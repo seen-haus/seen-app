@@ -1,8 +1,33 @@
 // Slideout Menu
 .button {
-  @apply border px-10 py-3 cursor-pointer rounded-full;
+  @apply flex items-center justify-items-center border h-13 cursor-pointer rounded-md px-8 font-bold border-transparent;
+
   &.primary {
+    @apply text-white;
     box-shadow: 0 3px 10px 0 rgba(0, 211, 115, 0.36);
-    background-image: linear-gradient(78deg, #34ca98 -3%, #00b97b 99%)
-  }
+    background-image: linear-gradient(78deg, #34ca98 -3%, #00b97b 99%);
+    }
+
+    &.light {
+      @apply bg-white text-black;
+    }
+
+    &.dark {
+      @apply bg-black text-white;
+    }
+
+    &.outline {
+      @apply bg-transparent text-black border-gray-400;
+      border-width: 2px;
+    }
+
+    .icon-left {
+      margin-left: -10px;
+      margin-right: 24px;
+    }
+
+    .icon-right {
+      margin-left: 24px;
+      margin-right: -10px;
+}
 }

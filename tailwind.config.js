@@ -28,12 +28,14 @@ module.exports = {
                 title: ['Playfair Display', "serif"],
             },
             spacing: {
+                '1.5': '0.375rem',
+                '2.5': '0.625rem',
                 '13': '3.25rem',
                 '15': '3.75rem',
                 '17': '4.25rem',
                 '18': '4.5rem',
                 '22': '5.5rem',
-            }
+            },
         },
     },
     variants: {
