@@ -1,0 +1,8 @@
+// Slideout Menu
+.button {
+  @apply border px-10 py-3 cursor-pointer rounded-full;
+  &.primary {
+    box-shadow: 0 3px 10px 0 rgba(0, 211, 115, 0.36);
+    background-image: linear-gradient(78deg, #34ca98 -3%, #00b97b 99%)
+  }
+}

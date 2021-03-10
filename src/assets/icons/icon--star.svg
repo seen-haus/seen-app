@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="17px" height="15px" viewBox="0 0 17 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Path</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="combined-shape_6" fill="#FFDD36" fill-rule="nonzero">
+            <path d="M9.03,0.243 L11.02,4.903 L16.114,5.337 C16.467,5.367 16.611,5.804 16.342,6.033 L12.478,9.346 L13.636,14.275 C13.716,14.617 13.342,14.887 13.038,14.705 L8.66,12.092 L4.282,14.705 C3.978,14.885 3.604,14.616 3.684,14.275 L4.842,9.346 L0.977,6.032 C0.709,5.802 0.852,5.366 1.206,5.336 L6.3,4.903 L8.29,0.243 C8.428,-0.081 8.891,-0.081 9.03,0.243 L9.03,0.243 Z" id="Shape"></path>
+        </g>
+    </g>
+</svg>
