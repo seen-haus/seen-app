@@ -2,7 +2,7 @@
   <div>
     <top-header-bar/>
     <container>
-      <header class="py-4">
+      <header class="py-8">
         <div class="flex items-center">
           <div id="logo" class="flex items-center">
             <img src="@/assets/images/logo--black.png"  class="mr-4" alt="">
