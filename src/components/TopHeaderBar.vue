@@ -3,7 +3,7 @@
     <container>
       <a href="https://app.sushi.com/pair/0xc5fa164247d2f8d68804139457146efbde8370f6"
          target="_blank"
-         class="block mr-8 md:mr-20 flex text-sm ">
+         class="mr-8 md:mr-20 flex text-sm ">
         <img src="@/assets/icons/icon--seen-green.svg" class="cursor-pointer mr-2" alt="SEEN">
         <span class="hidden md:block mr-1">Seen: </span> $403
       </a>
