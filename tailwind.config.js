@@ -34,6 +34,7 @@ module.exports = {
                 title: ['Playfair Display', "serif"],
             },
             fontSize: {
+                '2.5xl': '1.6875rem',
             },
             borderRadius: {
                 '2sm': '0.25rem', // 4px

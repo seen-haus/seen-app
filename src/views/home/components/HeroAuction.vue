@@ -4,7 +4,7 @@
       <div class="media overflow-hidden rounded-3xl relative flex-1">
         <img class="image" src="http://placekitten.com/1000/1000" alt="" />
 
-        <div class="tags flex absolute">
+        <div class="tags flex absolute top-6 left-6">
           <tag type="nft" />
           <tag type="tangible" />
         </div>
@@ -48,7 +48,8 @@
         </div>
 
         <div class="timer pt-12">
-          <progress-timer progress="0.2" />
+          <progress-bar :progress="0.34" class="bg-fence-dark h-3" />
+          <progress-timer progress="0.2" class="text-white mt-3"/>
         </div>
       </div>
     </container>
@@ -60,6 +61,7 @@
 import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
+import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
@@ -69,6 +71,7 @@ export default {
   components: {
     UserBadge,
     Tag,
+    ProgressBar,
     ProgressTimer,
     LiveIndicator,
     Container,
@@ -89,11 +92,6 @@ export default {
   }
 
   .media {
-    .tags {
-      top: 24px;
-      left: 24px;
-    }
-
     .video-type-indicator {
       @apply flex text-white;
       position: absolute;

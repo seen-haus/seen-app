@@ -1,7 +1,7 @@
 <template>
-    <div class="user-badge flex items-center rounded-full p-1.5 font-semibold" :class="typeStyles">
+    <div class="user-badge flex items-center rounded-full p-1.5 font-semibold shadow-lg" :class="typeStyles">
         <img class="user-img rounded-full mr-2" src="http://placekitten.com/24/24" />
-        <span class="text-xs mr-1.5">username</span>
+        <span class="text-sm mr-1.5">username</span>
     </div>
 </template>
 
