@@ -20,16 +20,27 @@ module.exports = {
         },
         extend: {
             colors: {
-                primary:"#34ca98",
-                accent: "#FCD34D"
+                primary: "#34CA98",
+                accent: "#FCD34D",
+                'tag-nft': '#665BE8',
+                'tag-tangible': '#3391E8',
+                'hero-gray': '#262626',
+                'fence-dark': '#262626',
+                'fence-gray': '#E6E5E4',
+                'fence-light': '#EEEEEE',
             },
             fontFamily: {
-                body:['Inter', "sans-serif"],
+                body: ['Inter', "sans-serif"],
                 title: ['Playfair Display', "serif"],
             },
+            fontSize: {
+            },
+            borderRadius: {
+                '2sm': '0.25rem', // 4px
+            },
             spacing: {
-                '1.5': '0.375rem',
-                '2.5': '0.625rem',
+                '1.5': '0.375rem', // 6px
+                '2.5': '0.625rem', // 10px
                 '13': '3.25rem',
                 '15': '3.75rem',
                 '17': '4.25rem',
@@ -42,4 +53,4 @@ module.exports = {
         extend: {},
     },
     plugins: [],
-}
+};

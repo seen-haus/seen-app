@@ -17,7 +17,7 @@ export default {
     setup(props) {
         const typeStyles = computed(() => props.type && props.type === 'light'
         ? 'text-black bg-white'
-        : 'text-white bg-gray-800');
+        : 'text-white bg-hero-gray');
 
         return {
             typeStyles
