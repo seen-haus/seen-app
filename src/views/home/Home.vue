@@ -38,11 +38,11 @@
         <product-card />
       </div>
 
-      <button class="button dark mt-20 mx-auto">View All Auctions</button>
+      <button class="button dark mt-20 mx-auto w-full md:w-96">View All Auctions</button>
     </container>
 
     <div class="learn-how-to bg-background-gray border-t border-b">
-      <container class="py-24 pb-56">
+      <container class="py-24 pb-56 mb-8">
         <fenced-title
           class="flex-grow mr-0 mb-8 self-stretch"
           color="fence-gray"
@@ -63,9 +63,32 @@
           <button class="button dark mr-4">Read FAQs</button>
           <button class="button outline">Meet the team</button>
         </div>
-
       </container>
     </div>
+
+    <div class="quotes">
+      <container class="flex justify-center">
+        <quote class="centered-quote" />
+      </container>
+    </div>
+
+    <container class="meet-artists -mt-12 pb-32">
+      <fenced-title
+        class="flex-grow mr-0 mb-8 self-stretch"
+        color="fence-gray"
+        textAlign="center"
+        :closed="true"
+        >Meet artists
+      </fenced-title>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
+        <artist-card />
+        <artist-card />
+        <artist-card />
+      </div>
+
+      <button class="button dark mt-20 mx-auto w-full md:w-96">View All Artists</button>
+    </container>
   </div>
 </template>
 
@@ -73,14 +96,27 @@
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
+import Quote from "@/components/Quote.vue";
+import ArtistCard from "@/components/ArtistCard.vue";
 import HeroAuction from "./components/HeroAuction.vue";
 import HowToVideo from "./components/HowToVideo.vue";
 
 export default {
   name: "Home",
-  components: { HeroAuction, Container, FencedTitle, ProductCard, HowToVideo },
+  components: {
+    HeroAuction,
+    Container,
+    FencedTitle,
+    ProductCard,
+    HowToVideo,
+    Quote,
+    ArtistCard
+  },
 };
 </script>
 
 <style scoped lang="scss">
+.centered-quote {
+  transform: translate3d(0, -50%, 0);
+}
 </style>

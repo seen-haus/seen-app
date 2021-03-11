@@ -19,9 +19,13 @@ module.exports = {
             xl: '1440px',
         },
         extend: {
+            height: {
+                '0.5': '1px',
+            },
             colors: {
                 primary: "#34CA98",
                 accent: "#FCD34D",
+                star: "#FFDD36",
                 'background-gray': '#F5F4F3',
                 'tag-nft': '#665BE8',
                 'tag-tangible': '#3391E8',
@@ -35,7 +39,7 @@ module.exports = {
                 title: ['Playfair Display', "serif"],
             },
             fontSize: {
-                '2.5xl': '1.6875rem',
+                '2.5xl': '1.6875rem', // 27px
             },
             borderRadius: {
                 '2sm': '0.25rem', // 4px
@@ -49,6 +53,9 @@ module.exports = {
                 '18': '4.5rem',
                 '22': '5.5rem',
             },
+            borderWidth: {
+                '3': '3px',
+            }
         },
     },
     variants: {
