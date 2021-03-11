@@ -22,6 +22,7 @@ module.exports = {
             colors: {
                 primary: "#34CA98",
                 accent: "#FCD34D",
+                'background-gray': '#F5F4F3',
                 'tag-nft': '#665BE8',
                 'tag-tangible': '#3391E8',
                 'hero-gray': '#262626',
