@@ -7,11 +7,7 @@
       <img src=http://placekitten.com/100/100 alt="" class="rounded-full
       border-white border-3 absolute left-6 -top-13">
 
-      <div
-        class="rounded-sm bg-fence-light self-end text-xs px-2 py-1 font-bold text-gray-400"
-      >
-        18 CREATIONS
-      </div>
+      <tag class="bg-fence-light self-end text-gray-400 font-semibold">18 CREATIONS</tag>
 
       <div class="text-title font-bold text-2.5xl mt-6">Mark Kitty</div>
       <div class="mt-2 text-gray-600">
@@ -30,7 +26,13 @@
 </template>
 
 <script>
+import Tag from "@/components/PillsAndTags/Tag.vue";
+
 export default {
   name: "ArtistCard",
+  components: {
+    Tag,
+  }
 };
 </script>
+

@@ -40,6 +40,7 @@ module.exports = {
             },
             fontSize: {
                 '2.5xl': '1.6875rem', // 27px
+                '4xl': '2.25rem', // 36px
             },
             borderRadius: {
                 '2sm': '0.25rem', // 4px
@@ -55,6 +56,9 @@ module.exports = {
             },
             borderWidth: {
                 '3': '3px',
+            },
+            boxShadow: {
+                'lifted': '0 2px 36px 0 #0000003d'
             }
         },
     },
