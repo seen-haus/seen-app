@@ -99,7 +99,7 @@ import FencedTitle from "@/components/FencedTitle.vue";
 import Quote from "@/components/Quote.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 import HeroAuction from "./components/HeroAuction.vue";
-import HowToVideo from "./components/HowToVideo.vue";
+import HowToVideo from "../../components/HowToVideo.vue";
 
 export default {
   name: "Home",
@@ -114,9 +114,3 @@ export default {
   },
 };
 </script>
-
-<style scoped lang="scss">
-.centered-quote {
-  transform: translate3d(0, -50%, 0);
-}
-</style>

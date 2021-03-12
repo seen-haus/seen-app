@@ -5,3 +5,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.centered-quote {
+  transform: translate3d(0, -50%, 0);
+}

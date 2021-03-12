@@ -1,17 +1,152 @@
 <template>
   <div>
-    editions
-<!--    components -->
+    <container class="section-featured-auctions pb-24">
+      <div class="flex items-center py-6 flex-col lg:flex-row">
+        <fenced-title
+          class="flex-grow mr-0 mb-2 self-stretch"
+          color="fence-gray"
+          textAlign="center"
+          :closed="true"
+          >Auctions</fenced-title
+        >
+      </div>
+
+      <div class="flex justify-start items-center">
+          <toggle
+            :value="filterNft"
+            class="text-tag-nft mr-8"
+            @onChange="handleNftToggle($event)"
+          >
+            <span class="font-bold ml-1 text-black">NFT</span>
+          </toggle>
+        
+
+          <toggle
+            :value="filterTangible"
+            class="text-tag-tangible"
+            @onChange="handleTangibleToggle($event)"
+          >
+            <span class="font-bold ml-1 text-black">NFT + Tangible</span>
+          </toggle>
+      </div>
+
+      <div
+        class="auction-list-big grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-5"
+      >
+        <product-card />
+        <product-card />
+        <product-card />
+        <product-card />
+        <product-card />
+        <product-card />
+      </div>
+
+      <button class="button dark mt-20 mx-auto w-full md:w-96">
+        Load More
+      </button>
+    </container>
+
+    <div class="learn-how-to bg-background-gray border-t border-b">
+      <container class="py-24 pb-56 mb-8">
+        <fenced-title
+          class="flex-grow mr-0 mb-8 self-stretch"
+          color="fence-gray"
+          textAlign="center"
+          :closed="true"
+          >Learn how to bid in
+          <span class="text-primary italic">50 seconds</span></fenced-title
+        >
+
+        <div class="text-center md:w-1/2 md:mx-auto text-gray-600 text-lg">
+          Seen.haus is an innovative auction house of the future merging the
+          physical and digital worlds of art
+        </div>
+
+        <how-to-video class="my-12"></how-to-video>
+
+        <div class="flex justify-center">
+          <button class="button dark mr-4">Read FAQs</button>
+          <button class="button outline">Meet the team</button>
+        </div>
+      </container>
+    </div>
+
+    <div class="quotes">
+      <container class="flex justify-center">
+        <quote class="centered-quote" />
+      </container>
+    </div>
+
+    <container class="meet-artists -mt-12 pb-32">
+      <fenced-title
+        class="flex-grow mr-0 mb-8 self-stretch"
+        color="fence-gray"
+        textAlign="center"
+        :closed="true"
+        >Meet artists
+      </fenced-title>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
+        <artist-card />
+        <artist-card />
+        <artist-card />
+      </div>
+
+      <button class="button dark mt-20 mx-auto w-full md:w-96">View All Artists</button>
+    </container>
   </div>
 </template>
 
 <script>
+import Container from "@/components/Container.vue";
+import ProductCard from "@/components/ProductCard.vue";
+import FencedTitle from "@/components/FencedTitle.vue";
+import Toggle from "@/components/Inputs/Toggle.vue";
+import HowToVideo from "@/components/HowToVideo.vue";
+import Quote from "@/components/Quote.vue";
+import ArtistCard from "@/components/ArtistCard.vue";
+import { computed, reactive } from "vue";
+
 export default {
   name: "Auctions",
-}
+  components: {
+    Container,
+    FencedTitle,
+    ProductCard,
+    Toggle,
+    HowToVideo,
+    Quote,
+    ArtistCard
+  },
+  setup() {
+    const state = reactive({
+      filterNft: true,
+      filterTangible: true,
+    });
+
+    const filterNft = computed(() => state.filterNft);
+    const filterTangible = computed(() => state.filterTangible);
+
+    const handleNftToggle = function (event) {
+      console.log("handleNftToggle", event);
+      state.filterNft = event;
+    };
+
+    const handleTangibleToggle = function (event) {
+      console.log("filterTangible", event);
+      state.filterTangible = event;
+    };
+
+    return {
+      filterNft,
+      filterTangible,
+      handleNftToggle,
+      handleTangibleToggle,
+    };
+  },
+};
 </script>
 
 <style scoped>
-
 </style>
  
