@@ -5,8 +5,8 @@
         <img class="image" src="http://placekitten.com/1000/1000" alt="" />
 
         <div class="tags flex absolute top-6 left-6">
-          <tag type="nft" />
-          <tag type="tangible" />
+          <tag class="bg-tag-nft mr-1">NFT</tag>
+          <tag class="bg-tag-tangible">TANGIBLE</tag>
         </div>
 
         <i v-if="true" class="video-type-indicator fas fa-video"></i>
@@ -32,19 +32,15 @@
 
         <div class="flex lg:justify-start items-center mt-2 justify-center">
           <user-badge type="dark" class="mr-4" />
-          <live-indicator status="comming soon" />
+          <live-indicator status="comming soon" class="text-white">COMMING SOON</live-indicator>
         </div>
 
         <div class="auction-action flex items-center pt-14">
           <button class="button light mr-7">
             View Auction <i class="fas fa-arrow-right ml-3 icon-right"></i>
           </button>
-          <div class="price flex flex-col items-start">
-            <div class="crypto text-white text-sm">
-              <span class="font-bold mr-1.5 text-3xl">2.06</span>Ether
-            </div>
-            <div class="fiat text-gray-400 text-sm">$2,442.55</div>
-          </div>
+
+          <price-display size="md" class="text-white" type="Ether"/>
         </div>
 
         <div class="timer pt-12">
@@ -59,6 +55,7 @@
 
 <script>
 import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
+import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
@@ -71,6 +68,7 @@ export default {
   components: {
     UserBadge,
     Tag,
+    PriceDisplay,
     ProgressBar,
     ProgressTimer,
     LiveIndicator,

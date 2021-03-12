@@ -9,3 +9,7 @@
 .centered-quote {
   transform: translate3d(0, -50%, 0);
 }
+
+.rounded-container {
+  @apply rounded-xl overflow-hidden bg-background-gray border p-6;
+}
