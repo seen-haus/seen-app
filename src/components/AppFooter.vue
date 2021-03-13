@@ -14,7 +14,7 @@
         </div>
       </div>
       <div class="grid-cols-1 lg:grid-cols-2 grid mt-12 mb-10">
-        <div class="about w-88">
+        <div class="about sm:w-88">
           <div id="logo" class="flex items-center mb-6">
             <img src="@/assets/images/logo--white.png"  class="mr-4 footer-logo" alt="seen logo">
           </div>
