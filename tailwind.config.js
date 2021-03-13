@@ -36,6 +36,9 @@ module.exports = {
                 'place-gold': '#FFAE00',
                 'place-silver': '#BCBABA',
                 'place-bronze': '#DA805C',
+                'newsletter': '#333333',
+                'footer-grey': '#999999',
+                'topbar': '#DDDDDD',
             },
             fontFamily: {
                 body: ['Inter', "sans-serif"],
@@ -45,6 +48,7 @@ module.exports = {
                 '2xs': '0.8125rem', // 13px
                 '2.5xl': '1.6875rem', // 27px
                 '4xl': '2.25rem', // 36px
+                'md': '0.9375rem',
             },
             borderRadius: {
                 '2sm': '0.25rem', // 4px
@@ -57,6 +61,7 @@ module.exports = {
                 '17': '4.25rem',
                 '18': '4.5rem',
                 '22': '5.5rem',
+                '88': '22rem',
             },
             borderWidth: {
                 '3': '3px',

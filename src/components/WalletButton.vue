@@ -1,6 +1,6 @@
 <template>
-  <div class="border border-white py-3 px-7 text-white rounded-full">
-    <button v-if="!account" class="cursor-pointer" @click="openWalletModal"> Connect wallet</button>
+  <div class="py-3">
+    <button v-if="!account" class="cursor-pointer button primary flex-shrink-0" @click="openWalletModal"><i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet</button>
     <button v-else class="cursor-pointer flex items-center" @click="openWalletModal"> <identicon/> <span class="ml-2">{{ shortenAddress(account) }}</span></button>
   </div>
 </template>
