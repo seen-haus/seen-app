@@ -14,7 +14,7 @@
 
       <div class="outlined-input mt-5">
         <input type="text" placeholder="Enter your bid" />
-        <div class="icon w-5 pr-1"></div>
+        <div class="icon w-5 mr-1"></div>
         <div class="type font-bold">ETH</div>
       </div>
 
