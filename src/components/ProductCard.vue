@@ -5,7 +5,8 @@
 
       <div class="tags flex absolute top-6 left-6">
         <tag class="bg-tag-nft mr-1 text-white">NFT</tag>
-        <tag class="bg-tag-tangible text-white">TANGIBLE</tag>
+        <tag class="bg-tag-tangible mr-1 text-white">TANGIBLE</tag>
+        <tag class="bg-black text-white">EDITION NFT 3/3</tag>
       </div>
 
       <live-indicator status="live" class="absolute top-6 right-6 text-white">LIVE</live-indicator>
