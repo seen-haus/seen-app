@@ -33,6 +33,9 @@ module.exports = {
                 'fence-dark': '#262626',
                 'fence-gray': '#E6E5E4',
                 'fence-light': '#EEEEEE',
+                'place-gold': '#FFAE00',
+                'place-silver': '#BCBABA',
+                'place-bronze': '#DA805C',
             },
             fontFamily: {
                 body: ['Inter', "sans-serif"],
@@ -58,7 +61,8 @@ module.exports = {
                 '3': '3px',
             },
             boxShadow: {
-                'lifted': '0 2px 36px 0 #0000003d'
+                'lifted-sm': '0 1px 15px 0 #00000026',
+                'lifted': '0 2px 36px 0 #0000003d',
             }
         },
     },
