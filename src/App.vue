@@ -4,11 +4,13 @@
     <wallet-modal/>
     <!--  Modals END -->
     <mobile-menu/>
-    <main id="main" class="min-h-screen z-10 bg-white text-black font-body">
-     <app-header/>
-      <div class="router-wrap">
-        <router-view/>
-      </div>
+    <main id="main" class="flex flex-col justify-between min-h-screen z-10 bg-white text-black font-body">
+     <div class="flex flex-col">
+      <app-header/>
+        <div class="router-wrap">
+          <router-view/>
+        </div>
+     </div>
       <app-footer/>
     </main>
   </web3-provider>

@@ -28,6 +28,8 @@ module.exports = {
                 'fence-dark': '#262626',
                 'fence-gray': '#E6E5E4',
                 'fence-light': '#EEEEEE',
+                'newsletter': '#333333',
+                'footer-grey': '#999999'
             },
             fontFamily: {
                 body: ['Inter', "sans-serif"],
@@ -35,6 +37,7 @@ module.exports = {
             },
             fontSize: {
                 '2.5xl': '1.6875rem',
+                'md': '0.9375rem',
             },
             borderRadius: {
                 '2sm': '0.25rem', // 4px
@@ -47,7 +50,8 @@ module.exports = {
                 '17': '4.25rem',
                 '18': '4.5rem',
                 '22': '5.5rem',
-            },
+                '88': '22rem'
+            }
         },
     },
     variants: {

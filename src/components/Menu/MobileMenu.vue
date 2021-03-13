@@ -1,6 +1,19 @@
 <template>
-  <nav id="menu" class="min-h-screen bg-blue-300 slideout-menu">
-    menu
+  <nav id="menu" class="min-h-screen slideout-menu bg-black text-white pt-13">
+    <button class="button w-full text-white" @click="closeMobileMenu">CLOSE</button>
+    <router-link :to="{ name: 'auctions'}" v-slot="{isActive}" class="routing-link block py-1 px-8">
+      <span class="opacity-50 font-bold py-0.5" :class="{'active': isActive}">Auctions</span>
+    </router-link>
+    <router-link :to="{ name: 'editions'}" v-slot="{isActive}" class="routing-link block py-1 px-8">
+      <span class="opacity-50 font-bold py-0.5" :class="{'active': isActive}">Editions</span>
+    </router-link>
+    <router-link :to="{ name: 'artists'}" v-slot="{isActive}" class="routing-link block py-1 px-8">
+      <span class="opacity-50 font-bold py-0.5" :class="{'active': isActive}">Artists</span>
+    </router-link>
+    <router-link :to="{ name: 'leaderboard'}" v-slot="{isActive}" class="routing-link block py-1 px-8">
+      <span class="opacity-50 font-bold py-0.5" :class="{'active': isActive}">Leaderboard</span>
+    </router-link>
+    <wallet-button class="pl-8"/>  
   </nav>
 </template>
 
@@ -8,9 +21,11 @@
 import {useStore} from "vuex";
 import {watchEffect, onMounted, ref, computed} from "vue";
 import Slideout from "slideout";
+import WalletButton from "@/components/WalletButton";
 
 export default {
   name: "MobileMenu",
+  components: {WalletButton},
   setup() {
     const store = useStore()
     let slideout = ref(null)
@@ -42,6 +57,7 @@ export default {
       })
     })
 
+    return {closeMobileMenu: () => store.commit('application/CLOSE_MOBILE_MENU')} 
   },
 }
 </script>

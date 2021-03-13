@@ -1,1 +1,7 @@
 // Non component specific styles
+.routing-link {
+  .active {
+    @apply opacity-100 border-b-2;
+    border-color: #34ca98;
+  }
+}
