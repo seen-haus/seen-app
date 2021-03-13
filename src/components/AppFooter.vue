@@ -16,7 +16,7 @@
       <div class="grid-cols-1 lg:grid-cols-2 grid mt-12 mb-10">
         <div class="about w-88">
           <div id="logo" class="flex items-center mb-6">
-            <img src="@/assets/images/logo--black.png"  class="mr-4 footer-logo" alt="seen logo">
+            <img src="@/assets/images/logo--white.png"  class="mr-4 footer-logo" alt="seen logo">
           </div>
           <p class="opacity-70 text-md">Seen.haus is an innovative auction house of the future merging the physical and digital worlds of art. Each physical collectible sold through our platform is paired with a digital version that provides an exclusive record of ownership.</p>
         </div>
@@ -118,12 +118,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.footer-logo {
-  filter: invert(100%) sepia(26%) saturate(3573%) hue-rotate(165deg) brightness(119%) contrast(116%);
-  @screen md {
-    margin-left: 0px;
-  }
-}
 .footer-border {
   border-top: 2px solid rgba(255,255,255,.2);
 }
