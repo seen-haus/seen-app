@@ -1,5 +1,5 @@
 <template>
-    <div class="user-badge flex items-center rounded-full p-1.5 font-semibold shadow-lg" :class="typeStyles">
+    <div class="user-badge flex items-center rounded-full p-1.5 font-semibold shadow-md" :class="typeStyles">
         <img class="user-img rounded-full mr-2" src="http://placekitten.com/24/24" />
         <span class="text-sm mr-1.5">username</span>
     </div>

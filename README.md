@@ -1,4 +1,4 @@
-# SEEN Haus
+# SEEN Haus V2
 
 ## Tech Stack
 

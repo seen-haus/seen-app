@@ -19,24 +19,33 @@ module.exports = {
             xl: '1440px',
         },
         extend: {
+            height: {
+                '0.5': '1px',
+            },
             colors: {
                 primary: "#34CA98",
                 accent: "#FCD34D",
+                star: "#FFDD36",
+                'background-gray': '#F5F4F3',
                 'tag-nft': '#665BE8',
                 'tag-tangible': '#3391E8',
                 'hero-gray': '#262626',
                 'fence-dark': '#262626',
                 'fence-gray': '#E6E5E4',
                 'fence-light': '#EEEEEE',
+                'place-gold': '#FFAE00',
+                'place-silver': '#BCBABA',
+                'place-bronze': '#DA805C',
                 'newsletter': '#333333',
-                'footer-grey': '#999999'
+                'footer-grey': '#999999',
             },
             fontFamily: {
                 body: ['Inter', "sans-serif"],
                 title: ['Playfair Display', "serif"],
             },
             fontSize: {
-                '2.5xl': '1.6875rem',
+                '2.5xl': '1.6875rem', // 27px
+                '4xl': '2.25rem', // 36px
                 'md': '0.9375rem',
             },
             borderRadius: {
@@ -50,7 +59,14 @@ module.exports = {
                 '17': '4.25rem',
                 '18': '4.5rem',
                 '22': '5.5rem',
-                '88': '22rem'
+                '88': '22rem',
+            },
+            borderWidth: {
+                '3': '3px',
+            },
+            boxShadow: {
+                'lifted-sm': '0 1px 15px 0 #00000026',
+                'lifted': '0 2px 36px 0 #0000003d',
             }
         },
     },

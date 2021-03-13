@@ -1,4 +1,22 @@
 // Non component specific styles
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.centered-quote {
+  transform: translate3d(0, -50%, 0);
+}
+
+.rounded-container {
+  @apply rounded-xl overflow-hidden bg-background-gray border p-6;
+}
+
+.text-shadow {
+  text-shadow: 0 1px 1px #00000040;
+}
 .routing-link {
   .active {
     @apply opacity-100 border-b-2;

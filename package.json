@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "deploy": "./scripts/deploy.sh"
   },
   "dependencies": {
     "@0x/subproviders": "^6.4.1",
@@ -58,7 +59,12 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "vue/no-unused-components": ["warn", {
+        "ignoreWhenBindingPresent": true
+      }],
+      "no-unused-vars": "warn"
+    }
   },
   "browserslist": [
     "> 1%",

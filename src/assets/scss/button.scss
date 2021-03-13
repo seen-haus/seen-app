@@ -1,6 +1,6 @@
 // Slideout Menu
 .button {
-  @apply flex items-center justify-items-center border h-13 cursor-pointer rounded-md px-8 font-bold border-transparent;
+  @apply flex items-center justify-center border h-13 cursor-pointer rounded-md px-8 font-bold border-transparent;
 
   &.primary {
     @apply text-white;

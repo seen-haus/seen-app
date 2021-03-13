@@ -1,0 +1,22 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - run: mkdir -p ~/.aws
+      - run: echo "[seen.site]" > ~/.aws/credentials
+      - run: echo "aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+      - run: echo "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+      - run: |
+          touch .env.production.local
+          echo ${{ secrets.PRODUCTION_ENV_VARS }} >> .env.production.local
+      - run: yarn install
+      - run: yarn run build
+      - run: yarn run deploy
