@@ -79,7 +79,7 @@
 
           <div class="rounded-container flex">
             <i
-              class="fas fa-truck mr-2 text-3xl icon-right text-gray-500 mr-6"
+              class="fas fa-truck text-3xl icon-right text-gray-500 mr-6"
             ></i>
 
             <div class="text-sm font-bold">
