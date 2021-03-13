@@ -38,6 +38,7 @@ module.exports = {
                 'place-bronze': '#DA805C',
                 'newsletter': '#333333',
                 'footer-grey': '#999999',
+                'topbar': '#DDDDDD',
             },
             fontFamily: {
                 body: ['Inter', "sans-serif"],
