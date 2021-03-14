@@ -19,7 +19,7 @@
           >
             <span class="font-bold ml-1 text-black">NFT</span>
           </toggle>
-        
+
 
           <toggle
             :value="filterTangible"
@@ -105,6 +105,7 @@ import Toggle from "@/components/Inputs/Toggle.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
 import Quote from "@/components/Quote.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
+import {CollectablesService} from "@/services/apiService"
 import { computed, reactive } from "vue";
 
 export default {
@@ -118,11 +119,13 @@ export default {
     Quote,
     ArtistCard
   },
-  setup() {
+  async setup() {
     const state = reactive({
       filterNft: true,
       filterTangible: true,
     });
+
+    console.log(await CollectablesService.list());
 
     const filterNft = computed(() => state.filterNft);
     const filterTangible = computed(() => state.filterTangible);
@@ -149,4 +152,3 @@ export default {
 
 <style scoped>
 </style>
- 

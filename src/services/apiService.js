@@ -1,8 +1,8 @@
 import {$axios} from './api/axios';
 
-export const ApiService = {
+const ApiService = {
     init() {
-        $axios.defaults.baseURL = `${process.env.VUE_APP_BASE_URL}/`;
+        $axios.defaults.baseURL = `${process.env.VUE_APP_API_URL}/`;
         return $axios;
     },
 
@@ -37,6 +37,9 @@ export const ApiService = {
     }
 };
 
+// init API service
+ApiService.init();
+
 export const UserService = {
     create(payload) {
         return ApiService.post('users/' + payload.wallet, payload);
@@ -62,9 +65,9 @@ export const LeaderboardService = {
 };
 
 export const CollectablesService = {
-    list(pagination= {perPage: 6, page: 1}) {
+    list(pagination= {perPage: 6, page: 1}, filter = {}) {
         // serializeđ
-        return ApiService.query('collectables', pagination);
+        return ApiService.query('collectables', {...pagination, ...filter});
     },
     show(contractAddress) {
         return ApiService.get(`collectables/${contractAddress}`);
