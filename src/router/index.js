@@ -52,6 +52,11 @@ const routes = [
         name: 'stake',
         component: () => import(/* webpackChunkName: "stake" */ '../views/stake/Stake.vue')
     },
+    {
+        path: '/spaaaaace',
+        name: 'spaaaaace',
+        component: () => import(/* webpackChunkName: "stake" */ '../views/spaaaaace/Spaaaaace.vue')
+    },
 ]
 
 const router = createRouter({

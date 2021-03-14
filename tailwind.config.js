@@ -69,6 +69,7 @@ module.exports = {
             boxShadow: {
                 'lifted-sm': '0 1px 15px 0 #00000026',
                 'lifted': '0 2px 36px 0 #0000003d',
+                'inset': 'inset 0 0 0 4px #ffffff',
             }
         },
     },

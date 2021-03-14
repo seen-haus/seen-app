@@ -23,3 +23,12 @@
     border-color: #34ca98;
   }
 }
+
+.bg-rainbow {
+  background-image: linear-gradient(
+    to right,
+    #03ba7d 0%,
+    #009fd4 54%,
+    #665be8 100%
+  );
+}
