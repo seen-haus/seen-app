@@ -1,10 +1,7 @@
 import {$axios} from './api/axios';
 
-const ApiService = {
-    init() {
-        $axios.defaults.baseURL = `${process.env.VUE_APP_API_URL}/`;
-        return $axios;
-    },
+$axios.defaults.baseURL = `${process.env.VUE_APP_API_URL}/`;
+export const ApiService = {
 
     query(resource, params) {
         return $axios.get(resource, {params}).catch(error => {
@@ -37,9 +34,6 @@ const ApiService = {
     }
 };
 
-// init API service
-ApiService.init();
-
 export const UserService = {
     create(payload) {
         return ApiService.post('users/' + payload.wallet, payload);
@@ -65,7 +59,7 @@ export const LeaderboardService = {
 };
 
 export const CollectablesService = {
-    list(pagination= {perPage: 6, page: 1}, filter = {}) {
+    list(pagination = {perPage: 6, page: 1}, filter = {}) {
         // serializeđ
         return ApiService.query('collectables', {...pagination, ...filter});
     },
@@ -81,7 +75,7 @@ export const SpotlightService = {
 };
 
 export const ArtistService = {
-    list(pagination= {perPage: 6, page: 1}) {
+    list(pagination = {perPage: 6, page: 1}) {
         // serializeđ
         console.log(pagination)
         return ApiService.query('artists', pagination);

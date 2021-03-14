@@ -31,7 +31,7 @@
     "web3-provider-engine": "^16.0.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss7-compat": "^2.0.3",
+    "@tailwindcss/postcss7-compat": "npm:@tailwindcss/postcss7-compat",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-plugin-router": "~4.5.0",
@@ -60,9 +60,12 @@
       "parser": "babel-eslint"
     },
     "rules": {
-      "vue/no-unused-components": ["warn", {
-        "ignoreWhenBindingPresent": true
-      }],
+      "vue/no-unused-components": [
+        "warn",
+        {
+          "ignoreWhenBindingPresent": true
+        }
+      ],
       "no-unused-vars": "warn"
     }
   },

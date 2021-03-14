@@ -3,42 +3,43 @@
     <container class="section-featured-auctions pb-24">
       <div class="flex items-center py-6 flex-col lg:flex-row">
         <fenced-title
-          class="flex-grow mr-0 mb-2 self-stretch"
-          color="fence-gray"
-          textAlign="center"
-          :closed="true"
-          >Auctions</fenced-title
+            class="flex-grow mr-0 mb-2 self-stretch"
+            color="fence-gray"
+            textAlign="center"
+            :closed="true"
+        >Auctions
+        </fenced-title
         >
       </div>
 
       <div class="flex justify-start items-center">
-          <toggle
+        <toggle
             :value="filterNft"
             class="text-tag-nft mr-8"
             @onChange="handleNftToggle($event)"
-          >
-            <span class="font-bold ml-1 text-black">NFT</span>
-          </toggle>
+        >
+          <span class="font-bold ml-1 text-black">NFT</span>
+        </toggle>
 
 
-          <toggle
+        <toggle
             :value="filterTangible"
             class="text-tag-tangible"
             @onChange="handleTangibleToggle($event)"
-          >
-            <span class="font-bold ml-1 text-black">NFT + Tangible</span>
-          </toggle>
+        >
+          <span class="font-bold ml-1 text-black">NFT + Tangible</span>
+        </toggle>
       </div>
 
       <div
-        class="auction-list-big grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-5"
+          class="auction-list-big grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-5"
       >
-        <product-card />
-        <product-card />
-        <product-card />
-        <product-card />
-        <product-card />
-        <product-card />
+        <product-card/>
+        <product-card/>
+        <product-card/>
+        <product-card/>
+        <product-card/>
+        <product-card/>
       </div>
 
       <button class="button dark mt-20 mx-auto w-full md:w-96">
@@ -49,11 +50,11 @@
     <div class="learn-how-to bg-background-gray border-t border-b">
       <container class="py-24 pb-56 mb-8">
         <fenced-title
-          class="flex-grow mr-0 mb-8 self-stretch"
-          color="fence-gray"
-          textAlign="center"
-          :closed="true"
-          >Learn how to bid in
+            class="flex-grow mr-0 mb-8 self-stretch"
+            color="fence-gray"
+            textAlign="center"
+            :closed="true"
+        >Learn how to bid in
           <span class="text-primary italic">50 seconds</span></fenced-title
         >
 
@@ -73,23 +74,23 @@
 
     <div class="quotes">
       <container class="flex justify-center">
-        <quote class="centered-quote" />
+        <quote class="centered-quote"/>
       </container>
     </div>
 
     <container class="meet-artists -mt-12 pb-32">
       <fenced-title
-        class="flex-grow mr-0 mb-8 self-stretch"
-        color="fence-gray"
-        textAlign="center"
-        :closed="true"
-        >Meet artists
+          class="flex-grow mr-0 mb-8 self-stretch"
+          color="fence-gray"
+          textAlign="center"
+          :closed="true"
+      >Meet artists
       </fenced-title>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
-        <artist-card />
-        <artist-card />
-        <artist-card />
+        <artist-card/>
+        <artist-card/>
+        <artist-card/>
       </div>
 
       <button class="button dark mt-20 mx-auto w-full md:w-96">View All Artists</button>
@@ -105,8 +106,8 @@ import Toggle from "@/components/Inputs/Toggle.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
 import Quote from "@/components/Quote.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
-import {CollectablesService} from "@/services/apiService"
-import { computed, reactive } from "vue";
+import {computed, reactive} from "vue";
+import {CollectablesService} from "@/services/apiService";
 
 export default {
   name: "Auctions",
@@ -119,14 +120,13 @@ export default {
     Quote,
     ArtistCard
   },
-  async setup() {
+  setup() {
     const state = reactive({
       filterNft: true,
       filterTangible: true,
     });
 
-    console.log(await CollectablesService.list());
-
+    CollectablesService.list();
     const filterNft = computed(() => state.filterNft);
     const filterTangible = computed(() => state.filterTangible);
 
