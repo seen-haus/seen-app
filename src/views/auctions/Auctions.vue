@@ -124,9 +124,22 @@ export default {
     const state = reactive({
       filterNft: true,
       filterTangible: true,
+      items: [],
+      pagination: {
+        perPage: 6,
+        page: 1,
+      }
     });
 
-    CollectablesService.list();
+
+    const fetchData = async () => {
+      let { data }= await CollectablesService.list();
+      state.items = data;
+      console.log(state.items[0], data);
+    }
+
+    fetchData();
+
     const filterNft = computed(() => state.filterNft);
     const filterTangible = computed(() => state.filterTangible);
 
