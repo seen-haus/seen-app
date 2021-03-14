@@ -1,9 +1,9 @@
 <template>
-  <div class="price flex flex-col items-start" :class="{'pt-2': size === 'small'}">
-    <div class="crypto text-sm">
+  <div class="price flex flex-col items-start">
+    <div class="text-sm">
       <span class="font-bold mr-1.5" :class="numberSize">{{price}}</span>{{type}}
     </div>
-    <div class="fiat text-gray-400" :class="fiatSize">$2,442.55</div>
+    <div class="text-gray-400" :class="fiatSize">$2,442.55</div>
   </div>
 </template>
 

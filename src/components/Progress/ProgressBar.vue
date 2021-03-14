@@ -1,5 +1,5 @@
 <template>
-  <div class="progress-bar rounded-full">
+  <div class="progress-bar rounded-full overflow-hidden">
     <div
       class="progress h-full rounded-full rounded-tr-none rounded-br-none"
       :class="progressColor"

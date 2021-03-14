@@ -8,7 +8,9 @@
         'bg-accent': indicatorStatus === 'COMMING SOON',
       }"
     ></div>
-    <div class="font-bold"><slot></slot></div>
+    <div class="font-bold">
+      <slot>{{ indicatorStatus }}</slot>
+    </div>
   </div>
 </template>
 
@@ -17,7 +19,7 @@
 export default {
   name: "LiveIndicator",
   props: {
-    status: String,
+    status: { type: String, default: "live" },
   },
   computed: {
     indicatorStatus: function () {

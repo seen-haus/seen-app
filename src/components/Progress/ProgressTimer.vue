@@ -15,7 +15,7 @@ export default {
       type: String,
       default: 'Ends in:'
     },
-    endDate: Date,
+    endDate: String,
   },
   // TODO timer logic
 };

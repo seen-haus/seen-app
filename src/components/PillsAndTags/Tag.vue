@@ -1,5 +1,5 @@
 <template>
-  <div class="tag p-1 px-2 text-xs rounded-2sm tracking-wider">
+  <div class="tag p-1 px-2 text-xs rounded-2sm tracking-wider text-shadow">
     <slot></slot>
   </div>
 </template>
