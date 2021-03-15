@@ -171,8 +171,6 @@ export default {
       handleLoadMore,
     };
   },
-
-  init() {},
 };
 </script>
 
