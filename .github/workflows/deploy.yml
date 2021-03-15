@@ -16,7 +16,7 @@ jobs:
       - run: echo "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
       - run: |
           touch .env.production.local
-          echo ${{ secrets.PRODUCTION_ENV_VARS }} > .env.production.local
+          echo "${{ secrets.PRODUCTION_ENV_VARS }}" >> .env.production.local
           cat .env.production.local
       - run: yarn install
       - run: yarn run build
