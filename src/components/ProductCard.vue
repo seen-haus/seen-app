@@ -58,13 +58,15 @@
 </template>
 
 <script lang="ts">
+import { computed, reactive, ref } from "vue";
+
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
 import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import UserBadge from "./PillsAndTags/UserBadge.vue";
-import { computed, reactive, ref } from "vue";
+
 import COLLECTABLE_TYPE from "@/constants/Collectables.js";
 
 export default {

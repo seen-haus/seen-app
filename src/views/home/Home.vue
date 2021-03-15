@@ -1,6 +1,14 @@
 <template>
   <div>
-    <hero-auction />
+    <hero-auction
+      v-if="heroCollectable != null"
+      :collectable="heroCollectable"
+    />
+    <div
+      v-else
+      class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
+      :style="{ 'padding-bottom': '40%' }"
+    ></div>
 
     <container class="section-featured-auctions pb-24">
       <div class="flex items-center py-24 flex-col lg:flex-row">
@@ -26,19 +34,51 @@
       <div
         class="auction-list-big grid grid-cols-1 md:grid-cols-2 mb-22 gap-10"
       >
-        <product-card />
-        <product-card />
+        <template
+          v-for="collectable in featuredCollectables"
+          :key="collectable && collectable.id"
+        >
+          <product-card
+            v-if="collectable != null"
+            :collectable="collectable"
+            @click="navigateToCollectable(collectable.contract_address)"
+          />
+          <div
+            v-else
+            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
+            :style="{ 'padding-bottom': '120%' }"
+          ></div>
+        </template>
+        <!-- <product-card />
+        <product-card /> -->
       </div>
 
       <div
         class="auction-list-big grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
       >
+        <template
+          v-for="collectable in otherCollectables"
+          :key="collectable && collectable.id"
+        >
+          <product-card
+            v-if="collectable != null"
+            :collectable="collectable"
+            @click="navigateToCollectable(collectable.contract_address)"
+          />
+          <div
+            v-else
+            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
+            :style="{ 'padding-bottom': '120%' }"
+          ></div>
+        </template>
+        <!-- <product-card />
         <product-card />
-        <product-card />
-        <product-card />
+        <product-card /> -->
       </div>
 
-      <button class="button dark mt-20 mx-auto w-full md:w-96">View All Auctions</button>
+      <button class="button dark mt-20 mx-auto w-full md:w-96">
+        View All Auctions
+      </button>
     </container>
 
     <div class="learn-how-to bg-background-gray border-t border-b">
@@ -87,12 +127,17 @@
         <artist-card />
       </div>
 
-      <button class="button dark mt-20 mx-auto w-full md:w-96">View All Artists</button>
+      <button class="button dark mt-20 mx-auto w-full md:w-96">
+        View All Artists
+      </button>
     </container>
   </div>
 </template>
 
 <script>
+import { computed, reactive } from "vue";
+import { useRouter } from "vue-router";
+
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
@@ -100,6 +145,9 @@ import Quote from "@/components/Quote.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 import HeroAuction from "./components/HeroAuction.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
+
+import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
+import useCollectablesWithPagination from "@/hooks/useCollectablesWithPagination.js";
 
 export default {
   name: "Home",
@@ -110,7 +158,47 @@ export default {
     ProductCard,
     HowToVideo,
     Quote,
-    ArtistCard
+    ArtistCard,
+  },
+  setup() {
+    const router = useRouter();
+
+    const paginatedCollectables = useCollectablesWithPagination(
+      PURCHASE_TYPE.SALE
+    );
+    const listOfCollectables = computed(
+      () => paginatedCollectables.listOfCollectables.value
+    );
+
+    const heroCollectable = computed(() => listOfCollectables.value[0]);
+    const featuredCollectables = computed(() =>
+      [listOfCollectables.value[1], listOfCollectables.value[2]].filter(
+        (i) => i !== undefined
+      )
+    );
+    const otherCollectables = computed(() =>
+      [
+        listOfCollectables.value[3],
+        listOfCollectables.value[4],
+        listOfCollectables.value[5],
+      ].filter((i) => i !== undefined)
+    );
+
+    paginatedCollectables.load();
+
+    const navigateToCollectable = function (address) {
+      router.push({
+        name: "collectableAuction",
+        params: { contractAddress: address },
+      });
+    };
+
+    return {
+      heroCollectable,
+      featuredCollectables,
+      otherCollectables,
+      navigateToCollectable,
+    };
   },
 };
 </script>
