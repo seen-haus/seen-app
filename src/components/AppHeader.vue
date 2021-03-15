@@ -1,8 +1,9 @@
 <template>
   <div>
     <top-header-bar/>
-    <container>
-      <header class="py-8">
+    <div :class="headerClasses">
+      <container>
+      <header>
         <div class="flex items-center justify-between">
           <div id="logo" class="flex items-center">
             <img src="@/assets/images/logo--black.png"  class="mr-4" alt="">
@@ -18,10 +19,11 @@
             >
               menu
             </button>
-            </nav>
+          </nav>
         </div>
       </header>
     </container>
+    </div>
   </div>
 </template>
 
@@ -38,6 +40,11 @@ export default {
   setup() {
     const store = useStore();
     return {openMobileMenu: () => store.commit('application/OPEN_MOBILE_MENU')};
+  },
+  computed: {
+    headerClasses() {
+      return this.$route.fullPath.match('/profile') ? 'pt-10 pb-14 bg-background-gray' : 'py-10';
+    }
   }
 }
 </script>

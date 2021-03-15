@@ -1,7 +1,7 @@
 <template>
   <div class="py-2.5 bg-black text-white">
     <container>
-      <div class="flex justify-between">
+      <div class="flex justify-between flex-wrap">
          <div class="flex align-center py-1">
           <a href="https://app.sushi.com/pair/0xc5fa164247d2f8d68804139457146efbde8370f6"
             target="_blank"
@@ -53,7 +53,7 @@ export default {
 
 <style scoped lang="scss">
   .btn-exchange {
-    @apply block mr-8 flex text-sm inline-flex text-topbar items-center;
+    @apply mr-8 text-sm inline-flex text-topbar items-center;
     &:last-child {
       @apply mr-0;
     }
