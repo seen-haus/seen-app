@@ -117,6 +117,7 @@ import Quote from "@/components/Quote.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 import { computed, reactive } from "vue";
 
+import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 import useCollectablesWithPagination from "@/hooks/useCollectablesWithPagination.js";
 
 export default {
@@ -134,13 +135,12 @@ export default {
     const state = reactive({
       filterNft: true,
       filterTangibleNft: true,
-      isAcution: true,
     });
 
     const filterNft = computed(() => state.filterNft);
     const filterTangibleNft = computed(() => state.filterTangibleNft);
 
-    const paginatedCollectables = useCollectablesWithPagination();
+    const paginatedCollectables = useCollectablesWithPagination(PURCHASE_TYPE.SALE);
     const listOfCollectables = computed(() => paginatedCollectables.listOfCollectables.value);
     const hasMore = computed(() => paginatedCollectables.hasMore.value);
 

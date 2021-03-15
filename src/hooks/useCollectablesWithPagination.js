@@ -3,7 +3,7 @@ import COLLECTABLE_TYPE from "@/constants/Collectables.js";
 import { computed, reactive } from "vue";
 
 
-export default function useCollectablesWithPagination() {
+export default function useCollectablesWithPagination(purchaseType = 1) {
   const state = reactive({
     items: [null, null, null, null, null, null],
     perPage: 6,
@@ -33,7 +33,7 @@ export default function useCollectablesWithPagination() {
 
     const { data, metadata } = await CollectablesService.list(
       pagination,
-      { type: state.filter },
+      { type: state.filter, purchaseType },
     );
 
     state.items = data;
@@ -61,7 +61,7 @@ export default function useCollectablesWithPagination() {
 
     const { data, metadata } = await CollectablesService.list(
       pagination,
-      { type: state.filter },
+      { type: state.filter, purchaseType },
     );
 
     state.page += 1;
