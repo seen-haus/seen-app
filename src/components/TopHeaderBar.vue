@@ -53,7 +53,7 @@ export default {
 
 <style scoped lang="scss">
   .btn-exchange {
-    @apply block mr-8 flex text-sm inline-flex text-topbar items-center;
+    @apply mr-8 text-sm inline-flex text-topbar items-center;
     &:last-child {
       @apply mr-0;
     }
