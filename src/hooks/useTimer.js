@@ -45,9 +45,19 @@ export default function useTimer() {
 
   function tick(now) {
     // Needs recalculation every tick because of ability to add more time
-    const duration = state.endDate - state.startDate;
-    const progress = now - state.startDate;
-    const progressLeft = state.endDate - now;
+    let duration;
+    let progress;
+    let progressLeft;
+
+    if (state.endDate != null) {
+      duration = state.endDate - state.startDate;
+      progress = now - state.startDate;
+      progressLeft = state.endDate - now;
+    } else {
+      progress = now - state.startDate;
+      duration = progress;
+      progressLeft = progress;
+    }
 
     state.percentage = +(progress / duration).toFixed(2);
 
@@ -63,12 +73,12 @@ export default function useTimer() {
     unsubscribe();
     const {
       startDate,
-      endDate,
+      endDate = null,
     } = options;
 
     const now = Date.now();
     const start = new Date(startDate).getTime();
-    const end = new Date(endDate).getTime();
+    const end = endDate == null ? null : new Date(endDate).getTime();
 
 
     if (now < start) {
@@ -78,7 +88,7 @@ export default function useTimer() {
       return;
     }
 
-    if (now > end) {
+    if (end != null && now > end) {
       unsubscribe();
       state.percentage = 1.0;
       state.value = 'Auction ended';
