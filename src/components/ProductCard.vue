@@ -43,8 +43,12 @@
       />
 
       <progress-timer
+        ref="timerRef"
         v-if="purchase_type === 2"
         class="text-black text-sm mt-2"
+        :startDate="startsAt"
+        :endDate="endsAt"
+        @onProgress="updateProgress"
       />
       <div v-else class="text-sm font-bold mt-2">
         {{ edition }} out of {{ edition_of }}
@@ -60,8 +64,7 @@ import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import UserBadge from "./PillsAndTags/UserBadge.vue";
-
-import { computed, reactive } from "vue";
+import { computed, reactive, ref } from "vue";
 import COLLECTABLE_TYPE from "@/constants/Collectables.js";
 
 export default {
@@ -78,11 +81,11 @@ export default {
     collectable: Object,
   },
   setup(props) {
-    console.log("props");
-    console.log(props.collectable);
+    // console.log(props.collectable);
 
+    const timerRef = ref(null);
     const state = reactive({
-      progress: 0.5,
+      progress: 0.0,
     });
 
     const title = computed(() => props.collectable.title);
@@ -132,6 +135,15 @@ export default {
       return status;
     });
 
+    const updateProgress = function(event) {
+      state.progress = event;
+    }
+
+    const addTime = function() {
+      if (timerRef.value != null)
+        timerRef.value.addSeconds(60 * 60 * 24);
+    }
+
     return {
       title,
       artist,
@@ -149,6 +161,9 @@ export default {
       // Methods
       isTangible,
       isNft,
+      updateProgress,
+      addTime,
+      timerRef
     };
   },
 };

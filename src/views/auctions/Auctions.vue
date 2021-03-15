@@ -32,8 +32,11 @@
       <div
         class="auction-list-big grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-5"
       >
-        <template v-for="collectable in listOfCollectables" :key="collectable">
-          <product-card v-if="collectable != null" :collectable="collectable"/>
+        <template
+          v-for="collectable in listOfCollectables"
+          :key="collectable && collectable.id"
+        >
+          <product-card v-if="collectable != null" :collectable="collectable" />
           <div
             v-else
             class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
@@ -153,7 +156,7 @@ export default {
         page: state.pagination.page,
       };
 
-      console.log('filter', state.filter.type);
+      console.log("filter", state.filter.type);
 
       state.listOfCollectables = [null, null, null, null, null, null];
 
@@ -170,6 +173,7 @@ export default {
       console.log(metadata);
       console.log("end");
     };
+
 
     const handleLoadMore = async () => {
       if (!state.pagination.hasMore) return;
@@ -228,8 +232,9 @@ export default {
       if (state.filterNft && state.filterTangibleNft)
         state.filter.type = COLLECTABLE_TYPE.NONE;
       else if (state.filterNft) state.filter.type = COLLECTABLE_TYPE.NFT;
-      else if (state.filterTangibleNft) state.filter.type = COLLECTABLE_TYPE.TANGIBLE_NFT;
-      else state.filter.type = COLLECTABLE_TYPE.TANGIBLE
+      else if (state.filterTangibleNft)
+        state.filter.type = COLLECTABLE_TYPE.TANGIBLE_NFT;
+      else state.filter.type = COLLECTABLE_TYPE.TANGIBLE;
     };
 
     return {
