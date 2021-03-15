@@ -7,9 +7,9 @@
        <identicon/> <span class="ml-2">{{ shortenAddress('0x397Fb10C9a36C780Ca3D7dB90B49c78D5D1b04bE') }}</span></button>
     <div class="dropdown-menu" v-if="isOpen">
       <div class="arrow-up"></div>
-      <div class="py-6 px-8 bg-background-gray rounded-t-lg">
+      <div class="py-6 px-8 bg-background-gray lg:rounded-t-lg">
         <p class="text-xs font-bold text-grey-9">YOUR WALLET BALANCE</p>
-        <p class="text-3xl font-bold">5323.32 <span class="text-lg font-normal">ETH</span></p>
+        <p class="text-3xl font-bold text-black">5323.32 <span class="text-lg font-normal">ETH</span></p>
         <p class="text-sm text-grey-9">$2442.55</p>
       </div>
       <div>
@@ -60,16 +60,11 @@ export default {
 
 <style scoped lang="scss">
   .dropdown-menu {
-    @apply absolute w-80 rounded-lg mt-5 z-10;
+    @apply absolute w-64 lg:w-80 lg:rounded-lg mt-5 z-10 right-0;
     box-shadow: 0 2px 36px 0 rgba(0, 0, 0, 0.24);
-    right: 0;
   }
   .arrow-up {
-    width: 0; 
-    height: 0;
-    position: absolute;
-    top: -.5rem;
-    right: 5rem;
+    @apply hidden lg:block -top-2 absolute w-0 h-0 right-20;
     border-left:.5rem solid transparent;
     border-right: .5rem solid transparent;
     border-bottom: .5rem solid #F5F4F3;
