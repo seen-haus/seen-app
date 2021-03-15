@@ -37,12 +37,13 @@ module.exports = {
                 'place-silver': '#BCBABA',
                 'place-bronze': '#DA805C',
                 'newsletter': '#333333',
-                'footer-grey': '#999999',
+                'grey-9': '#999999',
                 'topbar': '#DDDDDD',
             },
             fontFamily: {
                 body: ['Inter', "sans-serif"],
                 title: ['Playfair Display', "serif"],
+                address: ['Courier', 'serif']
             },
             fontSize: {
                 '2xs': '0.8125rem', // 13px
@@ -61,6 +62,8 @@ module.exports = {
                 '17': '4.25rem',
                 '18': '4.5rem',
                 '22': '5.5rem',
+                '30': '7.5rem',
+                '66': '16.5rem',
                 '88': '22rem',
             },
             borderWidth: {

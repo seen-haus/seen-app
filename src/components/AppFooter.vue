@@ -22,7 +22,7 @@
         </div>
         <div class="links grid-cols-3 grid row-start-1 lg:row-auto mb-12 lg:mb-0">
           <div>
-            <p class="text-footer-grey font-bold text-xl mb-6">Offerings</p>
+            <p class="text-grey-9 font-bold text-xl mb-6">Offerings</p>
             <div class="font-bold text-md leading-loose">
               <router-link :to="{ name: 'auctions'}" class="block">
                 <span class="font-bold">Auctions</span>
@@ -39,7 +39,7 @@
             </div>
           </div>
           <div>
-            <p class="text-footer-grey font-bold text-xl mb-6">Support</p>
+            <p class="text-grey-9 font-bold text-xl mb-6">Support</p>
             <div class="font-bold text-md leading-loose">
               <a href="#"
                 target="_blank"
@@ -59,7 +59,7 @@
             </div>
           </div>
           <div>
-            <p class="text-footer-grey font-bold text-xl mb-6">Community</p>
+            <p class="text-grey-9 font-bold text-xl mb-6">Community</p>
             <div class="font-bold text-md leading-loose">
               <a href="#"
                 target="_blank"
@@ -90,16 +90,16 @@
    <div class="bg-black text-white footer-border py-4">
     <container>
       <div class="flex justify-between">
-        <p class="text-footer-grey text-sm">© Seen.haus 2021, All rights reserved.</p>
+        <p class="text-grey-9 text-sm">© Seen.haus 2021, All rights reserved.</p>
         <div>
            <a href="#"
             target="_blank"
-            class="text-footer-grey text-sm mr-4 inline-block">
+            class="text-grey-9 text-sm mr-4 inline-block">
             Privacy Policy
           </a>
           <a href="#"
             target="_blank"
-            class="text-footer-grey text-sm inline-block">
+            class="text-grey-9 text-sm inline-block">
             Terms of Use
           </a>
         </div>
