@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span class="text-gray-400 mr-2">{{ labelText }}</span
+    <span v-if="label != null" class="text-gray-400 mr-2">{{ labelText }}</span
     ><span class="font-semibold">{{value}}</span>
   </div>
 </template>

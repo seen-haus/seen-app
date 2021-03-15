@@ -36,7 +36,11 @@
           v-for="collectable in listOfCollectables"
           :key="collectable && collectable.id"
         >
-          <product-card v-if="collectable != null" :collectable="collectable" />
+          <product-card
+            v-if="collectable != null"
+            :collectable="collectable"
+            @click="navigateToCollectable(collectable.contract_address)"
+          />
           <div
             v-else
             class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
@@ -108,6 +112,9 @@
 </template>
 
 <script>
+import { computed, reactive } from "vue";
+import { useRouter } from "vue-router";
+
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
@@ -115,7 +122,6 @@ import Toggle from "@/components/Inputs/Toggle.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
 import Quote from "@/components/Quote.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
-import { computed, reactive } from "vue";
 
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 import useCollectablesWithPagination from "@/hooks/useCollectablesWithPagination.js";
@@ -132,6 +138,7 @@ export default {
     ArtistCard,
   },
   setup() {
+    const router = useRouter();
     const state = reactive({
       filterNft: true,
       filterTangibleNft: true,
@@ -140,8 +147,12 @@ export default {
     const filterNft = computed(() => state.filterNft);
     const filterTangibleNft = computed(() => state.filterTangibleNft);
 
-    const paginatedCollectables = useCollectablesWithPagination(PURCHASE_TYPE.SALE);
-    const listOfCollectables = computed(() => paginatedCollectables.listOfCollectables.value);
+    const paginatedCollectables = useCollectablesWithPagination(
+      PURCHASE_TYPE.SALE
+    );
+    const listOfCollectables = computed(
+      () => paginatedCollectables.listOfCollectables.value
+    );
     const hasMore = computed(() => paginatedCollectables.hasMore.value);
 
     paginatedCollectables.load();
@@ -160,6 +171,13 @@ export default {
       paginatedCollectables.filter(state.filterNft, state.filterTangibleNft);
     };
 
+    const navigateToCollectable = function (address) {
+      router.push({
+        name: "collectableAuction",
+        params: { contractAddress: address },
+      });
+    };
+
     return {
       filterNft,
       filterTangibleNft,
@@ -169,6 +187,7 @@ export default {
       handleNftToggle,
       handleTangibleToggle,
       handleLoadMore,
+      navigateToCollectable,
     };
   },
 };

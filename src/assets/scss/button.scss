@@ -17,6 +17,11 @@
     background-image: linear-gradient(76deg, #00b0e7 -3%, #0098cd 99%);
   }
 
+  &.opensea {
+    @apply text-white;
+    box-shadow: 0 3px 10px 0 #3391e854;
+    background-image: linear-gradient(82deg, #3391e8 -3%, #0d71ce 100%);
+  }
 
   &.light {
     @apply bg-white text-black;
