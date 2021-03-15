@@ -116,8 +116,8 @@ import HowToVideo from "@/components/HowToVideo.vue";
 import Quote from "@/components/Quote.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 import { computed, reactive } from "vue";
-import { CollectablesService } from "@/services/apiService";
-import COLLECTABLE_TYPE from "@/constants/Collectables.js";
+
+import useCollectablesWithPagination from "@/hooks/useCollectablesWithPagination.js";
 
 export default {
   name: "Auctions",
@@ -135,113 +135,36 @@ export default {
       filterNft: true,
       filterTangibleNft: true,
       isAcution: true,
-
-      listOfCollectables: [null, null, null, null, null, null],
-      filter: {
-        type: COLLECTABLE_TYPE.NONE,
-      },
-      pagination: {
-        perPage: 6,
-        page: 1,
-        hasMore: false,
-      },
     });
-
-    const fetchData = async () => {
-      state.pagination.perPage = 6;
-      state.pagination.page = 1;
-
-      const pagination = {
-        perPage: state.pagination.perPage,
-        page: state.pagination.page,
-      };
-
-      console.log("filter", state.filter.type);
-
-      state.listOfCollectables = [null, null, null, null, null, null];
-
-      const { data, metadata } = await CollectablesService.list(
-        pagination,
-        state.filter
-      );
-
-      state.listOfCollectables = data.slice(0); // TODO REMOVE
-      state.pagination.hasMore =
-        metadata.pagination.totalPages !== state.pagination.page;
-
-      console.log(data);
-      console.log(metadata);
-      console.log("end");
-    };
-
-
-    const handleLoadMore = async () => {
-      if (!state.pagination.hasMore) return;
-
-      const pagination = {
-        perPage: state.pagination.perPage,
-        page: state.pagination.page + 1,
-      };
-
-      state.listOfCollectables = [
-        ...state.listOfCollectables,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-      ];
-
-      const { data, metadata } = await CollectablesService.list(
-        pagination,
-        state.filter
-      );
-
-      state.pagination.page += 1;
-      state.listOfCollectables = [
-        ...state.listOfCollectables.filter((i) => i != null),
-        ...data,
-      ];
-      state.pagination.hasMore =
-        metadata.pagination.totalPages !== state.pagination.page;
-
-      console.log(metadata.pagination.totalPages, state.pagination.page);
-    };
-
-    fetchData();
 
     const filterNft = computed(() => state.filterNft);
     const filterTangibleNft = computed(() => state.filterTangibleNft);
-    const hasMore = computed(() => state.pagination.hasMore);
-    const listOfCollectables = computed(() => state.listOfCollectables);
+
+    const paginatedCollectables = useCollectablesWithPagination();
+    const listOfCollectables = computed(() => paginatedCollectables.listOfCollectables.value);
+    const hasMore = computed(() => paginatedCollectables.hasMore.value);
+
+    paginatedCollectables.load();
+
+    const handleLoadMore = async () => {
+      paginatedCollectables.loadMore();
+    };
 
     const handleNftToggle = function (event) {
       state.filterNft = event;
-      updateFilter();
-      fetchData();
+      paginatedCollectables.filter(state.filterNft, state.filterTangibleNft);
     };
 
     const handleTangibleToggle = function (event) {
       state.filterTangibleNft = event;
-      updateFilter();
-      fetchData();
-    };
-
-    const updateFilter = function () {
-      if (state.filterNft && state.filterTangibleNft)
-        state.filter.type = COLLECTABLE_TYPE.NONE;
-      else if (state.filterNft) state.filter.type = COLLECTABLE_TYPE.NFT;
-      else if (state.filterTangibleNft)
-        state.filter.type = COLLECTABLE_TYPE.TANGIBLE_NFT;
-      else state.filter.type = COLLECTABLE_TYPE.TANGIBLE;
+      paginatedCollectables.filter(state.filterNft, state.filterTangibleNft);
     };
 
     return {
       filterNft,
       filterTangibleNft,
-      hasMore,
       listOfCollectables,
+      hasMore,
       // Methods
       handleNftToggle,
       handleTangibleToggle,

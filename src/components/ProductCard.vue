@@ -24,11 +24,11 @@
 
       <div class="title-and-price flex items-start">
         <span class="text-2.5xl font-title font-bold flex-1"
-          >{{ title }} {{ purchase_type }}</span
+          >{{ title }}</span
         >
         <price-display
           size="sm"
-          class="text-black items-end"
+          class="text-black items-end ml-2"
           type="Ether"
           :price="price"
         />
@@ -81,7 +81,7 @@ export default {
     collectable: Object,
   },
   setup(props) {
-    // console.log(props.collectable);
+    // console.log('ProductCard', props.collectable);
 
     const timerRef = ref(null);
     const state = reactive({

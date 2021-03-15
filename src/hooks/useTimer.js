@@ -11,14 +11,12 @@ function globalTimerTick() {
 function addListener(listener) {
   globalTimerListeners.push(listener);
   if (globalTimerListeners.length === 1) {
-    console.info('starting global timer');
     globalTimer = setInterval(globalTimerTick, 1000);
   }
 }
 function removeListener(listener) {
   globalTimerListeners = globalTimerListeners.filter(i => i != listener);
   if (globalTimerListeners.length === 0) {
-    console.info('stopping global timer');
     clearInterval(globalTimer);
   }
 }
@@ -62,7 +60,7 @@ export default function useTimer() {
     state.percentage = +(progress / duration).toFixed(2);
 
     if (progressLeft <= 0) {
-      state.value = 'Finished';
+      state.value = 'Auction ended';
       endTimer();
     } else {
       state.value = formatter(progressLeft);
