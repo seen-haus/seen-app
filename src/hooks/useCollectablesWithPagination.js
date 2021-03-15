@@ -38,7 +38,7 @@ export default function useCollectablesWithPagination(purchaseType = 1) {
 
     state.items = data;
     state.hasMore =
-      metadata.pagination.totalPages !== state.page;
+      metadata.pagination.totalPages > state.page;
   }
 
   async function loadMore() {

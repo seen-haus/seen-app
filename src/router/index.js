@@ -23,6 +23,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "auctions" */ '../views/auctions/Auctions.vue')
     },
     {
+        path: '/auctions/:contractAddress',
+        name: 'collectableAuction',
+        component: () => import(/* webpackChunkName: "collectableAuction" */ '../views/collectable/Collectable.vue')
+    },
+    {
         path: '/artists',
         name: 'artists',
         component: () => import(/* webpackChunkName: "artists" */ '../views/artists/Artists.vue')
@@ -31,6 +36,11 @@ const routes = [
         path: '/editions',
         name: 'editions',
         component: () => import(/* webpackChunkName: "editions" */ '../views/editions/Editions.vue')
+    },
+    {
+        path: '/editions/:contractAddress',
+        name: 'collectableEdition',
+        component: () => import(/* webpackChunkName: "collectableEdition" */ '../views/collectable/Collectable.vue')
     },
     {
         path: '/leaderboard',
