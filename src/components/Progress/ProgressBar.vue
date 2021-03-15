@@ -12,15 +12,21 @@
 export default {
   name: "ProgressBar",
   props: {
-    progress: Number, // from 0.0 to 1.0
-    colorClass: String, // Actual css class
+    progress: {
+      type: Number,
+      default: 0.5,
+    }, // from 0.0 to 1.0
+    colorClass: {
+      type: String,
+      default: "bg-primary",
+    }, // Actual css class
   },
   computed: {
     progressPercent: function () {
-      return (this.progress || 0.5) * 100 + "%";
+      return this.progress * 100 + "%";
     },
     progressColor: function () {
-      return this.colorClass || "bg-primary";
+      return this.colorClass;
     },
   },
 };
