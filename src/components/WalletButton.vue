@@ -3,7 +3,7 @@
     <button v-if="!account" class="cursor-pointer button primary flex-shrink-0" @click="openWalletModal"><i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet</button>
     
  
-    <button v-if="account" @click="isOpen = !isOpen" class="tooltip-target b3 cursor-pointer button primary flex items-center wallet">
+    <button v-if="account" @click="isOpen = !isOpen" class="cursor-pointer button primary flex items-center wallet">
        <identicon/> <span class="ml-2">{{ shortenAddress('0x397Fb10C9a36C780Ca3D7dB90B49c78D5D1b04bE') }}</span></button>
     <div class="dropdown-menu" v-if="isOpen">
       <div class="arrow-up"></div>
@@ -12,7 +12,7 @@
         <p class="text-3xl font-bold text-black">5323.32 <span class="text-lg font-normal">ETH</span></p>
         <p class="text-sm text-grey-9">$2442.55</p>
       </div>
-      <div>
+      <div class="lg:bg-white lg:rounded-b-lg">
         <button class="button dropdown-btn">
            <img src="@/assets/icons/icon--person.svg" class="cursor-pointer mr-2" alt="SEEN"> View Your Profile
         </button>
@@ -31,14 +31,13 @@ import useWeb3 from "@/connectors/hooks"
 import {useStore} from "vuex"
 import Identicon from "@/components/Identicon/Identicon"
 import {shortenAddress} from "@/services/utils/index"
-import VTooltip from 'v-tooltip';
 
 export default {
   name: 'WalletButton',
-  components: {Identicon, VTooltip},
+  components: {Identicon},
   data() {
     return {
-      isOpen: true
+      isOpen: false
     }
   },
   setup() {
