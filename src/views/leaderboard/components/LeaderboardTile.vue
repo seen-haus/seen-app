@@ -13,7 +13,7 @@
     <div class="flex-1 text-left flex items-center relative">
       <img src=http://placekitten.com/56/56 alt="" class="rounded-full mr-6"
       :class="imageSizeClass">
-      <span>Gibbet</span>
+      <span>{{user.username || "Unknown"}}</span>
 
       <template v-if="place === 0">
         <i
@@ -48,14 +48,14 @@
         </div>
       </template>
     </div>
-    <div class="flex-shrink-0 w-20">12</div>
+    <div class="flex-shrink-0 w-20">{{user.won || 0}}</div>
 
     <div class="flex-shrink-0 w-40 flex flex-col my-4 lg:my-0">
-      <div>13523</div>
+      <div>{{user.bids_count || 0}}</div>
       <div class="text-sm text-gray-400 font-normal">424352.88 ETH</div>
     </div>
 
-    <div class="flex-shrink-0 w-40">1342.99 ETH</div>
+    <div class="flex-shrink-0 w-40">{{user.amount_spent || 0}} ETH</div>
   </div>
 </template>
 
@@ -72,6 +72,7 @@ export default {
       type: Boolean,
       default: false,
     },
+    user: {},
   },
   computed: {
     isInFirstThree: function () {
