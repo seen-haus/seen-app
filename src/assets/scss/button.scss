@@ -35,6 +35,10 @@
     @apply text-md justify-start w-full;
   }
 
+  &.account-button {
+    @apply h-15;
+  }
+
   .icon-left {
     margin-left: -10px;
     margin-right: 24px;

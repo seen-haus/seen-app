@@ -1,10 +1,11 @@
 <template>
-  <header class="relative p-4 flex justify-between items-center border-b">
-    <div class="flex items-center">
-      <button  @click="$emit('back')" class="mr-4" v-if="hasBackButton">Back</button>
-      <slot></slot>
+  <header class="relative p-4 border-b" :class="getHeaderWrapperClasses">
+    <div class="flex w-full justify-center">
+      <div class="font-bold text-4xl mt-5">
+        <slot></slot>
+      </div>
     </div>
-    <button class="cursor-pointer text-lg" @click="onDismiss">
+    <button class="absolute right-4 top-4 cursor-pointer text-lg" @click="onDismiss">
       <i class="fas fa-times"></i>
     </button>
   </header>
@@ -16,6 +17,10 @@ export default {
   emits: ['back'],
   props: {
     hasBackButton: {
+      type: Boolean,
+      default: false
+    },
+    isProfilePage: {
       type: Boolean,
       default: false
     }
@@ -34,6 +39,11 @@ export default {
       if (evt.key === "Escape") {
         this.onDismiss();
       }
+    }
+  },
+  computed: {
+    getHeaderWrapperClasses: function () {
+      return this.isProfilePage ? 'h-40 bg-background-gray' : '';
     }
   }
 }

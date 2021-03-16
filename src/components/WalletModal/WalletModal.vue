@@ -1,7 +1,7 @@
 <template>
-  <modal :visible="isOpen">
-    <modal-header @back="handleBack" :has-back-button="hasBackButton">{{ title }}</modal-header>
-    <modal-content>
+  <modal :visible="isOpen" class="rounded-lg">
+    <modal-header @back="handleBack" :is-profile-page="view === views.ACCOUNT" :has-back-button="hasBackButton" class="rounded-t-lg">{{ title }}</modal-header>
+    <modal-content class="rounded-b-lg">
       <div>
         <account-view v-if="view === views.ACCOUNT" @change-view="setView"/>
         <options-view v-if="view === views.OPTIONS" @change-view="setView"/>
@@ -42,7 +42,7 @@ export default {
     const store = useStore()
 
     const name = 'WalletModal'
-    const {account} = useWeb3()
+    const {account} = useWeb3();
     const view = ref(WALLET_VIEWS.OPTIONS)
     if (account.value) {
       view.value = WALLET_VIEWS.ACCOUNT;
@@ -54,7 +54,7 @@ export default {
       view.value = value
     }
     const title = computed(() => view.value === WALLET_VIEWS.ACCOUNT
-        ? 'Account'
+        ? 'Edit Profile'
         : (view.value === WALLET_VIEWS.PENDING ? '' : (account.value ? '' : 'Connect your wallet')))
     const isOpen = computed(() => store.getters['application/openModal'] === name);
     watchEffect(() => {

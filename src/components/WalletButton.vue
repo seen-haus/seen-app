@@ -1,8 +1,8 @@
 <template>
   <div class="py-3 relative">
     <button v-if="!account" class="cursor-pointer button primary flex-shrink-0" @click="openWalletModal"><i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet</button>
-    
- 
+
+
     <button v-if="account" @click="isOpen = !isOpen" class="cursor-pointer button primary flex items-center wallet">
        <identicon/> <span class="ml-2">{{ shortenAddress('0x397Fb10C9a36C780Ca3D7dB90B49c78D5D1b04bE') }}</span></button>
     <div class="dropdown-menu" v-if="isOpen">
@@ -13,11 +13,11 @@
         <p class="text-sm text-grey-9">$2442.55</p>
       </div>
       <div class="lg:bg-white lg:rounded-b-lg">
-        <button class="button dropdown-btn">
+        <button class="button dropdown-btn" @click="openWalletModal">
            <img src="@/assets/icons/icon--person.svg" class="cursor-pointer mr-2" alt="SEEN"> View Your Profile
         </button>
         <div class="mx-8 h-0.5 bg-background-gray"></div>
-        <button class="button dropdown-btn">
+        <button class="button dropdown-btn" @click="handleDisconnect">
            <img src="@/assets/icons/icon--disconnect.svg" class="cursor-pointer mr-2" alt="SEEN"> Disconnect
         </button>
       </div>
@@ -31,27 +31,32 @@ import useWeb3 from "@/connectors/hooks"
 import {useStore} from "vuex"
 import Identicon from "@/components/Identicon/Identicon"
 import {shortenAddress} from "@/services/utils/index"
+import {ref} from 'vue'
+
 
 export default {
   name: 'WalletButton',
   components: {Identicon},
-  data() {
-    return {
-      isOpen: false
-    }
-  },
   setup() {
-    const {error, account} = useWeb3();
+    const {error, account, deactivate} = useWeb3();
     const store = useStore();
+    let isOpen = ref(false);
     const openWalletModal = () => {
+      isOpen.value = false;
       store.dispatch('application/openModal', 'WalletModal')
+    };
+    const handleDisconnect = () => {
+      isOpen.value = false;
+      deactivate();
     };
 
     return {
       error,
       account,
       openWalletModal,
-      shortenAddress
+      shortenAddress,
+      handleDisconnect,
+      isOpen
     }
   }
 }

@@ -3,7 +3,7 @@
     <div class="fixed h-screen inset-x-0 top-0 z-50 overflow-x-auto modal" v-if="visible">
       <div class="relative w-full  min-h-screen px-4 flex items-center justify-center">
         <div
-            class="bg-white dark:bg-gray-800 md:max-w-md md:mx-auto border border-black-lighter z-40 my-4 mx-4 relative modal-inner">
+            class="bg-white dark:bg-gray-800 md:max-w-md md:mx-auto z-40 my-4 mx-4 relative modal-inner rounded-lg">
           <slot></slot>
         </div>
       </div>
@@ -42,7 +42,7 @@ export default {
 .modal-inner {
   min-width: 100%;
   @screen md {
-    min-width: 500px;
+    min-width: 600px;
   }
 }
 </style>
