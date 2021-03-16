@@ -1,11 +1,18 @@
 <template>
   <div
     class="product-card flex flex-col overflow-hidden rounded-2xl shadow-lg cursor-pointer"
+    @mouseenter="handleHover(true)" @mouseleave="handleHover(false)"
   >
     <div class="media relative">
-      <div class="relative pb-full">
-        <img class="image absolute w-full h-full" :src="media" alt="" />
-      </div>
+      <!-- <img class="image absolute w-full h-full" :src="media" alt="" /> -->
+      <media-loader
+        ref="mediaRef"
+        :src="media"
+        aspectRatio="100%"
+        muted
+        loop
+        class="overflow-hidden rounded-t-3xl flex-1"
+      />
 
       <div class="tags flex absolute top-6 left-6 right-6">
         <tag v-if="isNft" class="bg-tag-nft mr-1 text-white">NFT</tag>
@@ -23,9 +30,7 @@
       />
 
       <div class="title-and-price flex items-start">
-        <span class="text-2.5xl font-title font-bold flex-1"
-          >{{ title }}</span
-        >
+        <span class="text-2.5xl font-title font-bold flex-1">{{ title }}</span>
         <price-display
           size="sm"
           class="text-black items-end ml-2"
@@ -66,6 +71,7 @@ import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import UserBadge from "./PillsAndTags/UserBadge.vue";
+import MediaLoader from "@/components/Media/MediaLoader.vue";
 
 import COLLECTABLE_TYPE from "@/constants/Collectables.js";
 
@@ -78,13 +84,14 @@ export default {
     Tag,
     LiveIndicator,
     PriceDisplay,
+    MediaLoader,
   },
   props: {
     collectable: Object,
   },
   setup(props) {
     // console.log('ProductCard', props.collectable);
-
+    const mediaRef = ref(null);
     const timerRef = ref(null);
     const state = reactive({
       progress: 0.0,
@@ -93,7 +100,7 @@ export default {
     const title = computed(() => props.collectable.title);
     const artist = computed(() => props.collectable.artist);
     const type = computed(() => props.collectable.type);
-    const media = computed(() => props.collectable.media[1].url);
+    const media = computed(() => props.collectable.media[0].url);
 
     const is_active = computed(() => props.collectable.is_active);
     const is_coming_soon = computed(() => props.collectable.is_coming_soon);
@@ -137,14 +144,23 @@ export default {
       return status;
     });
 
-    const updateProgress = function(event) {
+    const updateProgress = function (event) {
       state.progress = event;
+    };
+
+    const addTime = function () {
+      if (timerRef.value != null) timerRef.value.addSeconds(60 * 60 * 24);
+    };
+
+    const handleHover = function(toState) {
+      if (toState) {
+        if (mediaRef.value != null) mediaRef.value.playVideo();
+      }
+      else {
+        if (mediaRef.value != null) mediaRef.value.pauseVideo();
+      }
     }
 
-    const addTime = function() {
-      if (timerRef.value != null)
-        timerRef.value.addSeconds(60 * 60 * 24);
-    }
 
     return {
       title,
@@ -165,7 +181,9 @@ export default {
       isNft,
       updateProgress,
       addTime,
-      timerRef
+      timerRef,
+      mediaRef,
+      handleHover,
     };
   },
 };

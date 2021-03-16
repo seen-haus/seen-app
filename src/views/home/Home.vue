@@ -1,6 +1,6 @@
 <template>
   <div>
-    <hero-auction
+    <hero-auction :key="heroCollectable && heroCollectable.id"
       v-if="heroCollectable != null"
       :collectable="heroCollectable"
     />
@@ -49,8 +49,6 @@
             :style="{ 'padding-bottom': '120%' }"
           ></div>
         </template>
-        <!-- <product-card />
-        <product-card /> -->
       </div>
 
       <div
@@ -71,9 +69,6 @@
             :style="{ 'padding-bottom': '120%' }"
           ></div>
         </template>
-        <!-- <product-card />
-        <product-card />
-        <product-card /> -->
       </div>
 
       <button class="button dark mt-20 mx-auto w-full md:w-96">
