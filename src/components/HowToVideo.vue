@@ -1,34 +1,25 @@
 <template>
-  <div class="video-container overflow-hidden rounded-lg relative flex justify-center">
-    <div class="relative">
-      <iframe
-        width="750"
-        height="420"
+  <div class="video-container overflow-hidden justify-center">
+    <div class="relative mx-auto max-w-full lg:max-w-screen-md">
+      <media-loader
         src="https://www.youtube.com/embed/wLlovxa3VJ0?controls=0&modestbranding"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;"
-        allowfullscreen
-        controls="0"
-        class="max-w-full lg:max-w-screen-md overflow-hidden rounded-3xl"
-      ></iframe>
-
-      <div
-        class="video-overlay absolute w-full h-full flex items-center justify-center top-0 left-0"
-      >
-        <div
-          class="play-button w-22 h-22 rounded-full bg-primary flex items-center justify-center"
-        >
-          <i class="fas fa-play text-2xl text-white ml-1 scale"></i>
-        </div>
-      </div>
+        aspectRatio="56.25%"
+        controls
+        class="overflow-hidden rounded-3xl"
+      />
     </div>
   </div>
 </template>
 
 
 <script>
+import MediaLoader from "@/components/Media/MediaLoader.vue";
+
 export default {
   name: "HowToVideo",
+  components: {
+    MediaLoader,
+  },
 };
 </script>
 
@@ -36,7 +27,7 @@ export default {
 .video-overlay {
   cursor: pointer;
 
-  &:hover .play-button{
+  &:hover .play-button {
     transform: scale(1.2);
   }
 }

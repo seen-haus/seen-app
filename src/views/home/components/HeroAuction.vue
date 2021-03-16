@@ -1,8 +1,17 @@
 <template>
   <div class="hero-auction">
     <container class="py-15 flex flex-col lg:flex-row">
-      <div class="media overflow-hidden rounded-3xl relative flex-1">
-        <img class="image" :src="media" alt="" />
+      <div class="media relative flex items-center flex-1">
+        <!-- <img class="image" :src="media" alt="" /> -->
+
+        <media-loader
+          :src="media"
+          aspectRatio="100%"
+          class="overflow-hidden rounded-3xl flex-1"
+          muted
+          loop
+          autoplay
+        />
 
         <div class="tags flex absolute top-6 left-6">
           <tag v-if="isNft" class="bg-tag-nft mr-1 text-white">NFT</tag>
@@ -13,6 +22,7 @@
 
         <i v-if="true" class="video-type-indicator fas fa-video"></i>
       </div>
+
       <div class="w-12"></div>
 
       <div class="description flex flex-1 flex-col justify-center">
@@ -76,6 +86,7 @@ import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
+import MediaLoader from "@/components/Media/MediaLoader.vue";
 
 import COLLECTABLE_TYPE from "@/constants/Collectables.js";
 
@@ -90,6 +101,7 @@ export default {
     LiveIndicator,
     Container,
     FencedTitle,
+    MediaLoader,
   },
   props: {
     collectable: Object,
@@ -106,7 +118,7 @@ export default {
     const title = computed(() => props.collectable.title);
     const artist = computed(() => props.collectable.artist);
     const type = computed(() => props.collectable.type);
-    const media = computed(() => props.collectable.media[1].url);
+    const media = computed(() => props.collectable.media[0].url);
 
     const is_active = computed(() => props.collectable.is_active);
     const is_coming_soon = computed(() => props.collectable.is_coming_soon);
