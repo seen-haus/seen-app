@@ -131,9 +131,17 @@
       </fenced-title>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
-        <artist-card />
-        <artist-card />
-        <artist-card />
+        <template
+          v-for="artist in listOfArtists"
+          :key="artist && artist.id"
+        >
+          <artist-card v-if="artist != null" :artist=artist />
+          <div
+            v-else
+            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
+            :style="{ 'padding-bottom': '100%' }"
+          ></div>
+        </template>
       </div>
 
       <button class="button dark mt-20 mx-auto w-full md:w-96">
@@ -157,6 +165,8 @@ import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
 import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import CollageTile from "./components/CollageTile.vue";
+import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
+import { computed, reactive } from "vue";
 
 export default {
   name: "Spaaaaace",
@@ -174,6 +184,23 @@ export default {
     LiveIndicator,
     CollageTile,
   },
+  setup() {
+    const paginatedArtists = useArtistsWithPagination();
+    const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
+    const hasMore = computed(() => paginatedArtists.hasMore.value);
+
+    paginatedArtists.load();
+
+    const handleLoadMore = async () => {
+      paginatedArtists.loadMore();
+    };
+    return {
+      listOfArtists,
+      hasMore,
+      // Methods
+      handleLoadMore,
+    };
+  }
 };
 </script>
 

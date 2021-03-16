@@ -99,9 +99,17 @@
       </fenced-title>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
-        <artist-card />
-        <artist-card />
-        <artist-card />
+        <template
+          v-for="artist in listOfArtists"
+          :key="artist && artist.id"
+        >
+          <artist-card v-if="artist != null" :artist=artist />
+          <div
+            v-else
+            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
+            :style="{ 'padding-bottom': '100%' }"
+          ></div>
+        </template>
       </div>
 
       <button class="button dark mt-20 mx-auto w-full md:w-96">
@@ -125,6 +133,7 @@ import ArtistCard from "@/components/ArtistCard.vue";
 
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 import useCollectablesWithPagination from "@/hooks/useCollectablesWithPagination.js";
+import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
 
 export default {
   name: "Editions",
@@ -176,16 +185,29 @@ export default {
       router.push({ name: 'collectableEdition', params: { contractAddress: address } });
     }
 
+    const paginatedArtists = useArtistsWithPagination();
+    const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
+    const hasMoreArtists = computed(() => paginatedArtists.hasMore.value);
+
+    paginatedArtists.load();
+
+    const handleLoadMoreArtists = async () => {
+      paginatedArtists.loadMore();
+    };
+
     return {
       filterNft,
       filterTangibleNft,
       listOfCollectables,
       hasMore,
+      listOfArtists,
+      hasMoreArtists,
       // Methods
       handleNftToggle,
       handleTangibleToggle,
       handleLoadMore,
       navigateToCollectable,
+      handleLoadMoreArtists,
     };
   },
 };

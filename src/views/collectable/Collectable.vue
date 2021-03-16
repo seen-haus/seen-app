@@ -220,6 +220,7 @@ import ListOfBuyers from "@/components/Lists/ListOfBuyers.vue";
 import { CollectablesService } from "@/services/apiService";
 import COLLECTABLE_TYPE from "@/constants/Collectables.js";
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
+import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
 
 export default {
   name: "Collectable",
