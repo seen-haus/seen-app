@@ -110,7 +110,7 @@
           <div class="text-4xl font-title font-bold mt-14 mb-6">
             Artist statement
           </div>
-          <artist-card class="shadow-md" />
+          <artist-card class="shadow-md" :artist="artist" />
 
           <template v-if="showAdditionalInformation">
             <div class="text-4xl font-title font-bold mt-14 mb-6">
@@ -220,7 +220,6 @@ import ListOfBuyers from "@/components/Lists/ListOfBuyers.vue";
 import { CollectablesService } from "@/services/apiService";
 import COLLECTABLE_TYPE from "@/constants/Collectables.js";
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
-import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
 
 export default {
   name: "Collectable",

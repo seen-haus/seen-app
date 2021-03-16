@@ -144,9 +144,12 @@
         </template>
       </div>
 
-      <button class="button dark mt-20 mx-auto w-full md:w-96">
-        View All Artists
-      </button>
+      <router-link to="artists">
+        <button class="button dark mt-20 mx-auto w-full md:w-96">
+          View All Artists
+        </button>
+      </router-link>
+      
     </container>
   </div>
 </template>
@@ -187,18 +190,12 @@ export default {
   setup() {
     const paginatedArtists = useArtistsWithPagination();
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
-    const hasMore = computed(() => paginatedArtists.hasMore.value);
 
     paginatedArtists.load();
 
-    const handleLoadMore = async () => {
-      paginatedArtists.loadMore();
-    };
     return {
       listOfArtists,
-      hasMore,
       // Methods
-      handleLoadMore,
     };
   }
 };

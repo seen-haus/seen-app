@@ -41,21 +41,15 @@
           <div>
             <p class="text-grey-9 font-bold text-xl mb-6">Support</p>
             <div class="font-bold text-md leading-loose">
-              <a href="#"
-                target="_blank"
-                class="block">
+              <router-link :to="{ name: 'profile'}" class="block">
                 Account
-              </a>
-              <a href="#"
-                target="_blank"
-                class="block">
+              </router-link>
+              <router-link :to="{ name: 'about'}" class="block">
                 About Us
-              </a>
-              <a href="#"
-                target="_blank"
-                class="block">
+              </router-link>
+              <router-link :to="{ name: 'faq'}" class="block">
                 FAQs
-              </a>
+              </router-link>
             </div>
           </div>
           <div>

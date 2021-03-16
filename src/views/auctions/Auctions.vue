@@ -112,9 +112,11 @@
         </template>
       </div>
 
-      <button class="button dark mt-20 mx-auto w-full md:w-96" @click="loadMoreArtists">
-        View All Artists
-      </button>
+      <router-link to="artists">
+        <button class="button dark mt-20 mx-auto w-full md:w-96">
+          View All Artists
+        </button>
+      </router-link>
     </container>
   </div>
 </template>
@@ -189,13 +191,8 @@ export default {
 
     const paginatedArtists = useArtistsWithPagination();
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
-    const hasMoreArtists = computed(() => paginatedArtists.hasMore.value);
 
     paginatedArtists.load();
-
-    const handleLoadMoreArtists = async () => {
-      paginatedArtists.loadMore();
-    };
 
     return {
       filterNft,
@@ -203,12 +200,10 @@ export default {
       listOfCollectables,
       listOfArtists,
       hasMore,
-      hasMoreArtists,
       // Methods
       handleNftToggle,
       handleTangibleToggle,
       handleLoadMore,
-      handleLoadMoreArtists,
       navigateToCollectable,
     };
   },
