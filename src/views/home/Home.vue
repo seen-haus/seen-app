@@ -145,7 +145,7 @@
 </template>
 
 <script>
-import { computed, reactive } from "vue";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
 
 import Container from "@/components/Container.vue";

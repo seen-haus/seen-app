@@ -29,7 +29,12 @@
     <container>
       <div class="flex flex-col lg:flex-row mb-18">
         <div class="video flex items-center flex-1 lg:order-3">
-          <video-loader />
+          <media-loader
+            src="https://www.youtube.com/embed/wLlovxa3VJ0?controls=0&modestbranding"
+            aspectRatio="56.25%"
+            controls
+            class="overflow-hidden rounded-3xl flex-1"
+          />
         </div>
 
         <div class="w-12 h-12 lg:order-2"></div>
@@ -156,12 +161,13 @@
 
 
 <script>
+import { computed } from "vue";
+
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
 import Quote from "@/components/Quote.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
-import VideoLoader from "@/components/Media/VideoLoader.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
@@ -169,7 +175,7 @@ import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import CollageTile from "./components/CollageTile.vue";
 import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
-import { computed, reactive } from "vue";
+import MediaLoader from "@/components/Media/MediaLoader.vue";
 
 export default {
   name: "Spaaaaace",
@@ -179,7 +185,7 @@ export default {
     HowToVideo,
     Quote,
     ArtistCard,
-    VideoLoader,
+    MediaLoader,
     ProgressBar,
     ProgressTimer,
     UserBadge,
