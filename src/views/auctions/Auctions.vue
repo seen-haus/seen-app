@@ -32,8 +32,15 @@
       <div
         class="auction-list-big grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-5"
       >
-        <template v-for="collectable in listOfCollectables" :key="collectable">
-          <product-card v-if="collectable != null" :collectable="collectable"/>
+        <template
+          v-for="collectable in listOfCollectables"
+          :key="collectable && collectable.id"
+        >
+          <product-card
+            v-if="collectable != null"
+            :collectable="collectable"
+            @click="navigateToCollectable(collectable.contract_address)"
+          />
           <div
             v-else
             class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
@@ -105,6 +112,9 @@
 </template>
 
 <script>
+import { computed, reactive } from "vue";
+import { useRouter } from "vue-router";
+
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
@@ -112,9 +122,9 @@ import Toggle from "@/components/Inputs/Toggle.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
 import Quote from "@/components/Quote.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
-import { computed, reactive } from "vue";
-import { CollectablesService } from "@/services/apiService";
-import COLLECTABLE_TYPE from "@/constants/Collectables.js";
+
+import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
+import useCollectablesWithPagination from "@/hooks/useCollectablesWithPagination.js";
 
 export default {
   name: "Auctions",
@@ -128,123 +138,58 @@ export default {
     ArtistCard,
   },
   setup() {
+    const router = useRouter();
     const state = reactive({
       filterNft: true,
       filterTangibleNft: true,
-      isAcution: true,
-
-      listOfCollectables: [null, null, null, null, null, null],
-      filter: {
-        type: COLLECTABLE_TYPE.NONE,
-      },
-      pagination: {
-        perPage: 6,
-        page: 1,
-        hasMore: false,
-      },
     });
-
-    const fetchData = async () => {
-      state.pagination.perPage = 6;
-      state.pagination.page = 1;
-
-      const pagination = {
-        perPage: state.pagination.perPage,
-        page: state.pagination.page,
-      };
-
-      console.log('filter', state.filter.type);
-
-      state.listOfCollectables = [null, null, null, null, null, null];
-
-      const { data, metadata } = await CollectablesService.list(
-        pagination,
-        state.filter
-      );
-
-      state.listOfCollectables = data.slice(0); // TODO REMOVE
-      state.pagination.hasMore =
-        metadata.pagination.totalPages !== state.pagination.page;
-
-      console.log(data);
-      console.log(metadata);
-      console.log("end");
-    };
-
-    const handleLoadMore = async () => {
-      if (!state.pagination.hasMore) return;
-
-      const pagination = {
-        perPage: state.pagination.perPage,
-        page: state.pagination.page + 1,
-      };
-
-      state.listOfCollectables = [
-        ...state.listOfCollectables,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-      ];
-
-      const { data, metadata } = await CollectablesService.list(
-        pagination,
-        state.filter
-      );
-
-      state.pagination.page += 1;
-      state.listOfCollectables = [
-        ...state.listOfCollectables.filter((i) => i != null),
-        ...data,
-      ];
-      state.pagination.hasMore =
-        metadata.pagination.totalPages !== state.pagination.page;
-
-      console.log(metadata.pagination.totalPages, state.pagination.page);
-    };
-
-    fetchData();
 
     const filterNft = computed(() => state.filterNft);
     const filterTangibleNft = computed(() => state.filterTangibleNft);
-    const hasMore = computed(() => state.pagination.hasMore);
-    const listOfCollectables = computed(() => state.listOfCollectables);
+
+    const paginatedCollectables = useCollectablesWithPagination(
+      PURCHASE_TYPE.SALE
+    );
+    const listOfCollectables = computed(
+      () => paginatedCollectables.listOfCollectables.value
+    );
+    const hasMore = computed(() => paginatedCollectables.hasMore.value);
+
+    paginatedCollectables.load();
+
+    const handleLoadMore = async () => {
+      paginatedCollectables.loadMore();
+    };
 
     const handleNftToggle = function (event) {
       state.filterNft = event;
-      updateFilter();
-      fetchData();
+      paginatedCollectables.filter(state.filterNft, state.filterTangibleNft);
     };
 
     const handleTangibleToggle = function (event) {
       state.filterTangibleNft = event;
-      updateFilter();
-      fetchData();
+      paginatedCollectables.filter(state.filterNft, state.filterTangibleNft);
     };
 
-    const updateFilter = function () {
-      if (state.filterNft && state.filterTangibleNft)
-        state.filter.type = COLLECTABLE_TYPE.NONE;
-      else if (state.filterNft) state.filter.type = COLLECTABLE_TYPE.NFT;
-      else if (state.filterTangibleNft) state.filter.type = COLLECTABLE_TYPE.TANGIBLE_NFT;
-      else state.filter.type = COLLECTABLE_TYPE.TANGIBLE
+    const navigateToCollectable = function (address) {
+      router.push({
+        name: "collectableAuction",
+        params: { contractAddress: address },
+      });
     };
 
     return {
       filterNft,
       filterTangibleNft,
-      hasMore,
       listOfCollectables,
+      hasMore,
       // Methods
       handleNftToggle,
       handleTangibleToggle,
       handleLoadMore,
+      navigateToCollectable,
     };
   },
-
-  init() {},
 };
 </script>
 
