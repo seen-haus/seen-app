@@ -1,19 +1,23 @@
 <template>
   <div
-    class="leaderboard-tile flex flex-col lg:flex-row text-center 
-    lg:text-right py-8 lg:py-0 w-full items-center text-lg break-all
-    "
-    :class="{ 
-      'font-bold': isInFirstThree, 
+    class="leaderboard-tile flex flex-col lg:flex-row text-center lg:text-right py-8 lg:py-0 w-full items-center text-lg break-all"
+    :class="{
+      'font-bold': isInFirstThree,
       'text-gray-600': !isInFirstThree,
-      'rounded-lg bg-gray-200 border border-gray-300': selected && !isInFirstThree, 
-      'bg-gray-200 border-gray-300': selected && isInFirstThree, 
+      'rounded-lg bg-gray-200 border border-gray-300':
+        selected && !isInFirstThree,
+      'bg-gray-200 border-gray-300': selected && isInFirstThree,
     }"
   >
     <div class="flex-1 text-left flex items-center relative">
-      <img src=http://placekitten.com/56/56 alt="" class="rounded-full mr-6"
-      :class="imageSizeClass">
-      <span>Gibbet</span>
+      <icon
+        :size="isInFirstThree ? 56 : 40"
+        :wallet-address="user.wallet_address"
+        class="rounded-full mr-6"
+        :class="isInFirstThree ? 'my-6' : 'my-4'"
+      />
+
+      <span>{{ name }}</span>
 
       <template v-if="place === 0">
         <i
@@ -48,19 +52,24 @@
         </div>
       </template>
     </div>
-    <div class="flex-shrink-0 w-20">12</div>
+    <div class="flex-shrink-0 w-20">{{ user.won || 0 }}</div>
 
     <div class="flex-shrink-0 w-40 flex flex-col my-4 lg:my-0">
-      <div>13523</div>
-      <div class="text-sm text-gray-400 font-normal">424352.88 ETH</div>
+      <div>{{ user.bids_count || 0 }}</div>
+      <div class="text-sm text-gray-400 font-normal">
+        ~{{ (user.total_amount || 0).toFixed(2) }} ETH
+      </div>
     </div>
 
-    <div class="flex-shrink-0 w-40">1342.99 ETH</div>
+    <div class="flex-shrink-0 w-40">{{ user.amount_spent || 0 }} ETH</div>
   </div>
 </template>
 
 
 <script>
+import Icon from "@/components/Common/Icon.vue";
+import { shortenAddress } from "@/services/utils/index";
+
 export default {
   name: "LeaderboardTile",
   props: {
@@ -72,8 +81,23 @@ export default {
       type: Boolean,
       default: false,
     },
+    user: {},
+  },
+  components: { Icon },
+  setup() {
+    return {
+      shortenAddress,
+    };
   },
   computed: {
+    name: function () {
+      return (
+        this.user.username ||
+        (this.user.wallet_address &&
+          shortenAddress(this.user.wallet_address)) ||
+        "Unknown"
+      );
+    },
     isInFirstThree: function () {
       return this.place < 3;
     },

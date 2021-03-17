@@ -3,7 +3,7 @@
     <div
       class="indicator-icon w-2.5 h-2.5 rounded-full mr-2"
       :class="{
-        'bg-primary': indicatorStatus === 'LIVE',
+        'bg-primary blink': indicatorStatus === 'LIVE',
         'bg-gray-500': indicatorStatus === 'ENDED',
         'bg-accent': indicatorStatus === 'COMMING SOON',
       }"
@@ -37,3 +37,21 @@ export default {
   },
 };
 </script>
+
+
+<style lang="scss">
+.blink {
+  animation: blink 2s both 0s infinite;
+}
+@keyframes blink {
+  0% {
+    opacity: 0.0;
+  }
+  50% {
+    opacity: 1.0;
+  }
+  100% {
+    opacity: 0.0;
+  }
+}
+</style>

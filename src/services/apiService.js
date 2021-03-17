@@ -77,7 +77,6 @@ export const SpotlightService = {
 export const ArtistService = {
     list(pagination = {perPage: 6, page: 1}) {
         // serializeđ
-        console.log(pagination)
         return ApiService.query('artists', pagination);
     },
 };
