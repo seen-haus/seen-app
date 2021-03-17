@@ -7,7 +7,7 @@
         >({{ numberOfBids }} bids)</span
       >
     </div>
-    <div class="text-gray-400" :class="fiatSize">$2,442.55</div>
+    <div class="text-gray-400" :class="fiatSize">${{ priceUSD.toFixed(2) }}</div>
   </div>
 </template>
 
@@ -22,6 +22,10 @@ export default {
     price: {
       type: Number,
       default: 2.06,
+    },
+    priceUSD: {
+      type: Number,
+      default: 2442.55,
     },
     type: {
       type: String,
