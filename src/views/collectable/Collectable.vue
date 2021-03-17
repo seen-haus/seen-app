@@ -46,11 +46,7 @@
       </div>
     </container>
 
-    <div
-      class="galery h-96 bg-gray-400 text-white flex justify-center items-center mb-8"
-    >
-      GALERY HERE :P
-    </div>
+    <hero-gallery :mediaResources="mediaResources"/>
 
     <container>
       <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6">
@@ -217,6 +213,7 @@ import Container from "@/components/Container.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 import BidCard from "@/components/BidCard.vue";
 import ListOfBuyers from "@/components/Lists/ListOfBuyers.vue";
+import HeroGallery from "@/components/Media/HeroGallery.vue";
 import { CollectablesService } from "@/services/apiService";
 import COLLECTABLE_TYPE from "@/constants/Collectables.js";
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
@@ -232,6 +229,7 @@ export default {
     ArtistCard,
     BidCard,
     ListOfBuyers,
+    HeroGallery,
   },
   setup() {
     const route = useRoute();
@@ -246,7 +244,7 @@ export default {
     const description = computed(() => state.collectable.description);
     const artist = computed(() => state.collectable.artist);
     const type = computed(() => state.collectable.type);
-    const media = computed(() => state.collectable.media[1].url);
+    const mediaResources = computed(() => state.collectable.media);
 
     const is_active = computed(() => state.collectable.is_active);
     const is_coming_soon = computed(() => state.collectable.is_coming_soon);
@@ -313,7 +311,7 @@ export default {
       artist,
       price,
       type,
-      media,
+      mediaResources,
       startsAt,
       endsAt,
       liveStatus,
@@ -328,4 +326,4 @@ export default {
     };
   },
 };
-</script> 
+</script>

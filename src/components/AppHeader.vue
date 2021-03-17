@@ -4,11 +4,13 @@
     <div :class="headerClasses">
       <container>
       <header>
-        <div class="flex items-center justify-between">
-          <div id="logo" class="flex items-center">
-            <img src="@/assets/images/logo--black.png"  class="mr-4" alt="">
-          </div>
-          <div class="items-center hidden lg:flex justify-between">
+        <div class="flex items-center flex-wrap justify-between">
+          <router-link to="/">
+            <div id="logo" class="flex items-center">
+              <img src="@/assets/images/logo--black.png"  class="mr-4" alt="">
+            </div>
+          </router-link>
+          <div class="items-center hidden lg:flex lg:flex-grow xl:flex-grow-0 justify-between">
             <desktop-menu/>
             <wallet-button/>            
           </div>

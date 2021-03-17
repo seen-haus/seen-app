@@ -113,7 +113,7 @@
       </div>
 
       <router-link to="artists">
-        <button class="button dark mt-20 mx-auto w-full md:w-96">
+        <button class="button dark mt-20 mx-auto w-full md:w-96" >
           View All Artists
         </button>
       </router-link>
