@@ -34,53 +34,92 @@
 
           <div class="divider h-0 border-t-2 border-gray-200 my-9"></div>
 
-          <form>
+          <form ref="form" :class="{ dirty: wasTouched }">
             <div class="flex flex-col lg:flex-row">
               <div class="input-group mr-0 mb-8 lg:mr-5">
                 <label>Your Name</label>
                 <input
+                  v-model.trim="name"
                   type="text"
                   class="outlined-input"
-                  placeholder="placeholder text"
+                  placeholder="John Doe"
+                  required
                 />
+                <div class="validation-error text-sm text-red-700 mt-1">
+                  This field is required
+                </div>
               </div>
 
               <div class="input-group mb-8">
                 <label>Your email</label>
                 <input
-                  type="text"
+                  v-model.trim="email"
+                  type="email"
                   class="outlined-input"
-                  placeholder="placeholder text"
+                  placeholder="john@doe.com"
+                  required
                 />
+                <div class="validation-error text-sm text-red-700 mt-1">
+                  Enter a valid email
+                </div>
               </div>
             </div>
 
             <div class="input-group mb-8">
               <label>Tell us something about yourself</label>
               <textarea
+                minlength="20"
+                v-model.trim="yourself"
                 class="outlined-input"
-                placeholder="placeholder text"
+                placeholder="Who your are, what you do, etc."
+                required
               ></textarea>
+              <div class="validation-error text-sm text-red-700 mt-1">
+                This field must be at least 20 characters long
+              </div>
             </div>
 
             <div class="input-group mb-8">
               <label>Show us your work</label>
               <textarea
+                minlength="20"
+                v-model.trim="work"
                 class="outlined-input"
-                placeholder="placeholder text"
+                placeholder="Links to your portfolio"
+                required
               ></textarea>
+              <div class="validation-error text-sm text-red-700 mt-1">
+                This field must be at least 20 characters long
+              </div>
             </div>
 
             <div class="input-group mb-8">
               <label>LINKs to your social networks</label>
               <textarea
+                minlength="20"
+                v-model.trim="links"
                 class="outlined-input"
-                placeholder="placeholder text"
+                placeholder="Who your are, what you do, etc."
+                required
               ></textarea>
+              <div class="validation-error text-sm text-red-700 mt-1">
+                This field must be at least 20 characters long
+              </div>
             </div>
           </form>
 
-          <button class="button primary mb-4 mt-12 mx-auto w-full">
+          <div v-if="success === false" class="text-red-700 text-center">
+            There was an error submitting Your information. Please check your
+            fields and try again.
+          </div>
+          <div v-if="success === true" class="text-green-700 text-center">
+            We have received your information. Thank You!
+          </div>
+
+          <button
+            class="button primary mb-4 mt-12 mx-auto w-full"
+            @click="submitForm"
+          >
             Submit Form
           </button>
         </div>
@@ -93,9 +132,60 @@
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
 
+import { SpotlightService } from "@/services/apiService";
+
 export default {
   name: "Spotlight",
   components: { FencedTitle, Container },
+  data() {
+    return {
+      name: "",
+      email: "",
+      yourself: "",
+      work: "",
+      links: "",
+      wasTouched: false,
+      submitting: false,
+      success: null,
+    };
+  },
+  methods: {
+    resetForm() {
+      this.wasTouched = false;
+      this.$refs.form.reset();
+
+      this.name = "";
+      this.email = "";
+      this.yourself = "";
+      this.work = "";
+      this.links = "";
+    },
+    submitForm: async function () {
+      if (this.submitting) return;
+
+      this.wasTouched = true;
+      if (!this.$refs.form.checkValidity()) return;
+
+      this.submitting = true;
+
+      try {
+        await SpotlightService.submit({
+          name: this.name,
+          email: this.email,
+          info: this.yourself,
+          work: this.work,
+          socials: this.links,
+        });
+
+        this.resetForm();
+        this.success = true;
+      } catch (e) {
+        this.success = false;
+      }
+
+      this.submitting = false;
+    },
+  },
 };
 </script>
 
