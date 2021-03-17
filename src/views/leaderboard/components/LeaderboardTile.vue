@@ -17,7 +17,7 @@
         :class="isInFirstThree ? 'my-6' : 'my-4'"
       />
 
-      <span>{{ user.username || "Unknown" }}</span>
+      <span>{{ name }}</span>
 
       <template v-if="place === 0">
         <i
@@ -68,6 +68,7 @@
 import Icon from "@/components/Common/Icon.vue";
 import { shortenAddress } from "@/services/utils/index";
 
+
 export default {
   name: "LeaderboardTile",
   props: {
@@ -88,6 +89,9 @@ export default {
     };
   },
   computed: {
+    name: function() {
+      return this.user.username || (this.user.wallet_address && shortenAddress(this.user.wallet_address)) || "Unknown";
+    },
     isInFirstThree: function () {
       return this.place < 3;
     },
