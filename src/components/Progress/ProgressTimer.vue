@@ -7,8 +7,8 @@
 
 
 <script>
-import useTimer from "@/hooks/useTimer.js";
-import { computed, watch } from 'vue';
+import useTimer, {TIMER_STATE} from "@/hooks/useTimer.js";
+import { computed, watch, ref } from 'vue';
 
 export default {
   name: "ProgressTimer",
@@ -28,13 +28,29 @@ export default {
   },
   // TODO timer logic
   setup(props, ctx) {
-    const { startTimer, endTimer, addSeconds, percentage, value } = useTimer();
-
-    const labelText = computed(() => {
-      return value.value === 'Comming soon' || value.value === 'Auction ended' ? '' : props.label;
-    });
+    const timerState = ref(TIMER_STATE.WAITING);
+    const { startTimer, endTimer, addSeconds, percentage, value } = useTimer(timerStateChange);
 
     watch(percentage, () => ctx.emit('onProgress', percentage.value));
+    watch(timerState, () => ctx.emit('onTimerStateChange', timerState.value));
+
+    const labelText = computed(() => {
+      if (timerState.value === TIMER_STATE.WAITING) {
+        return 'Launching in: ';
+      }
+      if (timerState.value === TIMER_STATE.IN_PROGRESS) {
+        return 'Ends in: ' || props.label;
+      }
+      if (timerState.value === TIMER_STATE.DONE) {
+        return '';
+      }
+
+      return ''
+    });
+
+    function timerStateChange(state) {
+      timerState.value = state;
+    }
 
     startTimer({
       startDate: props.startDate,

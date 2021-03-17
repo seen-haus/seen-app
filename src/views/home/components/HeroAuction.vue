@@ -65,8 +65,20 @@
         </div>
 
         <div class="timer pt-12">
-          <progress-bar :progress="0.34" class="bg-fence-dark h-3" />
-          <progress-timer progress="0.2" class="text-white mt-3" />
+          <progress-bar
+            :progress="progress"
+            class="bg-fence-dark h-3"
+            :colorClass="is_sold_out ? 'bg-white' : 'bg-primary'"
+          />
+          <!-- <progress-timer progress="0.2" class="text-white mt-3" /> -->
+          <progress-timer
+            ref="timerRef"
+            v-if="purchase_type === 2"
+            class="text-white text-sm mt-2"
+            :startDate="startsAt"
+            :endDate="endsAt"
+            @onProgress="updateProgress"
+          />
         </div>
       </div>
     </container>
