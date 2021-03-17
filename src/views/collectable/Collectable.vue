@@ -159,7 +159,7 @@
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
             Recent Buyers
           </div>
-          <list-of-buyers class="mb-12" />
+          <list-of-buyers class="mb-12" :list="events" :onLoadMore="showMoreEvents"/>
 
           <template v-if="showHowToBuy">
             <button class="button dark w-full">
@@ -239,6 +239,10 @@ export default {
       loading: true,
       contractAddress: null,
       collectable: {},
+      buyers: {
+        list: [],
+        visible: 3,
+      },
     });
     const isLoading = computed(() => state.loading);
 
@@ -285,6 +289,22 @@ export default {
       return status;
     });
 
+    // Events
+    const events = computed(() =>
+      state.buyers.list.slice(0, state.buyers.visible)
+    );
+    const addEvents = (newEvents) => {
+      const length = newEvents.length;
+      state.buyers.list = [
+        ...newEvents.reverse(),
+        ...state.buyers.list.slice(0, state.buyers.visible - length),
+      ];
+    };
+    const showMoreEvents = () => {
+      console.log('show mote', state.buyers);
+      state.buyers.visible += 3;
+    }
+
     const showAdditionalInformation = computed(
       () => type.value === "tangible" || type.value === "tangible_nft"
     );
@@ -301,6 +321,9 @@ export default {
         "0xeFb2de8e3464b5F33840d12d7f0259831bb381A7";
       const { data } = await CollectablesService.show(contractAddress);
 
+      data.events.reverse(); // Right order
+
+      state.buyers.list = data.events;
       state.loading = false;
       state.contractAddress = contractAddress;
       state.collectable = data;
@@ -314,6 +337,10 @@ export default {
       price,
       type,
       media,
+      events,
+      addEvents,
+      showMoreEvents,
+
       startsAt,
       endsAt,
       liveStatus,
@@ -321,6 +348,7 @@ export default {
       purchase_type,
       edition,
       edition_of,
+
       isTangible,
       isNft,
       showAdditionalInformation,

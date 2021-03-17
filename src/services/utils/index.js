@@ -126,3 +126,16 @@ export function getContract(address, ABI, library, account) {
 export function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
 }
+
+
+export function getDaysAgo(dateFrom) {
+    const now = Date.now();
+    const from = new Date(dateFrom).getTime();
+
+    const diff = (now - from) / 1000;
+    const days = diff / (60 * 60 * 24);
+
+    if (days < 1) return 'Less than a day ago';
+    if (days < 2) return 'One day ago';
+    return ~~days + ' days ago';
+}
