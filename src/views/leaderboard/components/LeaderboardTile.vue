@@ -56,7 +56,9 @@
 
     <div class="flex-shrink-0 w-40 flex flex-col my-4 lg:my-0">
       <div>{{ user.bids_count || 0 }}</div>
-      <div class="text-sm text-gray-400 font-normal"> ~{{ (user.total_amount || 0).toFixed(2) }} ETH</div>
+      <div class="text-sm text-gray-400 font-normal">
+        ~{{ (user.total_amount || 0).toFixed(2) }} ETH
+      </div>
     </div>
 
     <div class="flex-shrink-0 w-40">{{ user.amount_spent || 0 }} ETH</div>
@@ -67,7 +69,6 @@
 <script>
 import Icon from "@/components/Common/Icon.vue";
 import { shortenAddress } from "@/services/utils/index";
-
 
 export default {
   name: "LeaderboardTile",
@@ -89,8 +90,13 @@ export default {
     };
   },
   computed: {
-    name: function() {
-      return this.user.username || (this.user.wallet_address && shortenAddress(this.user.wallet_address)) || "Unknown";
+    name: function () {
+      return (
+        this.user.username ||
+        (this.user.wallet_address &&
+          shortenAddress(this.user.wallet_address)) ||
+        "Unknown"
+      );
     },
     isInFirstThree: function () {
       return this.place < 3;
