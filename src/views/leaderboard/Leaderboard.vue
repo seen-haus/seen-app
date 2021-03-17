@@ -92,12 +92,8 @@ export default {
     (async function () {
       state.isLoading = true;
       const { data } = await LeaderboardService.get();
-
-      console.log(data);
-
+      
       state.users = data.sort((a, b) => +b.amount_spent - +a.amount_spent);
-
-      console.log(state.users);
       state.isLoading = false;
     })();
 
