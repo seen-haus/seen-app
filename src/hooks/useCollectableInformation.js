@@ -52,7 +52,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
   const liveStatus = computed(() => {
     if (collectableState.value === COLLECTABLE_STATE.DONE) return "ended";
     if (collectableState.value === COLLECTABLE_STATE.WAITING)
-      return "comming soon";
+      return "coming soon";
     if (collectableState.value === COLLECTABLE_STATE.OUT_OF_STOCK)
       return "sold out";
 

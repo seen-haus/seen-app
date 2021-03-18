@@ -7,11 +7,13 @@
         >({{ numberOfBids }} bids)</span
       >
     </div>
-    <div class="text-gray-400" :class="fiatSize">${{ priceUSD.toFixed(2) }}</div>
+    <div class="text-gray-400" :class="fiatSize">{{ convertEthToUSDAndFormat(price) }}</div>
   </div>
 </template>
 
 <script>
+import useExchangeRate from '@/hooks/useExchangeRate.js'
+
 export default {
   name: "PriceDisplay",
   props: {
@@ -62,5 +64,9 @@ export default {
       return "text-xs";
     },
   },
+  setup() {
+    const { convertEthToUSDAndFormat } = useExchangeRate();
+    return { convertEthToUSDAndFormat };
+  }
 };
 </script>

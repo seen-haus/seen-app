@@ -32,7 +32,7 @@ export default {
         case "sold out":
           return "SOLD OUT";
         case "comming soon":
-          return "COMMING SOON";
+          return "COMING SOON";
         default:
           return "CUSTOM";
       }

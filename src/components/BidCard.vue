@@ -40,7 +40,8 @@
         </div>
 
         <div class="text-center text-gray-400 text-sm py-2">
-          Approx. {{usdPrice}}
+          <p v-if="!ethereum"><i class="fas fa-spinner fa-spin"></i></p>
+          <p v-else>Approx. {{convertEthToUSDAndFormat(price)}}</p>
         </div>
       </template>
 
@@ -126,13 +127,13 @@
 
 
 <script>
-import { ref, computed } from "vue";
-import {useStore} from "vuex"
+import { ref } from "vue";
 
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
+import useExchangeRate from '@/hooks/useExchangeRate.js'
 
 export default {
   name: "BidCard",
@@ -189,18 +190,7 @@ export default {
 
 
 
-    const store = useStore();
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    });
-
-    const formatCurrency = function(value) {
-      return formatter.format(value);
-    };
-
-    const currencies = computed(() => store.getters['application/currencies']);
-    const usdPrice = computed(() => formatCurrency((currencies.value ? currencies.value.ethereum : 0) * parseInt(props.price, 10)));
+    const { ethereum, convertEthToUSDAndFormat } = useExchangeRate();
 
     return {
       // startsAt,
@@ -215,9 +205,8 @@ export default {
       currentProgress,
       addTime,
       updateProgress,
-      currencies,
-      formatCurrency,
-      usdPrice,
+      ethereum,
+      convertEthToUSDAndFormat,
     };
   },
 };

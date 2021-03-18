@@ -8,24 +8,24 @@
             class="btn-exchange">
             <img src="@/assets/icons/icon--seen-green.svg" class="cursor-pointer mr-2" alt="SEEN">
             <span class="hidden md:block mr-1">Seen: </span>
-            <p v-if="!currencies"><i class="fas fa-spinner fa-spin"></i></p>
-            <p v-else>{{formatCurrency(currencies.seen)}}</p>
+            <p v-if="!seen"><i class="fas fa-spinner fa-spin"></i></p>
+            <p v-else>{{formatCurrency(seen)}}</p>
           </a>
           <a href="https://app.sushi.com/pair/0xc5fa164247d2f8d68804139457146efbde8370f6"
             target="_blank"
             class="btn-exchange">
             <img src="@/assets/icons/icon--ethereum.svg" class="cursor-pointer mr-2" alt="SEEN">
             <span class="hidden md:block mr-1">Ethereum: </span>
-            <p v-if="!currencies"><i class="fas fa-spinner fa-spin"></i></p>
-            <p v-else>{{formatCurrency(currencies.ethereum)}}</p>
+            <p v-if="!ethereum"><i class="fas fa-spinner fa-spin"></i></p>
+            <p v-else>{{formatCurrency(ethereum)}}</p>
           </a>
           <a href="https://app.sushi.com/pair/0xc5fa164247d2f8d68804139457146efbde8370f6"
             target="_blank"
             class="btn-exchange">
             <img src="@/assets/icons/icon--bitcoin.svg" class="cursor-pointer mr-2" alt="SEEN">
             <span class="hidden md:block mr-1">Bitcoin: </span>
-            <p v-if="!currencies"><i class="fas fa-spinner fa-spin"></i></p>
-            <p v-else>{{formatCurrency(currencies.bitcoin)}}</p>
+            <p v-if="!bitcoin"><i class="fas fa-spinner fa-spin"></i></p>
+            <p v-else>{{formatCurrency(bitcoin)}}</p>
           </a>
         </div>
 
@@ -50,28 +50,14 @@
 
 <script>
 import Container from "@/components/Container";
-import {useStore} from "vuex"
-import { computed } from 'vue'
+import useExchangeRate from '@/hooks/useExchangeRate.js'
 
 export default {
   name: 'TopHeaderBar',
   components: {Container},
   setup() {
-    const store = useStore();
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    });
-
-    const formatCurrency = function(value) {
-      return formatter.format(value);
-    };
-
-    const currencies = computed(() => store.getters['application/currencies']);
-    return {
-      currencies,
-      formatCurrency
-    };
+    const { formatCurrency, seen, ethereum, bitcoin } = useExchangeRate();
+    return { formatCurrency, seen, ethereum, bitcoin };
   }
 }
 </script>
