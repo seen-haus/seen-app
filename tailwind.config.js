@@ -9,8 +9,8 @@ module.exports = {
             /-(leave|enter|appear)(|-(to|from|active))$/,
             /^(?!(|.*?:)cursor-move).+-move$/,
             /^router-link(|-exact)-active$/,
-            /swiper/,
-            /glightbox/,
+            /.*swiper*./,
+            /.*glightbox*./,
         ],
     },
     darkMode: false, // or 'media' or 'class'
