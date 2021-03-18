@@ -71,7 +71,7 @@
             :progress="progress"
             :colorClass="isCollectableActive ? isUpcomming ? 'bg-white' : 'bg-primary' : 'bg-white'"
           />
-          <!-- <progress-timer progress="0.2" class="text-white mt-3" /> -->
+          
           <template v-if="isAuction">
             <div
               class="text-sm mt-2 text-gray-400 font-semibold"
@@ -83,7 +83,7 @@
               v-else
               ref="timerRef"
               class="text-black text-sm mt-2"
-              :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+              :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
               :startDate="startsAt"
               :endDate="endsAt"
               @onProgress="updateProgress"
@@ -93,7 +93,7 @@
           <template v-else>
             <div
               class="text-sm font-bold mt-2"
-              :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+              :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
             >
               {{
                 isCollectableActive
