@@ -7,7 +7,8 @@ module.exports = {
         whitelistPatterns: [
             /-(leave|enter|appear)(|-(to|from|active))$/,
             /^(?!(|.*?:)cursor-move).+-move$/,
-            /^router-link(|-exact)-active$/
+            /^router-link(|-exact)-active$/,
+            /swiper/
         ],
     },
     darkMode: false, // or 'media' or 'class'

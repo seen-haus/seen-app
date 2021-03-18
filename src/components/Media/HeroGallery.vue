@@ -32,6 +32,7 @@
 </template>
 
 <script>
+  import { computed } from "vue";
   import MediaLoader from "@/components/Media/MediaLoader.vue"
 
  // import Swiper core and required modules
@@ -58,15 +59,12 @@ export default {
   props: {
     mediaResources: Object,
   },
-  methods: {
-    onSwiper(swiper) {
-      console.log(swiper);
-    },
-    onSlideChange() {
-      console.log('slide change');
-    },
-  },
-  setup() {
+  setup(props) {
+    const mediaType = computed(() => {
+      if (props.src.includes("youtube.com")) return "youtube";
+      if (props.src.includes(".mp4")) return "video";
+      return "image";
+    });
     const breakpoints = {
       300: {
         slidesPerView: 1,
