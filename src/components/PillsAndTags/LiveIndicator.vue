@@ -43,8 +43,11 @@ export default {
 
 
 <style lang="scss">
-.live-indicator {
+.live-indicator.dark {
   background: rgba(100,100,100, 0.5);
+}
+.live-indicator.light {
+  background: rgba(100,100,100, 0.15);
 }
 .blink {
   animation: blink 2s both 0s infinite;
