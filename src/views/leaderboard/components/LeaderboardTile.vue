@@ -61,7 +61,7 @@
       </div>
     </div>
 
-    <div class="flex-shrink-0 w-40">{{ user.amount_spent || 0 }} ETH</div>
+    <div class="flex-shrink-0 w-40">{{ (user.amount_spent || 0).toFixed(2) }} ETH</div>
   </div>
 </template>
 

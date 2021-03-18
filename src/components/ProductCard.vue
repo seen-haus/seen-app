@@ -18,7 +18,7 @@
         <tag v-if="isNft" class="bg-tag-nft mr-1 text-white">NFT</tag>
         <tag v-if="isTangible" class="bg-tag-tangible text-white">TANGIBLE</tag>
 
-        <live-indicator :status="liveStatus" class="text-white ml-auto" />
+        <live-indicator :status="liveStatus" class="text-white ml-auto dark" />
       </div>
     </div>
     <div class="description relative p-6 flex flex-col flex-grow">
@@ -129,19 +129,20 @@ export default {
         type.value === COLLECTABLE_TYPE.TANGIBLE ||
         type.value === COLLECTABLE_TYPE.TANGIBLE_NFT
     );
+    
     const isNft = computed(
       () =>
         type.value === COLLECTABLE_TYPE.NFT ||
         type.value === COLLECTABLE_TYPE.TANGIBLE_NFT
     );
-    const liveStatus = computed(() => {
-      let status = is_active.value
-        ? is_coming_soon.value
-          ? "comming soon"
-          : "live"
-        : "ended";
 
-      return status;
+    const liveStatus = computed(() => {
+      if (is_active.value === false) return "ended";
+
+      if (is_coming_soon.value) return "comming soon";
+      if (is_sold_out.value) return "sold out";
+
+      return "live";
     });
 
     const updateProgress = function (event) {
