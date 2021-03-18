@@ -51,7 +51,7 @@
 
     <div class="quotes bg-background-gray max-h-56">
       <container class="flex justify-center">
-        <quote class="centered-quote" />
+        <quote-carousel class="centered-quote" />
       </container>
     </div>
   </div>
@@ -61,7 +61,7 @@
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
-import Quote from "@/components/Quote.vue";
+import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 
 export default {
   name: "About",
@@ -69,7 +69,7 @@ export default {
     Container,
     FencedTitle,
     HowToVideo,
-    Quote,
+    QuoteCarousel,
   },
 };
 </script>

@@ -85,7 +85,7 @@
 
     <div class="quotes">
       <container class="flex justify-center">
-        <quote class="centered-quote" />
+        <quote-carousel class="centered-quote" />
       </container>
     </div>
 
@@ -130,7 +130,7 @@ import ProductCard from "@/components/ProductCard.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import Toggle from "@/components/Inputs/Toggle.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
-import Quote from "@/components/Quote.vue";
+import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
@@ -145,7 +145,7 @@ export default {
     ProductCard,
     Toggle,
     HowToVideo,
-    Quote,
+    QuoteCarousel,
     ArtistCard,
   },
   setup() {

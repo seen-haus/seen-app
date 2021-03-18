@@ -42,17 +42,14 @@
   // Import Swiper Vue.js components
   import { Swiper, SwiperSlide } from 'swiper/vue';
 
-  // Import Swiper styles
-  import 'swiper/swiper.scss';
-  import 'swiper/components/navigation/navigation.scss';
-  import 'swiper/components/pagination/pagination.scss';
-  import 'swiper/components/scrollbar/scrollbar.scss';
+
 
   // install Swiper modules
   SwiperCore.use([Navigation, Pagination, Scrollbar, A11y]);
 
   import GLightbox from 'glightbox';
   import 'glightbox/dist/css/glightbox.css';
+
 export default {
   name: "HeroGallery",
   components: {
@@ -107,7 +104,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 .gallery {
   max-height: 650px;
@@ -117,19 +114,6 @@ export default {
   max-width: 1700px;
   position: relative;
   height: calc(100vw * 0.44 - 100px);
-}
-
-.swiper-pagination-bullet {
-  width: 12px !important;
-  height: 12px !important;
-  margin: 0 8px 0 0 !important;
-  background-color: #d8d8d8 !important;
-  border-radius: 50%;
-  outline: none !important;
-  opacity: 1;
-  &.swiper-pagination-bullet-active {
-    background-color: #000000 !important;
-  }
 }
 
 .swiper-slide {
@@ -143,23 +127,7 @@ export default {
   transition: all .5s;
 }
 
-.swiper-button-next, .swiper-button-prev {
-  width: 48px;
-  height: 48px;
-  padding: 18px 15px 18px 14px;
-  box-shadow: 0 1px 15px 0 rgba(0, 0, 0, 0.15);
-  background-color: #ffffff;
-  border-radius: 50%;
-  top: calc(50% - 1.5rem);
-  &:after {
-    display: none;
-  }
-  &:focus {
-    outline: none;
-  }
-}
 .swiper-button-prev {
-  transform: rotate(-180deg);
   left: calc(14% - 1.5rem);
 }
 .swiper-button-next {

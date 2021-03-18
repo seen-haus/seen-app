@@ -112,7 +112,7 @@
 
     <div class="quotes">
       <container class="flex justify-center">
-        <quote class="centered-quote" />
+        <quote-carousel class="centered-quote" />
       </container>
     </div>
 
@@ -152,7 +152,7 @@ import { useRouter } from "vue-router";
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
-import Quote from "@/components/Quote.vue";
+import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 import HeroAuction from "./components/HeroAuction.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
@@ -169,7 +169,7 @@ export default {
     FencedTitle,
     ProductCard,
     HowToVideo,
-    Quote,
+    QuoteCarousel,
     ArtistCard,
   },
   setup() {

@@ -122,7 +122,7 @@
 
     <div class="quotes">
       <container class="flex justify-center">
-        <quote class="centered-quote" />
+        <quote-carousel class="centered-quote" />
       </container>
     </div>
 
@@ -166,7 +166,7 @@ import { computed } from "vue";
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
-import Quote from "@/components/Quote.vue";
+import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
@@ -183,7 +183,7 @@ export default {
     Container,
     FencedTitle,
     HowToVideo,
-    Quote,
+    QuoteCarousel,
     ArtistCard,
     MediaLoader,
     ProgressBar,
