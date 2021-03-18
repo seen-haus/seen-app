@@ -32,7 +32,7 @@
           />
           <div class="tags flex mx-9">
             <tag
-              v-if="purchase_type === 1"
+              v-if="isAuction"
               class="bg-fence-light self-end text-gray-500 font-semibold mr-1"
               >EDITION {{ edition }}/{{ edition_of }}</tag
             >
@@ -46,7 +46,7 @@
       </div>
     </container>
 
-    <hero-gallery :mediaResources="mediaResources"/>
+    <hero-gallery :mediaResources="media" />
 
     <container>
       <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6">
@@ -150,14 +150,29 @@
         </div>
 
         <div class="right-side col-span-5">
-          <bid-card />
+          <bid-card
+            :startsAt="startsAt"
+            :endsAt="endsAt"
+            :isAuction="isAuction"
+            :numberOfBids="events.length"
+            :edition="edition"
+            :edition_of="edition_of"
+            :items="items"
+            :items_of="itemsOf"
+            :price="price"
+            :priceUSD="priceUSD"
+            :progress="progress"
+            :is_sold_out="is_sold_out"
+            :isCollectableActive="isCollectableActive"
+            :isUpcomming="isUpcomming"
+          />
 
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
             Recent Buyers
           </div>
-          <list-of-buyers class="mb-12" :list="events" :onLoadMore="showMoreEvents"/>
+          <list-of-buyers class="mb-12" :list="events" />
 
-          <template v-if="showHowToBuy">
+          <template v-if="isAuction">
             <button class="button dark w-full">
               <i
                 class="fas fa-play-circle mr-2 text-xl icon-left text-white"
@@ -215,8 +230,8 @@ import BidCard from "@/components/BidCard.vue";
 import ListOfBuyers from "@/components/Lists/ListOfBuyers.vue";
 import HeroGallery from "@/components/Media/HeroGallery.vue";
 import { CollectablesService } from "@/services/apiService";
-import COLLECTABLE_TYPE from "@/constants/Collectables.js";
-import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
+
+import useCollectableInformation from "@/hooks/useCollectableInformation.js";
 
 export default {
   name: "Collectable",
@@ -237,120 +252,95 @@ export default {
       loading: true,
       contractAddress: null,
       collectable: {},
-      buyers: {
-        list: [],
-        visible: 3,
-      },
+      buyersVisible: 3,
     });
+
+    const {
+      collectableState,
+      price,
+      priceUSD,
+      items,
+      itemsOf,
+      progress,
+      isCollectableActive,
+      isUpcomming,
+      // Static
+      type,
+      media,
+      // firstMedia,
+      artist,
+      title,
+      description,
+      events,
+      startsAt,
+      endsAt,
+      liveStatus,
+      is_sold_out,
+      edition,
+      edition_of,
+      isTangible,
+      isNft,
+      isAuction,
+      // Methods
+      updateProgress,
+      setCollectable,
+      // updateInformation,
+      // updateCollectableState,
+    } = useCollectableInformation();
+
     const isLoading = computed(() => state.loading);
-
-    const title = computed(() => state.collectable.title);
-    const description = computed(() => state.collectable.description);
-    const artist = computed(() => state.collectable.artist);
-    const type = computed(() => state.collectable.type);
-    const mediaResources = computed(() => state.collectable.media);
-
-    const is_active = computed(() => state.collectable.is_active);
-    const is_coming_soon = computed(() => state.collectable.is_coming_soon);
-    const is_sold_out = computed(() => state.collectable.is_sold_out);
-
-    const startsAt = computed(() => state.collectable.starts_at);
-    const endsAt = computed(() => state.collectable.ends_at);
-
-    const purchase_type = computed(() => state.collectable.purchase_type);
-    const price = computed(() =>
-      purchase_type.value === 2
-        ? state.collectable.price
-        : state.collectable.start_bid
-    );
-
-    const edition = computed(() => state.collectable.edition);
-    const edition_of = computed(() => state.collectable.edition_of);
-
-    const isTangible = computed(
-      () =>
-        type.value === COLLECTABLE_TYPE.TANGIBLE ||
-        type.value === COLLECTABLE_TYPE.TANGIBLE_NFT
-    );
-    const isNft = computed(
-      () =>
-        type.value === COLLECTABLE_TYPE.NFT ||
-        type.value === COLLECTABLE_TYPE.TANGIBLE_NFT
-    );
-    const liveStatus = computed(() => {
-      let status = is_active.value
-        ? is_coming_soon.value
-          ? "comming soon"
-          : "live"
-        : "ended";
-
-      return status;
-    });
-
-    // Events
-    const events = computed(() =>
-      state.buyers.list.slice(0, state.buyers.visible)
-    );
-    const addEvents = (newEvents) => {
-      const length = newEvents.length;
-      state.buyers.list = [
-        ...newEvents.reverse(),
-        ...state.buyers.list.slice(0, state.buyers.visible - length),
-      ];
-    };
-    const showMoreEvents = () => {
-      console.log('show mote', state.buyers);
-      state.buyers.visible += 3;
-    }
 
     const showAdditionalInformation = computed(
       () => type.value === "tangible" || type.value === "tangible_nft"
     );
-    const showHowToBuy = computed(
-      () => purchase_type.value === PURCHASE_TYPE.AUCTION
-    );
 
-    loadCollectable();
-
-    async function loadCollectable() {
+    (async function loadCollectable() {
       state.loading = true;
       const contractAddress =
         route.params["contractAddress"] ||
         "0xeFb2de8e3464b5F33840d12d7f0259831bb381A7";
       const { data } = await CollectablesService.show(contractAddress);
 
-      data.events.reverse(); // Right order
-
-      state.buyers.list = data.events;
+      // data.events.reverse(); // Right order
+      // state.buyers.list = data.events;
       state.loading = false;
       state.contractAddress = contractAddress;
       state.collectable = data;
-    }
+
+      setCollectable(data);
+    })();
 
     return {
       isLoading,
+
+      collectableState,
+      price,
+      priceUSD,
+      items,
+      itemsOf,
+      progress,
+      isCollectableActive,
+      isUpcomming,
+      // Static
+      type,
+      media,
+      // firstMedia,
+      artist,
       title,
       description,
-      artist,
-      price,
-      type,
-      mediaResources,
       events,
-      addEvents,
-      showMoreEvents,
-
       startsAt,
       endsAt,
       liveStatus,
       is_sold_out,
-      purchase_type,
       edition,
       edition_of,
-
       isTangible,
       isNft,
+      isAuction,
+      // Methods
+      updateProgress,
       showAdditionalInformation,
-      showHowToBuy,
     };
   },
 };

@@ -175,7 +175,7 @@ export default {
     const router = useRouter();
 
     const paginatedCollectables = useCollectablesWithPagination(
-      PURCHASE_TYPE.SALE
+      PURCHASE_TYPE.AUCTION
     );
     const listOfCollectables = computed(
       () => paginatedCollectables.listOfCollectables.value

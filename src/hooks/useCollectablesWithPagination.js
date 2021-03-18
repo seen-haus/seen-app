@@ -1,5 +1,5 @@
 import { CollectablesService } from "@/services/apiService";
-import COLLECTABLE_TYPE from "@/constants/Collectables.js";
+import { COLLECTABLE_TYPE } from "@/constants/Collectables.js";
 import { computed, reactive } from "vue";
 
 

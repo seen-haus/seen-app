@@ -1,6 +1,9 @@
 <template>
   <div class="list-of-buyers rounded-container">
-    <template v-for="(buyer, index) in list" :key="buyer.id">
+    <template
+      v-for="(buyer, index) in list.slice(0, showCount)"
+      :key="buyer.id"
+    >
       <div class="list-tile flex items-center py-6">
         <icon :size="40" :wallet-address="buyer.wallet_address" class="mr-4" />
 
@@ -8,7 +11,9 @@
           <div class="address text-gray-500 tracking-widest">
             {{ shortenAddress(buyer.wallet_address) }}
           </div>
-          <div class="time text-xs text-gray-400">{{ daysAgo(buyer.updated_at) }}</div>
+          <div class="time text-xs text-gray-400">
+            {{ daysAgo(buyer.updated_at) }}
+          </div>
         </div>
 
         <price-display
@@ -32,7 +37,7 @@
 </template>
 
 <script>
-import { computed } from 'vue';
+import { ref } from "vue";
 import { shortenAddress, getDaysAgo } from "@/services/utils/index";
 
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
@@ -43,23 +48,28 @@ export default {
   components: { PriceDisplay },
   props: {
     list: Array,
-    onLoadMore: Function,
   },
-  setup(props) {
-    console.log(props.list);
+  setup() {
+    const showCount = ref(3);
 
     function daysAgo(updated_at) {
       if (updated_at) {
         return getDaysAgo(updated_at);
       }
 
-      return 'An unspecified time ago';
+      return "An unspecified time ago";
+    }
+
+    function onLoadMore() {
+      showCount.value = showCount.value + 3;
     }
 
     return {
       shortenAddress,
       Icon,
       daysAgo,
+      onLoadMore,
+      showCount,
     };
   },
 };
