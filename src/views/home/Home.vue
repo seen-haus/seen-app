@@ -26,9 +26,11 @@
           :closed="false"
           >Featured Auctions</fenced-title
         >
-        <button class="button dark flex-shrink-0">
-          View All Auctions <i class="fas fa-arrow-right ml-3 icon-right"></i>
-        </button>
+        <router-link to="auctions">
+          <button class="button dark flex-shrink-0">
+            View All Auctions <i class="fas fa-arrow-right ml-3 icon-right"></i>
+          </button>
+        </router-link>
       </div>
 
       <div
@@ -76,9 +78,11 @@
         <product-card /> -->
       </div>
 
-      <button class="button dark mt-20 mx-auto w-full md:w-96">
-        View All Auctions
-      </button>
+      <router-link to="auctions">
+        <button class="button dark mt-20 mx-auto w-full md:w-96">
+          View All Auctions
+        </button>
+      </router-link>
     </container>
 
     <div class="learn-how-to bg-background-gray border-t border-b">
@@ -122,11 +126,8 @@
       </fenced-title>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
-        <template
-          v-for="artist in listOfArtists"
-          :key="artist && artist.id"
-        >
-          <artist-card v-if="artist != null" :artist=artist />
+        <template v-for="artist in listOfArtists" :key="artist && artist.id">
+          <artist-card v-if="artist != null" :artist="artist" />
           <div
             v-else
             class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
@@ -175,7 +176,7 @@ export default {
     const router = useRouter();
 
     const paginatedCollectables = useCollectablesWithPagination(
-      PURCHASE_TYPE.SALE
+      PURCHASE_TYPE.AUCTION
     );
     const listOfCollectables = computed(
       () => paginatedCollectables.listOfCollectables.value

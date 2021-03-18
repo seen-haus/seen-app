@@ -29,6 +29,7 @@ module.exports = {
                 primary: "#34CA98",
                 accent: "#FCD34D",
                 star: "#FFDD36",
+                opensea: "#3391E8",
                 'background-gray': '#F5F4F3',
                 'tag-nft': '#665BE8',
                 'tag-tangible': '#3391E8',

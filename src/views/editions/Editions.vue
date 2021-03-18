@@ -160,7 +160,7 @@ export default {
     const filterTangibleNft = computed(() => state.filterTangibleNft);
 
     const paginatedCollectables = useCollectablesWithPagination(
-      PURCHASE_TYPE.AUCTION
+      PURCHASE_TYPE.SALE
     );
     const listOfCollectables = computed(
       () => paginatedCollectables.listOfCollectables.value
