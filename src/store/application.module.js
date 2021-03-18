@@ -33,7 +33,11 @@ const actions = {
     },
     async getExchangeRates(context) {
         ExchangeRateService.get().then((data) => {
-            context.commit('SET_EXCHANGE_RATES', {seen: data.seen.usd, bitcoin: data.bitcoin.usd, ethereum: data.ethereum.usd});
+            context.commit('SET_EXCHANGE_RATES', {
+                seen: parseFloat(data.seen.usd, 10),
+                bitcoin: parseFloat(data.bitcoin.usd, 10),
+                ethereum: parseFloat(data.ethereum.usd, 10)
+            });
         });
     }
 

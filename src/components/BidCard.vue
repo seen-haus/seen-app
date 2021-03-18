@@ -40,7 +40,7 @@
         </div>
 
         <div class="text-center text-gray-400 text-sm py-2">
-          Approx. $2,560.55
+          Approx. {{usdPrice}}
         </div>
       </template>
 
@@ -126,7 +126,8 @@
 
 
 <script>
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import {useStore} from "vuex"
 
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
@@ -186,6 +187,21 @@ export default {
       currentProgress.value = event;
     };
 
+
+
+    const store = useStore();
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    });
+
+    const formatCurrency = function(value) {
+      return formatter.format(value);
+    };
+
+    const currencies = computed(() => store.getters['application/currencies']);
+    const usdPrice = computed(() => formatCurrency((currencies.value ? currencies.value.ethereum : 0) * parseInt(props.price, 10)));
+
     return {
       // startsAt,
       // endsAt,
@@ -199,6 +215,9 @@ export default {
       currentProgress,
       addTime,
       updateProgress,
+      currencies,
+      formatCurrency,
+      usdPrice,
     };
   },
 };
