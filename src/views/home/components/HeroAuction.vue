@@ -69,7 +69,7 @@
           <progress-bar
             class="bg-fence-dark h-3"
             :progress="progress"
-            :colorClass="isCollectableActive ? isUpcomming ? 'bg-white' : 'bg-primary' : 'bg-white'"
+            :colorClass="isCollectableActive ? (isUpcomming ? 'bg-white' : 'bg-primary') : 'bg-white'"
           />
           
           <template v-if="isAuction">

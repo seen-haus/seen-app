@@ -50,7 +50,13 @@
 
       <progress-bar
         :progress="progress"
-        :colorClass="isCollectableActive ? 'bg-primary' : 'bg-gray-300'"
+        :colorClass="
+          isCollectableActive
+            ? isUpcomming
+              ? 'bg-gray-300'
+              : 'bg-primary'
+            : 'bg-gray-300'
+        "
         class="bg-fence-light h-2 mt-10"
       />
 
@@ -73,18 +79,30 @@
       </template>
 
       <template v-else>
-        <div
-          class="text-sm font-bold mt-2"
-          :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
-        >
-          {{
-            isCollectableActive
-              ? `${items} out of ${itemsOf}`
-              : is_sold_out
-              ? "Sold Out"
-              : "Ended"
-          }}
-        </div>
+        <template v-if="isUpcomming">
+          <progress-timer
+            ref="timerRef"
+            class="text-black text-sm mt-2"
+            :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+            :startDate="startsAt"
+            :endDate="endsAt"
+            @onProgress="updateProgress"
+          />
+        </template>
+        <template v-else>
+          <div
+            class="text-sm font-bold mt-2"
+            :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+          >
+            {{
+              isCollectableActive
+                ? `${items} out of ${itemsOf}`
+                : is_sold_out
+                ? "Sold Out"
+                : "Ended"
+            }}
+          </div>
+        </template>
       </template>
     </div>
   </div>
@@ -145,6 +163,7 @@ export default {
       isTangible,
       isNft,
       isAuction,
+      isUpcomming,
       // Methods
       updateProgress,
       // setCollectable,
@@ -189,6 +208,7 @@ export default {
       isTangible,
       isNft,
       isAuction,
+      isUpcomming,
       // Methods
       updateProgress,
       addTime,
