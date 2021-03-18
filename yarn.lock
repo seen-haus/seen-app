@@ -7092,6 +7092,11 @@ github-from-package@0.0.0:
   resolved "https://registry.yarnpkg.com/github-from-package/-/github-from-package-0.0.0.tgz#97fb5d96bfde8973313f20e8288ef9a167fa64ce"
   integrity sha1-l/tdlr/eiXMxPyDoKI75oWf6ZM4=
 
+glightbox@^3.0.6:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/glightbox/-/glightbox-3.0.7.tgz#f0fdb6213c285a416cba07046d822eb0c6223a2c"
+  integrity sha512-TIaB7UQi+6Aa15jrnDRcliDx2Z3nPzO6u+DSwJV6E2scCR9KUs1zAc+m/PDp+BmPnmPN+rqxKxUwYURyjfO+gw==
+
 glob-parent@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/glob-parent/-/glob-parent-3.1.0.tgz#9e6af6299d8d3bd2bd40430832bd113df906c5ae"

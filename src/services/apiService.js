@@ -81,3 +81,11 @@ export const ArtistService = {
     },
 };
 
+export const ExchangeRateService = {
+    get() {
+        return $axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum%2Cbitcoin%2Cseen&vs_currencies=USD').catch(error => {
+            throw new Error(`[RWV] ApiService ${error}`);
+        });
+    }
+};
+

@@ -1,6 +1,10 @@
 <template>
   <nav id="menu" class="min-h-screen slideout-menu bg-black text-white pt-13">
     <button class="button w-full text-white" @click="closeMobileMenu">CLOSE</button>
+    <router-link :to="{ name: 'spaaaaace'}" v-slot="{isActive}" class="routing-link block py-1 px-8">
+      <img src="@/assets/icons/icon--spacenft.svg" :class="isActive ? 'active-green-icon' : ''" class="cursor-pointer mr-1 inline-flex" alt="SEEN">
+      <span class="opacity-50 font-bold py-0.5 hover:opacity-100" :class="{'active': isActive}">Space NFT</span>
+    </router-link>
     <router-link :to="{ name: 'auctions'}" v-slot="{isActive}" class="routing-link block py-1 px-8">
       <span class="opacity-50 font-bold py-0.5" :class="{'active': isActive}">Auctions</span>
     </router-link>
@@ -62,6 +66,10 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+  .routing-link:hover {
+    img {
+      filter: brightness(0) invert(1) !important;
+    }
+  }
 </style>

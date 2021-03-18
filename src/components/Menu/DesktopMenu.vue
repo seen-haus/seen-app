@@ -26,9 +26,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  .active-green-icon {
-    filter: brightness(0) saturate(100%) invert(65%) sepia(65%) saturate(420%) hue-rotate(109deg) brightness(89%) contrast(91%) !important;
-  }
   .routing-link:hover {
     img {
       filter: brightness(0) saturate(100%);

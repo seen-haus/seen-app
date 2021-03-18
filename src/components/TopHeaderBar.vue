@@ -7,19 +7,25 @@
             target="_blank"
             class="btn-exchange">
             <img src="@/assets/icons/icon--seen-green.svg" class="cursor-pointer mr-2" alt="SEEN">
-            <span class="hidden md:block mr-1">Seen: </span> $403
+            <span class="hidden md:block mr-1">Seen: </span>
+            <p v-if="!currencies"><i class="fas fa-spinner fa-spin"></i></p>  
+            <p v-else>${{currencies.seen}}</p>
           </a>
           <a href="https://app.sushi.com/pair/0xc5fa164247d2f8d68804139457146efbde8370f6"
             target="_blank"
             class="btn-exchange">
             <img src="@/assets/icons/icon--ethereum.svg" class="cursor-pointer mr-2" alt="SEEN">
-            <span class="hidden md:block mr-1">Ethereum: </span> $1,403.54
+            <span class="hidden md:block mr-1">Ethereum: </span>
+            <p v-if="!currencies"><i class="fas fa-spinner fa-spin"></i></p>  
+            <p v-else>${{currencies.ethereum}}</p>
           </a>
           <a href="https://app.sushi.com/pair/0xc5fa164247d2f8d68804139457146efbde8370f6"
             target="_blank"
             class="btn-exchange">
             <img src="@/assets/icons/icon--bitcoin.svg" class="cursor-pointer mr-2" alt="SEEN">
-            <span class="hidden md:block mr-1">Bitcoin: </span> $51,403.54
+            <span class="hidden md:block mr-1">Bitcoin: </span>
+            <p v-if="!currencies"><i class="fas fa-spinner fa-spin"></i></p>  
+            <p v-else>${{currencies.bitcoin}}</p>
           </a>
         </div>
 
@@ -44,10 +50,19 @@
 
 <script>
 import Container from "@/components/Container";
+import {useStore} from "vuex"
+import { computed } from 'vue'
 
 export default {
   name: 'TopHeaderBar',
   components: {Container},
+  setup() {
+    const store = useStore();
+    const currencies = computed(() => store.getters['application/currencies']);
+    return {
+      currencies,
+    };
+  }
 }
 </script>
 

@@ -2,22 +2,24 @@
   <div class="gallery relative text-white flex justify-center items-center mb-8">
       <swiper
         :space-between="50"
-        @swiper="onSwiper"
         :breakpoints="breakpoints"
         :loop="true"
         :height="600"
         :pagination="{ clickable: true, el: '.swiper-pagination' }"
         :navigation="{nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev'}"
-        @slideChange="onSlideChange"
       >
         <swiper-slide v-for="mediaResource in mediaResources" :key="mediaResource.id"  v-slot="{ isNext }">
-          <div :class="isNext ? 'active-slide' : ''">
+          <div :class="'relative ' + (isNext ? 'active-slide' : '')">
             <media-loader
+              @click="openModal(mediaResource.type, mediaResource.url)"
               ref="mediaRef"
               :src="mediaResource.url"
               aspectRatio="100%"
-              class="overflow-hidden rounded-t-3xl flex-1 media-loader-active"
+              :autoplay="true"
+              :muted="true"
+              class="overflow-hidden rounded-lg flex-1 media-loader-active"
             />
+            <p class="w-full text-grey-9 text-center mt-4 text-sm">{{mediaResource.type === 'video' ? 'Click for Audio' : '&nbsp;'}}</p>
           </div>
         </swiper-slide>
       </swiper>
@@ -32,7 +34,6 @@
 </template>
 
 <script>
-  import { computed } from "vue";
   import MediaLoader from "@/components/Media/MediaLoader.vue"
 
  // import Swiper core and required modules
@@ -49,6 +50,9 @@
 
   // install Swiper modules
   SwiperCore.use([Navigation, Pagination, Scrollbar, A11y]);
+
+  import GLightbox from 'glightbox';
+  import 'glightbox/dist/css/glightbox.css';
 export default {
   name: "HeroGallery",
   components: {
@@ -59,12 +63,7 @@ export default {
   props: {
     mediaResources: Object,
   },
-  setup(props) {
-    const mediaType = computed(() => {
-      if (props.src.includes("youtube.com")) return "youtube";
-      if (props.src.includes(".mp4")) return "video";
-      return "image";
-    });
+  setup() {
     const breakpoints = {
       300: {
         slidesPerView: 1,
@@ -83,7 +82,27 @@ export default {
         spaceBetween: 100,
       }
     };
-    return { breakpoints }
+    const openModal = (type, url) => {
+      const lightbox = GLightbox({
+          touchNavigation: true,
+          loop: true,
+          autoplayVideos: true
+      });
+      if (type === 'video') {
+          lightbox.setElements([{
+              'href': url,
+              'type': 'video',
+              'source': 'local', //vimeo, youtube or local
+          }])
+      } else {
+          lightbox.setElements([{
+              'href': url,
+              'type': 'image', //vimeo, youtube or local
+          }]);
+      }
+      lightbox.open();
+    };
+    return { breakpoints, openModal }
   }
 };
 </script>
@@ -131,6 +150,7 @@ export default {
   box-shadow: 0 1px 15px 0 rgba(0, 0, 0, 0.15);
   background-color: #ffffff;
   border-radius: 50%;
+  top: calc(50% - 1.5rem);
   &:after {
     display: none;
   }
@@ -146,7 +166,7 @@ export default {
   right: calc(14% - 1.5rem);
 }
 .swiper-pagination {
-  bottom: -3rem;
+  bottom: -4rem;
 }
 
 @media screen and (max-width:600px) {
@@ -155,8 +175,31 @@ export default {
     max-width: 600px !important;
     opacity: 1 !important;
   }
+  .gallery {
+    @apply mb-0;
+    height: calc(100vw)
+  }
+  .swiper-pagination {
+    bottom: -2.5rem;
+  }
 }
 @media screen and (min-width:601px){
+  .swiper-slide {
+    align-self: center;
+    &.swiper-slide-active {
+      width: 25% !important;
+    }
+    &.swiper-slide-next {
+      width: calc(50% - 100px) !important;
+
+      &+.swiper-slide {
+        width: 25% !important;
+      }
+    }
+  }
+}
+
+@media screen and (min-width:900px){
   .swiper-slide {
     align-self: center;
     &.swiper-slide-active {
@@ -169,6 +212,15 @@ export default {
         width: 28% !important;
       }
     }
+  }
+  .swiper-button-prev {
+    left: calc(14% - 1.5rem);
+  }
+  .swiper-button-next {
+    right: calc(14% - 1.5rem);
+  }
+  .swiper-pagination {
+    bottom: -3rem;
   }
 }
 
@@ -188,6 +240,9 @@ export default {
         width: 26% !important;
       }
     }
+  }
+  .swiper-pagination {
+    bottom: -2rem;
   }
   .swiper-button-prev {
     left: calc(13% - 1.5rem);

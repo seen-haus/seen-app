@@ -28,12 +28,9 @@
 
       <div class="h-0.5 my-4 w-full rounded-full bg-gray-200"></div>
 
-      <div class="flex justify-start items-center text-xs text-gray-400">
-        <a class="mr-8 cursor-pointer" :href="twitter.url" target="_blank">
-          <i class="fas fa-link mr-2 text-sm"></i>{{ twitter?.title }}
-        </a>
-        <a class="cursor-pointer" :href="twitter.url" target="_blank">
-          <i class="fas fa-envelope mr-2 text-sm"></i>{{ instagram?.title }}
+      <div class="flex flex-wrap justify-start items-center text-xs text-gray-400">
+        <a class="mr-8 cursor-pointer" :href="twitter.url" target="_blank" v-for="social in artist.socials" :key="social.url">
+          <i :class="'mr-2 text-sm ' + getSocialIcon(social)"></i>{{ getSocialText(social) }}
         </a>
       </div>
     </div>
@@ -53,6 +50,21 @@ export default {
   props: {
     artist: Object,
   },
+  methods: {
+    getSocialIcon(social) {
+      const type = social.type;
+      if (type === 'twitter') {
+        return 'fab fa-twitter'
+      } else if (type === 'instagram') {
+        return 'fab fa-instagram'
+      } else {
+        return 'fas fa-link';
+      }
+    },
+    getSocialText(social) {
+      return social.handle || social.url;
+    }
+  },
   computed: {
     twitter: function () {
       return this.artist.socials[0];
@@ -63,4 +75,3 @@ export default {
   },
 };
 </script>
-

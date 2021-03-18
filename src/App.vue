@@ -22,11 +22,18 @@ import WalletModal from "@/components/WalletModal/WalletModal"
 import MobileMenu from "@/components/Menu/MobileMenu";
 import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
+import {useStore} from "vuex"
 
 export default {
   name: 'App',
   components: {AppFooter, AppHeader, MobileMenu, WalletModal, Web3Provider},
-
+  setup() {
+    const store = useStore();
+    const getExchangeRates = () => {
+      store.dispatch('application/getExchangeRates')
+    };
+    getExchangeRates();
+  }
 }
 </script>
 <style lang="scss" scoped>

@@ -1,5 +1,6 @@
 module.exports = {
     purge: {
+        enabled: false,
         content: [
             './public/**/*.html',
             './src/**/*.vue',
@@ -8,7 +9,8 @@ module.exports = {
             /-(leave|enter|appear)(|-(to|from|active))$/,
             /^(?!(|.*?:)cursor-move).+-move$/,
             /^router-link(|-exact)-active$/,
-            /swiper/
+            /swiper/,
+            /glightbox/,
         ],
     },
     darkMode: false, // or 'media' or 'class'

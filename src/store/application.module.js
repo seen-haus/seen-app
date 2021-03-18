@@ -1,6 +1,9 @@
+import { ExchangeRateService } from "@/services/apiService";
+
 const state = {
     openModal: null,
     mobileMenu: null,
+    currencies: null,
 };
 
 const mutations = {
@@ -15,6 +18,9 @@ const mutations = {
     },
     CLOSE_MOBILE_MENU(state) {
         state.mobileMenu = false
+    },
+    SET_EXCHANGE_RATES(state, exchangeRates) {
+        state.currencies = exchangeRates;
     }
 };
 
@@ -24,9 +30,14 @@ const actions = {
     },
     closeModal(context) {
         context.commit('CLOSE_MODAL')
+    },
+    async getExchangeRates(context) {
+        ExchangeRateService.get().then((data) => {
+            context.commit('SET_EXCHANGE_RATES', {seen: data.seen.usd, bitcoin: data.bitcoin.usd, ethereum: data.ethereum.usd});
+        });
     }
 
-}
+};
 
 const getters = {
     openModal(state) {
@@ -34,8 +45,11 @@ const getters = {
     },
     mobileMenu(state) {
         return state.mobileMenu
+    },
+    currencies(state) {
+        return state.currencies;
     }
-}
+};
 
 export default {
     namespaced: true,
