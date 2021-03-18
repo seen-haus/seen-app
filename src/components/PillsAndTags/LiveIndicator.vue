@@ -4,8 +4,8 @@
       class="indicator-icon w-2.5 h-2.5 rounded-full mr-2"
       :class="{
         'bg-primary blink': indicatorStatus === 'LIVE',
-        'bg-gray-500': indicatorStatus === 'ENDED',
-        'bg-gray-500': indicatorStatus === 'SOLD OUT',
+        'bg-gray-500': indicatorStatus === 'ENDED' 
+                      || indicatorStatus === 'SOLD OUT',
         'bg-accent': indicatorStatus === 'COMMING SOON',
       }"
     ></div>
@@ -54,13 +54,13 @@ export default {
 }
 @keyframes blink {
   0% {
-    opacity: 0.0;
+    opacity: 0.25;
   }
   50% {
     opacity: 1.0;
   }
   100% {
-    opacity: 0.0;
+    opacity: 0.25;
   }
 }
 </style>
