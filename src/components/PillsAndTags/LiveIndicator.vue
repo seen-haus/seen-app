@@ -1,10 +1,11 @@
 <template>
-  <div class="live-indicator flex items-center font-medium text-xs">
+  <div class="live-indicator flex items-center font-medium text-xs rounded py-0.5 px-2">
     <div
       class="indicator-icon w-2.5 h-2.5 rounded-full mr-2"
       :class="{
         'bg-primary blink': indicatorStatus === 'LIVE',
         'bg-gray-500': indicatorStatus === 'ENDED',
+        'bg-gray-500': indicatorStatus === 'SOLD OUT',
         'bg-accent': indicatorStatus === 'COMMING SOON',
       }"
     ></div>
@@ -28,6 +29,8 @@ export default {
           return "LIVE";
         case "ended":
           return "ENDED";
+        case "sold out":
+          return "SOLD OUT";
         case "comming soon":
           return "COMMING SOON";
         default:
@@ -40,6 +43,9 @@ export default {
 
 
 <style lang="scss">
+.live-indicator {
+  background: rgba(100,100,100, 0.5);
+}
 .blink {
   animation: blink 2s both 0s infinite;
 }
