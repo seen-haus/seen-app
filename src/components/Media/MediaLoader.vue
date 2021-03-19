@@ -5,6 +5,13 @@
       'padding-bottom': aspectRatio,
     }"
   >
+    <div
+      class="absolute w-full h-full flex items-center justify-center bg-gray-100"
+      :class="'loading-indicator ' + (isLoading ? 'is-loading' : '')"
+    >
+      <i class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i>
+    </div>
+
     <template v-if="mediaType === 'youtube'">
       <iframe
         ref="videoRef"
@@ -48,14 +55,19 @@
     </template>
 
     <template v-if="mediaType === 'image'">
-      <img class="image absolute w-full h-full" :src="src" alt="" />
+      <img
+        ref="imageRef"
+        class="image absolute w-full h-full"
+        :src="src"
+        alt=""
+      />
     </template>
   </div>
 </template>
 
 
 <script>
-import { computed, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 
 import PlayButton from "./components/PlayButton.vue";
 
@@ -90,9 +102,12 @@ export default {
   components: { PlayButton },
   setup(props) {
     const videoRef = ref(null);
+    const imageRef = ref(null);
+
     const state = reactive({
       paused: !props.autoplay,
     });
+    const isLoading = ref(true);
 
     const isPaused = computed(() => state.paused);
     const mediaType = computed(() => {
@@ -134,8 +149,42 @@ export default {
       }
     }
 
+    function onLoadedCallback() {
+      if (mediaType.value === "video") {
+        //Video should now be loaded but we can add a second check
+        if (videoRef.value.readyState >= 3) {
+          isLoading.value = false;
+          videoRef.value.removeEventListener("loadeddata", onLoadedCallback);
+        }
+      }
+
+      if (mediaType.value === "youtube") {
+        // Need plugin
+      }
+
+      if (mediaType.value === "image") {
+        isLoading.value = false;
+        imageRef.value.removeEventListener("load", onLoadedCallback);
+      }
+    }
+
+    onMounted(() => {
+      if (mediaType.value === "video") {
+        videoRef.value.addEventListener("loadeddata", onLoadedCallback);
+      }
+      if (mediaType.value === "youtube") {
+        // Need plugin
+        isLoading.value = false;
+      }
+      if (mediaType.value === "image") {
+        imageRef.value.addEventListener("load", onLoadedCallback);
+      }
+    });
+
     return {
       videoRef,
+      imageRef,
+      isLoading,
       mediaType,
       isPaused,
       togglePlay,
@@ -149,6 +198,18 @@ export default {
 
 <style lang="scss">
 .media-loader {
+  .loading-indicator {
+    opacity: 0;
+    visibility: 0;
+
+    transition: all 250ms linear;
+
+    &.is-loading {
+      opacity: 1;
+      visibility: 1;
+    }
+  }
+
   .video-player,
   .video-overlay {
     position: absolute;
