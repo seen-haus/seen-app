@@ -55,7 +55,7 @@
 
 
 <script>
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, toRefs, watchEffect } from "vue";
 
 import PlayButton from "./components/PlayButton.vue";
 
@@ -89,6 +89,7 @@ export default {
   },
   components: { PlayButton },
   setup(props) {
+    const { autoplay } = toRefs(props);
     const videoRef = ref(null);
     const state = reactive({
       paused: !props.autoplay,
@@ -133,6 +134,10 @@ export default {
         videoRef.value.pause();
       }
     }
+    watchEffect(() => {
+      if (!videoRef.value) return;
+      autoplay.value ? playVideo() : pauseVideo();
+    });
 
     return {
       videoRef,

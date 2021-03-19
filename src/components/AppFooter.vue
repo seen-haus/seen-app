@@ -55,22 +55,22 @@
           <div>
             <p class="text-grey-9 font-bold text-xl mb-6">Community</p>
             <div class="font-bold text-md leading-loose">
-              <a href="#"
+              <a href="https://t.me/seenhaus"
                 target="_blank"
                 class="block">
                 Telegram
               </a>
-              <a href="#"
+              <a href="https://discord.com/invite/dad8J4f"
                 target="_blank"
                 class="block">
                 Discord
               </a>
-              <a href="#"
+              <a href="https://www.instagram.com/seen.haus/"
                 target="_blank"
                 class="block">
                 Instagram
               </a>
-              <a href="#"
+              <a href="https://twitter.com/seen_haus"
                 target="_blank"
                 class="block">
                 Twitter

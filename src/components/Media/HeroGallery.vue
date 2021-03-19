@@ -15,7 +15,7 @@
               ref="mediaRef"
               :src="mediaResource.url"
               aspectRatio="100%"
-              :autoplay="true"
+              :autoplay="isNext"
               :muted="true"
               class="overflow-hidden rounded-lg flex-1 media-loader-active"
             />
