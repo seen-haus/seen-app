@@ -38,7 +38,7 @@
         >
         <price-display
           size="sm"
-          class="items-end ml-2"
+          class="items-end ml-2 mt-3"
           :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
           type="Ether"
           :price="price"
@@ -61,14 +61,7 @@
       />
 
       <template v-if="isAuction">
-        <div
-          class="text-sm mt-2 text-gray-400 font-semibold"
-          v-if="is_sold_out"
-        >
-          Sold Out
-        </div>
         <progress-timer
-          v-else
           ref="timerRef"
           class="text-black text-sm mt-2"
           :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
@@ -97,9 +90,7 @@
             {{
               isCollectableActive
                 ? `${items} out of ${itemsOf}`
-                : is_sold_out
-                ? "Sold Out"
-                : "Ended"
+                : "Sold Out"
             }}
           </div>
         </template>

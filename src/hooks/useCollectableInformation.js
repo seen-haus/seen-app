@@ -25,7 +25,10 @@ export default function useCollectableInformation(initialCollectable = {}) {
   const description = computed(() => collectable.value.description);
 
   const is_sold_out = computed(
-    () => collectableState.value === COLLECTABLE_STATE.OUT_OF_STOCK
+    () => {
+      if (isAuction.value) return false;
+      return collectableState.value === COLLECTABLE_STATE.OUT_OF_STOCK;
+    }
   );
   const isCollectableActive = computed(() => {
     return (
@@ -53,8 +56,11 @@ export default function useCollectableInformation(initialCollectable = {}) {
     if (collectableState.value === COLLECTABLE_STATE.DONE) return "ended";
     if (collectableState.value === COLLECTABLE_STATE.WAITING)
       return "coming soon";
-    if (collectableState.value === COLLECTABLE_STATE.OUT_OF_STOCK)
-      return "sold out";
+    if (collectableState.value === COLLECTABLE_STATE.OUT_OF_STOCK) {
+      if (!isAuction.value) {
+        return "sold out";
+      }
+    }
 
     return "live";
   });
@@ -72,12 +78,14 @@ export default function useCollectableInformation(initialCollectable = {}) {
   };
 
   const updateInformation = function (data) {
+    // events.value = data.events.sort((a, b) => b.updatedAt - a.updatedAt);
     events.value = data.events.reverse();
-    const lastestEvent = events.value[events.value.length - 1];
+    const lastestEvent = events.value[0];
 
     items.value = 0;
     itemsOf.value = data.available_qty || 0;
 
+    // AUCTION
     if (isAuction.value) {
       if (events.value.length === 0) {
         price.value = +(data.start_bid || 0).toFixed(2);
@@ -87,15 +95,11 @@ export default function useCollectableInformation(initialCollectable = {}) {
         priceUSD.value = +(lastestEvent.value_in_usd || 0).toFixed(2);
       }
     } else {
-      if (events.value.length === 0) {
-        price.value = +(data.price || 0).toFixed(2);
-        priceUSD.value = +(data.value_in_usd || 0).toFixed(2);
-      } else {
-        price.value = +(lastestEvent.value || 0).toFixed(2);
-        priceUSD.value = +(lastestEvent.value_in_usd || 0).toFixed(2);
-      }
+      price.value = +(data.price || 0).toFixed(2);
+      priceUSD.value = +(data.value_in_usd || 0).toFixed(2);
     }
 
+    // SALE
     if (!isAuction.value) {
       progress.value = itemsOf.value / items.value;
     }
@@ -116,9 +120,11 @@ export default function useCollectableInformation(initialCollectable = {}) {
       return;
     }
 
-    if (items.value >= itemsOf.value) {
-      collectableState.value = COLLECTABLE_STATE.OUT_OF_STOCK;
-      return;
+    if (!isAuction.value) {
+      if (items.value >= itemsOf.value) {
+        collectableState.value = COLLECTABLE_STATE.OUT_OF_STOCK;
+        return;
+      }
     }
 
     if (now >= start && now < end) {

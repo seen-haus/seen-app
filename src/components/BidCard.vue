@@ -23,7 +23,7 @@
         type="ETH"
         :price="price"
         :priceUSD="priceUSD"
-        :number-of-bids="numberOfBids"
+        :number-of-bids="isAuction ? numberOfBids : undefined"
       />
 
       <template v-if="isCollectableActive">
