@@ -22,12 +22,12 @@
         >Your collection</fenced-title
       >
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-5">
+        <!-- <product-card />
         <product-card />
         <product-card />
         <product-card />
         <product-card />
-        <product-card />
-        <product-card />
+        <product-card /> -->
       </div>
     </container>
   </div>
@@ -36,11 +36,11 @@
 <script>
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
-import ProductCard from "@/components/ProductCard.vue";
+// import ProductCard from "@/components/ProductCard.vue";
 
 export default {
   name: "Profile",
-  components: { FencedTitle, Container, ProductCard },
+  components: { FencedTitle, Container, /* ProductCard  */},
   methods: {
     cropWithExtension: function(text, maxCharacters) {
       const txtLength = text.length; // Length of the incoming text
