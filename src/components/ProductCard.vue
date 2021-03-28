@@ -12,6 +12,7 @@
         aspectRatio="100%"
         muted
         loop
+        :autoplay="autoplay"
         class="overflow-hidden rounded-t-3xl flex-1"
       />
 
@@ -22,7 +23,7 @@
         <live-indicator :status="liveStatus" class="text-white ml-auto dark" />
       </div>
     </div>
-    <div class="description relative p-6 flex flex-col flex-grow">
+    <div class="description relative p-6 pb-3 flex flex-col flex-grow">
       <user-badge
         type="light"
         :url="artist.avatar"
@@ -32,13 +33,13 @@
 
       <div class="title-and-price flex items-start">
         <span
-          class="text-2.5xl font-title font-bold flex-1"
+          class="text-xl md:text-2xl font-title font-bold flex-1"
           :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
           >{{ title }}</span
         >
         <price-display
           size="sm"
-          class="items-end ml-2 mt-3"
+          class="items-end ml-2 -mt-0.5 md:mt-0.5"
           :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
           type="Ether"
           :price="price"
@@ -127,6 +128,7 @@ export default {
     collectable: Object,
   },
   setup(props) {
+    const autoplay = true;
     // console.log('ProductCard', props.collectable);
     const mediaRef = ref(null);
     const timerRef = ref(null);
@@ -167,6 +169,8 @@ export default {
     };
 
     const handleHover = function (toState) {
+      if (autoplay) return; // On autoplay we dont handle hover
+      if (isCollectableActive.value) return; // Handle hover only on non-active cards to save memory
       if (toState) {
         if (mediaRef.value != null) mediaRef.value.playVideo();
       } else {
@@ -175,6 +179,7 @@ export default {
     };
 
     return {
+      autoplay,
       timerRef,
       mediaRef,
       collectableState,

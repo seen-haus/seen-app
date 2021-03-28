@@ -1,5 +1,5 @@
 <template>
-  <div class="live-indicator flex items-center font-medium text-xs rounded py-0.5 px-2">
+  <div class="live-indicator flex items-center font-medium text-10px rounded py-0.5 px-2">
     <div
       class="indicator-icon w-2.5 h-2.5 rounded-full mr-2"
       :class="{

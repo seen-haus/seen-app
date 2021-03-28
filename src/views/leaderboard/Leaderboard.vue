@@ -6,7 +6,7 @@
         color="fence-gray"
         textAlign="center"
         :closed="true"
-        >Leaderboard</fenced-title
+        >Top Collectors</fenced-title
       >
 
       <div class="description text-gray-600 mx-auto text-center py-4 text-lg">
@@ -14,7 +14,7 @@
         artworks they owned and how many bids they placed.
       </div>
     </container>
-    <div class="bg-background-gray border-t pb-28">
+    <div class="pb-28">
       <container class="py-6">
         <div
           class="leaderboard bg-white rounded-lg shadow-lifted overflow-hidden px-6 py-12 mx-auto -mt-28"
@@ -25,7 +25,7 @@
             >
               <div class="flex-1 lg:text-left">COLLECTOR</div>
               <div class="flex-shrink-0 lg:w-40">ARTWORKS OWNED</div>
-              <div class="flex-shrink-0 lg:w-40">NUMBER OF BIDS</div>
+              <!-- <div class="flex-shrink-0 lg:w-40">NUMBER OF BIDS</div> -->
               <div class="flex-shrink-0 lg:w-40">AMOUNT SPENT</div>
             </div>
 

@@ -47,7 +47,7 @@
         </collapsible-tile>
 
         <collapsible-tile class="mx-auto mb-6" title="How do I bid on an item?">
-          <p>Navigate to the live auctions page.</p>
+          <p>Navigate to the live drops page.</p>
           <p>
             Select an item that catches your eye and enter an amount higher than
             the previous bid.

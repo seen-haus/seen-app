@@ -50,6 +50,7 @@ module.exports = {
                 address: ['Courier', 'serif']
             },
             fontSize: {
+                '10px': '10px', // 10px 
                 '2xs': '0.8125rem', // 13px
                 '2.5xl': '1.6875rem', // 27px
                 '4xl': '2.25rem', // 36px
@@ -82,6 +83,8 @@ module.exports = {
                 'inset': 'inset 0 0 0 4px #ffffff',
             },
             padding: {
+                '2px': '2px',
+                '3px': '3px',
                 '1/2': '50%',
                 'full': '100%',
             }

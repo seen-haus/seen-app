@@ -6,7 +6,7 @@
       :class="{ 'fence-left': closed, ...colorClass }"
     ></div>
 
-    <div class="title-text text-center font-title flex-shrink lg:flex-shrink-0 font-bold">
+    <div class="title-text text-center font-title lg:flex-shrink-0 font-bold" :class="unshrinkable ? 'flex-shrink-0' : 'flex-shrink'">
       <slot> Title </slot>
     </div>
 
@@ -25,6 +25,7 @@ export default {
     textAlign: String, // left, center, right
     closed: Boolean, // Are fences closed at the ends
     color: String, // 
+    unshrinkable: Boolean
   },
   computed: {
     alignment: function () {
@@ -46,6 +47,13 @@ export default {
 
 
 <style lang="scss" scoped>
+.title-small {
+  .title-text {
+    max-width: 80%;
+    font-size: 36px;
+    margin-top: -6px;
+  }
+}
 .title-text {
   max-width: 80%;
   font-size: 46px;

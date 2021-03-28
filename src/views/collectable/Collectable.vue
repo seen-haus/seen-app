@@ -49,10 +49,10 @@
     <hero-gallery :mediaResources="media" />
 
     <container>
-      <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6">
+      <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32">
         <div class="left-side col-span-7 py-6">
           <fenced-title
-            class="text-black flex lg:hidden mt-6"
+            class="text-black flex lg:hidden mt-6 title-small"
             color="fence-dark"
             text-align="center"
             :closed="true"
@@ -60,7 +60,7 @@
           >
 
           <fenced-title
-            class="text-black hidden lg:flex"
+            class="text-black hidden lg:flex title-small"
             color="fence-dark"
             text-align="left"
             :closed="true"
@@ -108,7 +108,7 @@
           </div>
           <artist-card class="shadow-md" :artist="artist" />
 
-          <template v-if="showAdditionalInformation">
+          <!-- <template v-if="showAdditionalInformation">
             <div class="text-4xl font-title font-bold mt-14 mb-6">
               Additional Information
             </div>
@@ -146,7 +146,7 @@
                 after the auction ends.
               </div>
             </div>
-          </template>
+          </template> -->
         </div>
 
         <div class="right-side col-span-5">
@@ -168,7 +168,7 @@
           />
 
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
-            Recent Buyers
+            History
           </div>
           <list-of-buyers class="mb-12" :list="events" />
 

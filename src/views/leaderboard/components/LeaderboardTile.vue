@@ -15,6 +15,7 @@
         :wallet-address="user.wallet_address"
         class="rounded-full mr-6"
         :class="isInFirstThree ? 'my-6' : 'my-4'"
+        :style="{'min-width' : isInFirstThree ? '56px' : '40px'}"
       />
 
       <span>{{ name }}</span>
@@ -54,12 +55,12 @@
     </div>
     <div class="flex-shrink-0 w-20">{{ user.won || 0 }}</div>
 
-    <div class="flex-shrink-0 w-40 flex flex-col my-4 lg:my-0">
+    <!-- <div class="flex-shrink-0 w-40 flex flex-col my-4 lg:my-0">
       <div>{{ user.bids_count || 0 }}</div>
       <div class="text-sm text-gray-400 font-normal">
         ~{{ (user.total_amount || 0).toFixed(2) }} ETH
       </div>
-    </div>
+    </div> -->
 
     <div class="flex-shrink-0 w-40">{{ (user.amount_spent || 0).toFixed(2) }} ETH</div>
   </div>

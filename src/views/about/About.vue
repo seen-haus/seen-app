@@ -7,7 +7,7 @@
           color="fence-gray"
           textAlign="center"
           :closed="true"
-          >About seen.haus</fenced-title
+          >Seen Haus</fenced-title
         >
       </div>
 
@@ -48,12 +48,6 @@
         </div>
       </template>
     </container>
-
-    <div class="quotes bg-background-gray max-h-56">
-      <container class="flex justify-center">
-        <quote-carousel class="centered-quote" />
-      </container>
-    </div>
   </div>
 </template>
 

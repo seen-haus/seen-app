@@ -26,9 +26,9 @@
           :closed="false"
           >Featured Auctions</fenced-title
         >
-        <router-link to="auctions">
+        <router-link to="drops">
           <button class="button dark flex-shrink-0">
-            View All Auctions <i class="fas fa-arrow-right ml-3 icon-right"></i>
+            View All Drops <i class="fas fa-arrow-right ml-3 icon-right"></i>
           </button>
         </router-link>
       </div>
@@ -78,9 +78,9 @@
         <product-card /> -->
       </div>
 
-      <router-link to="auctions">
+      <router-link to="drops">
         <button class="button dark mt-20 mx-auto w-full md:w-96">
-          View All Auctions
+          View All Drops
         </button>
       </router-link>
     </container>

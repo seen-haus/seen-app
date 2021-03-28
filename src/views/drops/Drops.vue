@@ -6,8 +6,13 @@
           class="flex-grow mr-0 mb-2 self-stretch"
           color="fence-gray"
           textAlign="center"
+          unshrinkable
           :closed="true"
-          >Auctions
+          ><img
+            src="@/assets/icons/icon-fire.svg"
+            class="cursor-pointer mr-2 inline-flex icon-fire -mt-1.5"
+            alt="SEEN"
+          />Drops
         </fenced-title>
       </div>
 
@@ -99,11 +104,8 @@
       </fenced-title>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
-        <template
-          v-for="artist in listOfArtists"
-          :key="artist && artist.id"
-        >
-          <artist-card v-if="artist != null" :artist=artist />
+        <template v-for="artist in listOfArtists" :key="artist && artist.id">
+          <artist-card v-if="artist != null" :artist="artist" />
           <div
             v-else
             class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
@@ -113,7 +115,7 @@
       </div>
 
       <router-link to="artists">
-        <button class="button dark mt-20 mx-auto w-full md:w-96" >
+        <button class="button dark mt-20 mx-auto w-full md:w-96">
           View All Artists
         </button>
       </router-link>
@@ -134,11 +136,11 @@ import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
-import useCollectablesWithPagination from "@/hooks/useCollectablesWithPagination.js";
+import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
 import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
 
 export default {
-  name: "Auctions",
+  name: "Drops",
   components: {
     Container,
     FencedTitle,
@@ -158,9 +160,7 @@ export default {
     const filterNft = computed(() => state.filterNft);
     const filterTangibleNft = computed(() => state.filterTangibleNft);
 
-    const paginatedCollectables = useCollectablesWithPagination(
-      PURCHASE_TYPE.AUCTION
-    );
+    const paginatedCollectables = useDropsWithPagination(PURCHASE_TYPE.AUCTION);
     const listOfCollectables = computed(
       () => paginatedCollectables.listOfCollectables.value
     );

@@ -3,7 +3,7 @@
     <container>
       <div class="newsletter rounded-lg py-4 bg-newsletter px-8 lg:flex align-center">
         <div class="w-full lg:w-1/2 py-4 inline-flex flex-col justify-center">
-          <p class="text-2xl mb-1">Be the first to to hear about upcoming drops!</p>
+          <p class="text-xl mb-1">Be the first to to hear about upcoming drops!</p>
           <p class="color-white opacity-50 text-md">Join our newsletter TODAY!</p>
         </div>
         <div class="w-full lg:w-1/2 py-4 md:inline-flex">
@@ -24,17 +24,14 @@
           <div>
             <p class="text-grey-9 font-bold text-xl mb-6">Offerings</p>
             <div class="font-bold text-md leading-loose">
-              <router-link :to="{ name: 'auctions'}" class="block">
-                <span class="font-bold">Auctions</span>
-              </router-link>
-              <router-link :to="{ name: 'editions'}" class="block">
-                <span class="font-bold">Editions</span>
+              <router-link :to="{ name: 'drops'}" class="block">
+                <span class="font-bold">Drops</span>
               </router-link>
               <router-link :to="{ name: 'artists'}" class="block">
                 <span class="font-bold">Artists</span>
               </router-link>
-              <router-link :to="{ name: 'leaderboard'}" class="block">
-                <span class="font-bold">Leaderboard</span>
+              <router-link :to="{ name: 'collectors'}" class="block">
+                <span class="font-bold">Top Collectors</span>
               </router-link>
             </div>
           </div>

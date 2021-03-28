@@ -41,7 +41,7 @@ export default {
   computed: {
     numberSize: function () {
       if (this.size === "xs") return "text-xl";
-      if (this.size === "sm") return "text-2.5xl";
+      if (this.size === "sm") return "text-2xl";
       if (this.size === "md") return "text-3xl";
       if (this.size === "lg") return "text-4xl";
 

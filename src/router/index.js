@@ -18,9 +18,9 @@ const routes = [
         component: () => import(/* webpackChunkName: "faq" */ '../views/faq/Faq.vue')
     },
     {
-        path: '/auctions',
-        name: 'auctions',
-        component: () => import(/* webpackChunkName: "auctions" */ '../views/auctions/Auctions.vue')
+        path: '/drops',
+        name: 'drops',
+        component: () => import(/* webpackChunkName: "drops" */ '../views/drops/Drops.vue')
     },
     {
         path: '/auctions/:contractAddress',
@@ -33,19 +33,14 @@ const routes = [
         component: () => import(/* webpackChunkName: "artists" */ '../views/artists/Artists.vue')
     },
     {
-        path: '/editions',
-        name: 'editions',
-        component: () => import(/* webpackChunkName: "editions" */ '../views/editions/Editions.vue')
-    },
-    {
         path: '/editions/:contractAddress',
         name: 'collectableEdition',
         component: () => import(/* webpackChunkName: "collectableEdition" */ '../views/collectable/Collectable.vue')
     },
     {
-        path: '/leaderboard',
-        name: 'leaderboard',
-        component: () => import(/* webpackChunkName: "leaderboard" */ '../views/leaderboard/Leaderboard.vue')
+        path: '/collectors',
+        name: 'collectors',
+        component: () => import(/* webpackChunkName: "collectors" */ '../views/leaderboard/Leaderboard.vue')
     },
     {
         path: '/profile',
