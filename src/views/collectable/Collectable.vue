@@ -151,6 +151,7 @@
 
         <div class="right-side col-span-5">
           <bid-card
+            :collectable="collectable"
             :startsAt="startsAt"
             :endsAt="endsAt"
             :isAuction="isAuction"
@@ -178,13 +179,6 @@
                 class="fas fa-play-circle mr-2 text-xl icon-left text-white"
               ></i>
               Learn How To Buy
-            </button>
-
-            <button class="button dark mt-4 w-full" @click="openWinnerModal">
-              <i
-                class="fas fa-play-circle mr-2 text-xl icon-left text-white"
-              ></i>
-              Claim your winnings
             </button>
 
             <div class="text-sm text-gray-400 text-center mt-2">
@@ -239,7 +233,6 @@ import HeroGallery from "@/components/Media/HeroGallery.vue";
 import { CollectablesService } from "@/services/apiService";
 
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
-import emitter from "@/services/utils/emitter"
 
 export default {
   name: "Collectable",
@@ -298,10 +291,6 @@ export default {
       // updateCollectableState,
     } = useCollectableInformation();
 
-    const openWinnerModal = () => {
-      emitter.emit('openWinnerModal', collectable.value);
-    }
-
     const isLoading = computed(() => state.loading);
 
     const showAdditionalInformation = computed(
@@ -326,7 +315,7 @@ export default {
 
     return {
       isLoading,
-
+      collectable,
       collectableState,
       price,
       priceUSD,
@@ -356,7 +345,6 @@ export default {
       // Methods
       updateProgress,
       showAdditionalInformation,
-      openWinnerModal,
     };
   },
 };

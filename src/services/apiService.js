@@ -66,6 +66,9 @@ export const CollectablesService = {
     show(contractAddress) {
         return ApiService.get(`collectables/${contractAddress}`);
     },
+    winner(contractAddress, payload) {
+        return ApiService.get(`collectables/${contractAddress}/winner`, payload);
+    }
 };
 
 export const SpotlightService = {

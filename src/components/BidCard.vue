@@ -58,6 +58,10 @@
         <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
           AUCTION ENDED
         </div>
+        <button class="button dark mt-4 w-full" @click="openWinnerModal" v-if="isWinnerButtonShown">
+          <i class="fas fa-play-circle mr-2 text-xl icon-left text-white"></i>
+          Claim your winnings
+        </button>
       </template>
 
       <template v-else-if="isAuction">
@@ -127,7 +131,9 @@
 
 
 <script>
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import emitter from "@/services/utils/emitter"
+import useWeb3 from "@/connectors/hooks"
 
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
@@ -156,11 +162,16 @@ export default {
     isCollectableActive: Boolean,
     isUpcomming: Boolean,
     is_sold_out: Boolean,
+    collectable: Object,
   },
   setup(props) {
     // const state = reactive({
     //   progress: 0.35,
     // });
+    const {account} = useWeb3();
+    const collectableData = ref(props.collectable);
+    // TODO: uncomment when testing const isWinnerButtonShown = computed(() => account.value === collectableData.value.winner);
+    const isWinnerButtonShown = computed(() => true);
     const timerRef = ref(null);
     const currentProgress = ref(props.progress);
 
@@ -192,6 +203,10 @@ export default {
 
     const { ethereum, convertEthToUSDAndFormat } = useExchangeRate();
 
+    const openWinnerModal = () => {
+      emitter.emit('openWinnerModal', collectableData.value);
+    }
+
     return {
       // startsAt,
       // endsAt,
@@ -207,6 +222,8 @@ export default {
       updateProgress,
       ethereum,
       convertEthToUSDAndFormat,
+      openWinnerModal,
+      isWinnerButtonShown,
     };
   },
 };
