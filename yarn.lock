@@ -11146,6 +11146,11 @@ pretty-hrtime@^1.0.3:
   resolved "https://registry.yarnpkg.com/pretty-hrtime/-/pretty-hrtime-1.0.3.tgz#b7e3ea42435a4c9b2759d99e0f201eb195802ee1"
   integrity sha1-t+PqQkNaTJsnWdmeDyAesZWALuE=
 
+primevue@^3.3.5:
+  version "3.3.5"
+  resolved "https://registry.yarnpkg.com/primevue/-/primevue-3.3.5.tgz#3bf9e4e90632604acc7568848af2b1386938128e"
+  integrity sha512-RWR3vYfy64gLvm3DdhFsevI/TPEU6vCvBui19N3//VN3xyYusQe5ikSE7uJaXD4DMfwMkx50MpL1oXXiIE6+Zg==
+
 printj@~1.1.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/printj/-/printj-1.1.2.tgz#d90deb2975a8b9f600fb3a1c94e3f4c53c78a222"
