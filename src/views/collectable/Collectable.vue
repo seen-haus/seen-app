@@ -180,6 +180,13 @@
               Learn How To Buy
             </button>
 
+            <button class="button dark mt-4 w-full" @click="openWinnerModal">
+              <i
+                class="fas fa-play-circle mr-2 text-xl icon-left text-white"
+              ></i>
+              Claim your winnings
+            </button>
+
             <div class="text-sm text-gray-400 text-center mt-2">
               Explanation video will appear in a pop-up
             </div>
@@ -232,6 +239,7 @@ import HeroGallery from "@/components/Media/HeroGallery.vue";
 import { CollectablesService } from "@/services/apiService";
 
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
+import emitter from "@/services/utils/emitter"
 
 export default {
   name: "Collectable",
@@ -256,6 +264,7 @@ export default {
     });
 
     const {
+      collectable,
       collectableState,
       price,
       priceUSD,
@@ -288,6 +297,10 @@ export default {
       // updateInformation,
       // updateCollectableState,
     } = useCollectableInformation();
+
+    const openWinnerModal = () => {
+      emitter.emit('openWinnerModal', collectable.value);
+    }
 
     const isLoading = computed(() => state.loading);
 
@@ -343,6 +356,7 @@ export default {
       // Methods
       updateProgress,
       showAdditionalInformation,
+      openWinnerModal,
     };
   },
 };

@@ -158,6 +158,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
   return {
     collectableState,
+    collectable,
     price,
     priceUSD,
     items,
