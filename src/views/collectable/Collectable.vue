@@ -46,7 +46,7 @@
       </div>
     </container>
 
-    <hero-gallery :mediaResources="media" />
+    <hero-gallery :mediaResources="gallerySortedMedia" />
 
     <container>
       <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32">
@@ -151,6 +151,7 @@
 
         <div class="right-side col-span-5">
           <bid-card
+            :collectable="collectable"
             :startsAt="startsAt"
             :endsAt="endsAt"
             :isAuction="isAuction"
@@ -256,6 +257,7 @@ export default {
     });
 
     const {
+      collectable,
       collectableState,
       price,
       priceUSD,
@@ -268,6 +270,7 @@ export default {
       type,
       media,
       // firstMedia,
+      gallerySortedMedia,
       artist,
       title,
       description,
@@ -312,7 +315,7 @@ export default {
 
     return {
       isLoading,
-
+      collectable,
       collectableState,
       price,
       priceUSD,
@@ -324,6 +327,7 @@ export default {
       // Static
       type,
       media,
+      gallerySortedMedia,
       // firstMedia,
       artist,
       title,

@@ -35,7 +35,7 @@ import ArtistCard from "@/components/ArtistCard.vue";
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
-import { computed, reactive } from "vue";
+import { computed } from "vue";
 
 export default {
   name: "Artists",
