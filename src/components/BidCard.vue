@@ -170,8 +170,7 @@ export default {
     // });
     const {account} = useWeb3();
     const collectableData = ref(props.collectable);
-    // TODO: uncomment when testing const isWinnerButtonShown = computed(() => account.value === collectableData.value.winner);
-    const isWinnerButtonShown = computed(() => true);
+    const isWinnerButtonShown = computed(() => account.value.toLowerCase() === collectableData.value.winner_address.toLowerCase());
     const timerRef = ref(null);
     const currentProgress = ref(props.progress);
 

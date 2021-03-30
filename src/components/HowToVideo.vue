@@ -16,19 +16,9 @@
 import MediaLoader from "@/components/Media/MediaLoader.vue";
 
 export default {
-  name: "HowToVideo",
+  name: "InstructionalVideo",
   components: {
     MediaLoader,
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.video-overlay {
-  cursor: pointer;
-
-  &:hover .play-button {
-    transform: scale(1.2);
-  }
-}
-</style>

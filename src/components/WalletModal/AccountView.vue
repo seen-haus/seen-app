@@ -8,16 +8,6 @@
       </div>
       <button class="text-sm mb-8"><i class="fas fa-pencil-alt"></i> Change Avatar</button>
     </div>
-    <div class="mb-4">
-      <div class="text-xs font-bold mb-3">YOUR NAME</div>
-      <div class="flex justify-between">
-        <div class="outlined-input flex justify-between h-15 flex-grow mr-3">
-          <input type="text" placeholder="John Doe" class="text-sm"/>
-        </div>
-        <button class="button dark account-button w-45">Change Name</button>
-      </div>
-      <div class="my-8 h-0.5 bg-background-gray"></div>
-    </div>
     <div class="flex justify-between items-center mb-4">
       <div>
         <div class="text-xs font-bold mb-3 uppercase">Connected with {{ name }}</div>
@@ -35,6 +25,38 @@
     </div>
     <div class="text-sm bg-background-gray rounded-lg mt-6 mb-8 transactions-box">
       <p class="text-grey-9 p-5 text-center">Your transactions will appear here...</p>
+    </div>
+    <div>
+      <form @submit="onSubmit" class="font-semibold uppercase text-sm text-black">
+      <div class="grid grid-cols-1">
+        <div class="fc mb-4 input-width">
+          <label for="winner-name">YOUR NAME</label>
+          <input type="text" id="winner-name" class="w-full outlined-input mt-2" autocomplete="full-name" v-model="nameField.value" placeholder="" />
+          <span>{{ nameField.errors[0] }}</span>
+        </div>
+        <div class="fc mb-4 input-width">
+          <label for="winner-twitter">YOUR TWITTER</label>
+          <input type="text" id="winner-twitter" class="w-full outlined-input mt-2" autocomplete="new-password" v-model="twitterField.value" placeholder="" />
+          <span>{{ twitterField.errors[0] }}</span>
+        </div>
+        <div class="fc mb-4 input-width">
+          <label for="winner-website">YOUR WEBSITE</label>
+          <input type="text" id="winner-website" class="w-full outlined-input mt-2" autocomplete="new-password" v-model="websiteField.value" placeholder="" />
+          <span>{{ websiteField.errors[0] }}</span>
+        </div>
+        <div class="fc mb-4">
+          <label for="winner-description">YOUR SHORT DESCRIPTION</label>
+          <textarea type="phone" id="winner-description" class="w-full outlined-input mt-2" autocomplete="description" v-model="descriptionField.value" placeholder="" />
+          <span>{{ descriptionField.errors[0] }}</span>
+        </div>
+      </div>
+        
+      <div class="flex items-center justify-center mb-4 mt-8">
+        <button type="submit" class="cursor-pointer primary button mt-3 md:mt-0 w-full">
+          Save Changes
+        </button>
+      </div>
+    </form>
     </div>
     <div class="newsletter bg-black py-4 px-8 text-white align-center -mx-8 rounded-b-lg">
       <div class="w-full py-4 inline-flex flex-col justify-center text-center">
@@ -59,20 +81,49 @@ import Identicon from "@/components/Identicon/Identicon";
 import {shortenAddress, getEtherscanLink} from "@/services/utils/index";
 import CopyHelper from "@/components/CopyHelper/CopyHelper";
 
+
+import {reactive} from 'vue';
+import { useField, useForm } from "vee-validate";
+import { UserService } from "@/services/apiService"
+
 export default {
   name: "AccountView",
   components: {CopyHelper, Identicon},
   setup(props, {emit}) {
-    const {chainId, account, connector} = useWeb3()
+    const {chainId, account, connector} = useWeb3();
+    const user = {value: {}};
 
-    const {ethereum} = window
+    const {ethereum} = window;
     const isMetaMask = !!(ethereum && ethereum.isMetaMask)
     const name = Object.keys(SUPPORTED_WALLETS)
         .filter(
             k =>
                 SUPPORTED_WALLETS[k].connector === connector && (isMetaMask === (k === 'METAMASK'))
         )
-        .map(k => SUPPORTED_WALLETS[k].name)[0]
+        .map(k => SUPPORTED_WALLETS[k].name)[0];
+    const form = useForm({
+      initialValues: {
+        name: "",
+        twitter: "",
+        website: "",
+        description: "",
+      },
+    });
+
+    const nameField = reactive(useField("name", ""));
+    const twitterField = reactive(useField("twitter", ""));
+    const websiteField = reactive(useField("website", ""));
+    const descriptionField = reactive(useField("description", ""));
+    
+    const onSubmit = form.handleSubmit((values) => {
+      UserService.create({...values, wallet: user.value.wallet})
+        .then(res => {
+          console.log(res);
+        })
+        .catch(e => {
+          console.log(e);
+      })
+    });
     const openOptions = () => {
       emit('changeView', 'options');
     }
@@ -82,7 +133,12 @@ export default {
       chainId,
       openOptions,
       shortenAddress,
-      getEtherscanLink
+      getEtherscanLink,
+      nameField,
+      twitterField,
+      websiteField,
+      descriptionField,
+      onSubmit
     }
   }
 }
@@ -96,5 +152,9 @@ export default {
 }
 .transactions-box {
   border: solid 1px #e6e6e6;
+}
+.input-width {
+  width: 65%;
+  min-width:300px;
 }
 </style>

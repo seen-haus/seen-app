@@ -8,7 +8,7 @@
 
     <div>
       <div
-        class="quoted-text font-title text-2.5xl p-6 max-w-screen-sm italic sha"
+        class="font-title text-2.5xl p-6 max-w-screen-sm italic sha"
       >
         The quality and attention to detail of my hoodie is crazy good. Love it!
       </div>

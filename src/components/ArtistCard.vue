@@ -29,9 +29,7 @@
       <div class="h-0.5 my-4 w-full rounded-full bg-gray-200"></div>
 
       <div class="flex flex-wrap justify-start items-center text-xs text-gray-400">
-        <a class="mr-8 cursor-pointer" :href="twitter.url" target="_blank" v-for="social in artist.socials" :key="social.url">
-          <i :class="'mr-2 text-sm ' + getSocialIcon(social)"></i>{{ getSocialText(social) }}
-        </a>
+        <social-line :social="social" v-for="social in artist.socials" :key="social.url" />
       </div>
     </div>
   </div>
@@ -39,6 +37,7 @@
 
 <script>
 import Tag from "@/components/PillsAndTags/Tag.vue";
+import SocialLine from "@/components/PillsAndTags/SocialLine.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
 
 export default {
@@ -46,32 +45,10 @@ export default {
   components: {
     Tag,
     MediaLoader,
+    SocialLine,
   },
   props: {
     artist: Object,
-  },
-  methods: {
-    getSocialIcon(social) {
-      const type = social.type;
-      if (type === 'twitter') {
-        return 'fab fa-twitter'
-      } else if (type === 'instagram') {
-        return 'fab fa-instagram'
-      } else {
-        return 'fas fa-link';
-      }
-    },
-    getSocialText(social) {
-      return social.handle || social.url;
-    }
-  },
-  computed: {
-    twitter: function () {
-      return this.artist.socials[0];
-    },
-    instagram: function () {
-      return this.artist.socials[1];
-    },
   },
 };
 </script>

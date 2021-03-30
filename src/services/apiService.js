@@ -67,7 +67,7 @@ export const CollectablesService = {
         return ApiService.get(`collectables/${contractAddress}`);
     },
     winner(contractAddress, payload) {
-        return ApiService.get(`collectables/${contractAddress}/winner`, payload);
+        return ApiService.post(`collectables/${contractAddress}/winner`, payload);
     }
 };
 

@@ -1,7 +1,7 @@
 <template>
   <span @click="handleClick">
-      <span class="cursor-pointer" v-if="isCopied"> <i class="fas fa-check"></i> Copied</span>
-      <span class="cursor-pointer" v-else> <i class="fas fa-copy"></i> {{ text ? text : toCopy }}</span>
+      <span class="cursor-pointer" v-if="isCopied"> <i class="fas fa-check" v-if="!isIconSuffix"></i> Copied <i class="fas fa-check" v-if="isIconSuffix"></i></span>
+      <span class="cursor-pointer" v-else> <i class="fas fa-copy" v-if="!isIconSuffix"></i> {{ text ? text : toCopy }} <i class="fas fa-copy" v-if="isIconSuffix"></i></span>
   </span>
 </template>
 
@@ -17,6 +17,10 @@ export default {
     text: {
       type: [String, null],
       default: null,
+    },
+    isIconSuffix: {
+      type: Boolean,
+      default: false,
     }
   },
   setup(props) {

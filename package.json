@@ -23,6 +23,7 @@
     "lodash": "^4.17.21",
     "mitt": "^2.1.0",
     "node-sass": "^5.0.0",
+    "primeicons": "^4.1.0",
     "primevue": "^3.3.5",
     "sass-loader": "10.1.1",
     "slideout": "^1.0.1",

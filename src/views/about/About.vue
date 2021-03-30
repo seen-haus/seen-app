@@ -16,7 +16,16 @@
         non-fungible token (NFT) and tangible product auctions.
       </div>
 
-      <how-to-video class="my-12 mb-32"></how-to-video>
+      <div class="video-container overflow-hidden justify-center my-12 mb-32">
+        <div class="relative mx-auto max-w-full lg:max-w-screen-md">
+          <media-loader
+            src="https://www.youtube.com/embed/I6BcTbTDWHc?controls=0&modestbranding"
+            aspectRatio="56.25%"
+            controls
+            class="overflow-hidden rounded-3xl"
+          />
+        </div>
+      </div>
 
       <template v-for="(item, index) in 3" :key="item">
         <div
@@ -54,16 +63,14 @@
 <script>
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
-import HowToVideo from "@/components/HowToVideo.vue";
-import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
+import MediaLoader from "@/components/Media/MediaLoader.vue";
 
 export default {
   name: "About",
   components: {
     Container,
     FencedTitle,
-    HowToVideo,
-    QuoteCarousel,
+    MediaLoader,
   },
 };
 </script>
