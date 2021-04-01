@@ -6,6 +6,11 @@
 @import 'swiper/components/scrollbar/scrollbar.scss';
 /*! purgecss end ignore */
 
+.swiper-container {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  width: 100% !important;
+}
 .swiper-pagination-bullet {
   width: 12px !important;
   height: 12px !important;

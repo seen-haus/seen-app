@@ -2,17 +2,18 @@
   <div class="-mb-8 pt-9 relative">
     <div class="flex justify-center text-grey-9">
       <div class="avatar absolute">
-        <div class="bg-background-gray rounded-full w-full h-full flex justify-center items-center">
-          <img src="@/assets/icons/avatar.svg" class="h-16 cursor-pointer" alt="SEEN">
+        <div class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5">
+          <identicon :size="100"/>
+          <!-- <img src="@/assets/icons/avatar.svg" class="h-16 cursor-pointer" alt="SEEN"> -->
         </div>
       </div>
-      <button class="text-sm mb-8"><i class="fas fa-pencil-alt"></i> Change Avatar</button>
+      <!-- <button class="text-sm mb-8"><i class="fas fa-pencil-alt"></i> Change Avatar</button> -->
     </div>
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex justify-between items-center mb-4 my-8">
       <div>
         <div class="text-xs font-bold mb-3 uppercase">Connected with {{ name }}</div>
         <div class="flex">
-          <span class="mr-2"><identicon/></span> <span class="text-lg">{{ account && shortenAddress(account) }}</span>
+          <span class="mr-2 pt-1"><identicon/></span> <span class="text-lg">{{ account && shortenAddress(account) }}</span>
         </div>
       </div>
       <div>
@@ -23,8 +24,8 @@
       <copy-helper :to-copy="account" text="Copy Address" class="cursor-pointer mr-4 text-grey-9"/>
       <a :href="getEtherscanLink(chainId, account, 'address')" class="text-grey-9" target="_blank"><i class="fas fa-external-link-alt"></i> View on Etherscan</a>
     </div>
-    <div class="text-sm bg-background-gray rounded-lg mt-6 mb-8 transactions-box">
-      <p class="text-grey-9 p-5 text-center">Your transactions will appear here...</p>
+    <div class="text-sm bg-background-gray rounded-lg my-8 transactions-box">
+      <!-- <p class="text-grey-9 p-5 text-center">Your transactions will appear here...</p> -->
     </div>
     <div>
       <form @submit="onSubmit" class="font-semibold uppercase text-sm text-black">
@@ -51,7 +52,7 @@
         </div>
       </div>
         
-      <div class="flex items-center justify-center mb-4 mt-8">
+      <div class="flex items-center justify-center mt-3 mb-10">
         <button type="submit" class="cursor-pointer primary button mt-3 md:mt-0 w-full">
           Save Changes
         </button>

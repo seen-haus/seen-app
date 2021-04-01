@@ -5,8 +5,8 @@
     </div>
     <container class="relative">
       <div class="avatar">
-        <div class="bg-background-gray rounded-full w-full h-full flex justify-center items-center">
-          <img src="@/assets/icons/avatar.svg" class="h-16 cursor-pointer" alt="SEEN">
+        <div class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5">
+          <identicon :size="100"/>
         </div>
       </div>
       <div class="mt-4 flex justify-between flex-wrap items-center">
@@ -34,7 +34,7 @@
         :closed="true"
         >Your collection</fenced-title
       >
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 my-8">
         <!-- <product-card />
         <product-card />
         <product-card />
@@ -53,12 +53,13 @@ import { UserService } from "@/services/apiService"
 import CopyHelper from "@/components/CopyHelper/CopyHelper";
 import EditProfile from '@/components/EditProfile.vue';
 import SocialLine from "@/components/PillsAndTags/SocialLine.vue";
+import Identicon from "@/components/Identicon/Identicon";
 
 // import ProductCard from "@/components/ProductCard.vue";
 
 export default {
   name: "Profile",
-  components: { FencedTitle, Container, CopyHelper, EditProfile, SocialLine, /* ProductCard  */},
+  components: { FencedTitle, Container, CopyHelper, EditProfile, SocialLine, Identicon, /* ProductCard  */},
   methods: {
     cropWithExtension: function(text, maxCharacters) {
       const txtLength = text.length; // Length of the incoming text
