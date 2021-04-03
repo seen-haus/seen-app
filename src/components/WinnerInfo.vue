@@ -88,7 +88,6 @@ export default {
     const collectableData = ref({});
     const tokenContract = ref(null);
     const { account, provider } = useWeb3();
-    const signer = useSigner();
 
     emitter.on('openWinnerModal', payload => {
       collectableData.value = payload;
@@ -130,12 +129,12 @@ export default {
     const onSubmit = form.handleSubmit(async (values) => {
       //this.submitting = true
       const msg = `I would like to save my shipping information for wallet address ${account.value.toLowerCase()}.`;
-      if (signer.value) {
-        debugger; // eslint-disable-line
-        const sig = await signer.value
+      const signer = useSigner();
+
+      if (signer) {
+        const sig = await signer
           .signMessage(msg)
           .catch((e) => {
-            console.log(e)
             let msg = 'Error has occurred. Try again later.';
             if (e.code === 4001) {
                 msg = 'Request was rejected.';
