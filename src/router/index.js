@@ -18,6 +18,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "faq" */ '../views/faq/Faq.vue')
     },
     {
+        path: '/drops/:contractAddress',
+        name: 'collectableDrops',
+        component: () => import(/* webpackChunkName: "collectableDrops" */ '../views/collectable/Collectable.vue')
+    },
+    {
         path: '/drops',
         name: 'drops',
         component: () => import(/* webpackChunkName: "drops" */ '../views/drops/Drops.vue')
@@ -25,6 +30,7 @@ const routes = [
     {
         path: '/auctions/:contractAddress',
         name: 'collectableAuction',
+        redirect: to => `/drops/${to.params.contractAddress}`,
         component: () => import(/* webpackChunkName: "collectableAuction" */ '../views/collectable/Collectable.vue')
     },
     {
@@ -35,6 +41,7 @@ const routes = [
     {
         path: '/editions/:contractAddress',
         name: 'collectableEdition',
+        redirect: to => `/drops/${to.params.contractAddress}`,
         component: () => import(/* webpackChunkName: "collectableEdition" */ '../views/collectable/Collectable.vue')
     },
     {

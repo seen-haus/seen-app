@@ -170,7 +170,14 @@ export default {
     // });
     const {account} = useWeb3();
     const collectableData = ref(props.collectable);
-    const isWinnerButtonShown = computed(() => account.value.toLowerCase() === collectableData.value.winner_address.toLowerCase());
+    const winner = computed(() => collectableData.value.winner_address);
+    const isWinnerButtonShown = computed(() => {
+      if (typeof account.value === "string" && typeof winner.value === "string") {
+        return account.value.toLowerCase() === winner.value.toLowerCase();
+      } else {
+        return false;
+      }
+    });
     const timerRef = ref(null);
     const currentProgress = ref(props.progress);
 

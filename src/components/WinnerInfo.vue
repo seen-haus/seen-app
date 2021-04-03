@@ -46,8 +46,8 @@
       <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
         <div class="fc mb-4">
           <label for="winner-state">State / Province</label>
-          <input type="text" id="winner-state" class="w-full outlined-input mt-2" autocomplete="address-level1" v-model="stateField.value" placeholder="Your state / province" />
-          <span>{{ stateField.errors[0] }}</span>
+          <input type="text" id="winner-state" class="w-full outlined-input mt-2" autocomplete="address-level1" v-model="provinceField.value" placeholder="Your state / province" />
+          <span>{{ provinceField.errors[0] }}</span>
         </div>
         <div class="fc mb-4">
           <label for="winner-zip">ZIP</label>
@@ -60,7 +60,7 @@
         <input type="text" id="winner-country" class="w-full outlined-input mt-2" autocomplete="country-name" v-model="countryField.value" placeholder="Your country" />
         <span>{{ countryField.errors[0] }}</span>
       </div>
-        
+
       <div class="flex items-center justify-center mb-4 mt-8">
         <button type="submit" class="cursor-pointer primary button mt-3 md:mt-0">
           Submit
@@ -72,10 +72,13 @@
 
 <script>
 import Dialog from 'primevue/dialog';
-import {ref, reactive} from 'vue';
+import {ref, reactive, watchEffect} from 'vue';
 import emitter from "@/services/utils/emitter"
 import { useField, useForm } from "vee-validate";
 import { CollectablesService } from "@/services/apiService";
+import { useTokenContract } from "@/hooks/useContract";
+import useSigner from "@/hooks/useSigner";
+import useWeb3 from "@/connectors/hooks"
 
 export default {
   name: "WinnerInfo",
@@ -83,10 +86,21 @@ export default {
   setup() {
     const displayModal = ref(false);
     const collectableData = ref({});
+    const tokenContract = ref(null);
+    const { account, provider } = useWeb3();
+    const signer = useSigner();
+
     emitter.on('openWinnerModal', payload => {
       collectableData.value = payload;
       displayModal.value = true;
     });
+
+    watchEffect(() => {
+      if (collectableData.value && collectableData.value.contract_address) {
+        tokenContract.value = useTokenContract(collectableData.value.contract_address);
+      }
+    })
+
     const form = useForm({
       initialValues: {
         email: "",
@@ -96,7 +110,7 @@ export default {
         telegram_username: "",
         address: "",
         city: "",
-        state: "",
+        province: "",
         zip: "",
         country: "",
       },
@@ -109,15 +123,33 @@ export default {
     const telegramUsernameField = reactive(useField("telegram_username"));
     const addressField = reactive(useField("address", "required|min:3"));
     const cityField = reactive(useField("city", "required|min:2"));
-    const stateField = reactive(useField("state"));
+    const provinceField = reactive(useField("province"));
     const zipField = reactive(useField("zip", "required"));
     const countryField = reactive(useField("country", "required|min:4"));
-    
-    const onSubmit = form.handleSubmit((values) => {
-      debugger; // eslint-disable-line
-      CollectablesService.winner(collectableData.value.contract_address, values)
-        .then((res) => console.log(res))
-        .catch(() => console.log('Something went wrong!'));
+
+    const onSubmit = form.handleSubmit(async (values) => {
+      //this.submitting = true
+      const msg = `I would like to save my shipping information for wallet address ${account.value.toLowerCase()}.`;
+      if (signer.value) {
+        debugger; // eslint-disable-line
+        const sig = await signer.value
+          .signMessage(msg)
+          .catch((e) => {
+            console.log(e)
+            let msg = 'Error has occurred. Try again later.';
+            if (e.code === 4001) {
+                msg = 'Request was rejected.';
+            }
+            // ToastifyService.fail(msg);
+            //this.submitting = false;
+            return e;
+        });
+        CollectablesService.winner(collectableData.value.contract_address, {...values, sig, wallet_address: account.value})
+          .then((res) => console.log(res))
+          .catch(() => console.log('Something went wrong!'));
+      } else {
+        // toastr to login
+      }
     });
 
     return {
@@ -131,7 +163,7 @@ export default {
       telegramUsernameField,
       addressField,
       cityField,
-      stateField,
+      provinceField,
       zipField,
       countryField,
     };
