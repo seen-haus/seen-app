@@ -29,6 +29,7 @@
             type="light"
             :url="artist.avatar"
             :username="artist.name"
+            :artistId="artist.id"
           />
           <div class="tags flex mx-9">
             <tag

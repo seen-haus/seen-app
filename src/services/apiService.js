@@ -68,7 +68,7 @@ export const CollectablesService = {
     },
     winner(contractAddress, payload) {
         return ApiService.post(`collectables/${contractAddress}/winner`, payload);
-    }
+    },
 };
 
 export const SpotlightService = {
@@ -82,6 +82,9 @@ export const ArtistService = {
         // serializeđ
         return ApiService.query('artists', pagination);
     },
+    show(id) {
+        return ApiService.get(`artists/${id}`);
+    }
 };
 
 export const ExchangeRateService = {
@@ -92,3 +95,9 @@ export const ExchangeRateService = {
     }
 };
 
+export const OpenSeaAPIService = {
+    getProfileEntries(owner) {
+        const url = `https://api.opensea.io/api/v1/assets?owner=${owner}&collection=seen-haus`;
+        return $axios.get(url);
+    }
+}

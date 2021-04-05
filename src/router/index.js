@@ -34,6 +34,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "collectableAuction" */ '../views/collectable/Collectable.vue')
     },
     {
+        path: '/artists/:artistId',
+        name: 'artistProfile',
+        component: () => import(/* webpackChunkName: "artistProfile" */ '../views/profile/ArtistProfile.vue')
+    },
+    {
         path: '/artists',
         name: 'artists',
         component: () => import(/* webpackChunkName: "artists" */ '../views/artists/Artists.vue')
@@ -48,6 +53,11 @@ const routes = [
         path: '/collectors',
         name: 'collectors',
         component: () => import(/* webpackChunkName: "collectors" */ '../views/leaderboard/Leaderboard.vue')
+    },
+    {
+        path: '/profile/:userAddress',
+        name: 'profileWithAddress',
+        component: () => import(/* webpackChunkName: "profile" */ '../views/profile/Profile.vue')
     },
     {
         path: '/profile',

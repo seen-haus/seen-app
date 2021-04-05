@@ -1,47 +1,53 @@
 <template>
   <div class="profile">
-    <div class="profile-background" :style="{backgroundImage: `url(${user.picture})`}">
-    
-    </div>
+    <div class="profile-background" :style="{backgroundImage: `url(${user.picture})`}" v-if="user && user.image"></div>
     <container class="relative">
-      <div class="avatar">
-        <div class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5">
-          <identicon :size="100"/>
-        </div>
-      </div>
-      <div class="mt-4 flex justify-between flex-wrap items-center">
-        <div class="flex justify-start flex-wrap">
-          <p class="font-bold text-3xl mr-4">John Smith</p>
-          <div class="wallet-address-badge flex justify-between items-center">
-            <i class="fas fa-volleyball-ball text-lg"></i>
-            <copy-helper :toCopy="user.wallet" :isIconSuffix="true" :text="cropWithExtension(user.wallet, 20)"/>
+      <div v-if="isUserFound">
+        <div class="avatar">
+          <div class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5">
+            <identicon :size="100"/>
           </div>
         </div>
-        <edit-profile :userData="user"></edit-profile>
-      </div>
-      <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-8">
-        <div>
-          {{user?.description}}
+        <div class="mt-4 flex justify-between flex-wrap items-center">
+          <div class="flex justify-start flex-wrap">
+            <p class="font-bold text-3xl mr-4">{{user.username}}</p>
+            <div class="wallet-address-badge flex justify-between items-center">
+              <i class="fas fa-volleyball-ball text-lg"></i>
+              <copy-helper :toCopy="user.wallet" :isIconSuffix="true" :text="cropWithExtension(user.wallet, 20)"/>
+            </div>
+          </div>
+          <edit-profile :userData="user" :userUpdated="userUpdated"></edit-profile>
         </div>
-        <div class="text-xs text-gray-400">
-          <social-line class="my-1" :social="social" :isVertical="true" v-for="social in user.socials" :key="social.url" />
+        <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-8">
+          <div>
+            {{user.description ? user.description : 'User has no description.'}}
+          </div>
+          <div class="text-xs text-gray-400">
+            <div v-if="socials">
+              <social-line class="my-1" :social="social" :isVertical="true" v-for="social in socials" :key="social.url" />
+            </div>
+            <div v-else>
+              User has no socials yet
+            </div>
+          </div>
+        </div>
+        <fenced-title
+          class="flex-grow mr-0 mb-2 self-stretch"
+          color="fence-gray"
+          textAlign="center"
+          :closed="true"
+          >Your collection</fenced-title
+        >
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 my-8">
+          <!-- <product-card />
+          <product-card />
+          <product-card />
+          <product-card />
+          <product-card />
+          <product-card /> -->
         </div>
       </div>
-      <fenced-title
-        class="flex-grow mr-0 mb-2 self-stretch"
-        color="fence-gray"
-        textAlign="center"
-        :closed="true"
-        >Your collection</fenced-title
-      >
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 my-8">
-        <!-- <product-card />
-        <product-card />
-        <product-card />
-        <product-card />
-        <product-card />
-        <product-card /> -->
-      </div>
+      <not-found v-else />
     </container>
   </div>
 </template>
@@ -50,16 +56,21 @@
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
 import { UserService } from "@/services/apiService"
+import { OpenSeaAPIService } from "@/services/apiService"
 import CopyHelper from "@/components/CopyHelper/CopyHelper";
 import EditProfile from '@/components/EditProfile.vue';
 import SocialLine from "@/components/PillsAndTags/SocialLine.vue";
 import Identicon from "@/components/Identicon/Identicon";
+import NotFound from "@/components/Common/NotFound"
+import { useRoute } from "vue-router";
+import useWeb3 from "@/connectors/hooks";
+import { ref, computed } from "vue";
 
 // import ProductCard from "@/components/ProductCard.vue";
 
 export default {
   name: "Profile",
-  components: { FencedTitle, Container, CopyHelper, EditProfile, SocialLine, Identicon, /* ProductCard  */},
+  components: { FencedTitle, Container, CopyHelper, EditProfile, SocialLine, Identicon, NotFound, /* ProductCard  */},
   methods: {
     cropWithExtension: function(text, maxCharacters) {
       const txtLength = text.length; // Length of the incoming text
@@ -67,31 +78,37 @@ export default {
       return text.substring(0, (txtLengthHalf -1)).trim() + '...' + text.substring((txtLength - txtLengthHalf) + 2, txtLength).trim(); //Return the string
     },
   },
-  setup() {
-    const user = {
-      picture: 'https://image.shutterstock.com/image-photo/extremely-wide-panorama-landscape-smoky-260nw-790687765.jpg',
-      wallet: '0x397Fb10C9a36C780Ca3D7dB90B49c78D5D1b04bE',
-      description: 'In 2012 I founded ProteusThemes, a design company specialized in building conversion-focused WooCommerce themes and grew it into a multi-million dollar company.',
-      socials: [
-        {
-          "url": "http://markwagnerinc.com/",
-          "type": "website",
-          "handle": ""
-        },
-        {
-          "url": "https://www.instagram.com/markwagnerinc/",
-          "type": "instagram",
-          "handle": "markwagnerinc"
-        }
-      ]
-    };
+  async setup() {
+    const isUserFound = ref(true);
+    const route = useRoute();
+    const {account} = useWeb3();
+    const assets = ref([]);
 
-    const fetchUser = async() => {
-      // debugger; // eslint-disable-line
-      const userData = await UserService.get('0x397Fb10C9a36C780Ca3D7dB90B49c78D5D1b04bE');
+    const userUpdated = function(newUser) {
+      debugger; // eslint-disable-line
+      user.value = newUser;
     }
-    fetchUser();
-    return { user };
+
+    const address = route.params.userAddress ? route.params.userAddress : account.value;
+    if (address) {
+      console.log(address);
+    }
+    const {data} = await UserService.get(address);
+    isUserFound.value = !!data && data.user;
+    const user = ref(data ? data.user : null);
+
+    if (isUserFound.value) {
+      // TODO JASA IMPLEMENT
+      assets.value = await OpenSeaAPIService.getProfileEntries('0x43392235b6b13e0ce9d4b6cc48c8f5d2b46bff5f');
+      console.log(assets);
+    }
+
+    const socials = computed(() => user.value.socials ?
+      [{type: 'twitter', url: user.value.socials.twitter}, {type: 'website', url: user.value.socials.website}] :
+      null
+    );
+
+    return { user, isUserFound, userUpdated, socials, assets };
   }
 }
 </script>

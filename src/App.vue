@@ -8,9 +8,11 @@
     <main id="main" class="flex flex-col justify-between min-h-screen z-10 bg-white text-black font-body">
      <div class="flex flex-col">
       <app-header/>
+      <Suspense>
         <div class="router-wrap">
           <router-view/>
         </div>
+      </Suspense>
      </div>
       <app-footer/>
     </main>

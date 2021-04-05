@@ -3,13 +3,14 @@ import { COLLECTABLE_TYPE } from "@/constants/Collectables.js";
 import { computed, reactive } from "vue";
 
 
-export default function useDropsWithPagination() {
+export default function useDropsWithPagination(artistId = null) {
   const state = reactive({
     items: [null, null, null, null, null, null],
     perPage: 6,
     page: 1,
     hasMore: false,
     filter: COLLECTABLE_TYPE.NONE,
+    artistId,
   });
 
   async function load() {
@@ -31,9 +32,14 @@ export default function useDropsWithPagination() {
       page: state.page,
     };
 
+    const filtrationOptions = { type: state.filter };
+    if (artistId != null) {
+      filtrationOptions.artistId = artistId;
+    }
+
     const { data, metadata } = await CollectablesService.list(
       pagination,
-      { type: state.filter },
+      filtrationOptions,
     );
 
     state.items = data;
@@ -59,9 +65,14 @@ export default function useDropsWithPagination() {
       null,
     ];
 
+    const filtrationOptions = { type: state.filter };
+    if (artistId != null) {
+      filtrationOptions.artistId = artistId;
+    }
+
     const { data, metadata } = await CollectablesService.list(
       pagination,
-      { type: state.filter },
+      filtrationOptions,
     );
 
     state.page += 1;
