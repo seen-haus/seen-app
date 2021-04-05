@@ -21,7 +21,7 @@
         >{{ artist.collectablesCount }} CREATIONS</tag
       >
 
-      <div class="text-title font-bold text-2.5xl mt-6">{{ artist.name }}</div>
+      <div class="text-title font-bold text-2.5xl mt-6 ellipsis">{{ artist.name }}</div>
       <div class="mt-2 text-gray-600">
         {{ artist.bio }}
       </div>

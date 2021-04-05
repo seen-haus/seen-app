@@ -30,7 +30,7 @@ export default {
                 name: "artistProfile",
                 params: { artistId: props.artistId },
             });
-            };
+        };
 
         return {
             typeStyles,

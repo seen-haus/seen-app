@@ -3,10 +3,9 @@
     <div class="profile-background" :style="{backgroundImage: `url(${artist.avatar})`}">
     
     </div>
-    <container class="relative">
+    <container class="relative pb-20">
       <div class="avatar">
-        <div class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5">
-          <identicon :size="100"/>
+        <div class="bg-background-gray rounded-full w-full h-full bg-contain bg-center" :style="{backgroundImage: `url(${artist.avatar})`}">
         </div>
       </div>
       <div class="mt-4 flex justify-between flex-wrap items-center">
@@ -20,7 +19,7 @@
       </div>
       <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-8">
         <div>
-          {{artist?.bio ? artist.bio : artist.description}}
+          {{artist?.bio ? artist.bio : 'No biography available.'}}
         </div>
         <div class="text-xs text-gray-400">
           <social-line class="my-1" :social="social" :isVertical="true" v-for="social in artist.socials" :key="social.url" />
@@ -33,14 +32,30 @@
         :closed="true"
         >Your collection</fenced-title
       >
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 my-8">
-        <!-- <product-card />
-        <product-card />
-        <product-card />
-        <product-card />
-        <product-card />
-        <product-card /> -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 my-10">
+        <template
+          v-for="collectable in listOfCollectables"
+          :key="collectable && collectable.id"
+        >
+          <product-card
+            v-if="collectable != null"
+            :collectable="collectable"
+            @click="navigateToCollectable(collectable.contract_address)"
+          />
+          <div
+            v-else
+            class="placeholder-card overflow-hidden rounded-3xl bg-gray-100"
+            :style="{ 'padding-bottom': '120%' }"
+          ></div>
+        </template>
       </div>
+      <button
+        class="button dark mt-12 mx-auto w-full md:w-96"
+        v-if="hasMore"
+        @click="handleLoadMore"
+      >
+        Load More
+      </button>
     </container>
   </div>
 </template>
@@ -56,13 +71,12 @@ import Identicon from "@/components/Identicon/Identicon";
 import { useRouter } from "vue-router";
 import { ArtistService } from "@/services/apiService";
 import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
-import {ref} from "vue";
-
-// import ProductCard from "@/components/ProductCard.vue";
+import {ref, computed} from "vue";
+import ProductCard from "@/components/ProductCard.vue";
 
 export default {
   name: "ArtistProfile",
-  components: { FencedTitle, Container, CopyHelper, EditProfile, SocialLine, Identicon, /* ProductCard  */},
+  components: { FencedTitle, Container, CopyHelper, EditProfile, SocialLine, Identicon, ProductCard },
   methods: {
     cropWithExtension: function(text, maxCharacters) {
       const txtLength = text.length; // Length of the incoming text
@@ -74,10 +88,30 @@ export default {
     const router = useRouter();
     const paginatedCollectables = useDropsWithPagination(router.currentRoute.value.params.artistId);
     await paginatedCollectables.load();
+    const hasMore = computed(() => paginatedCollectables.hasMore.value);
+    const handleLoadMore = async () => {
+      paginatedCollectables.loadMore();
+    };
+    const listOfCollectables = computed(
+      () => paginatedCollectables.listOfCollectables.value
+    );
+    const navigateToCollectable = function (address) {
+      router.push({
+        name: "collectableAuction",
+        params: { contractAddress: address },
+      });
+    };
     const {data} = await ArtistService.show(router.currentRoute.value.params.artistId);
     const artist = ref(data);
 
-    return { artist };
+    return {
+      artist,
+      navigateToCollectable,
+      listOfCollectables,
+      handleLoadMore,
+      hasMore,
+
+    };
   }
 }
 </script>
