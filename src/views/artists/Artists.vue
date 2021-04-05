@@ -15,7 +15,7 @@
           v-for="artist in listOfArtists"
           :key="artist && artist.id"
         >
-          <artist-card v-if="artist != null" :artist=artist @click="navigateToArtist(artist.slug)" class="cursor-pointer"/>
+          <artist-card v-if="artist != null" :artist="artist" class="cursor-pointer"/>
           <div
             v-else
             class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"

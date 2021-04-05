@@ -80,7 +80,6 @@ import Identicon from "@/components/Identicon/Identicon";
 import {shortenAddress, getEtherscanLink} from "@/services/utils/index";
 import CopyHelper from "@/components/CopyHelper/CopyHelper";
 import {useStore} from "vuex";
-import emitter from "@/services/utils/emitter"
 
 import {reactive, computed} from 'vue';
 import { useField, useForm } from "vee-validate";
