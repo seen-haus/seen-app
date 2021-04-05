@@ -15,7 +15,7 @@
           v-for="artist in listOfArtists"
           :key="artist && artist.id"
         >
-          <artist-card v-if="artist != null" :artist=artist />
+          <artist-card v-if="artist != null" :artist=artist @click="navigateToArtist(artist.id)" class="cursor-pointer"/>
           <div
             v-else
             class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
@@ -36,6 +36,7 @@ import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
 import { computed } from "vue";
+import { useRouter } from "vue-router";
 
 export default {
   name: "Artists",
@@ -45,6 +46,7 @@ export default {
     ArtistCard,
   },
   setup() {
+    const router = useRouter();
     const paginatedArtists = useArtistsWithPagination();
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
     const hasMore = computed(() => paginatedArtists.hasMore.value);
@@ -54,11 +56,19 @@ export default {
     const handleLoadMore = async () => {
       paginatedArtists.loadMore();
     };
+
+    const navigateToArtist = (artistId) => {
+        router.push({
+            name: "artistProfile",
+            params: { artistId: artistId },
+        });
+    };
     return {
       listOfArtists,
       hasMore,
       // Methods
       handleLoadMore,
+      navigateToArtist,
     };
   },
 };
