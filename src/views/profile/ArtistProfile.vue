@@ -63,11 +63,7 @@
 <script>
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
-import { UserService } from "@/services/apiService"
-import CopyHelper from "@/components/CopyHelper/CopyHelper";
-import EditProfile from '@/components/EditProfile.vue';
 import SocialLine from "@/components/PillsAndTags/SocialLine.vue";
-import Identicon from "@/components/Identicon/Identicon";
 import { useRouter } from "vue-router";
 import { ArtistService } from "@/services/apiService";
 import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
@@ -76,7 +72,7 @@ import ProductCard from "@/components/ProductCard.vue";
 
 export default {
   name: "ArtistProfile",
-  components: { FencedTitle, Container, CopyHelper, EditProfile, SocialLine, Identicon, ProductCard },
+  components: { FencedTitle, Container, SocialLine, ProductCard },
   methods: {
     cropWithExtension: function(text, maxCharacters) {
       const txtLength = text.length; // Length of the incoming text

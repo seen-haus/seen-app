@@ -27,6 +27,7 @@ import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
 import WinnerInfo from "@/components/WinnerInfo";
 import {useStore} from "vuex"
+import useUser from '@/hooks/useUser.js'
 
 export default {
   name: 'App',
@@ -37,6 +38,7 @@ export default {
       store.dispatch('application/getExchangeRates')
     };
     getExchangeRates();
+    useUser();
   }
 }
 </script>

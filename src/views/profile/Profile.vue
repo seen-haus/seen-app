@@ -16,7 +16,7 @@
               <copy-helper :toCopy="user.wallet" :isIconSuffix="true" :text="cropWithExtension(user.wallet, 20)"/>
             </div>
           </div>
-          <edit-profile :userData="user" :userUpdated="userUpdated"></edit-profile>
+          <edit-profile :userData="user"></edit-profile>
         </div>
         <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-8">
           <div>
@@ -65,6 +65,7 @@ import NotFound from "@/components/Common/NotFound"
 import { useRoute } from "vue-router";
 import useWeb3 from "@/connectors/hooks";
 import { ref, computed } from "vue";
+import {useStore} from "vuex";
 
 // import ProductCard from "@/components/ProductCard.vue";
 
@@ -79,28 +80,30 @@ export default {
     },
   },
   async setup() {
-    const isUserFound = ref(true);
+    const store = useStore()
     const route = useRoute();
     const {account} = useWeb3();
     const assets = ref([]);
+          debugger; // eslint-disable-line
 
-    const userUpdated = function(newUser) {
-      debugger; // eslint-disable-line
-      user.value = newUser;
-    }
-
+    const isOwnProfile = computed(() => (account.value === route.params.userAddress) || !route.params.userAddress);
     const address = route.params.userAddress ? route.params.userAddress : account.value;
+
+    let data;
     if (address) {
-      console.log(address);
+      const res = await UserService.get(address);
+      data = res.data;
     }
-    const {data} = await UserService.get(address);
-    isUserFound.value = !!data && data.user;
-    const user = ref(data ? data.user : null);
+
+    if (isOwnProfile.value) {
+      store.dispatch('user/setUser', data ? data.user : null);
+    }
+    const user = isOwnProfile.value ? computed(() => store.getters['user/user']) : ref(data ? data.user : null);
+    const isUserFound = computed(() => !!user.value);
 
     if (isUserFound.value) {
       // TODO JASA IMPLEMENT
       assets.value = await OpenSeaAPIService.getProfileEntries('0x43392235b6b13e0ce9d4b6cc48c8f5d2b46bff5f');
-      console.log(assets);
     }
 
     const socials = computed(() => user.value.socials ?
@@ -108,7 +111,12 @@ export default {
       null
     );
 
-    return { user, isUserFound, userUpdated, socials, assets };
+    return {
+      user,
+      isUserFound,
+      socials,
+      assets
+    };
   }
 }
 </script>
