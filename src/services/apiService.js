@@ -1,10 +1,10 @@
-import {$axios} from './api/axios';
+import { $axios } from './api/axios';
 
 $axios.defaults.baseURL = `${process.env.VUE_APP_API_URL}/`;
 export const ApiService = {
 
     query(resource, params) {
-        return $axios.get(resource, {params}).catch(error => {
+        return $axios.get(resource, { params }).catch(error => {
             throw new Error(`[RWV] ApiService ${error}`);
         });
     },
@@ -59,9 +59,9 @@ export const LeaderboardService = {
 };
 
 export const CollectablesService = {
-    list(pagination = {perPage: 6, page: 1}, filter = {}) {
+    list(pagination = { perPage: 6, page: 1 }, filter = {}) {
         // serializeđ
-        return ApiService.query('collectables', {...pagination, ...filter});
+        return ApiService.query('collectables', { ...pagination, ...filter });
     },
     show(contractAddress) {
         return ApiService.get(`collectables/${contractAddress}`);
@@ -78,7 +78,7 @@ export const SpotlightService = {
 };
 
 export const ArtistService = {
-    list(pagination = {perPage: 6, page: 1}) {
+    list(pagination = { perPage: 6, page: 1 }) {
         // serializeđ
         return ApiService.query('artists', pagination);
     },
@@ -96,8 +96,28 @@ export const ExchangeRateService = {
 };
 
 export const OpenSeaAPIService = {
-    getProfileEntries(owner) {
-        const url = `https://api.opensea.io/api/v1/assets?owner=${owner}&collection=seen-haus`;
-        return $axios.get(url);
-    }
-}
+    async getProfileEntries(owner, limit = 6, offset = 0) {
+        const url = `https://api.opensea.io/api/v1/assets?owner=${owner}&collection=seen-haus&limit=${limit}&offset=${offset}`;
+        const data = await $axios.get(url);
+
+        if (!data) return [];
+
+        const assets = data.assets;
+
+        //TODO Remove
+        assets.push({ token_id: "42" });
+
+        const collectables = await ApiService.query('collectables');
+        const mapped = [];
+
+        assets.forEach(a => {
+            const match = collectables.data.find(c => c.nft_token_id === a.token_id);
+            if (match)
+                mapped.push({ asGift: false, data: match });
+            else
+                mapped.push({ asGift: true, data: a });
+        });
+
+        return mapped;
+    },
+};

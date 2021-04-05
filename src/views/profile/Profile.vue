@@ -1,34 +1,53 @@
 <template>
   <div class="profile">
-    <div class="profile-background" :style="{backgroundImage: `url(${user.picture})`}" v-if="user && user.image"></div>
+    <div
+      class="profile-background"
+      :style="{ backgroundImage: `url(${user.picture})` }"
+      v-if="user && user.image"
+    ></div>
     <container class="relative">
       <div v-if="isUserFound">
         <div class="avatar">
-          <div class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5">
-            <identicon :size="100"/>
+          <div
+            class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5"
+          >
+            <identicon :size="100" />
           </div>
         </div>
         <div class="mt-4 flex justify-between flex-wrap items-center">
           <div class="flex justify-start flex-wrap">
-            <p class="font-bold text-3xl mr-4">{{user.username}}</p>
+            <p class="font-bold text-3xl mr-4">{{ user.username }}</p>
             <div class="wallet-address-badge flex justify-between items-center">
               <i class="fas fa-volleyball-ball text-lg"></i>
-              <copy-helper :toCopy="user.wallet" :isIconSuffix="true" :text="cropWithExtension(user.wallet, 20)"/>
+              <copy-helper
+                :toCopy="user.wallet"
+                :isIconSuffix="true"
+                :text="cropWithExtension(user.wallet, 20)"
+              />
             </div>
           </div>
-          <edit-profile :userData="user" :userUpdated="userUpdated"></edit-profile>
+          <edit-profile
+            :userData="user"
+            :userUpdated="userUpdated"
+          ></edit-profile>
         </div>
         <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-8">
           <div>
-            {{user.description ? user.description : 'User has no description.'}}
+            {{
+              user.description ? user.description : "User has no description."
+            }}
           </div>
           <div class="text-xs text-gray-400">
             <div v-if="socials">
-              <social-line class="my-1" :social="social" :isVertical="true" v-for="social in socials" :key="social.url" />
+              <social-line
+                class="my-1"
+                :social="social"
+                :isVertical="true"
+                v-for="social in socials"
+                :key="social.url"
+              />
             </div>
-            <div v-else>
-              User has no socials yet
-            </div>
+            <div v-else>User has no socials yet</div>
           </div>
         </div>
         <fenced-title
@@ -39,12 +58,37 @@
           >Your collection</fenced-title
         >
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 my-8">
-          <!-- <product-card />
-          <product-card />
-          <product-card />
-          <product-card />
-          <product-card />
-          <product-card /> -->
+          <template
+            v-for="collectable in listOfCollectables"
+            :key="collectable && collectable.data.id"
+          >
+            <template v-if="collectable != null">
+              <gift-product-card
+                v-if="collectable.asGift"
+                :collectable="collectable.data"
+              />
+              <product-card
+                v-else
+                :collectable="collectable.data"
+                @click="
+                  navigateToCollectable(collectable.data.contract_address)
+                "
+              />
+            </template>
+            <div
+              v-else
+              class="placeholder-card overflow-hidden rounded-3xl bg-gray-100"
+              :style="{ 'padding-bottom': '120%' }"
+            ></div>
+          </template>
+
+          <button
+            class="button dark mt-20 mx-auto w-full md:w-96"
+            v-if="hasMore"
+            @click="handleLoadMore"
+          >
+            Load More
+          </button>
         </div>
       </div>
       <not-found v-else />
@@ -53,64 +97,120 @@
 </template>
 
 <script>
+import { ref, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import useWeb3 from "@/connectors/hooks";
+
+import { UserService } from "@/services/apiService";
+import { OpenSeaAPIService } from "@/services/apiService";
+import useUsersCollectionWithPagination from "@/hooks/useUsersCollectionWithPagination.js";
+
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
-import { UserService } from "@/services/apiService"
-import { OpenSeaAPIService } from "@/services/apiService"
 import CopyHelper from "@/components/CopyHelper/CopyHelper";
-import EditProfile from '@/components/EditProfile.vue';
+import EditProfile from "@/components/EditProfile.vue";
 import SocialLine from "@/components/PillsAndTags/SocialLine.vue";
 import Identicon from "@/components/Identicon/Identicon";
-import NotFound from "@/components/Common/NotFound"
-import { useRoute } from "vue-router";
-import useWeb3 from "@/connectors/hooks";
-import { ref, computed } from "vue";
+import NotFound from "@/components/Common/NotFound";
 
-// import ProductCard from "@/components/ProductCard.vue";
+import ProductCard from "@/components/ProductCard.vue";
+import GiftProductCard from "@/views/profile/components/GiftProductCard.vue";
 
 export default {
   name: "Profile",
-  components: { FencedTitle, Container, CopyHelper, EditProfile, SocialLine, Identicon, NotFound, /* ProductCard  */},
+  components: {
+    FencedTitle,
+    Container,
+    CopyHelper,
+    EditProfile,
+    SocialLine,
+    Identicon,
+    NotFound,
+    ProductCard,
+    GiftProductCard,
+  },
   methods: {
-    cropWithExtension: function(text, maxCharacters) {
+    cropWithExtension: function (text, maxCharacters) {
       const txtLength = text.length; // Length of the incoming text
-      const txtLengthHalf = maxCharacters ? Math.round(maxCharacters / 2) : Math.round(txtLength / 2); // set max txtHalfLength
-      return text.substring(0, (txtLengthHalf -1)).trim() + '...' + text.substring((txtLength - txtLengthHalf) + 2, txtLength).trim(); //Return the string
+      const txtLengthHalf = maxCharacters
+        ? Math.round(maxCharacters / 2)
+        : Math.round(txtLength / 2); // set max txtHalfLength
+      return (
+        text.substring(0, txtLengthHalf - 1).trim() +
+        "..." +
+        text.substring(txtLength - txtLengthHalf + 2, txtLength).trim()
+      ); //Return the string
     },
   },
   async setup() {
-    const isUserFound = ref(true);
+    const router = useRouter();
     const route = useRoute();
-    const {account} = useWeb3();
+    const isUserFound = ref(true);
+    const { account } = useWeb3();
     const assets = ref([]);
 
-    const userUpdated = function(newUser) {
+    const collection = useUsersCollectionWithPagination(
+      "0x43392235b6b13e0ce9d4b6cc48c8f5d2b46bff5f"
+    );
+
+    const userUpdated = function (newUser) {
       debugger; // eslint-disable-line
       user.value = newUser;
-    }
+    };
 
-    const address = route.params.userAddress ? route.params.userAddress : account.value;
+    const address = route.params.userAddress
+      ? route.params.userAddress
+      : account.value;
     if (address) {
       console.log(address);
     }
-    const {data} = await UserService.get(address);
+    const { data } = await UserService.get(address);
     isUserFound.value = !!data && data.user;
     const user = ref(data ? data.user : null);
 
     if (isUserFound.value) {
-      // TODO JASA IMPLEMENT
-      assets.value = await OpenSeaAPIService.getProfileEntries('0x43392235b6b13e0ce9d4b6cc48c8f5d2b46bff5f');
-      console.log(assets);
+      collection.load();
     }
 
-    const socials = computed(() => user.value.socials ?
-      [{type: 'twitter', url: user.value.socials.twitter}, {type: 'website', url: user.value.socials.website}] :
-      null
+    const socials = computed(() =>
+      user.value.socials
+        ? [
+            { type: "twitter", url: user.value.socials.twitter },
+            { type: "website", url: user.value.socials.website },
+          ]
+        : null
     );
 
-    return { user, isUserFound, userUpdated, socials, assets };
-  }
-}
+    const handleLoadMore = async () => {
+      collection.loadMore();
+    };
+
+    const navigateToCollectable = function (address) {
+      router.push({
+        name: "collectableAuction",
+        params: { contractAddress: address },
+      });
+    };
+
+    const listOfCollectables = computed(
+      () => collection.listOfCollectables.value
+    );
+
+    const hasMore = computed(() => collection.hasMore.value);
+
+    return {
+      user,
+      isUserFound,
+      userUpdated,
+      socials,
+      assets,
+      listOfCollectables,
+      hasMore,
+      handleLoadMore,
+      navigateToCollectable,
+    };
+  },
+};
 </script>
 
 <style scoped lang="scss">
