@@ -15,7 +15,7 @@
           v-for="artist in listOfArtists"
           :key="artist && artist.id"
         >
-          <artist-card v-if="artist != null" :artist=artist @click="navigateToArtist(artist.id)" class="cursor-pointer"/>
+          <artist-card v-if="artist != null" :artist=artist @click="navigateToArtist(artist.slug)" class="cursor-pointer"/>
           <div
             v-else
             class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
@@ -57,10 +57,10 @@ export default {
       paginatedArtists.loadMore();
     };
 
-    const navigateToArtist = (artistId) => {
+    const navigateToArtist = (artistSlug) => {
         router.push({
             name: "artistProfile",
-            params: { artistId: artistId },
+            params: { artistSlug: artistSlug },
         });
     };
     return {

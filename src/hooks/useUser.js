@@ -15,8 +15,6 @@ export default function useUser() {
   watchEffect(() => {
     if (account.value) {
       fetchUser();
-    } else {
-      store.dispatch('user/setUser', null)
     }
   })
 

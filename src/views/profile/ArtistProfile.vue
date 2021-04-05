@@ -82,7 +82,10 @@ export default {
   },
   async setup() {
     const router = useRouter();
-    const paginatedCollectables = useDropsWithPagination(router.currentRoute.value.params.artistId);
+    const {data} = await ArtistService.show(router.currentRoute.value.params.artistSlug);
+    const artist = ref(data);
+
+    const paginatedCollectables = useDropsWithPagination(artist.value.id);
     await paginatedCollectables.load();
     const hasMore = computed(() => paginatedCollectables.hasMore.value);
     const handleLoadMore = async () => {
@@ -97,8 +100,6 @@ export default {
         params: { contractAddress: address },
       });
     };
-    const {data} = await ArtistService.show(router.currentRoute.value.params.artistId);
-    const artist = ref(data);
 
     return {
       artist,

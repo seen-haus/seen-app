@@ -34,7 +34,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "collectableAuction" */ '../views/collectable/Collectable.vue')
     },
     {
-        path: '/artists/:artistId',
+        path: '/artists/:artistSlug',
         name: 'artistProfile',
         component: () => import(/* webpackChunkName: "artistProfile" */ '../views/profile/ArtistProfile.vue')
     },

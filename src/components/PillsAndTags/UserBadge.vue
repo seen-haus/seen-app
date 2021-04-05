@@ -16,7 +16,7 @@ export default {
         type: { type: String, default:'light' },
         url: { type: String, default:'http://placekitten.com/24/24' },
         username: { type: String, default:'username' },
-        artistId: Number,
+        artistSlug: String,
     },
     setup(props) {
         const router = useRouter();
@@ -28,7 +28,7 @@ export default {
         const navigateToArtist = () => {
             router.push({
                 name: "artistProfile",
-                params: { artistId: props.artistId },
+                params: { artistSlug: props.artistSlug },
             });
         };
 
