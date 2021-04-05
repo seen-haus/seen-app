@@ -87,7 +87,7 @@ export default {
     const displayModal = ref(false);
     const collectableData = ref({});
     const tokenContract = ref(null);
-    const { account, provider } = useWeb3();
+    const { account } = useWeb3();
 
     emitter.on('openWinnerModal', payload => {
       collectableData.value = payload;
@@ -135,16 +135,19 @@ export default {
         const sig = await signer
           .signMessage(msg)
           .catch((e) => {
-            let msg = 'Error has occurred. Try again later.';
-            if (e.code === 4001) {
-                msg = 'Request was rejected.';
-            }
+            // let msg = 'Error has occurred. Try again later.';
+            // if (e.code === 4001) {
+            //     msg = 'Request was rejected.';
+            // }
             // ToastifyService.fail(msg);
             //this.submitting = false;
             return e;
         });
         CollectablesService.winner(collectableData.value.contract_address, {...values, sig, wallet_address: account.value})
-          .then((res) => console.log(res))
+          .then((res) => {
+            displayModal.value = false;
+            console.log(res);
+          })
           .catch(() => console.log('Something went wrong!'));
       } else {
         // toastr to login

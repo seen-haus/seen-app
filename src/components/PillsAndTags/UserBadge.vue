@@ -1,5 +1,5 @@
 <template>
-    <div class="user-badge flex items-center rounded-full p-1.5 font-semibold shadow-lifted-sm cursor-pointer" :class="typeStyles" @click="navigateToArtist">
+    <div class="user-badge flex items-center rounded-full p-1.5 font-semibold shadow-lifted-sm cursor-pointer" :class="typeStyles" @click="navigateToArtist($event)">
         <img class="user-img rounded-full mr-2 h-6 w-6" :src="url" />
         <span class="text-sm mr-1.5">{{username}}</span>
     </div>
@@ -25,7 +25,8 @@ export default {
         ? 'text-black bg-white'
         : 'text-white bg-hero-gray');
 
-        const navigateToArtist = () => {
+        const navigateToArtist = (e) => {
+            e.stopImmediatePropagation();
             router.push({
                 name: "artistProfile",
                 params: { artistSlug: props.artistSlug },

@@ -47,6 +47,7 @@
             type="dark"
             :url="artist.avatar"
             :username="artist.name"
+            :artistSlug="artist.slug"
           />
           <live-indicator :status="liveStatus" class="text-white ml-4" />
         </div>
