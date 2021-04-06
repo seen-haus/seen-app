@@ -4,6 +4,7 @@
     <wallet-modal/>
     <!--  Modals END -->
     <mobile-menu/>
+    <Toast />
     <winner-info></winner-info>
     <main id="main" class="flex flex-col justify-between min-h-screen z-10 bg-white text-black font-body">
      <div class="flex flex-col">
