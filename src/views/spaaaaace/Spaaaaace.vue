@@ -162,6 +162,7 @@
 
 <script>
 import { computed } from "vue";
+import { useMeta } from "vue-meta";
 
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
@@ -194,6 +195,9 @@ export default {
     CollageTile,
   },
   setup() {
+    const { meta } = useMeta({
+      title: "Spaaaaace",
+    });
     const paginatedArtists = useArtistsWithPagination();
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
 

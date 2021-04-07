@@ -61,13 +61,15 @@
 </template>
 
 <script>
+import {ref, computed} from "vue";
+import { useRouter } from "vue-router";
+import { useMeta } from "vue-meta";
+
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
 import SocialLine from "@/components/PillsAndTags/SocialLine.vue";
-import { useRouter } from "vue-router";
 import { ArtistService } from "@/services/apiService";
 import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
-import {ref, computed} from "vue";
 import ProductCard from "@/components/ProductCard.vue";
 
 export default {
@@ -81,9 +83,13 @@ export default {
     },
   },
   async setup() {
+    const { meta } = useMeta({
+      title: "Loading...",
+    });
     const router = useRouter();
     const {data} = await ArtistService.show(router.currentRoute.value.params.artistSlug);
     const artist = ref(data);
+    meta.title = artist.value.name;
 
     const paginatedCollectables = useDropsWithPagination(artist.value.id);
     await paginatedCollectables.load();

@@ -148,6 +148,7 @@
 <script>
 import {computed, watchEffect} from "vue";
 import { useRouter } from "vue-router";
+import { useMeta } from "vue-meta";
 
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
@@ -177,6 +178,9 @@ export default {
     ArtistCard,
   },
   setup() {
+    const { meta } = useMeta({
+      title: "Home",
+    });
     const router = useRouter();
 
     const paginatedCollectables = useCollectablesWithPagination(

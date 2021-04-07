@@ -129,6 +129,8 @@
 </template>
 
 <script>
+import { useMeta } from "vue-meta";
+
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
 
@@ -137,6 +139,11 @@ import { SpotlightService } from "@/services/apiService";
 export default {
   name: "Spotlight",
   components: { FencedTitle, Container },
+  setup() {
+    const { meta } = useMeta({
+      title: "Spotlight",
+    });
+  },
   data() {
     return {
       name: "",

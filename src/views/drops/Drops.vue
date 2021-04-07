@@ -126,6 +126,7 @@
 <script>
 import { computed, reactive } from "vue";
 import { useRouter } from "vue-router";
+import { useMeta } from "vue-meta";
 
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
@@ -150,6 +151,9 @@ export default {
     ArtistCard,
   },
   setup() {
+    const { meta } = useMeta({
+      title: "Drops",
+    });
     const router = useRouter();
     const state = reactive({
       filterNft: true,

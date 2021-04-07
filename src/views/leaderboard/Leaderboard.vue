@@ -67,6 +67,7 @@
 
 <script>
 import { computed, reactive } from "vue";
+import { useMeta } from "vue-meta";
 import { LeaderboardService } from "@/services/apiService";
 
 import FencedTitle from "@/components/FencedTitle.vue";
@@ -81,6 +82,9 @@ export default {
     LeaderboardTile,
   },
   setup() {
+    const { meta } = useMeta({
+      title: "Collectors",
+    });
     const state = reactive({
       isLoading: true,
       users: [],

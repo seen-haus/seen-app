@@ -31,12 +31,14 @@
 </template>
 
 <script>
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+import { useMeta } from "vue-meta";
+
 import ArtistCard from "@/components/ArtistCard.vue";
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
-import { computed } from "vue";
-import { useRouter } from "vue-router";
 
 export default {
   name: "Artists",
@@ -46,6 +48,9 @@ export default {
     ArtistCard,
   },
   setup() {
+    const { meta } = useMeta({
+      title: "Artists",
+    });
     const router = useRouter();
     const paginatedArtists = useArtistsWithPagination();
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
