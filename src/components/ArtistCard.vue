@@ -1,5 +1,5 @@
 <template>
-  <div class="artist-card overflow-hidden rounded-lg shadow-lg">
+  <div class="artist-card overflow-hidden rounded-lg shadow-lg cursor-pointer" @click="navigateToArtist">
     <div class="media flex justify-center bg-black h-32">
       <div class="w-32">
         <media-loader
@@ -39,6 +39,8 @@
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import SocialLine from "@/components/PillsAndTags/SocialLine.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
+import {useRouter} from 'vue-router';
+import {ref} from 'vue';
 
 export default {
   name: "ArtistCard",
@@ -50,5 +52,16 @@ export default {
   props: {
     artist: Object,
   },
+  setup(props) {
+    const artist = ref(props.artist);
+    const router = useRouter();
+    const navigateToArtist = () => {
+      router.push({
+        name: "artistProfile",
+        params: { artistSlug: artist.value.slug },
+      });
+    }
+    return {navigateToArtist};
+  }
 };
 </script>

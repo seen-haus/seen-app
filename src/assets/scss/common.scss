@@ -36,3 +36,23 @@
 .active-green-icon {
   filter: brightness(0) saturate(100%) invert(65%) sepia(65%) saturate(420%) hue-rotate(109deg) brightness(89%) contrast(91%) !important;
 }
+
+.p-toast .p-toast-message .p-toast-message-content {
+  border-width: 0 !important;
+}
+
+.fc {
+  .error-notice {
+    @apply font-normal text-red-500 text-xs mt-2;
+  }
+}
+
+.outlined-input {
+  .p-dropdown-label {
+    font-size: 15px;
+    color: black;
+    text-transform: none;
+    margin-top:0;
+    padding-left: 0;
+  }
+}

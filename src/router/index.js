@@ -34,7 +34,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "collectableAuction" */ '../views/collectable/Collectable.vue')
     },
     {
-        path: '/artists/:artistId',
+        path: '/artists/:artistSlug',
         name: 'artistProfile',
         component: () => import(/* webpackChunkName: "artistProfile" */ '../views/profile/ArtistProfile.vue')
     },
@@ -82,6 +82,9 @@ const routes = [
 ]
 
 const router = createRouter({
+    scrollBehavior() {
+        return {top: 0}
+    },
     history: createWebHistory(process.env.BASE_URL),
     routes
 })

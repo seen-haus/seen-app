@@ -11,6 +11,10 @@ export default function useUsersCollectionWithpagination(address = null) {
     error: null,
   });
 
+  const setAddress = (address) => {
+    state.address = address;
+  }
+
   async function load() {
     state.limit = 6;
     state.offset = 0;
@@ -72,6 +76,7 @@ export default function useUsersCollectionWithpagination(address = null) {
     hasMore,
     error,
     loadMore,
+    setAddress,
   };
 
 }

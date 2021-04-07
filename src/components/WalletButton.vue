@@ -47,6 +47,7 @@ export default {
     };
     const handleDisconnect = () => {
       isOpen.value = false;
+      store.dispatch('user/setUser', null);
       deactivate();
     };
 

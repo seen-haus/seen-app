@@ -1,6 +1,7 @@
 const state = {
     openModal: null,
     mobileMenu: null,
+    user: null,
 };
 
 const mutations = {
@@ -15,7 +16,10 @@ const mutations = {
     },
     CLOSE_MOBILE_MENU(state) {
         state.mobileMenu = false
-    }
+    },
+    SET_USER(state, user) {
+        state.user = user
+    },
 };
 
 const actions = {
@@ -24,6 +28,12 @@ const actions = {
     },
     closeModal(context) {
         context.commit('CLOSE_MODAL')
+    },
+    setUser(context, user) {
+        context.commit('SET_USER', user)
+    },
+    deleteUser(context) {
+        context.commit('SET_USER', null)
     }
 
 }
@@ -34,6 +44,9 @@ const getters = {
     },
     mobileMenu(state) {
         return state.mobileMenu
+    },
+    user(state) {
+        return state.user
     }
 }
 

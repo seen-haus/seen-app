@@ -28,36 +28,34 @@
       <!-- <p class="text-grey-9 p-5 text-center">Your transactions will appear here...</p> -->
     </div>
     <div>
-      <form @submit="onSubmit" class="font-semibold uppercase text-sm text-black">
-      <div class="grid grid-cols-1">
-        <div class="fc mb-4 input-width">
-          <label for="winner-name">YOUR NAME</label>
-          <input type="text" id="winner-name" class="w-full outlined-input mt-2" autocomplete="full-name" v-model="nameField.value" placeholder="" />
-          <span>{{ nameField.errors[0] }}</span>
-        </div>
-        <div class="fc mb-4 input-width">
-          <label for="winner-twitter">YOUR TWITTER</label>
-          <input type="text" id="winner-twitter" class="w-full outlined-input mt-2" autocomplete="new-password" v-model="twitterField.value" placeholder="" />
-          <span>{{ twitterField.errors[0] }}</span>
-        </div>
-        <div class="fc mb-4 input-width">
-          <label for="winner-website">YOUR WEBSITE</label>
-          <input type="text" id="winner-website" class="w-full outlined-input mt-2" autocomplete="new-password" v-model="websiteField.value" placeholder="" />
-          <span>{{ websiteField.errors[0] }}</span>
+      <form @submit="onSubmit" class="font-semibold uppercase text-md text-black">
+        <div class="fc mb-4">
+          <label for="profile-username">Username</label>
+          <input type="text" id="profile-username" class="w-full outlined-input mt-2" v-model="usernameField.value" />
+          <span class="error-notice">{{ usernameField.errors[0] }}</span>
         </div>
         <div class="fc mb-4">
-          <label for="winner-description">YOUR SHORT DESCRIPTION</label>
-          <textarea type="phone" id="winner-description" class="w-full outlined-input mt-2" autocomplete="description" v-model="descriptionField.value" placeholder="" />
-          <span>{{ descriptionField.errors[0] }}</span>
+          <label for="profile-twitter">Twitter</label>
+          <input type="text" id="profile-twitter" class="w-full outlined-input mt-2" v-model="twitterField.value" />
+          <span class="error-notice">{{ twitterField.errors[0] }}</span>
         </div>
-      </div>
-        
-      <div class="flex items-center justify-center mt-3 mb-10">
-        <button type="submit" class="cursor-pointer primary button mt-3 md:mt-0 w-full">
-          Save Changes
-        </button>
-      </div>
-    </form>
+        <div class="fc mb-4">
+          <label for="profile-website">Website</label>
+          <input type="text" id="profile-website" class="w-full outlined-input mt-2" v-model="websiteField.value" />
+          <span class="error-notice">{{ websiteField.errors[0] }}</span>
+        </div>
+        <div class="fc mb-4">
+          <label for="winner-description">Description</label>
+          <textarea id="winner-description" class="w-full outlined-input mt-2" v-model="descriptionField.value" ></textarea>
+          <span class="error-notice">{{ descriptionField.errors[0] }}</span>
+        </div>
+
+        <div class="flex items-center justify-center mb-4 mt-8">
+          <button type="submit" class="cursor-pointer primary button mt-3 md:mt-0">
+            Submit
+          </button>
+        </div>
+      </form>
     </div>
     <div class="newsletter bg-black py-4 px-8 text-white align-center -mx-8 rounded-b-lg">
       <div class="w-full py-4 inline-flex flex-col justify-center text-center">
@@ -81,18 +79,23 @@ import {SUPPORTED_WALLETS} from "@/connectors/constants";
 import Identicon from "@/components/Identicon/Identicon";
 import {shortenAddress, getEtherscanLink} from "@/services/utils/index";
 import CopyHelper from "@/components/CopyHelper/CopyHelper";
+import {useStore} from "vuex";
 
-
-import {reactive} from 'vue';
+import {reactive, computed} from 'vue';
 import { useField, useForm } from "vee-validate";
 import { UserService } from "@/services/apiService"
+import useSigner from "@/hooks/useSigner";
+import { useToast } from "primevue/usetoast";
+import {twitterRegx, isValidHttpUrl} from '@/connectors/constants'
 
 export default {
   name: "AccountView",
   components: {CopyHelper, Identicon},
   setup(props, {emit}) {
     const {chainId, account, connector} = useWeb3();
-    const user = {value: {}};
+    const store = useStore()
+    const user = computed(() => store.getters['user/user']);
+    const toast = useToast();
 
     const {ethereum} = window;
     const isMetaMask = !!(ethereum && ethereum.isMetaMask)
@@ -104,27 +107,48 @@ export default {
         .map(k => SUPPORTED_WALLETS[k].name)[0];
     const form = useForm({
       initialValues: {
-        name: "",
-        twitter: "",
-        website: "",
-        description: "",
+        username: user.value ? user.value.username : "",
+        twitter: (user.value && user.value.socials) ? user.value.socials.twitter : "",
+        website: (user.value && user.value.socials) ? user.value.socials.website : "",
+        description: user.value ? user.value.description : "",
       },
     });
 
-    const nameField = reactive(useField("name", ""));
-    const twitterField = reactive(useField("twitter", ""));
-    const websiteField = reactive(useField("website", ""));
-    const descriptionField = reactive(useField("description", ""));
-    
-    const onSubmit = form.handleSubmit((values) => {
-      UserService.create({...values, wallet: user.value.wallet})
-        .then(res => {
-          console.log(res);
-        })
-        .catch(e => {
-          console.log(e);
-      })
+    const usernameField = reactive(useField("username", "required"));
+    const twitterField = reactive(useField("twitter", url => {
+      const res = twitterRegx.exec(url);
+      return (res && res[1]) ? true : 'This is not a valid twitter address';
+    }));
+    const websiteField = reactive(useField("website", isValidHttpUrl));
+    const descriptionField = reactive(useField("description", "required|min:6"));
+
+    const onSubmit = form.handleSubmit(async (values) => {
+      const signer = useSigner();
+      const msg = `I would like to update my account preferences for ${account.value}.`
+
+      if (signer) {
+        const sig = await signer
+          .signMessage(msg)
+          .catch((e) => {
+            toast.add({severity:'error', summary:'Error', detail:'Message signing failed.', life: 3000});
+            // ToastifyService.fail(msg);
+            //this.submitting = false;
+            return e;
+        });
+
+        UserService.update(account.value, {...values, sig})
+          .then(res => {
+            store.dispatch('user/setUser', res.data.user);
+            toast.add({severity:'info', summary:'Success', detail:'Your profile has been updated.', life: 3000});
+            store.dispatch('application/closeModal');
+          })
+          .catch(e => {
+            console.error(e)
+            toast.add({severity:'error', summary:'Error', detail:'Profile update failed.', life: 3000});
+        });
+      }
     });
+
     const openOptions = () => {
       emit('changeView', 'options');
     }
@@ -135,7 +159,7 @@ export default {
       openOptions,
       shortenAddress,
       getEtherscanLink,
-      nameField,
+      usernameField,
       twitterField,
       websiteField,
       descriptionField,

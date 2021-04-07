@@ -243,7 +243,7 @@ export default {
   border-width: 2px;
 
   input {
-    @apply outline-none flex-grow;
+    @apply outline-none flex-grow border-transparent;
     height: 56px;
     min-width: 0;
   }

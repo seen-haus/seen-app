@@ -19,6 +19,7 @@
         type="light"
         :url="artist.avatar"
         :username="artist.name"
+        :artistSlug="artist.slug"
         class="absolute -top-4"
       />
 

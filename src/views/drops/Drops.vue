@@ -136,7 +136,6 @@ import HowToVideo from "@/components/HowToVideo.vue";
 import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 
-import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
 import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
 
@@ -164,7 +163,7 @@ export default {
     const filterNft = computed(() => state.filterNft);
     const filterTangibleNft = computed(() => state.filterTangibleNft);
 
-    const paginatedCollectables = useDropsWithPagination(PURCHASE_TYPE.AUCTION);
+    const paginatedCollectables = useDropsWithPagination();
     const listOfCollectables = computed(
       () => paginatedCollectables.listOfCollectables.value
     );

@@ -82,8 +82,8 @@ export const ArtistService = {
         // serializeđ
         return ApiService.query('artists', pagination);
     },
-    show(id) {
-        return ApiService.get(`artists/${id}`);
+    show(slug) {
+        return ApiService.get(`artists/${slug}`);
     }
 };
 

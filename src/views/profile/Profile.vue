@@ -28,7 +28,6 @@
           </div>
           <edit-profile
             :userData="user"
-            :userUpdated="userUpdated"
           ></edit-profile>
         </div>
         <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-8">
@@ -97,13 +96,12 @@
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { ref, computed, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
 import useWeb3 from "@/connectors/hooks";
 
 import { UserService } from "@/services/apiService";
-import { OpenSeaAPIService } from "@/services/apiService";
 import useUsersCollectionWithPagination from "@/hooks/useUsersCollectionWithPagination.js";
 
 import FencedTitle from "@/components/FencedTitle.vue";
@@ -112,7 +110,8 @@ import CopyHelper from "@/components/CopyHelper/CopyHelper";
 import EditProfile from "@/components/EditProfile.vue";
 import SocialLine from "@/components/PillsAndTags/SocialLine.vue";
 import Identicon from "@/components/Identicon/Identicon";
-import NotFound from "@/components/Common/NotFound";
+import NotFound from "@/components/Common/NotFound"
+import {useStore} from "vuex";
 
 import ProductCard from "@/components/ProductCard.vue";
 import GiftProductCard from "@/views/profile/components/GiftProductCard.vue";
@@ -147,34 +146,36 @@ export default {
     const { meta } = useMeta({
       title: "Profile",
     });
+    const store = useStore()
     const router = useRouter();
     const route = useRoute();
-    const isUserFound = ref(true);
     const { account } = useWeb3();
     const assets = ref([]);
 
-    const collection = useUsersCollectionWithPagination(
-      "0x43392235b6b13e0ce9d4b6cc48c8f5d2b46bff5f"
-    );
-
-    const userUpdated = function (newUser) {
-      debugger; // eslint-disable-line
-      user.value = newUser;
-    };
-
+    const isOwnProfile = computed(() => (account.value === route.params.userAddress) || !route.params.userAddress);
     const address = route.params.userAddress
       ? route.params.userAddress
       : account.value;
-    if (address) {
-      console.log(address);
-    }
-    const { data } = await UserService.get(address);
-    isUserFound.value = !!data && data.user;
-    const user = ref(data ? data.user : null);
 
-    if (isUserFound.value) {
+    let data = ref(null);
+    const user = computed(() => isOwnProfile.value ? store.getters['user/user'] : data.value);
+    const userLocal = computed(() => store.getters['user/user']);
+    const collection = useUsersCollectionWithPagination();
+    watchEffect(() => {
+      if (isOwnProfile.value && userLocal.value) {
+        collection.setAddress("0x43392235b6b13e0ce9d4b6cc48c8f5d2b46bff5f");
+        collection.load();
+      }
+    })
+
+    if (address && !isOwnProfile.value) {
+      const res = await UserService.get(address);
+      data.value = res.data.user;
+      collection.setAddress("0x43392235b6b13e0ce9d4b6cc48c8f5d2b46bff5f");
       collection.load();
     }
+
+    const isUserFound = computed(() => !!user.value);
 
     const socials = computed(() =>
       user.value.socials
@@ -205,7 +206,6 @@ export default {
     return {
       user,
       isUserFound,
-      userUpdated,
       socials,
       assets,
       listOfCollectables,

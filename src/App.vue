@@ -9,7 +9,8 @@
     <!--  Modals -->
     <wallet-modal />
     <!--  Modals END -->
-    <mobile-menu />
+    <mobile-menu/>
+    <Toast />
     <winner-info></winner-info>
     <main
       id="main"
@@ -38,6 +39,7 @@ import MobileMenu from "@/components/Menu/MobileMenu";
 import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
 import WinnerInfo from "@/components/WinnerInfo";
+import useUser from '@/hooks/useUser.js'
 
 export default {
   name: "App",
@@ -74,7 +76,7 @@ export default {
       store.dispatch("application/getExchangeRates");
     };
     getExchangeRates();
-
+    useUser();
     return {
       metadata,
     };

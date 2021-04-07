@@ -61,22 +61,20 @@
 </template>
 
 <script>
+import {ref, computed} from "vue";
+import { useRouter } from "vue-router";
+import { useMeta } from "vue-meta";
+
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
-import { UserService } from "@/services/apiService"
-import CopyHelper from "@/components/CopyHelper/CopyHelper";
-import EditProfile from '@/components/EditProfile.vue';
 import SocialLine from "@/components/PillsAndTags/SocialLine.vue";
-import Identicon from "@/components/Identicon/Identicon";
-import { useRouter } from "vue-router";
 import { ArtistService } from "@/services/apiService";
 import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
-import {ref, computed} from "vue";
 import ProductCard from "@/components/ProductCard.vue";
 
 export default {
   name: "ArtistProfile",
-  components: { FencedTitle, Container, CopyHelper, EditProfile, SocialLine, Identicon, ProductCard },
+  components: { FencedTitle, Container, SocialLine, ProductCard },
   methods: {
     cropWithExtension: function(text, maxCharacters) {
       const txtLength = text.length; // Length of the incoming text
@@ -85,8 +83,15 @@ export default {
     },
   },
   async setup() {
+    const { meta } = useMeta({
+      title: "Loading...",
+    });
     const router = useRouter();
-    const paginatedCollectables = useDropsWithPagination(router.currentRoute.value.params.artistId);
+    const {data} = await ArtistService.show(router.currentRoute.value.params.artistSlug);
+    const artist = ref(data);
+    meta.title = artist.value.name;
+
+    const paginatedCollectables = useDropsWithPagination(artist.value.id);
     await paginatedCollectables.load();
     const hasMore = computed(() => paginatedCollectables.hasMore.value);
     const handleLoadMore = async () => {
@@ -101,8 +106,6 @@ export default {
         params: { contractAddress: address },
       });
     };
-    const {data} = await ArtistService.show(router.currentRoute.value.params.artistId);
-    const artist = ref(data);
 
     return {
       artist,
