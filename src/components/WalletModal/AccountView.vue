@@ -49,7 +49,7 @@
           <textarea id="winner-description" class="w-full outlined-input mt-2" v-model="descriptionField.value" ></textarea>
           <span class="error-notice">{{ descriptionField.errors[0] }}</span>
         </div>
-          
+
         <div class="flex items-center justify-center mb-4 mt-8">
           <button type="submit" class="cursor-pointer primary button mt-3 md:mt-0">
             Submit
@@ -143,6 +143,7 @@ export default {
             store.dispatch('application/closeModal');
           })
           .catch(e => {
+            console.error(e)
             toast.add({severity:'error', summary:'Error', detail:'Profile update failed.', life: 3000});
         });
       }

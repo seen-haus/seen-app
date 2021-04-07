@@ -135,7 +135,6 @@ import HowToVideo from "@/components/HowToVideo.vue";
 import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 
-import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
 import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
 

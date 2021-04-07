@@ -146,7 +146,7 @@
 </template>
 
 <script>
-import { computed } from "vue";
+import {computed, watchEffect} from "vue";
 import { useRouter } from "vue-router";
 
 import Container from "@/components/Container.vue";
@@ -160,6 +160,10 @@ import HowToVideo from "@/components/HowToVideo.vue";
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 import useCollectablesWithPagination from "@/hooks/useCollectablesWithPagination.js";
 import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
+import useWeb3 from "@/connectors/hooks";
+import {Web3Provider} from "@ethersproject/providers";
+import {formatEther} from "@ethersproject/units";
+import {useTokenContract} from "@/hooks/useContract";
 
 export default {
   name: "Home",
@@ -209,6 +213,24 @@ export default {
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
 
     paginatedArtists.load();
+
+    // @TODO  EXAMPLES
+    const {account, provider} = useWeb3();
+    watchEffect(async() => {
+      if (account.value) {
+        //1. ETH balance (should update if account change)
+        const library = new Web3Provider(provider.value);
+        const balance = await library.getBalance(account.value);
+        console.log("ETH BALANCE", formatEther(balance))
+        //2 SEEN Balance (should update if account change)
+        const seenContract = useTokenContract("0xca3fe04c7ee111f0bbb02c328c699226acf9fd33");
+        const seenBalance = await seenContract.balanceOf('0x76bbd639c87aac623aad1c3b648e6187a9392dea')
+        console.log("SEEN BALANCE", formatEther(seenBalance))
+
+      }
+    }, {
+      flush: "post"
+    })
 
     return {
       heroCollectable,
