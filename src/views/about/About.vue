@@ -64,6 +64,7 @@
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
+import { useMeta } from "vue-meta";
 
 export default {
   name: "About",
@@ -72,6 +73,11 @@ export default {
     FencedTitle,
     MediaLoader,
   },
+  setup() {
+    const { meta } = useMeta({
+      title: "About seen.haus",
+    });
+  }
 };
 </script>
 

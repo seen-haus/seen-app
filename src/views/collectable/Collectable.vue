@@ -108,46 +108,6 @@
             Artist statement
           </div>
           <artist-card class="shadow-md" :artist="artist" />
-
-          <!-- <template v-if="showAdditionalInformation">
-            <div class="text-4xl font-title font-bold mt-14 mb-6">
-              Additional Information
-            </div>
-
-            <div class="rounded-container mb-6">
-              <div class="text-3xl font-title font-bold mb-4">
-                Tangible + Digital
-              </div>
-
-              <div class="text-gray-500">
-                Auction winners will receive both a physical version of the
-                artwork as well as a digital representation in the form of an
-                NFT.
-              </div>
-            </div>
-
-            <div class="rounded-container mb-6">
-              <div class="text-3xl font-title font-bold mb-4">Sale</div>
-
-              <div class="text-gray-500">
-                After the auction ends an NFT will be sent to the winners
-                address immediately. It can be kept on seen.haus or transferred
-                to an NFT marketplace.
-              </div>
-            </div>
-
-            <div class="rounded-container mb-6">
-              <div class="text-3xl font-title font-bold mb-4">
-                Shipping & Handling
-              </div>
-
-              <div class="text-gray-500">
-                All physical items are eligible for worldwide, expedited and
-                insured shipping. Details will be coordinated with the winner
-                after the auction ends.
-              </div>
-            </div>
-          </template> -->
         </div>
 
         <div class="right-side col-span-5">
@@ -221,6 +181,7 @@
 <script>
 import { computed, reactive } from "vue";
 import { useRoute } from "vue-router";
+import { useMeta } from "vue-meta";
 
 import FencedTitle from "@/components/FencedTitle.vue";
 import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
@@ -292,11 +253,41 @@ export default {
       // updateCollectableState,
     } = useCollectableInformation();
 
+    const keywords = computed(() => {
+      let words = ['collectable', 'drop', 'seen', 'seen.haus'];
+      if (isTangible) words.push('tangible')
+      if (isNft) words.push('nft')
+      if (isAuction) words.push('auction')
+      else words.push('sale')
+
+      return words.join(' ');
+    });
+
+    const { meta } = useMeta({
+      title: title.value || "Collectable",
+      meta: [
+        {
+          name: "keywords",
+          content: '',
+        },
+        {
+          name: "description",
+          content: ''
+        },
+      ],
+    });
+
     const isLoading = computed(() => state.loading);
 
     const showAdditionalInformation = computed(
       () => type.value === "tangible" || type.value === "tangible_nft"
     );
+
+    const updateMeta = () => {
+      meta.title = title.value || "Collectable";
+      meta.meta[0].content = keywords.value;
+      meta.meta[1].content = description.value.replace(/<\/?("[^"]*"|'[^']*'|[^>])*(>|$)/g, "");
+    }
 
     (async function loadCollectable() {
       state.loading = true;
@@ -312,6 +303,7 @@ export default {
       state.collectable = data;
 
       setCollectable(data);
+      updateMeta();
     })();
 
     return {

@@ -142,6 +142,8 @@
 </template>
 
 <script>
+import { useMeta } from "vue-meta";
+
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import CollapsibleTile from "./components/CollapsibleTile.vue";
@@ -153,6 +155,11 @@ export default {
     FencedTitle,
     CollapsibleTile,
   },
+  setup() {
+    const { meta } = useMeta({
+      title: "FAQ",
+    });
+  }
 };
 </script>
 

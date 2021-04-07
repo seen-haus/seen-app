@@ -99,6 +99,7 @@
 <script>
 import { ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useMeta } from "vue-meta";
 import useWeb3 from "@/connectors/hooks";
 
 import { UserService } from "@/services/apiService";
@@ -143,6 +144,9 @@ export default {
     },
   },
   async setup() {
+    const { meta } = useMeta({
+      title: "Profile",
+    });
     const router = useRouter();
     const route = useRoute();
     const isUserFound = ref(true);

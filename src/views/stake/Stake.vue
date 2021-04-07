@@ -118,6 +118,8 @@
 </template>
 
 <script>
+import { useMeta } from "vue-meta";
+
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
 import StakeOrWithdrawCard from "@/views/stake/components/StakeOrWithdrawCard";
@@ -125,6 +127,11 @@ import StakeOrWithdrawCard from "@/views/stake/components/StakeOrWithdrawCard";
 export default {
   name: "Stake",
   components: { FencedTitle, Container, StakeOrWithdrawCard },
+  setup() {
+    const { meta } = useMeta({
+      title: "Stake",
+    });
+  }
 };
 </script>
 
