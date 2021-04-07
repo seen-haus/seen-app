@@ -134,7 +134,7 @@
           />
 
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
-            History
+            Recent bids
           </div>
           <list-of-buyers class="mb-12" :list="events"/>
 
@@ -202,6 +202,7 @@ import useCollectableInformation from "@/hooks/useCollectableInformation.js";
 import useWeb3 from "@/connectors/hooks";
 import {formatEther, parseEther} from "@ethersproject/units";
 import {useV1AuctionContract, useV1NftContract} from "@/hooks/useContract";
+import useContractEvents from "@/hooks/useContractEvents";
 import {BigNumber} from "@ethersproject/bignumber";
 
 export default {
@@ -262,6 +263,14 @@ export default {
       // updateCollectableState,
     } = useCollectableInformation();
 
+    const {
+      mergedEvents,
+      lastBid,
+      initializeContractEvents,
+      bid,
+      buy,
+    } = useContractEvents()
+
     const keywords = computed(() => {
       let words = ['collectable', 'drop', 'seen', 'seen.haus'];
       if (isTangible) words.push('tangible')
@@ -312,124 +321,9 @@ export default {
       state.collectable = data;
 
       setCollectable(data);
+      initializeContractEvents(data);
       updateMeta();
     })();
-
-    const {account, provider} = useWeb3();
-    // do not use watchEffect
-
-    watchEffect(async () => {
-      // init Auction or NFT or tangible
-      // check the end date (if avail.)
-      let init = async () => {
-        // !! IMPORTANT !! remove listeners on beforeDestroy
-
-        // ============= IF is AUCTION =============
-        if (isAuction.value) {
-          // EXAMPLE https://etherscan.io/address/0xCEDC9a3c76746F288C87c0eBb0468A1b57484cb1#readContract
-          if (version.value === 1) {
-            console.log(state.contractAddress)
-            let contract = useV1AuctionContract(state.contractAddress)
-            // last bid
-            let lastBid = await contract.lastBid()
-            console.log("lastBid in ETH ", formatEther(lastBid))
-
-            // End Auction date
-            let auctionLength = await contract.auctionLength()
-            let startBidTime = await contract.startBidTime()
-            console.log("ENDS auctionLength + startBidTime", auctionLength.toString(), startBidTime.toString())
-
-            // End Subscribe to event
-            await contract.on("Bid", (evt) => {
-              // Handle bid event: add to events, check/update end time, update min bid!
-            })
-            // !! DONT FORGET !! await contract.off("Bid") https://docs.ethers.io/v5/api/contract/contract/#Contract-on
-            // Get past bids
-            let bids = await contract.queryFilter("Bid");
-            console.log("==== PAST EVENTS START ==== ")
-            bids.forEach(async (bid) => {
-              let decodedEvent = bid.decode(bid.data, bid.topics);
-              // Map the event to current structure
-              // The same event will cale through event listener
-              let evt = bid.decode(bid.data, bid.topics)
-              console.log("BIDDER", evt.who)
-              console.log("Bid amount", formatEther(evt.amount))
-            });
-            console.log("==== PAST EVENTS END ====")
-
-          }
-
-          if (version.value === 2) {
-            console.log("VERSION v2")
-          }
-
-          // ============= IF is SALE =============
-        } else {
-
-          if (version.value === 1) {
-            // useV1TangibleContract
-            console.log(state.contractAddress)
-            let contract = useV1NftContract(state.contractAddress)
-            let start = await contract.start()
-            let price = await contract.price()
-            let supply = await contract.supply()
-            //
-            console.log("START TIME ", start)
-            console.log("PRICE ", price)
-            console.log("SUPPLY LEFT ", supply)
-            await contract.on("Buy", (evt) => {
-              // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
-            })
-
-            let buys = await contract.queryFilter("Buy")
-            console.log("==== PAST EVENTS START ==== ")
-            buys.forEach(async (buy) => {
-              let decodedEvent = buy.decode(buy.data, buy.topics);
-              // Map the event to current structure
-              // The same event will cale through event listener
-              let evt = buy.decode(buy.data, buy.topics)
-              console.log("buyer", evt.buyer)
-              console.log("Qty ", evt.amount.toString())
-              console.log("Price in ETH ", formatEther((price * (parseInt(evt.amount))).toString()))
-              console.log("==== PAST EVENTS END ==== ")
-            });
-
-          }
-          if (version.value === 2) {
-            console.log("VERSION v2")
-          }
-
-        }
-
-        return true;
-      }
-
-      // init this bitch
-      await init();
-
-      // If click on bid
-      let bid = async () => {
-        // 1. get new contract
-        let contract = useV1AuctionContract(state.contractAddress, true)
-        let amount = 1 // 1 ETH
-        const gasPrice = await provider.getGasPrice();
-        amount = parseEther((new BigNumber(amount)).toString())
-        let tx = contract.bid(amount, {gasPrice})
-        await tx.wait()
-      }
-
-      // If click on buy
-      let buy = async () => {
-        // 1. get new contract
-        let contract = useV1NftContract(state.contractAddress, true)
-        let qty = (new BigNumber(1)) // 1 ETH
-        const gasPrice = await provider.getGasPrice();
-        const price = 1; // 1ETH
-        let value = parseEther(qty * price);
-        let tx = contract.buy(qty.toString(), {gasPrice, value, from: account.value})
-        await tx.wait()
-      }
-    });
 
     return {
       isLoading,

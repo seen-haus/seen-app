@@ -48,7 +48,7 @@
       <button class="button opensea mt-6" v-if="!isCollectableActive">
         Opensea
       </button>
-      <button class="button primary" v-else>
+      <button class="button primary" v-else @click="placeABid">
         {{ isAuction ? "Place a bid" : "Buy now" }}
       </button>
     </div>
@@ -181,6 +181,10 @@ export default {
     const timerRef = ref(null);
     const currentProgress = ref(props.progress);
 
+    const placeBid = () => {
+
+    }
+
     // const startsAt = computed(() => "2021-03-13T21:00:00.000Z");
     // const endsAt = computed(() => "2021-03-19T21:00:00.000Z");
 
@@ -230,6 +234,7 @@ export default {
       convertEthToUSDAndFormat,
       openWinnerModal,
       isWinnerButtonShown,
+      placeBid,
     };
   },
 };
