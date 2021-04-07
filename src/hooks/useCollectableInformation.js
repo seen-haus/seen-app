@@ -1,12 +1,21 @@
-import { ref, computed } from 'vue';
+import { ref, computed, watchEffect } from 'vue';
 
 import {
   COLLECTABLE_TYPE,
   COLLECTABLE_STATE,
 } from "@/constants/Collectables.js";
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
+import useWeb3 from "@/connectors/hooks"
 
 export default function useCollectableInformation(initialCollectable = {}) {
+  const {provider} = useWeb3();
+  const isListeningToEvents = ref(false);
+  watchEffect(() => {
+    debugger // eslint-disable-line
+    if (provider.value && !isListeningToEvents.value) {
+      console.log();
+    }
+  })
   const collectable = ref(initialCollectable);
 
   const events = ref(collectable.value.events || []);
