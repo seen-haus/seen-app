@@ -13,7 +13,7 @@
       >
         <span class="tracking-widest mr-4">ITEMS LEFT </span>
         <tag class="bg-fence-light self-end text-gray-400 font-semibold"
-          >{{ items }}/{{ items_of }}</tag
+          >{{ items_of - items }}/{{ items_of }}</tag
         >
       </div>
 
@@ -27,21 +27,29 @@
       />
 
       <template v-if="isCollectableActive">
-        <div class="outlined-input mt-5">
-          <input type="text" placeholder="Enter your bid" />
-          <div class="icon w-5 mr-1">
-            <img
-              src="@/assets/icons/icon--ethereum.svg"
-              class="cursor-pointer mr-2 opacity-50"
-              alt="SEEN"
-            />
-          </div>
-          <div class="type font-bold">ETH</div>
+        <div class="outlined-input mt-5" :class="{ invalid: hasError }">
+          <input
+            v-model="currentBid"
+            type="number"
+            :placeholder="isAuction ? 'Enter your bid' : 'Enter amount'"
+          />
+          <template v-if="isAuction">
+            <div class="icon w-5 mr-1">
+              <img
+                src="@/assets/icons/icon--ethereum.svg"
+                class="cursor-pointer mr-2 opacity-50"
+                alt="SEEN"
+              />
+            </div>
+            <div class="type font-bold">ETH</div>
+          </template>
         </div>
 
         <div class="text-center text-gray-400 text-sm py-2">
           <p v-if="!ethereum"><i class="fas fa-spinner fa-spin"></i></p>
-          <p v-else>Approx. {{convertEthToUSDAndFormat(price)}}</p>
+          <p v-else>
+            Approx. {{ convertEthToUSDAndFormat(currentBidValue || "0") }}
+          </p>
         </div>
       </template>
 
@@ -58,7 +66,11 @@
         <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
           AUCTION ENDED
         </div>
-        <button class="button dark mt-4 w-full" @click="openWinnerModal" v-if="isWinnerButtonShown">
+        <button
+          class="button dark mt-4 w-full"
+          @click="openWinnerModal"
+          v-if="isWinnerButtonShown"
+        >
           <i class="fas fa-play-circle mr-2 text-xl icon-left text-white"></i>
           Claim your winnings
         </button>
@@ -77,7 +89,7 @@
           @onProgress="updateProgress"
         />
         <progress-bar
-          :progress="0.5"
+          :progress="currentProgress"
           class="bg-gray-300 h-3 mt-3"
           :colorClass="
             isCollectableActive
@@ -103,7 +115,7 @@
             @onProgress="updateProgress"
           />
           <progress-bar
-            :progress="0.5"
+            :progress="currentProgress"
             class="bg-gray-300 h-3 mt-3"
             :colorClass="
               isCollectableActive
@@ -120,7 +132,7 @@
             ITEMS LEFT
           </div>
           <div class="text-2.5xl font-bold py-2">
-            {{ items }} out of {{ items_of }}
+            {{ items_of - items }} out of {{ items_of }}
           </div>
           <progress-bar :progress="progress" class="bg-gray-300 h-3 mt-3" />
         </template>
@@ -131,15 +143,15 @@
 
 
 <script>
-import { ref, computed } from "vue";
-import emitter from "@/services/utils/emitter"
-import useWeb3 from "@/connectors/hooks"
+import { ref, computed, toRefs } from "vue";
+import emitter from "@/services/utils/emitter";
+import useWeb3 from "@/connectors/hooks";
 
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
-import useExchangeRate from '@/hooks/useExchangeRate.js'
+import useExchangeRate from "@/hooks/useExchangeRate.js";
 
 export default {
   name: "BidCard",
@@ -164,15 +176,16 @@ export default {
     is_sold_out: Boolean,
     collectable: Object,
   },
-  setup(props) {
-    // const state = reactive({
-    //   progress: 0.35,
-    // });
-    const {account} = useWeb3();
+  setup(props, ctx) {
+    const { account } = useWeb3();
+    const hasError = ref(false);
     const collectableData = ref(props.collectable);
     const winner = computed(() => collectableData.value.winner_address);
     const isWinnerButtonShown = computed(() => {
-      if (typeof account.value === "string" && typeof winner.value === "string") {
+      if (
+        typeof account.value === "string" &&
+        typeof winner.value === "string"
+      ) {
         return account.value.toLowerCase() === winner.value.toLowerCase();
       } else {
         return false;
@@ -180,26 +193,38 @@ export default {
     });
     const timerRef = ref(null);
     const currentProgress = ref(props.progress);
+    const currentBid = ref("");
+    const currentBidValue = computed(() => {
+      if (props.isAuction) {
+        return currentBid.value;
+      } else {
+        return currentBid.value * props.price;
+      }
+    });
 
-    const placeBid = () => {
+    const placeABid = () => {
+      let amount = 0;
+      try {
+        if (props.isAuction.value) {
+          amount = parseFloat(currentBid.value, 10);
+          if (isNaN(amount)) throw new Error("invalid number");
+          if (amount < props.price) throw new Error("not enough funds");
+        } else {
+          amount = parseInt(currentBid.value, 10);
+          if (isNaN(amount)) throw new Error("invalid number");
+          if (amount > props.items_of - props.items)
+            throw new Error("not enough items");
+        }
 
-    }
+        console.log(amount, props.items, props.items_of);
 
-    // const startsAt = computed(() => "2021-03-13T21:00:00.000Z");
-    // const endsAt = computed(() => "2021-03-19T21:00:00.000Z");
-
-    // const isAuction = computed(() => true);
-    // const numberOfBids = computed(() => 5);
-
-    // const edition = computed(() => 1);
-    // const edition_of = computed(() => 1);
-    // const items = computed(() => 3);
-    // const items_of = computed(() => 40);
-
-    // const price = computed(() => 22.05);
-
-    // const progress = computed(() => state.progress);
-    // const hasEnded = computed(() => false);
+        hasError.value = false;
+        ctx.emit("onBid", currentBid.value);
+      } catch (e) {
+        hasError.value = true;
+        console.error("Error when trying to bid", e);
+      }
+    };
 
     const addTime = function () {
       if (timerRef.value != null) timerRef.value.addSeconds(60 * 60 * 24);
@@ -209,24 +234,13 @@ export default {
       currentProgress.value = event;
     };
 
-
-
     const { ethereum, convertEthToUSDAndFormat } = useExchangeRate();
 
     const openWinnerModal = () => {
-      emitter.emit('openWinnerModal', collectableData.value);
-    }
+      emitter.emit("openWinnerModal", collectableData.value);
+    };
 
     return {
-      // startsAt,
-      // endsAt,
-      // isAuction,
-      // numberOfBids,
-      // edition,
-      // edition_of,
-      // items,
-      // items_of,
-      // price,
       currentProgress,
       addTime,
       updateProgress,
@@ -234,7 +248,10 @@ export default {
       convertEthToUSDAndFormat,
       openWinnerModal,
       isWinnerButtonShown,
-      placeBid,
+      placeABid,
+      currentBid,
+      currentBidValue,
+      hasError,
     };
   },
 };
@@ -246,6 +263,10 @@ export default {
   @apply flex items-center border rounded-md border-black px-5;
   height: 60px;
   border-width: 2px;
+
+  &.invalid {
+    @apply border-red-500;
+  }
 
   input {
     @apply outline-none flex-grow border-transparent;

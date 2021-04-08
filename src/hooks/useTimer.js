@@ -36,7 +36,9 @@ export default function useTimer(callback) {
     callback: callback,
   });
 
-  const percentage = computed(() => state.percentage);
+  const percentage = computed(() => {
+    return state.percentage;
+  });
   const value = computed(() => state.value);
 
   function subscribe() {
@@ -74,7 +76,6 @@ export default function useTimer(callback) {
     }
 
     state.percentage = +(progress / duration).toFixed(2);
-
     if (progressLeft <= 0) {
       timerState.value = TIMER_STATE.DONE;
       state.value = 'Auction ended';
@@ -126,7 +127,7 @@ export default function useTimer(callback) {
 
   function addSeconds(seconds) {
     state.endDate = state.endDate + (seconds * 1000);
-    tick(Date.now());
+    startTimer({ startDate: state.startDate, endDate: state.endDate });
   }
 
   function endTimer() {

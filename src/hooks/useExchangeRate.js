@@ -13,7 +13,7 @@ export default function useExchangeRate() {
   };
 
   const convertEthToUSDAndFormat = function(numOfEth) {
-    return formatCurrency((currencies.value ? currencies.value.ethereum : 0) * parseInt(numOfEth, 10))
+    return formatCurrency((currencies.value ? currencies.value.ethereum : 0) * parseFloat(numOfEth, 10))
   }
 
   const currencies = computed(() => store.getters['application/currencies']);

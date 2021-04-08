@@ -1,4 +1,5 @@
-import {ref, computed} from 'vue';
+import { ref, computed, watch } from 'vue';
+import useContractEvents from "@/hooks/useContractEvents";
 
 import {
     COLLECTABLE_TYPE,
@@ -7,7 +8,16 @@ import {
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 
 export default function useCollectableInformation(initialCollectable = {}) {
+    const {
+        mergedEvents,
+        lastBid,
+        initializeContractEvents,
+        bid,
+        buy,
+    } = useContractEvents();
+
     const collectable = ref(initialCollectable);
+    const isContractEnabled = ref(false);
 
     const events = ref(collectable.value.events || []);
     const price = ref(0.0);
@@ -24,7 +34,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const artist = computed(() => collectable.value.artist);
     const title = computed(() => collectable.value.title);
     const description = computed(() => collectable.value.description);
-    const version =  computed(() => collectable.value.version);
+    const version = computed(() => collectable.value.version);
 
     const is_sold_out = computed(
         () => {
@@ -93,7 +103,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         events.value = data.events.reverse();
         const lastestEvent = events.value[0];
 
-        items.value = 0;
+        items.value = events.value.length; // Amount of items sold
         itemsOf.value = data.available_qty || 0;
 
         // AUCTION
@@ -146,16 +156,48 @@ export default function useCollectableInformation(initialCollectable = {}) {
         collectableState.value = COLLECTABLE_STATE.WAITING;
     };
 
+    const enableContract = function () {
+        if (collectable.value == null) return;
+        if (isContractEnabled.value) return;
+
+        const now = Date.now();
+        const start = new Date(startsAt.value).getTime();
+        const end = new Date(endsAt.value).getTime();
+
+        if (now >= start && now < end) {
+            console.log('contract initialized');
+            isContractEnabled.value = true;
+            initializeContractEvents(collectable.value);
+        }
+    };
+
     const setCollectable = function (data) {
         collectable.value = data;
         updateInformation(data);
         updateCollectableState();
+        enableContract(data);
     };
 
     // Update the information on load
     if (collectable.value.type != null) {
         setCollectable(collectable.value);
     }
+
+    // Blockchain watchers
+    watch(mergedEvents, (v) => {
+        console.log('updating events from chain', v);
+        events.value = v;
+
+        // Update ends_at, price
+    });
+
+    watch(lastBid, (v) => {
+        console.log('updaing last bid', v);
+        price.value = 5.0; // TODO
+        priceUSD.value = 1000, 0; // TODO
+
+        // Update ends_at, price
+    });
 
     return {
         collectableState,

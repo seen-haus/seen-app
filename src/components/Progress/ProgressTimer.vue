@@ -8,7 +8,7 @@
 
 <script>
 import useTimer, {TIMER_STATE} from "@/hooks/useTimer.js";
-import { computed, watch, ref } from 'vue';
+import { computed, watch, ref, toRefs } from 'vue';
 
 export default {
   name: "ProgressTimer",
@@ -33,6 +33,12 @@ export default {
 
     watch(percentage, () => ctx.emit('onProgress', percentage.value));
     watch(timerState, () => ctx.emit('onTimerStateChange', timerState.value));
+    watch(toRefs(props).endDate, (v, p) => {
+      if (v !== p) {
+        const diff = new Date(v).getTime() - new Date(p).getTime();
+        addSeconds(diff / 1000);
+      }
+    });
 
     const labelText = computed(() => {
       if (timerState.value === TIMER_STATE.WAITING) {

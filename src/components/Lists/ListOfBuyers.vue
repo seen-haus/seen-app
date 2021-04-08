@@ -1,38 +1,49 @@
 <template>
   <div class="list-of-buyers rounded-container">
-    <template
-      v-for="(buyer, index) in list.slice(0, showCount)"
-      :key="buyer.id"
-    >
-      <div class="list-tile flex items-center py-6">
-        <icon :size="40" :wallet-address="buyer.wallet_address" class="mr-4" />
+    <template v-if="list.length === 0">
+      <div class="text-center text-gray-400">
+        No buyers yet! Be the first!
+      </div>
+    </template>
+    <template v-else>
+      <template
+        v-for="(buyer, index) in list.slice(0, showCount)"
+        :key="buyer.id"
+      >
+        <div class="list-tile flex items-center py-6">
+          <icon
+            :size="40"
+            :wallet-address="buyer.wallet_address"
+            class="mr-4"
+          />
 
-        <div class="flex flex-col flex-grow">
-          <div class="address text-gray-500 tracking-widest">
-            {{ shortenAddress(buyer.wallet_address) }}
+          <div class="flex flex-col flex-grow">
+            <div class="address text-gray-500 tracking-widest">
+              {{ shortenAddress(buyer.wallet_address) }}
+            </div>
+            <div class="time text-xs text-gray-400">
+              {{ daysAgo(buyer.updated_at) }}
+            </div>
           </div>
-          <div class="time text-xs text-gray-400">
-            {{ daysAgo(buyer.updated_at) }}
-          </div>
+
+          <price-display
+            size="xs"
+            class="items-end"
+            :price="buyer.value"
+            :priceUSD="buyer.value_in_usd"
+          />
         </div>
 
-        <price-display
-          size="xs"
-          class="items-end"
-          :price="buyer.value"
-          :priceUSD="buyer.value_in_usd"
-        />
-      </div>
+        <div
+          v-if="index != 4"
+          class="divider h-0 border-t-2 border-gray-200"
+        ></div>
+      </template>
 
-      <div
-        v-if="index != 4"
-        class="divider h-0 border-t-2 border-gray-200"
-      ></div>
+      <button class="button outline w-full mt-6" @click="onLoadMore">
+        Load More
+      </button>
     </template>
-
-    <button class="button outline w-full mt-6" @click="onLoadMore">
-      Load More
-    </button>
   </div>
 </template>
 
@@ -45,7 +56,7 @@ import Icon from "@/components/Common/Icon.vue";
 
 export default {
   name: "ListOfBuyers",
-  components: { PriceDisplay },
+  components: { PriceDisplay, Icon },
   props: {
     list: Array,
   },
@@ -66,7 +77,6 @@ export default {
 
     return {
       shortenAddress,
-      Icon,
       daysAgo,
       onLoadMore,
       showCount,

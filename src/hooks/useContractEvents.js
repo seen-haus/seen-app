@@ -3,55 +3,28 @@ import useCollectableInformation from "@/hooks/useCollectableInformation.js";
 import {formatEther, parseEther} from "@ethersproject/units";
 import {useV1AuctionContract, useV1NftContract} from "@/hooks/useContract";
 import {BigNumber} from "@ethersproject/bignumber";
-import {ref} from 'vue';
+import { computed, ref } from 'vue';
 
 export default function useContractEvents() {
   const {account, provider} = useWeb3();
   const contractAddress = ref(null);
   const mergedEvents = ref([]);
   const lastBid = ref(null);
+  const collectable = ref(null);
 
-  const {
-    collectable,
-    collectableState,
-    price,
-    priceUSD,
-    items,
-    itemsOf,
-    progress,
-    isCollectableActive,
-    isUpcomming,
-    // Static
-    type,
-    media,
-    // firstMedia,
-    gallerySortedMedia,
-    artist,
-    title,
-    description,
-    events,
-    startsAt,
-    endsAt,
-    liveStatus,
-    is_sold_out,
-    edition,
-    edition_of,
-    isTangible,
-    isNft,
-    isAuction,
-    version,
-    // Methods
-    updateProgress,
-    setCollectable,
-    // updateInformation,
-    // updateCollectableState,
-  } = useCollectableInformation();
+  const isAuction = computed(() => {
+    return collectable.value ? collectable.value.isAuction : false;
+  });
 
-  const bid = async () => {
+  const version = computed(() => {
+    return collectable.value ? collectable.value.version : '1.0';
+  });
+
+  const bid = async (amount) => {
+    if (amount == null) return;
     // 1. get new contract
     if (contractAddress.value) return; // do toastr
     let contract = useV1AuctionContract(contractAddress.value, true)
-    let amount = 1 // 1 ETH
     const gasPrice = await provider.getGasPrice();
     amount = parseEther((new BigNumber(amount)).toString())
     let tx = contract.bid(amount, {gasPrice})
@@ -59,23 +32,27 @@ export default function useContractEvents() {
   }
 
   // If click on buy
-  const buy = async () => {
+  const buy = async (amount) => {
+    const price = collectable.value && collectable.value.price;
+    if (price == null || amount == null) return;
     // 1. get new contract
     if (contractAddress.value) return; // do toastr
     let contract = useV1NftContract(contractAddress.value, true)
-    let qty = (new BigNumber(1)) // 1 ETH
+    let qty = (new BigNumber(amount)); // 1 ETH
     const gasPrice = await provider.getGasPrice();
-    const price = 1; // 1ETH
     let value = parseEther(qty * price);
     let tx = contract.buy(qty.toString(), {gasPrice, value, from: account.value})
     await tx.wait()
+    console.log('buyed')
   }
 
   const initializeContractEvents = async (collectableData) => {
-    setCollectable(collectableData);
+    collectable.value = collectableData;
     contractAddress.value = collectableData.contract_address;
     mergedEvents.value = collectableData.events;
     // !! IMPORTANT !! remove listeners on beforeDestroy
+
+    console.log('initialized');
 
     // ============= IF is AUCTION =============
     if (isAuction.value) {
@@ -149,8 +126,8 @@ export default function useContractEvents() {
           console.log("buyer", evt.buyer)
           console.log("Qty ", evt.amount.toString())
           console.log("Price in ETH ", formatEther((price * (parseInt(evt.amount))).toString()))
-          console.log("==== PAST EVENTS END ==== ")
         });
+        console.log("==== PAST EVENTS END ==== ")
 
       }
       if (version.value === 2) {
