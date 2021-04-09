@@ -17,7 +17,7 @@
       </div>
     </container>
 
-    <div class="bg-background-gray border-t pb-28">
+    <div class="pb-28">
       <container class="py-6">
         <div
           class="submission-form bg-white rounded-lg shadow-lifted overflow-hidden px-8 lg:px-14 py-12 mx-auto"

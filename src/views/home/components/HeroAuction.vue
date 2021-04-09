@@ -1,9 +1,10 @@
 <template>
   <div class="hero-auction">
     <container class="py-15 flex flex-col lg:flex-row">
-      <div class="media relative flex items-center flex-1">
-        <!-- <img class="image" :src="media" alt="" /> -->
-
+      <div
+        class="media relative flex items-center flex-1 cursor-pointer"
+        @click="navigateToCollectable(collectable.contract_address)"
+      >
         <media-loader
           :src="firstMedia"
           aspectRatio="100%"
@@ -54,7 +55,7 @@
 
         <div class="auction-action flex items-center pt-14">
           <button class="button light mr-7" @click="navigateToCollectable">
-            View Auction <i class="fas fa-arrow-right ml-3 icon-right"></i>
+            View Drop <i class="fas fa-arrow-right ml-3 icon-right"></i>
           </button>
 
           <price-display
@@ -68,11 +69,18 @@
 
         <div class="timer pt-12">
           <progress-bar
+            :inversed="isAuction"
             class="bg-fence-dark h-3"
             :progress="progress"
-            :colorClass="isCollectableActive ? (isUpcomming ? 'bg-white' : 'bg-primary') : 'bg-white'"
+            :colorClass="
+              isCollectableActive
+                ? isUpcomming
+                  ? 'bg-white'
+                  : 'bg-primary'
+                : 'bg-white'
+            "
           />
-          
+
           <template v-if="isAuction">
             <div
               class="text-sm mt-2 text-gray-400 font-semibold"
@@ -185,6 +193,7 @@ export default {
     };
 
     const navigateToCollectable = function () {
+      if (!isCollectableActive) return;
       router.push({
         name: "collectableAuction",
         params: { contractAddress: props.collectable.contract_address },

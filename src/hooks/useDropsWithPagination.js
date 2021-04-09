@@ -3,10 +3,10 @@ import { COLLECTABLE_TYPE } from "@/constants/Collectables.js";
 import { computed, reactive } from "vue";
 
 
-export default function useDropsWithPagination(artistId = null) {
+export default function useDropsWithPagination(artistId = null, perPage = 12) {
   const state = reactive({
     items: [null, null, null, null, null, null],
-    perPage: 6,
+    perPage: perPage,
     page: 1,
     hasMore: false,
     filter: COLLECTABLE_TYPE.NONE,
@@ -14,7 +14,7 @@ export default function useDropsWithPagination(artistId = null) {
   });
 
   async function load() {
-    state.perPage = 6;
+    state.perPage = perPage;
     state.page = 1;
     state.hasMore = false;
 

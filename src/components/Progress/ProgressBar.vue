@@ -20,9 +20,13 @@ export default {
       type: String,
       default: "bg-primary",
     }, // Actual css class
+    inversed: {
+      type: Boolean,
+    }
   },
   computed: {
     progressPercent: function () {
+      if (this.inversed) return (100 - this.progress * 100) + "%";
       return this.progress * 100 + "%";
     },
     progressColor: function () {

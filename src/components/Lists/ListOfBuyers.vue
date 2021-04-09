@@ -30,14 +30,14 @@
       ></div>
     </template>
 
-    <button class="button outline w-full mt-6" @click="onLoadMore">
+    <button class="button outline w-full mt-6" @click="onLoadMore" v-if="showButton">
       Load More
     </button>
   </div>
 </template>
 
 <script>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { shortenAddress, getDaysAgo } from "@/services/utils/index";
 
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
@@ -49,8 +49,9 @@ export default {
   props: {
     list: Array,
   },
-  setup() {
+  setup(props) {
     const showCount = ref(3);
+    const showButton = computed(() => showCount.value < props.list.length);
 
     function daysAgo(updated_at) {
       if (updated_at) {
@@ -70,6 +71,7 @@ export default {
       daysAgo,
       onLoadMore,
       showCount,
+      showButton,
     };
   },
 };

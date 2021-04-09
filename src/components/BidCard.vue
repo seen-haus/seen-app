@@ -77,6 +77,7 @@
           @onProgress="updateProgress"
         />
         <progress-bar
+          :inversed="isAuction"
           :progress="0.5"
           class="bg-gray-300 h-3 mt-3"
           :colorClass="

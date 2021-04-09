@@ -17,14 +17,14 @@
           color="fence-light"
           textAlign="center"
           :closed="false"
-          >Featured Auctions</fenced-title
+          >Future Drops</fenced-title
         >
         <fenced-title
           class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
           color="fence-light"
           textAlign="left"
           :closed="false"
-          >Featured Auctions</fenced-title
+          >Future Drops</fenced-title
         >
         <router-link to="drops">
           <button class="button dark flex-shrink-0">
@@ -104,8 +104,7 @@
         <how-to-video class="my-12"></how-to-video>
 
         <div class="flex justify-center">
-          <button class="button dark mr-4">Read FAQs</button>
-          <button class="button outline">Meet the team</button>
+          <button class="button dark">Read FAQs</button>
         </div>
       </container>
     </div>
@@ -122,7 +121,7 @@
         color="fence-gray"
         textAlign="center"
         :closed="true"
-        >Meet artists
+        >Artists
       </fenced-title>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
