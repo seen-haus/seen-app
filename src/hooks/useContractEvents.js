@@ -1,24 +1,54 @@
 import useWeb3 from "@/connectors/hooks"
-import useCollectableInformation from "@/hooks/useCollectableInformation.js";
 import {formatEther, parseEther} from "@ethersproject/units";
 import {useV1AuctionContract, useV1NftContract} from "@/hooks/useContract";
 import {BigNumber} from "@ethersproject/bignumber";
-import { computed, ref } from 'vue';
+import { computed, ref, onBeforeUnmount } from 'vue';
+import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
+import useExchangeRate from "@/hooks/useExchangeRate.js";
 
 export default function useContractEvents() {
+  const { converEthToUSD } = useExchangeRate();
   const {account, provider} = useWeb3();
   const contractAddress = ref(null);
   const mergedEvents = ref([]);
   const lastBid = ref(null);
   const collectable = ref(null);
+  const contractSubscription = ref(null);
 
-  const isAuction = computed(() => {
-    return collectable.value ? collectable.value.isAuction : false;
-  });
+  const destroySubscriptions = () => {
+    if (contractSubscription.value) {
+      contractSubscription.value.removeAllListeners();
+    }
+  };
+
+  onBeforeUnmount(() => {
+    destroySubscriptions();
+  })
+
+
+  const isAuction = computed(
+    () => collectable.value.purchase_type === PURCHASE_TYPE.AUCTION
+  );
 
   const version = computed(() => {
     return collectable.value ? collectable.value.version : '1.0';
   });
+
+  const mergeEvents = (event) => {
+    const evts = [...mergedEvents.value];
+    const existingEvt = evts.find(evt => evt.tx === event.tx);
+    if (existingEvt) {
+      return;
+    } else {
+      const insertIndex = evts.findIndex(evt => new Date(evt.created_at) >= event.created_at);
+      if (insertIndex != null) {
+        evts.splice(insertIndex, 0, event);
+      } else {
+        evts.push(event);
+      }
+    }
+    mergedEvents.value = evts;
+  }
 
   const bid = async (amount) => {
     if (amount == null) return;
@@ -46,6 +76,30 @@ export default function useContractEvents() {
     console.log('buyed')
   }
 
+  const createNormalizedEvent = async (contractEvent, type) => {
+    const trx = await contractEvent.getTransaction();
+    const blockNumber = await contractEvent.getBlock();
+    const tx = trx.hash;
+    // Map the event to current structure
+    // The same event will cale through event listener
+    const evt = contractEvent.decode(contractEvent.data, contractEvent.topics);
+    const wallet_address = type === 'bid' ? evt.who : evt.buyer;
+    const ethAmount = parseFloat(formatEther(evt.amount), 10);
+
+    const event = {
+      collectable_id: collectable.value.id,
+      created_at: new Date(blockNumber.timestamp * 1000),
+      event_type: type,
+      id: Math.random(),
+      tx,
+      updated_at: null,
+      value: ethAmount,
+      value_in_usd: converEthToUSD(ethAmount),
+      wallet_address,
+    }
+    mergeEvents(event);
+  }
+
   const initializeContractEvents = async (collectableData) => {
     collectable.value = collectableData;
     contractAddress.value = collectableData.contract_address;
@@ -58,10 +112,9 @@ export default function useContractEvents() {
     if (isAuction.value) {
       // EXAMPLE https://etherscan.io/address/0xCEDC9a3c76746F288C87c0eBb0468A1b57484cb1#readContract
       if (version.value === 1) {
-        console.log(contractAddress.value)
-        let contract = useV1AuctionContract(contractAddress.value)
+        const contract = useV1AuctionContract(contractAddress.value)
         // last bid
-        lastBid.value = await contract.lastBid()
+        lastBid.value = await contract.lastBid();
         console.log("lastBid in ETH ", formatEther(lastBid.value))
 
         // End Auction date
@@ -70,26 +123,16 @@ export default function useContractEvents() {
         console.log("ENDS auctionLength + startBidTime", auctionLength.toString(), startBidTime.toString())
 
         // End Subscribe to event
-        await contract.on("Bid", (evt) => {
+        contractSubscription.value = await contract.on("Bid", (evt) => {
           // Handle bid event: add to events, check/update end time, update min bid!
-        })
+        });
         // !! DONT FORGET !! await contract.off("Bid") https://docs.ethers.io/v5/api/contract/contract/#Contract-on
         // Get past bids
         // log_cab346fb
         // log_1e644af9
-        let bids = await contract.queryFilter("Bid");
+        const bids = await contract.queryFilter("Bid");
         console.log("==== PAST EVENTS START ==== ")
-        bids.forEach(async (bid) => {
-          var trx = await bid.getTransaction();
-          var trxRec = await bid.getTransactionReceipt();
-          let decodedEvent = bid.decode(bid.data, bid.topics);
-          console.log(bid, trx, trxRec);
-          // Map the event to current structure
-          // The same event will cale through event listener
-          let evt = bid.decode(bid.data, bid.topics)
-          console.log("BIDDER", evt.who)
-          console.log("Bid amount", formatEther(evt.amount))
-        });
+        bids.forEach((bid) => createNormalizedEvent(bid, 'bid'));
         console.log("==== PAST EVENTS END ====")
 
       }
@@ -103,7 +146,6 @@ export default function useContractEvents() {
 
       if (version.value === 1) {
         // useV1TangibleContract
-        console.log(contractAddress.value)
         let contract = useV1NftContract(contractAddress.value)
         let start = await contract.start()
         let price = await contract.price()
@@ -112,21 +154,13 @@ export default function useContractEvents() {
         console.log("START TIME ", start)
         console.log("PRICE ", price)
         console.log("SUPPLY LEFT ", supply)
-        await contract.on("Buy", (evt) => {
+        contractSubscription.value = await contract.on("Buy", (evt) => {
           // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
         })
 
-        let buys = await contract.queryFilter("Buy")
+        const buys = await contract.queryFilter("Buy")
         console.log("==== PAST EVENTS START ==== ")
-        buys.forEach(async (buy) => {
-          let decodedEvent = buy.decode(buy.data, buy.topics);
-          // Map the event to current structure
-          // The same event will cale through event listener
-          let evt = buy.decode(buy.data, buy.topics)
-          console.log("buyer", evt.buyer)
-          console.log("Qty ", evt.amount.toString())
-          console.log("Price in ETH ", formatEther((price * (parseInt(evt.amount))).toString()))
-        });
+        buys.forEach((buy) => createNormalizedEvent(buy, 'buy'));
         console.log("==== PAST EVENTS END ==== ")
 
       }

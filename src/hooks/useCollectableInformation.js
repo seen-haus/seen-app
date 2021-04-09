@@ -12,8 +12,6 @@ export default function useCollectableInformation(initialCollectable = {}) {
         mergedEvents,
         lastBid,
         initializeContractEvents,
-        bid,
-        buy,
     } = useContractEvents();
 
     const collectable = ref(initialCollectable);
@@ -163,6 +161,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
         const now = Date.now();
         const start = new Date(startsAt.value).getTime();
         const end = new Date(endsAt.value).getTime();
+        
+        // TODO: Remove this call
+        initializeContractEvents(collectable.value);
 
         if (now >= start && now < end) {
             console.log('contract initialized');

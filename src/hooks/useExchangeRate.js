@@ -16,6 +16,8 @@ export default function useExchangeRate() {
     return formatCurrency((currencies.value ? currencies.value.ethereum : 0) * parseFloat(numOfEth, 10))
   }
 
+  const converEthToUSD = (numOfEth) => (currencies.value ? currencies.value.ethereum : 0) * parseFloat(numOfEth, 10);
+
   const currencies = computed(() => store.getters['application/currencies']);
   const seen = computed(() => currencies.value ? currencies.value.seen : null);
   const bitcoin = computed(() => currencies.value ? currencies.value.bitcoin : null);
@@ -28,5 +30,6 @@ export default function useExchangeRate() {
     ethereum,
     formatCurrency,
     convertEthToUSDAndFormat,
+    converEthToUSD,
   };
 }

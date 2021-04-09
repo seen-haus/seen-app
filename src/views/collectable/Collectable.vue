@@ -180,7 +180,7 @@
 
 
 <script>
-import { computed, reactive, ref, watchEffect } from "vue";
+import { computed, onBeforeUnmount, reactive, ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import { useMeta } from "vue-meta";
 
@@ -263,9 +263,6 @@ export default {
     } = useCollectableInformation();
 
     const {
-      mergedEvents,
-      lastBid,
-      initializeContractEvents,
       bid,
       buy,
     } = useContractEvents();
