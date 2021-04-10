@@ -92,6 +92,11 @@ export const ExchangeRateService = {
         return $axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum%2Cbitcoin%2Cseen&vs_currencies=USD').catch(error => {
             throw new Error(`[RWV] ApiService ${error}`);
         });
+    },
+    getEthExchangeRate() {
+        return $axios.get(`https://api.coinpaprika.com/v1/tickers/eth-ethereum/historical?start=${parseInt(Date.now() / 1000) - 1100000}&limit=1&quote=usd&interval=5m`).catch(error => {
+            throw new Error(`[RWV] ApiService ${error}`);
+        });
     }
 };
 

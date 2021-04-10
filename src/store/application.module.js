@@ -39,6 +39,10 @@ const actions = {
                 ethereum: parseFloat(data.ethereum.usd, 10)
             });
         });
+        ExchangeRateService.getEthExchangeRate().then((data) => {
+            
+        });
+
     }
 
 };

@@ -130,7 +130,6 @@ export default function useContractEvents() {
           lastBid.value = event;
           auctionLength = await contract.auctionLength();
 
-          debugger; // eslint-disable-line
           // Handle bid event: add to events, check/update end time, update min bid!
         });
         // !! DONT FORGET !! await contract.off("Bid") https://docs.ethers.io/v5/api/contract/contract/#Contract-on
@@ -139,8 +138,8 @@ export default function useContractEvents() {
         // log_1e644af9
         const bids = await contract.queryFilter("Bid");
         console.log("==== PAST EVENTS START ==== ")
-        bids.forEach((bid) => {
-          const event = createNormalizedEvent(bid, 'bid');
+        bids.forEach(async (bid) => {
+          const event = await createNormalizedEvent(bid, 'bid');
           mergeEvents(event);
         });
         console.log("==== PAST EVENTS END ====")
@@ -166,15 +165,15 @@ export default function useContractEvents() {
         console.log("SUPPLY LEFT ", supply)
         await contract.on("Buy", async (evt) => {
           // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
-          const event = createNormalizedEvent(evt, 'buy');
+          const event = await createNormalizedEvent(evt, 'buy');
           mergeEvents(event);
           supply = await contract.supply();
         })
 
         const buys = await contract.queryFilter("Buy")
         console.log("==== PAST EVENTS START ==== ")
-        buys.forEach((buy) => {
-          const event = createNormalizedEvent(buy, 'buy');
+        buys.forEach(async (buy) => {
+          const event = await createNormalizedEvent(buy, 'buy');
           mergeEvents(event)
         });
         console.log("==== PAST EVENTS END ==== ")
