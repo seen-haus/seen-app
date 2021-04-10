@@ -153,6 +153,7 @@ import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
+import useContractEvents from "@/hooks/useContractEvents";
 
 export default {
   name: "BidCard",
@@ -178,9 +179,13 @@ export default {
     collectable: Object,
   },
   setup(props, ctx) {
+    const isAuction = ref(props.isAuction);
     const { account } = useWeb3();
     const hasError = ref(false);
     const collectableData = ref(props.collectable);
+    const {
+      balance
+    } = useContractEvents();
     const winner = computed(() => collectableData.value.winner_address);
     const isWinnerButtonShown = computed(() => {
       if (
@@ -196,7 +201,7 @@ export default {
     const currentProgress = ref(props.progress);
     const currentBid = ref("");
     const currentBidValue = computed(() => {
-      if (props.isAuction) {
+      if (isAuction.value) {
         return currentBid.value;
       } else {
         return currentBid.value * props.price;
@@ -206,7 +211,7 @@ export default {
     const placeABid = () => {
       let amount = 0;
       try {
-        if (props.isAuction.value) {
+        if (isAuction.value) {
           amount = parseFloat(currentBid.value, 10);
           if (isNaN(amount)) throw new Error("invalid number");
           if (amount < props.price) throw new Error("not enough funds");

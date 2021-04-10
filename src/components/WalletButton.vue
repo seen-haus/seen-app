@@ -35,25 +35,23 @@ import {ref, watchEffect, computed} from 'vue'
 import {Web3Provider} from "@ethersproject/providers"
 import {formatEther, parseEther} from "@ethersproject/units";
 import { BigNumber } from "@ethersproject/bignumber";
+import useSigner from "@/hooks/useSigner";
+import useExchangeRate from "@/hooks/useExchangeRate.js";
 
 export default {
   name: 'WalletButton',
   components: {Identicon},
   setup() {
     const {error, account, deactivate, provider} = useWeb3();
+    const { ethereum, convertEthToUSDAndFormat } = useExchangeRate();
     const balance = ref(null);
-    const balanceFormatted = computed(() => {
-        debugger; // eslint-disable-line
-        return balance.value;
-
-      // return balance.value === null ? null : BigNumber.from(balance.value).div('1000000000000000000').toString()
-      });
-    const dollarValue = computed(() => balance.value === null ? null : BigNumber.from(balance.value).div('1000000000000000000'))
+    const balanceFormatted = computed(() => balance.value);
+    const dollarValue = computed(() => balance.value === null ? '' : convertEthToUSDAndFormat(balance.value))
 
     watchEffect(async () => {
       if (provider.value) {
-        const ethersProvider = new Web3Provider(provider.value);
-        const balanceEncoded = await ethersProvider.getBalance("ethers.eth");
+        const signer = useSigner();
+        const balanceEncoded = await signer.getBalance();
         balance.value = formatEther(balanceEncoded);
       }
     })
@@ -76,6 +74,7 @@ export default {
       shortenAddress,
       handleDisconnect,
       isOpen,
+      balance,
       balanceFormatted,
       dollarValue,
     }

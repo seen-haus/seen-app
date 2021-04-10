@@ -268,6 +268,7 @@ export default {
     const {
       bid,
       buy,
+      balance,
     } = useContractEvents();
 
     // const endsAt = computed(() => {

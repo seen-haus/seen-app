@@ -5,6 +5,7 @@ import {BigNumber} from "@ethersproject/bignumber";
 import { computed, ref, onBeforeUnmount } from 'vue';
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
+import {Web3Provider} from "@ethersproject/providers"
 
 export default function useContractEvents() {
   const { converEthToUSD } = useExchangeRate();
@@ -55,11 +56,13 @@ export default function useContractEvents() {
     if (amount == null) return;
     // 1. get new contract
     if (contractAddress.value) return; // do toastr
-    let temporaryContract = useV1AuctionContract(contractAddress.value, true)
-    const gasPrice = await provider.getGasPrice();
-    amount = parseEther((new BigNumber(amount)).toString())
-    let tx = temporaryContract.bid(amount, {gasPrice})
-    await tx.wait()
+    const temporaryContract = useV1AuctionContract(contract.value, true); // contract.value
+    const temporaryProvider = new Web3Provider(provider.value);
+    const gasPrice = await temporaryProvider.getGasPrice();
+    amount = parseEther((BigNumber.from(amount)).toString());
+    console.log(formatEther(amount));
+    let tx = await temporaryContract.bid({gasPrice})
+    // await tx.wait();
   }
 
   // If click on buy
@@ -70,7 +73,8 @@ export default function useContractEvents() {
     if (contractAddress.value) return; // do toastr
     let temporaryContract = useV1NftContract(contractAddress.value, true)
     let qty = (new BigNumber(amount)); // 1 ETH
-    const gasPrice = await provider.getGasPrice();
+    const temporaryProvider = new Web3Provider(provider.value);
+    const gasPrice = await temporaryProvider.getGasPrice();
     let value = parseEther(qty * price);
     let tx = temporaryContract.buy(qty.toString(), {gasPrice, value, from: account.value})
     await tx.wait()
