@@ -2,7 +2,7 @@
   <div
     class="media-loader relative h-0"
     :style="{
-      'padding-bottom': aspectRatio,
+      'padding-bottom': calculatedAspecRatio,
     }"
   >
     <div
@@ -104,6 +104,7 @@ export default {
     const { autoplay } = toRefs(props);
     const videoRef = ref(null);
     const imageRef = ref(null);
+    const calculatedAspecRatio = ref(props.aspectRatio);
 
     const state = reactive({
       paused: !props.autoplay,
@@ -160,6 +161,7 @@ export default {
         if (videoRef.value.readyState >= 3) {
           isLoading.value = false;
           videoRef.value.removeEventListener("loadeddata", onLoadedCallback);
+          calculatedAspecRatio.value =  (videoRef.value.videoHeight / videoRef.value.videoWidth) * 100 + '%';
         }
       }
 
@@ -170,6 +172,7 @@ export default {
       if (mediaType.value === "image") {
         isLoading.value = false;
         imageRef.value.removeEventListener("load", onLoadedCallback);
+        calculatedAspecRatio.value =  (imageRef.value.naturalHeight / imageRef.value.naturalWidth) * 100 + '%';
       }
     }
 
@@ -189,6 +192,7 @@ export default {
     return {
       videoRef,
       imageRef,
+      calculatedAspecRatio,
       isLoading,
       mediaType,
       isPaused,

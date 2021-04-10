@@ -27,7 +27,16 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
     const type = computed(() => collectable.value.type);
     const media = computed(() => collectable.value.media);
-    const firstMedia = computed(() => (media.value && media.value[0].url) || '');
+    const firstMedia = computed(() => { // Use preview image or first
+        if (!media.value) return '';
+        const found = media.value.find(v => v.isPreview);
+
+        if (found) {
+            return found.url;
+        }
+        
+        return media.value[0].url || '';
+    });
     const gallerySortedMedia = computed(() => collectable.value.mediaSorted);
     const artist = computed(() => collectable.value.artist);
     const artistStatement = computed(() => collectable.value.artist_statement);
@@ -91,7 +100,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const updateInformation = function (data) {
         // events.value = data.events.sort((a, b) => b.updatedAt - a.updatedAt);
         if (data.media && data.media.length) {
-            const sorted = [...data.media].sort((a, b) => a.position < b.position ? -1 : 1);
+            const sorted = [...data.media].sort((a, b) => a.position < b.position ? -1 : 1).filter(m => !m.isPreview);
             const lastItem = sorted[sorted.length - 1];
             const mediaSlice = sorted.slice(0, -1);
             mediaSlice.unshift(lastItem);
