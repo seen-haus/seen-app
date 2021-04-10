@@ -6,7 +6,11 @@
       :class="{ 'fence-left': closed, ...colorClass }"
     ></div>
 
-    <div class="title-text text-center font-title lg:flex-shrink-0 font-bold" :class="unshrinkable ? 'flex-shrink-0' : 'flex-shrink'">
+    <div
+      class="title-text text-center font-title lg:flex-shrink-0 font-bold"
+      :class="unshrinkable ? 'flex-shrink-0' : 'flex-shrink'"
+      :style="{ 'max-width': hideBars ? '100%' : '80%', 'width': hideBars ? '100%' : 'auto' }"
+    >
       <slot> Title </slot>
     </div>
 
@@ -22,19 +26,22 @@
 export default {
   name: "FencedTitle",
   props: {
+    hideBars: Boolean,
     textAlign: String, // left, center, right
     closed: Boolean, // Are fences closed at the ends
-    color: String, // 
-    unshrinkable: Boolean
+    color: String, //
+    unshrinkable: Boolean,
   },
   computed: {
     alignment: function () {
       return this.textAlign || "center";
     },
     showLeft: function () {
+      if (this.hideBars) return false;
       return this.alignment === "center" || this.alignment === "right";
     },
     showRight: function () {
+      if (this.hideBars) return false;
       return this.alignment === "center" || this.alignment === "left";
     },
     colorClass: function () {

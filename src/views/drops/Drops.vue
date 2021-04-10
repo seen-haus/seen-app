@@ -62,64 +62,6 @@
         Load More
       </button>
     </container>
-
-    <div class="learn-how-to bg-background-gray border-t border-b">
-      <container class="py-24 pb-56 mb-8">
-        <fenced-title
-          class="flex-grow mr-0 mb-8 self-stretch"
-          color="fence-gray"
-          textAlign="center"
-          :closed="true"
-          >Learn how to bid in
-          <span class="text-primary italic">50 seconds</span></fenced-title
-        >
-
-        <div class="text-center md:w-1/2 md:mx-auto text-gray-600 text-lg">
-          Seen.haus is an innovative auction house of the future merging the
-          physical and digital worlds of art
-        </div>
-
-        <how-to-video class="my-12"></how-to-video>
-
-        <div class="flex justify-center">
-          <button class="button dark mr-4">Read FAQs</button>
-          <button class="button outline">Meet the team</button>
-        </div>
-      </container>
-    </div>
-
-    <div class="quotes">
-      <container class="flex justify-center">
-        <quote-carousel class="centered-quote" />
-      </container>
-    </div>
-
-    <container class="meet-artists -mt-12 pb-32">
-      <fenced-title
-        class="flex-grow mr-0 mb-8 self-stretch"
-        color="fence-gray"
-        textAlign="center"
-        :closed="true"
-        >Meet artists
-      </fenced-title>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
-        <template v-for="artist in listOfArtists" :key="artist && artist.id">
-          <artist-card v-if="artist != null" :artist="artist" />
-          <div
-            v-else
-            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
-            :style="{ 'padding-bottom': '100%' }"
-          ></div>
-        </template>
-      </div>
-
-      <router-link to="artists">
-        <button class="button dark mt-20 mx-auto w-full md:w-96">
-          View All Artists
-        </button>
-      </router-link>
-    </container>
   </div>
 </template>
 
@@ -137,7 +79,6 @@ import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 
 import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
-import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
 
 export default {
   name: "Drops",
@@ -192,16 +133,10 @@ export default {
       });
     };
 
-    const paginatedArtists = useArtistsWithPagination();
-    const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
-
-    paginatedArtists.load();
-
     return {
       filterNft,
       filterTangibleNft,
       listOfCollectables,
-      listOfArtists,
       hasMore,
       // Methods
       handleNftToggle,

@@ -30,7 +30,7 @@
         color="fence-gray"
         textAlign="center"
         :closed="true"
-        >Your collection</fenced-title
+        >Collection</fenced-title
       >
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 my-10">
         <template
@@ -91,7 +91,7 @@ export default {
     const artist = ref(data);
     meta.title = artist.value.name;
 
-    const paginatedCollectables = useDropsWithPagination(artist.value.id);
+    const paginatedCollectables = useDropsWithPagination(artist.value.id, 48);
     await paginatedCollectables.load();
     const hasMore = computed(() => paginatedCollectables.hasMore.value);
     const handleLoadMore = async () => {

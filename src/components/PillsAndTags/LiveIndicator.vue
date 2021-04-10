@@ -44,7 +44,7 @@ export default {
 
 <style lang="scss">
 .live-indicator.dark {
-  background: rgba(100,100,100, 0.5);
+  background: rgba(0,0,0, 1.0);
 }
 .live-indicator.light {
   background: rgba(100,100,100, 0.15);

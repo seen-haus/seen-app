@@ -57,7 +57,8 @@
             color="fence-dark"
             text-align="center"
             :closed="true"
-            ><span class="flex-shrink-0">{{ title }}</span></fenced-title
+            hideBars
+          ><span class="flex-shrink-0">{{ title }}</span></fenced-title
           >
 
           <fenced-title
@@ -65,10 +66,11 @@
             color="fence-dark"
             text-align="left"
             :closed="true"
-            ><span class="flex-shrink-0">{{ title }}</span></fenced-title
+            hideBars
+          ><span class="flex-shrink-0">{{ title }}</span></fenced-title
           >
 
-          <div class="text-lg text-gray-500 mt-6" v-html="description"></div>
+          <div class="text-lg text-gray-500 mt-6 description" v-html="description"></div>
 
           <template v-if="showAdditionalInformation">
             <div class="rounded-container flex items-center mt-12">
@@ -92,7 +94,7 @@
               </div>
             </div>
 
-            <div class="rounded-container flex items-center mt-6">
+            <div class="rounded-container flex items-center mt-6" v-if="!isAuction">
               <i
                 class="fas fa-trash-alt text-3xl icon-right text-gray-500 mr-6"
               ></i>
@@ -107,7 +109,7 @@
           <div class="text-4xl font-title font-bold mt-14 mb-6">
             Artist statement
           </div>
-          <artist-card class="shadow-md" :artist="artist" />
+          <artist-card class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
         </div>
 
         <div class="right-side col-span-5">
@@ -242,6 +244,7 @@ export default {
       // firstMedia,
       gallerySortedMedia,
       artist,
+      artistStatement,
       title,
       description,
       events,
@@ -383,6 +386,7 @@ export default {
       gallerySortedMedia,
       // firstMedia,
       artist,
+      artistStatement,
       title,
       description,
       events,
@@ -403,3 +407,12 @@ export default {
   },
 };
 </script>
+
+
+<style lang="scss">
+.description {
+  p {
+    margin-bottom: 1rem;
+  }
+}
+</style>

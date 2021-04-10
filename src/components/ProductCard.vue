@@ -51,6 +51,7 @@
       <div class="flex-1"></div>
 
       <progress-bar
+        :inversed="isAuction"
         :progress="progress"
         :colorClass="
           isCollectableActive
