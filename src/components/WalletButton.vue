@@ -9,8 +9,8 @@
       <div class="arrow-up"></div>
       <div class="py-6 px-8 bg-background-gray lg:rounded-t-lg">
         <p class="text-xs font-bold text-grey-9">YOUR WALLET BALANCE</p>
-        <p class="text-3xl font-bold text-black">5323.32 <span class="text-lg font-normal">ETH</span></p>
-        <p class="text-sm text-grey-9">$2442.55</p>
+        <p class="text-3xl font-bold text-black"><span v-if="balance">{{balanceFormatted}}</span><i v-if="!balance" class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i>  <span class="text-lg font-normal">ETH</span></p>
+        <p class="text-sm text-grey-9"><span v-if="dollarValue">{{dollarValue}}</span><i v-if="!dollarValue" class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i></p>
       </div>
       <div class="lg:bg-white lg:rounded-b-lg">
         <button class="button dropdown-btn" @click="openWalletModal">
@@ -31,14 +31,32 @@ import useWeb3 from "@/connectors/hooks"
 import {useStore} from "vuex"
 import Identicon from "@/components/Identicon/Identicon"
 import {shortenAddress} from "@/services/utils/index"
-import {ref} from 'vue'
-
+import {ref, watchEffect, computed} from 'vue'
+import {Web3Provider} from "@ethersproject/providers"
+import {formatEther, parseEther} from "@ethersproject/units";
+import { BigNumber } from "@ethersproject/bignumber";
 
 export default {
   name: 'WalletButton',
   components: {Identicon},
   setup() {
-    const {error, account, deactivate} = useWeb3();
+    const {error, account, deactivate, provider} = useWeb3();
+    const balance = ref(null);
+    const balanceFormatted = computed(() => {
+        debugger; // eslint-disable-line
+        return balance.value;
+
+      // return balance.value === null ? null : BigNumber.from(balance.value).div('1000000000000000000').toString()
+      });
+    const dollarValue = computed(() => balance.value === null ? null : BigNumber.from(balance.value).div('1000000000000000000'))
+
+    watchEffect(async () => {
+      if (provider.value) {
+        const ethersProvider = new Web3Provider(provider.value);
+        const balanceEncoded = await ethersProvider.getBalance("ethers.eth");
+        balance.value = formatEther(balanceEncoded);
+      }
+    })
     const store = useStore();
     let isOpen = ref(false);
     const openWalletModal = () => {
@@ -57,7 +75,9 @@ export default {
       openWalletModal,
       shortenAddress,
       handleDisconnect,
-      isOpen
+      isOpen,
+      balanceFormatted,
+      dollarValue,
     }
   }
 }

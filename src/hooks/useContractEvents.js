@@ -14,10 +14,11 @@ export default function useContractEvents() {
   const lastBid = ref(null);
   const collectable = ref(null);
   const contractSubscription = ref(null);
+  let contract = null;
 
   const destroySubscriptions = () => {
-    if (contractSubscription.value) {
-      contractSubscription.value.removeAllListeners();
+    if (contract) {
+      contract.removeAllListeners();
     }
   };
 
@@ -54,10 +55,10 @@ export default function useContractEvents() {
     if (amount == null) return;
     // 1. get new contract
     if (contractAddress.value) return; // do toastr
-    let contract = useV1AuctionContract(contractAddress.value, true)
+    let temporaryContract = useV1AuctionContract(contractAddress.value, true)
     const gasPrice = await provider.getGasPrice();
     amount = parseEther((new BigNumber(amount)).toString())
-    let tx = contract.bid(amount, {gasPrice})
+    let tx = temporaryContract.bid(amount, {gasPrice})
     await tx.wait()
   }
 
@@ -67,11 +68,11 @@ export default function useContractEvents() {
     if (price == null || amount == null) return;
     // 1. get new contract
     if (contractAddress.value) return; // do toastr
-    let contract = useV1NftContract(contractAddress.value, true)
+    let temporaryContract = useV1NftContract(contractAddress.value, true)
     let qty = (new BigNumber(amount)); // 1 ETH
     const gasPrice = await provider.getGasPrice();
     let value = parseEther(qty * price);
-    let tx = contract.buy(qty.toString(), {gasPrice, value, from: account.value})
+    let tx = temporaryContract.buy(qty.toString(), {gasPrice, value, from: account.value})
     await tx.wait()
     console.log('buyed')
   }
@@ -97,7 +98,7 @@ export default function useContractEvents() {
       value_in_usd: converEthToUSD(ethAmount),
       wallet_address,
     }
-    mergeEvents(event);
+    return event;
   }
 
   const initializeContractEvents = async (collectableData) => {
@@ -112,7 +113,7 @@ export default function useContractEvents() {
     if (isAuction.value) {
       // EXAMPLE https://etherscan.io/address/0xCEDC9a3c76746F288C87c0eBb0468A1b57484cb1#readContract
       if (version.value === 1) {
-        const contract = useV1AuctionContract(contractAddress.value)
+        contract = useV1AuctionContract(contractAddress.value)
         // last bid
         lastBid.value = await contract.lastBid();
         console.log("lastBid in ETH ", formatEther(lastBid.value))
@@ -123,7 +124,13 @@ export default function useContractEvents() {
         console.log("ENDS auctionLength + startBidTime", auctionLength.toString(), startBidTime.toString())
 
         // End Subscribe to event
-        contractSubscription.value = await contract.on("Bid", (evt) => {
+        await contract.on("Bid", async (evt) => {
+          const event = createNormalizedEvent(evt, 'bid');
+          mergeEvents(event);
+          lastBid.value = event;
+          auctionLength = await contract.auctionLength();
+
+          debugger; // eslint-disable-line
           // Handle bid event: add to events, check/update end time, update min bid!
         });
         // !! DONT FORGET !! await contract.off("Bid") https://docs.ethers.io/v5/api/contract/contract/#Contract-on
@@ -132,7 +139,10 @@ export default function useContractEvents() {
         // log_1e644af9
         const bids = await contract.queryFilter("Bid");
         console.log("==== PAST EVENTS START ==== ")
-        bids.forEach((bid) => createNormalizedEvent(bid, 'bid'));
+        bids.forEach((bid) => {
+          const event = createNormalizedEvent(bid, 'bid');
+          mergeEvents(event);
+        });
         console.log("==== PAST EVENTS END ====")
 
       }
@@ -146,7 +156,7 @@ export default function useContractEvents() {
 
       if (version.value === 1) {
         // useV1TangibleContract
-        let contract = useV1NftContract(contractAddress.value)
+        contract = useV1NftContract(contractAddress.value)
         let start = await contract.start()
         let price = await contract.price()
         let supply = await contract.supply()
@@ -154,13 +164,19 @@ export default function useContractEvents() {
         console.log("START TIME ", start)
         console.log("PRICE ", price)
         console.log("SUPPLY LEFT ", supply)
-        contractSubscription.value = await contract.on("Buy", (evt) => {
+        await contract.on("Buy", async (evt) => {
           // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
+          const event = createNormalizedEvent(evt, 'buy');
+          mergeEvents(event);
+          supply = await contract.supply();
         })
 
         const buys = await contract.queryFilter("Buy")
         console.log("==== PAST EVENTS START ==== ")
-        buys.forEach((buy) => createNormalizedEvent(buy, 'buy'));
+        buys.forEach((buy) => {
+          const event = createNormalizedEvent(buy, 'buy');
+          mergeEvents(event)
+        });
         console.log("==== PAST EVENTS END ==== ")
 
       }
