@@ -56,9 +56,18 @@
       <button class="button opensea mt-6" v-if="!isCollectableActive">
         Opensea
       </button>
-      <button class="button primary" v-else @click="placeABid">
-        {{ isAuction ? "Place a bid" : "Buy now" }}
-      </button>
+      <template v-else>
+        <button class="button primary" v-if="account" @click="placeABid">
+          {{ isAuction ? "Place a bid" : "Buy now" }}
+        </button>
+        <button
+          v-else
+          class="cursor-pointer button primary flex-shrink-0"
+          @click="openWalletModal"
+        >
+          <i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
+        </button>
+      </template>
     </div>
 
     <div class="bottom-part bg-background-gray border-t p-8">
@@ -145,6 +154,7 @@
 
 <script>
 import { ref, computed, toRefs } from "vue";
+import { useStore } from "vuex";
 import emitter from "@/services/utils/emitter";
 import useWeb3 from "@/connectors/hooks";
 
@@ -179,13 +189,12 @@ export default {
     collectable: Object,
   },
   setup(props, ctx) {
+    const store = useStore();
     const isAuction = ref(props.isAuction);
     const { account } = useWeb3();
     const hasError = ref(false);
     const collectableData = ref(props.collectable);
-    const {
-      balance
-    } = useContractEvents();
+    const { balance } = useContractEvents();
     const winner = computed(() => collectableData.value.winner_address);
     const isWinnerButtonShown = computed(() => {
       if (
@@ -246,7 +255,12 @@ export default {
       emitter.emit("openWinnerModal", collectableData.value);
     };
 
+    const openWalletModal = () => {
+      store.dispatch("application/openModal", "WalletModal");
+    };
+
     return {
+      account,
       currentProgress,
       addTime,
       updateProgress,
@@ -258,6 +272,7 @@ export default {
       currentBid,
       currentBidValue,
       hasError,
+      openWalletModal,
     };
   },
 };
@@ -267,6 +282,7 @@ export default {
 <style lang="scss" scoped>
 .outlined-input {
   @apply flex items-center border rounded-md border-black px-5;
+
   height: 60px;
   border-width: 2px;
 
@@ -276,6 +292,7 @@ export default {
 
   input {
     @apply outline-none flex-grow border-transparent;
+
     height: 56px;
     min-width: 0;
   }

@@ -1,5 +1,8 @@
 import { ref, computed, watch } from 'vue';
 import useContractEvents from "@/hooks/useContractEvents";
+import {BigNumber} from "@ethersproject/bignumber";
+import useExchangeRate from "@/hooks/useExchangeRate.js";
+import {formatEther, parseEther} from "@ethersproject/units";
 
 import {
     COLLECTABLE_TYPE,
@@ -8,6 +11,7 @@ import {
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 
 export default function useCollectableInformation(initialCollectable = {}) {
+    const { converEthToUSD } = useExchangeRate();
     const {
         mergedEvents,
         lastBid,
@@ -118,10 +122,10 @@ export default function useCollectableInformation(initialCollectable = {}) {
         if (isAuction.value) {
             if (events.value.length === 0) {
                 price.value = +(data.start_bid || 0).toFixed(2);
-                priceUSD.value = +(data.value_in_usd || 0).toFixed(2);
+                priceUSD.value = +(data.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             } else {
                 price.value = +(lastestEvent.value || 0).toFixed(2);
-                priceUSD.value = +(lastestEvent.value_in_usd || 0).toFixed(2);
+                priceUSD.value = +(lastestEvent.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             }
         } else {
             price.value = +(data.price || 0).toFixed(2);
@@ -198,16 +202,13 @@ export default function useCollectableInformation(initialCollectable = {}) {
     watch(mergedEvents, (v) => {
         console.log('updating events from chain', v);
         events.value = v;
-
-        // Update ends_at, price
     });
 
     watch(lastBid, (v) => {
         console.log('updaing last bid', v);
-        price.value = 5.0; // TODO
-        priceUSD.value = 1000, 0; // TODO
 
-        // Update ends_at, price
+        price.value = +formatEther(v);
+        priceUSD.value = converEthToUSD(price.value);
     });
 
     return {
