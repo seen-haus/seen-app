@@ -27,6 +27,9 @@
               <router-link :to="{ name: 'drops'}" class="block">
                 <span class="font-bold">Drops</span>
               </router-link>
+              <router-link :to="{ name: 'stake'}" class="block">
+                <span class="font-bold">Stake</span>
+              </router-link>
               <router-link :to="{ name: 'artists'}" class="block">
                 <span class="font-bold">Artists</span>
               </router-link>

@@ -11,8 +11,17 @@
   height: 60px;
   border-width: 2px;
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     @apply border-black;
+  }
+
+  .p-dropdown-label {
+    font-size: 15px;
+    color: black;
+    text-transform: none;
+    margin-top: 0;
+    padding-left: 0;
   }
 }
 
@@ -20,6 +29,7 @@ input {
   @apply outline-none flex-grow;
   height: 56px;
   min-width: 0;
+  border-color: transparent;
 }
 
 textarea {
@@ -33,13 +43,14 @@ textarea {
 }
 
 form.dirty {
-  input, textarea {
+  input,
+  textarea {
     &:invalid {
       &.outlined-input {
         @apply border-red-500;
       }
 
-      +.validation-error {
+      + .validation-error {
         display: block;
       }
     }
