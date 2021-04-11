@@ -116,7 +116,7 @@
           <bid-card
             :collectable="collectable"
             :startsAt="startsAt"
-            :endsAt="endsAt"
+            :endsAt="currentEndsAt"
             :isAuction="isAuction"
             :numberOfBids="events.length"
             :edition="edition"
@@ -129,7 +129,7 @@
             :is_sold_out="is_sold_out"
             :isCollectableActive="isCollectableActive"
             :isUpcomming="isUpcomming"
-            @onBid="onBid"
+            :lastBid="lastBid"
           />
 
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
@@ -199,11 +199,7 @@ import { CollectablesService } from "@/services/apiService";
 import { useToast } from "primevue/usetoast";
 
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
-import useWeb3 from "@/connectors/hooks";
-import { formatEther, parseEther } from "@ethersproject/units";
-import { useV1AuctionContract, useV1NftContract } from "@/hooks/useContract";
 import useContractEvents from "@/hooks/useContractEvents";
-import { BigNumber } from "@ethersproject/bignumber";
 
 export default {
   name: "Collectable",
@@ -261,29 +257,26 @@ export default {
       // Methods
       updateProgress,
       setCollectable,
+      lastBid,
       // updateInformation,
       // updateCollectableState,
     } = useCollectableInformation();
 
-    const {
-      bid,
-      buy,
-      balance,
-    } = useContractEvents();
+    const currentEndsAt = computed(() => {
+      if (isAuction.value) {
+        const extension = 5 * 60 * 1000;
+        const orig = new Date(endsAt.value).getTime();
+        if (!lastBid.value) {
+          return endsAt.value;
+        }
+        const bid = new Date(lastBid.value.time).getTime();
+        if ((orig - bid) < extension) {
+          return new Date(bid + extension);
+        }
+      }
 
-    // const endsAt = computed(() => {
-    //   // TODO(klemen) uncomment when lastBid works
-    //   // if (isAuction.value) {
-    //   //   const extension = 5 * 60 * 1000;
-    //   //   const orig = new Date(originalEndsAt.value).getTime();
-    //   //   const bid = new Date(lastBid.value.time).getTime();
-    //   //   if ((orig - bid) < extension) {
-    //   //     return new Date(bid + extension);
-    //   //   }
-    //   // }
-
-    //   return originalEndsAt.value;
-    // });
+      return endsAt.value;
+    });
 
     const keywords = computed(() => {
       let words = ["collectable", "drop", "seen", "seen.haus"];
@@ -321,36 +314,6 @@ export default {
         /<\/?("[^"]*"|'[^']*'|[^>])*(>|$)/g,
         ""
       );
-    };
-
-    const onBid = async (event) => {
-      console.log("got it", event);
-      try {
-        const currentPrice = price.value;
-        const currentWalletAmount = 1000; // TODO Klemen
-
-        if (isAuction.value) {
-          const amount = +parseFloat(event, 10);
-          if (amount > currentWalletAmount) {
-            throw new Error('Not enough funds in wallet!');
-          }
-
-          console.log('bidding', amount);
-          await bid(amount);
-        } else {
-          const amount = +parseInt(event, 10);
-          const totalPrice = amount * currentPrice;
-          if (totalPrice > currentWalletAmount) {
-            throw new Error('Not enough funds in wallet!');
-          }
-
-          console.log('buying', amount);
-          await buy(amount);
-        }
-      } catch (e) {
-        console.error("Error placing bid/buy", e);
-        toast.add({severity:'error', summary:'Error', detail:'Error placing bid', life: 3000});
-      }
     };
 
     (async function loadCollectable() {
@@ -392,7 +355,7 @@ export default {
       description,
       events,
       startsAt,
-      endsAt,
+      currentEndsAt,
       liveStatus,
       is_sold_out,
       edition,
@@ -403,7 +366,7 @@ export default {
       // Methods
       updateProgress,
       showAdditionalInformation,
-      onBid,
+      lastBid,
     };
   },
 };

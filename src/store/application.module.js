@@ -4,6 +4,10 @@ const state = {
     openModal: null,
     mobileMenu: null,
     currencies: null,
+    balance: {
+        eth: null,
+        seen: null,
+    },
 };
 
 const mutations = {
@@ -21,6 +25,9 @@ const mutations = {
     },
     SET_EXCHANGE_RATES(state, exchangeRates) {
         state.currencies = exchangeRates;
+    },
+    SET_BALANCE(state, balance) {
+        state.balance = balance;
     }
 };
 
@@ -39,12 +46,10 @@ const actions = {
                 ethereum: parseFloat(data.ethereum.usd, 10)
             });
         });
-        ExchangeRateService.getEthExchangeRate().then((data) => {
-            
-        });
-
+    },
+    setBalance(context, balance) {
+        context.commit('SET_BALANCE', balance);
     }
-
 };
 
 const getters = {
@@ -56,6 +61,9 @@ const getters = {
     },
     currencies(state) {
         return state.currencies;
+    },
+    balance(state) {
+        return state.balance;
     }
 };
 

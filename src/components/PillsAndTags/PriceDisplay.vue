@@ -7,12 +7,13 @@
         >({{ numberOfBids }} bids)</span
       >
     </div>
-    <div class="text-gray-400" :class="fiatSize">{{ convertEthToUSDAndFormat(price) }}</div>
+    <div class="text-gray-400" :class="fiatSize">{{ formatCurrencyWithFallback(priceUSD) }}</div>
   </div>
 </template>
 
 <script>
-import useExchangeRate from '@/hooks/useExchangeRate.js'
+import useExchangeRate from '@/hooks/useExchangeRate.js';
+import {ref} from 'vue'
 
 export default {
   name: "PriceDisplay",
@@ -27,7 +28,6 @@ export default {
     },
     priceUSD: {
       type: Number,
-      default: 2442.55,
     },
     type: {
       type: String,
@@ -64,9 +64,12 @@ export default {
       return "text-xs";
     },
   },
-  setup() {
-    const { convertEthToUSDAndFormat } = useExchangeRate();
-    return { convertEthToUSDAndFormat };
+  setup(props) {
+    const usdPrice = ref(props.priceUSD);
+    const ethPrice = ref(props.price);
+    const { formatCurrency, convertEthToUSDAndFormat } = useExchangeRate();
+    const formatCurrencyWithFallback = () => usdPrice.value ? formatCurrency(usdPrice.value) : convertEthToUSDAndFormat(ethPrice.value);
+    return { formatCurrencyWithFallback };
   }
 };
 </script>

@@ -27,11 +27,20 @@
       />
 
       <template v-if="isCollectableActive">
-        <div class="outlined-input mt-5" :class="{ invalid: hasError }">
+        <div class="outlined-input mt-5" :class="{ invalid: hasError || isFieldInvalid }">
           <input
-            v-model="currentBid"
+            v-model="auctionField.value"
+            v-if="isAuction"
             type="number"
-            :placeholder="isAuction ? 'Enter your bid' : 'Enter amount'"
+            placeholder="Enter your bid"
+          />
+          <input
+            v-model="saleField.value"
+            v-if="!isAuction"
+            step="1"
+            min="1"
+            type="number"
+            placeholder="Enter amount"
           />
           <template v-if="isAuction">
             <div class="icon w-5 mr-1">
@@ -44,6 +53,8 @@
             <div class="type font-bold">ETH</div>
           </template>
         </div>
+        <span class="error-notice" v-if="isAuction">{{ auctionField.errors[0] }}</span>
+        <span class="error-notice" v-if="!isAuction">{{ saleField.errors[0] }}</span>
 
         <div class="text-center text-gray-400 text-sm py-2">
           <p v-if="!ethereum"><i class="fas fa-spinner fa-spin"></i></p>
@@ -57,11 +68,14 @@
         Opensea
       </button>
       <template v-else>
-        <button class="button primary" v-if="account" @click="placeABid">
+        <button class="button primary" v-if="account && hasEnoughFunds()" @click="placeABidOrBuy">
           {{ isAuction ? "Place a bid" : "Buy now" }}
         </button>
+        <button class="button dark disabled opacity-50" v-if="account && !hasEnoughFunds()">
+          Insufficient funds
+        </button>
         <button
-          v-else
+          v-if="!account"
           class="cursor-pointer button primary flex-shrink-0"
           @click="openWalletModal"
         >
@@ -153,7 +167,7 @@
 
 
 <script>
-import { ref, computed, toRefs } from "vue";
+import { ref, computed, watchEffect, reactive } from "vue";
 import { useStore } from "vuex";
 import emitter from "@/services/utils/emitter";
 import useWeb3 from "@/connectors/hooks";
@@ -163,7 +177,11 @@ import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
+import {formatEther} from "@ethersproject/units";
+import useSigner from "@/hooks/useSigner";
 import useContractEvents from "@/hooks/useContractEvents";
+import { useToast } from "primevue/usetoast";
+import { useField, useForm } from "vee-validate";
 
 export default {
   name: "BidCard",
@@ -187,15 +205,62 @@ export default {
     isUpcomming: Boolean,
     is_sold_out: Boolean,
     collectable: Object,
+    lastBid: Object,
   },
   setup(props, ctx) {
+    const price = ref(props.price);
+    const toast = useToast();
     const store = useStore();
     const isAuction = ref(props.isAuction);
     const { account } = useWeb3();
-    const hasError = ref(false);
+    const hasError = ref(null);
     const collectableData = ref(props.collectable);
-    const { balance } = useContractEvents();
     const winner = computed(() => collectableData.value.winner_address);
+    const balance = computed(() => store.getters['application/balance'].eth);
+
+    const form = useForm({
+      initialValues: {
+        bid: "",
+        amount: "",
+      },
+    });
+
+    const auctionField = reactive(useField("bid", (val) => fieldValidatorAuction(val)));
+    const saleField = reactive(useField("amount", (val) => fieldValidatorSale(val)));
+
+    const isFieldInvalid = computed(() => {
+      return isAuction.value ? auctionField.errors.length : saleField.errors.length});
+
+    const fieldValidatorAuction = (value) => {
+      if (value) {
+        return hasEnoughFunds() ? true : 'You do not have enough funds';
+      } else {
+        return true;
+      }
+    }
+
+    const fieldValidatorSale = (value) => {
+      if (value) {
+        return hasEnoughFunds() ? true : 'You do not have enough funds';
+      } else {
+        return true;
+      }
+    }
+
+    const priceUSDByType = computed(() => isAuction.value === 1);
+
+    const {
+      bid,
+      buy,
+      initializeContractEvents,
+    } = useContractEvents();
+
+    watchEffect(() => {
+      if (collectableData.value) {
+        initializeContractEvents(collectableData.value, true)
+      }
+    })
+
     const isWinnerButtonShown = computed(() => {
       if (
         typeof account.value === "string" &&
@@ -209,35 +274,67 @@ export default {
     const timerRef = ref(null);
     const currentProgress = ref(props.progress);
     const currentBid = ref("");
+    const numberOfItems = ref(1);
     const currentBidValue = computed(() => {
       if (isAuction.value) {
-        return currentBid.value;
+        return parseFloat(auctionField.value);
       } else {
-        return currentBid.value * props.price;
+        return parseInt(saleField.value) * price.value;
       }
     });
 
-    const placeABid = () => {
+    const placeABidOrBuy = () => {
       let amount = 0;
       try {
         if (isAuction.value) {
-          amount = parseFloat(currentBid.value, 10);
+          amount = parseFloat(auctionField.value, 10);
           if (isNaN(amount)) throw new Error("invalid number");
-          if (amount < props.price) throw new Error("not enough funds");
+          if (amount < price.value) throw new Error("not enough funds");
+          onBid(auctionField.value);
         } else {
-          amount = parseInt(currentBid.value, 10);
+          amount = parseInt(saleField.value, 10);
           if (isNaN(amount)) throw new Error("invalid number");
-          if (amount > props.items_of - props.items)
+          if (amount > props.items_of - props.items) {
             throw new Error("not enough items");
+          }
+          onBuy(saleField.value);
+            
         }
-
-        console.log(amount, props.items, props.items_of);
-
-        hasError.value = false;
-        ctx.emit("onBid", currentBid.value);
+        hasError.value = null;
       } catch (e) {
         hasError.value = true;
         console.error("Error when trying to bid", e);
+        toast.add({severity:'error', summary:'Error', detail:`Error placing ${isAuction.value ? 'a bid' : 'a buy order'}.`, life: 3000});
+      }
+    };
+
+    const onBuy = async(event) => {
+      try {
+        const currentPrice = price.value;
+        const amount = +parseInt(event, 10);
+        const totalPrice = amount * currentPrice;
+        if (totalPrice > balance.value) {
+          throw new Error('Not enough funds in wallet!');
+        }
+
+        await buy(amount);
+      } catch (e) {
+        console.error("Error placing bid/buy", e);
+        toast.add({severity:'error', summary:'Error', detail:'Error placing a buy order.', life: 3000});
+      }
+    };
+
+    const onBid = async (event) => {
+      if (!balance.value) return;
+      try {
+        const amount = +parseFloat(event, 10);
+        if (amount > balance.value) {
+          throw new Error('Not enough funds in wallet!');
+        }
+        await bid(amount);
+      } catch (e) {
+        console.error("Error placing bid/buy", e);
+        toast.add({severity:'error', summary:'Error', detail:'Error placing a bid.', life: 3000});
       }
     };
 
@@ -250,6 +347,23 @@ export default {
     };
 
     const { ethereum, convertEthToUSDAndFormat } = useExchangeRate();
+
+    const hasEnoughFunds = () => {
+      if (!balance.value) return true;
+      const funds = parseFloat(balance.value);
+      if (isAuction.value) {
+        let valid = true;
+        if (props.lastBid) {
+          valid = funds > parseFloat(props.lastBid.toString());
+        }
+        if (valid) {
+          valid = funds > parseFloat(auctionField.value ? auctionField.value : 0);
+        }
+        return valid;
+      } else {
+        return funds > (props.price * parseInt(numberOfItems));
+      }
+    }
 
     const openWinnerModal = () => {
       emitter.emit("openWinnerModal", collectableData.value);
@@ -268,11 +382,16 @@ export default {
       convertEthToUSDAndFormat,
       openWinnerModal,
       isWinnerButtonShown,
-      placeABid,
+      placeABidOrBuy,
       currentBid,
+      numberOfItems,
       currentBidValue,
       hasError,
       openWalletModal,
+      hasEnoughFunds,
+      auctionField,
+      saleField,
+      isFieldInvalid,
     };
   },
 };
@@ -296,5 +415,11 @@ export default {
     height: 56px;
     min-width: 0;
   }
+  .button.disabled {
+    cursor: not-allowed !important;
+  }
+}
+.error-notice {
+  @apply mt-1;
 }
 </style>

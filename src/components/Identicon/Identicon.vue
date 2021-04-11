@@ -21,8 +21,12 @@ export default {
 
     const root = ref(null)
     watchEffect(() => {
-      if ( root.value && account.value) {
-        root.value.innerHtml = ''
+      if (root.value && account.value) {
+        var child = root.value.firstElementChild; 
+        while (child) {
+            root.value.removeChild(child);
+            child = root.value.firstElementChild;
+        }
         root.value.appendChild(Jazzicon(size.value, parseInt(account.value.slice(2, 10), 16)));
       } else {
         root.value = null

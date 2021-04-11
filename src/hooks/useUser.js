@@ -8,8 +8,13 @@ export default function useUser() {
   const {account} = useWeb3();
 
   const fetchUser = async () => {
-    const {data} = await UserService.get(account.value);
-    store.dispatch('user/setUser', data ? data.user : null);
+    try {
+      const {data} = await UserService.get(account.value);
+      store.dispatch('user/setUser', data ? data.user : null);
+    } catch (err) {
+      return;
+    }
+    
   }
 
   watchEffect(() => {

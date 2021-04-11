@@ -245,6 +245,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         updateProgress,
         setCollectable,
         updateInformation,
-        updateCollectableState
+        updateCollectableState,
+        lastBid,
     };
 }

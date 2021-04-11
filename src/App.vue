@@ -32,6 +32,9 @@
 <script>
 import { useStore } from "vuex";
 import { useMeta, useActiveMeta } from "vue-meta";
+import useWeb3 from "@/connectors/hooks"
+import {watchEffect, ref} from 'vue';
+import { useTokenContract } from "@/hooks/useContract";
 
 import Web3Provider from "@/connector/Web3Provider";
 import WalletModal from "@/components/WalletModal/WalletModal";
@@ -40,6 +43,8 @@ import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
 import WinnerInfo from "@/components/WinnerInfo";
 import useUser from '@/hooks/useUser.js'
+import useSigner from "@/hooks/useSigner";
+import {formatEther} from "@ethersproject/units";
 
 export default {
   name: "App",
@@ -52,6 +57,25 @@ export default {
     WinnerInfo,
   },
   setup() {
+    const { account, provider } = useWeb3();
+    const store = useStore();
+    let accountCurrent = null;
+
+    watchEffect(async () => {
+      if (provider.value) {
+        console.log('PROVIDER', provider.value);
+      }
+      if (account.value && account.value !== accountCurrent) {
+        const signer = useSigner();
+        if (signer) {
+          const tokenContract = useTokenContract('0xCa3FE04C7Ee111F0bbb02C328c699226aCf9Fd33');
+          const seenBalance = await tokenContract.balanceOf(account.value);
+          accountCurrent = account.value;
+          const ethBalance = await signer.getBalance();
+          store.dispatch('application/setBalance', {eth: formatEther(ethBalance), seen: formatEther(seenBalance)});
+        }
+      }
+    });
     const { meta } = useMeta({
       title: "SEEN.HAUS",
       meta: [
@@ -71,7 +95,6 @@ export default {
       ],
     });
     const metadata = useActiveMeta();
-    const store = useStore();
     const getExchangeRates = () => {
       store.dispatch("application/getExchangeRates");
     };

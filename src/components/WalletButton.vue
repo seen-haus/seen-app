@@ -4,7 +4,7 @@
 
 
     <button v-if="account" @click="isOpen = !isOpen" class="cursor-pointer button primary flex items-center wallet">
-      <div class="pt-1.5"><identicon/></div> <span class="ml-2">{{ shortenAddress('0x397Fb10C9a36C780Ca3D7dB90B49c78D5D1b04bE') }}</span></button>
+      <div class="pt-1.5"><identicon/></div> <span class="ml-2">{{ shortenAddress(account) }}</span></button>
     <div class="dropdown-menu" v-if="isOpen">
       <div class="arrow-up"></div>
       <div class="py-6 px-8 bg-background-gray lg:rounded-t-lg">

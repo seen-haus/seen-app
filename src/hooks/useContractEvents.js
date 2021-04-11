@@ -55,8 +55,8 @@ export default function useContractEvents() {
   const bid = async (amount) => {
     if (amount == null) return;
     // 1. get new contract
-    if (contractAddress.value) return; // do toastr
-    const temporaryContract = useV1AuctionContract(contract.value, true); // contract.value
+    if (!contractAddress.value) return; // do toastr
+    const temporaryContract = useV1AuctionContract(contractAddress.value, true); // contract.value
     const temporaryProvider = new Web3Provider(provider.value);
     const gasPrice = await temporaryProvider.getGasPrice();
     amount = parseEther((BigNumber.from(amount)).toString());
@@ -70,7 +70,7 @@ export default function useContractEvents() {
     const price = collectable.value && collectable.value.price;
     if (price == null || amount == null) return;
     // 1. get new contract
-    if (contractAddress.value) return; // do toastr
+    if (!contractAddress.value) return; // do toastr
     let temporaryContract = useV1NftContract(contractAddress.value, true)
     let qty = (new BigNumber(amount)); // 1 ETH
     const temporaryProvider = new Web3Provider(provider.value);
@@ -105,9 +105,13 @@ export default function useContractEvents() {
     return event;
   }
 
-  const initializeContractEvents = async (collectableData) => {
+  const initializeContractEvents = async (collectableData, onlySaveContractAddress = false) => {
     collectable.value = collectableData;
     contractAddress.value = collectableData.contract_address;
+
+    if (onlySaveContractAddress) {
+      return;
+    }
     mergedEvents.value = collectableData.events;
     // !! IMPORTANT !! remove listeners on beforeDestroy
 

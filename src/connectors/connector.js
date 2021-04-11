@@ -78,7 +78,7 @@ const setError = (error) => {
 }
 const update = (payload) => {
     state.account = payload.account
-    state.provider = payload.provider
+    // state.provider = payload.provider // TODO: ASK NEJC ABOUT THAT
 }
 
 
