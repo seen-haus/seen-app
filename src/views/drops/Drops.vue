@@ -18,19 +18,18 @@
 
       <div class="flex justify-start items-center">
         <toggle
-          :value="filterNft"
-          class="text-tag-nft mr-8"
-          @onChange="handleNftToggle($event)"
+          :value="filterAuctions"
+          class="mr-8"
+          @onChange="handleAuctionsToggle($event)"
         >
-          <span class="font-bold ml-1 text-black">NFT</span>
+          <span class="font-bold text-black">Auctions</span>
         </toggle>
 
         <toggle
-          :value="filterTangibleNft"
-          class="text-tag-tangible"
-          @onChange="handleTangibleToggle($event)"
+          :value="filterEditions"
+          @onChange="handleEditionsToggle($event)"
         >
-          <span class="font-bold ml-1 text-black">NFT + Tangible</span>
+          <span class="font-bold text-black">Editions</span>
         </toggle>
       </div>
 
@@ -66,7 +65,7 @@
 </template>
 
 <script>
-import { computed, reactive } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
 
@@ -96,13 +95,8 @@ export default {
       title: "Drops",
     });
     const router = useRouter();
-    const state = reactive({
-      filterNft: true,
-      filterTangibleNft: true,
-    });
-
-    const filterNft = computed(() => state.filterNft);
-    const filterTangibleNft = computed(() => state.filterTangibleNft);
+    const filterAuctions = ref(true);
+    const filterEditions = ref(true);
 
     const paginatedCollectables = useDropsWithPagination();
     const listOfCollectables = computed(
@@ -116,16 +110,17 @@ export default {
       paginatedCollectables.loadMore();
     };
 
-    const handleNftToggle = function (event) {
-      state.filterNft = event;
-      paginatedCollectables.filter(state.filterNft, state.filterTangibleNft);
-    };
+    const handleAuctionsToggle = (event) => {
+      if (!filterEditions.value && !event) return;
+      filterAuctions.value = event;
+      paginatedCollectables.filter(filterAuctions.value, filterEditions.value);
+    }
 
-    const handleTangibleToggle = function (event) {
-      state.filterTangibleNft = event;
-      paginatedCollectables.filter(state.filterNft, state.filterTangibleNft);
-    };
-
+    const handleEditionsToggle = (event) => {
+      if (!filterAuctions.value && !event) return;
+      filterEditions.value = event;
+      paginatedCollectables.filter(filterAuctions.value, filterEditions.value);
+    }
     const navigateToCollectable = function (address) {
       router.push({
         name: "collectableAuction",
@@ -134,13 +129,13 @@ export default {
     };
 
     return {
-      filterNft,
-      filterTangibleNft,
+      filterAuctions,
+      filterEditions,
+      handleAuctionsToggle,
+      handleEditionsToggle,
+
       listOfCollectables,
       hasMore,
-      // Methods
-      handleNftToggle,
-      handleTangibleToggle,
       handleLoadMore,
       navigateToCollectable,
     };

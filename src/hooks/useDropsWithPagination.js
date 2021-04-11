@@ -1,5 +1,6 @@
 import { CollectablesService } from "@/services/apiService";
 import { COLLECTABLE_TYPE } from "@/constants/Collectables.js";
+import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 import { computed, reactive } from "vue";
 
 
@@ -9,7 +10,7 @@ export default function useDropsWithPagination(artistId = null, perPage = 12) {
     perPage: perPage,
     page: 1,
     hasMore: false,
-    filter: COLLECTABLE_TYPE.NONE,
+    filter: PURCHASE_TYPE.BOTH,
     artistId,
   });
 
@@ -85,21 +86,37 @@ export default function useDropsWithPagination(artistId = null, perPage = 12) {
       metadata.pagination.totalPages !== state.page;
   }
 
-  function filter(filterNft, filterTangibleNft) {
-    state.filter = getFilter(filterNft, filterTangibleNft);
+  function filter(filterAuctions, filterEditions) {
+    state.filter = getFilter(filterAuctions, filterEditions);
     load();
   }
 
-  function getFilter(filterNft, filterTangibleNft) {
-    if (filterNft && filterTangibleNft)
-      return COLLECTABLE_TYPE.NONE;
-    if (filterNft)
-      return COLLECTABLE_TYPE.NFT;
-    if (filterTangibleNft)
-      return COLLECTABLE_TYPE.TANGIBLE_NFT;
+  function getFilter(filterAuctions, filterEditions) {
+    if (filterAuctions && filterEditions)
+      return PURCHASE_TYPE.BOTH;
+    if (filterAuctions)
+      return PURCHASE_TYPE.AUCTION;
+    if (filterEditions)
+      return PURCHASE_TYPE.SALE;
 
-    return COLLECTABLE_TYPE.TANGIBLE;
+    return COLLECTABLE_TYPE.BOTH;
   }
+
+  // function filter(filterNft, filterTangibleNft) {
+  //   state.filter = getFilter(filterNft, filterTangibleNft);
+  //   load();
+  // }
+
+  // function getFilter(filterNft, filterTangibleNft) {
+    // if (filterNft && filterTangibleNft)
+    //   return COLLECTABLE_TYPE.NONE;
+    // if (filterNft)
+    //   return COLLECTABLE_TYPE.NFT;
+    // if (filterTangibleNft)
+    //   return COLLECTABLE_TYPE.TANGIBLE_NFT;
+
+    // return COLLECTABLE_TYPE.TANGIBLE;
+  // }
 
   const listOfCollectables = computed(() => state.items);
   const hasMore = computed(() => state.hasMore);

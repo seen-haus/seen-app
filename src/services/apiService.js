@@ -60,7 +60,7 @@ export const LeaderboardService = {
 
 export const CollectablesService = {
     list(pagination = { perPage: 6, page: 1 }, filter = {}) {
-        // serializeđ
+        // serialize
         return ApiService.query('collectables', { ...pagination, ...filter });
     },
     show(contractAddress) {

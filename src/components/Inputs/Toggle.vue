@@ -1,14 +1,10 @@
 <template>
   <div
     class="flex justify-center items-center cursor-pointer"
-    @click="this.$emit('onChange', !value)"
+    @click="onChange"
   >
-    <div class="toggle">
-      <i v-if="value" class="fas fa-toggle-on mr-2 text-3xl"></i>
-      <i
-        v-if="!value"
-        class="fas fa-toggle-off mr-2 text-3xl text-gray-300"
-      ></i>
+    <div class="toggle mr-2" :class="{ on: value }">
+      <div class="knob"></div>
     </div>
     <div class="slot"><slot></slot></div>
   </div>
@@ -23,5 +19,40 @@ export default {
       default: false,
     },
   },
+  setup(props, ctx) {
+    const onChange = () => {
+      ctx.emit("onChange", !props.value);
+    };
+
+    return {
+      onChange,
+    };
+  },
 };
 </script>
+
+<style lang="scss" scoped>
+.toggle {
+  @apply bg-gray-300 rounded-full overflow-hidden flex justify-start;
+
+  height: 20px;
+  width: 40px;
+
+  .knob {
+    @apply bg-white rounded-full;
+
+    height: 18px;
+    width: 18px;
+    margin: 1px;
+    box-shadow: 0 4px 10px 0 #00000026, 0 1px 3px 0 #00000033;
+    background-image: linear-gradient(to top, #e3e3e3, #ffffff);
+  }
+
+  &.on {
+    @apply bg-primary justify-end;
+
+    .knob {
+    }
+  }
+}
+</style>
