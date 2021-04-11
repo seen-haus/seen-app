@@ -1,36 +1,28 @@
 <template>
   <div
-    class="artist-card overflow-hidden rounded-lg shadow-lg cursor-pointer"
+    class="artist-card overflow-hidden rounded-lg custom-shadow cursor-pointer"
     @click="navigateToArtist"
   >
-    <div class="media flex justify-center bg-black h-32">
-      <div class="w-32">
-        <media-loader
-          :src="artist.avatar"
-          aspectRatio="100%"
-          controls
-          class="overflow-hidden"
-        />
-      </div>
-    </div>
-    <div class="description flex flex-col relative p-6">
+    <div class="description flex flex-col p-6">
       <img
         :src="artist.avatar"
         alt=""
-        class="rounded-full border-white border-3 absolute left-6 -top-12.5 w-25 h-25"
+        class="rounded-full border-white border-3 left-6 -top-12.5 w-25 h-25"
       />
 
-      <tag class="bg-fence-light self-end text-gray-400 font-semibold">
-        {{ collectablesCount }} CREATION{{
-          collectablesCount > 1 || collectablesCount === 0
-            ? "S"
-            : ""
-        }}</tag
-      >
-
-      <div class="text-title font-bold text-2.5xl mt-6 ellipsis">
-        {{ artist.name }}
+      <div class="flex items-center mt-6">
+        <div class="text-title font-bold text-2.5xl ellipsis">
+          {{ artist.name }}
+        </div>
+        <tag class="bg-fence-light text-gray-400 font-semibold flex-shrink-0 ml-2">
+          {{ collectablesCount }} CREATION{{
+            collectablesCount > 1 || collectablesCount === 0
+              ? "S"
+              : ""
+          }}</tag
+        >
       </div>
+      
       <div
         class="mt-3 text-gray-600"
         v-if="artistStatement != null"
@@ -96,3 +88,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+  .custom-shadow {
+    box-shadow: 0px 3px 15px rgba(0,0,0,.1);
+  }
+</style>
