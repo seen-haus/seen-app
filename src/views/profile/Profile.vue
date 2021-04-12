@@ -174,7 +174,7 @@ export default {
     if (address && !isOwnProfile.value) {
       const res = await UserService.get(address);
       data.value = res.data.user;
-      collection.setAddress("0x43392235b6b13e0ce9d4b6cc48c8f5d2b46bff5f");
+      collection.setAddress(address);
       collection.load();
     }
 
