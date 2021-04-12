@@ -57,7 +57,7 @@ const routes = [
     {
         path: '/profile/:userAddress',
         name: 'profileWithAddress',
-        component: () => import(/* webpackChunkName: "profile" */ '../views/profile/Profile.vue')
+        component: () => import(/* webpackChunkName: "profileWithAddress" */ '../views/profile/Profile.vue')
     },
     {
         path: '/profile',

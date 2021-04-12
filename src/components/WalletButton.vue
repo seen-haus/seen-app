@@ -33,7 +33,7 @@
               </div>
               <div>{{seenBalanceUSD}}</div>
            </div>
-           
+
         </a>
         <div class="mx-8 h-0.5 bg-background-gray"></div>
         <router-link :to="{ name: 'profile'}">
@@ -69,11 +69,11 @@ export default {
   setup() {
     const store = useStore();
     const {error, account, deactivate, provider} = useWeb3();
-    const { ethereum, convertEthToUSDAndFormat, convertSeenToUSDAndFormat } = useExchangeRate();
+    const { formatCrypto, convertEthToUSDAndFormat, convertSeenToUSDAndFormat } = useExchangeRate();
     const balance = ref(null);
-    const balanceFormatted = computed(() => balance.value);
+    const balanceFormatted = computed(() => formatCrypto(balance.value));
     const dollarValue = computed(() => balance.value === null ? '' : convertEthToUSDAndFormat(balance.value));
-    const seenBalance = computed(() => store.getters['application/balance'].seen);
+    const seenBalance = computed(() => store.getters['application/balance'].seen ? formatCrypto(store.getters['application/balance'].seen) : 0);
     const seenBalanceUSD = computed(() => seenBalance.value ? convertSeenToUSDAndFormat(seenBalance.value) : '');
     const etherscanLink = computed(() => account.value ? `https://etherscan.io/address/${account.value}` : 'https://etherscan.io/token/0xCa3FE04C7Ee111F0bbb02C328c699226aCf9Fd33');
 

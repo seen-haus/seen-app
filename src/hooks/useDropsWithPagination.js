@@ -33,7 +33,7 @@ export default function useDropsWithPagination(artistId = null, perPage = 12) {
       page: state.page,
     };
 
-    const filtrationOptions = { type: state.filter };
+    const filtrationOptions = { purchaseType: state.filter };
     if (artistId != null) {
       filtrationOptions.artistId = artistId;
     }
@@ -66,7 +66,7 @@ export default function useDropsWithPagination(artistId = null, perPage = 12) {
       null,
     ];
 
-    const filtrationOptions = { type: state.filter };
+    const filtrationOptions = { purchaseType: state.filter };
     if (artistId != null) {
       filtrationOptions.artistId = artistId;
     }
