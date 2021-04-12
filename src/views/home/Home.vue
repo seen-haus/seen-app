@@ -17,14 +17,14 @@
           color="fence-light"
           textAlign="center"
           :closed="false"
-          >Future Drops</fenced-title
+          > Featured Drops</fenced-title
         >
         <fenced-title
           class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
           color="fence-light"
           textAlign="left"
           :closed="false"
-          >Future Drops</fenced-title
+          > Featured Drops</fenced-title
         >
         <router-link to="drops">
           <button class="button dark flex-shrink-0">

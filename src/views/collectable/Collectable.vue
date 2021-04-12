@@ -73,15 +73,15 @@
           <div class="text-lg text-gray-500 mt-6 description" v-html="description"></div>
 
           <template v-if="showAdditionalInformation">
-            <div class="rounded-container flex items-center mt-12">
-              <i
-                  class="fas fa-truck text-3xl icon-right text-gray-500 mr-6"
-              ></i>
+<!--            <div class="rounded-container flex items-center mt-12">-->
+<!--              <i-->
+<!--                  class="fas fa-truck text-3xl icon-right text-gray-500 mr-6"-->
+<!--              ></i>-->
 
-              <div class="text-sm font-bold">
-                The item will be shipped from Paris, France
-              </div>
-            </div>
+<!--              <div class="text-sm font-bold">-->
+<!--                The item will be shipped from Paris, France-->
+<!--              </div>-->
+<!--            </div>-->
 
             <div class="rounded-container flex items-center mt-6">
               <i
