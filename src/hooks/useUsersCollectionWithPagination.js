@@ -51,7 +51,7 @@ export default function useUsersCollectionWithpagination(address = null) {
             null,
             null,
         ];
-        
+
         try {
             const data = await OpenSeaAPIService.getProfileEntries(state.address, state.limit, state.offset);
 

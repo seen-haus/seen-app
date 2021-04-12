@@ -26,14 +26,13 @@
       <div class="lg:bg-white lg:rounded-b-lg">
         <a class="button dropdown-btn" :href="etherscanLink" target="_blank">
            <div class="flex justify-between flex-grow">
-              <div class="flex flex-grow">
+              <div class="flex flex-grow lowercase">
                 <img src="@/assets/icons/icon--seen.svg" class="cursor-pointer mr-2" alt="SEEN">
                 <i class="fas fa-spinner fa-spin" v-if="!seenBalance"></i>
                 {{seenBalance ? `${seenBalance.substring(0, 4)} $seen` : ''}}
               </div>
-              <div>{{seenBalanceUSD}}</div>
+              <div class="text-grey-9">{{seenBalanceUSD}}</div>
            </div>
-
         </a>
         <div class="mx-8 h-0.5 bg-background-gray"></div>
         <router-link :to="{ name: 'profile'}">

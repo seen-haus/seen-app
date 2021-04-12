@@ -131,10 +131,12 @@ export default {
       if (mediaType.value === "image") return;
       if (!props.controls) return;
 
-      if (state.paused) playVideo();
-      else pauseVideo();
-
-      state.paused = !state.paused;
+      if (state.paused)  {
+        playVideo();
+      } else {
+        pauseVideo();
+      }
+      // state.paused = !state.paused;
     }
 
     function playVideo() {
