@@ -104,7 +104,7 @@
         <how-to-video class="my-12"></how-to-video>
 
         <div class="flex justify-center">
-          <button class="button dark">Read FAQs</button>
+          <button class="button dark" @click="$router.push({name: 'faq'})">Read FAQs</button>
         </div>
       </container>
     </div>

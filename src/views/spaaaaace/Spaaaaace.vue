@@ -114,8 +114,8 @@
         <how-to-video class="my-12"></how-to-video>
 
         <div class="flex justify-center">
-          <button class="button dark mr-4">Read FAQs</button>
-          <button class="button outline">Meet the team</button>
+          <button class="button dark mr-4" @click="$router.push({name: 'faq'})">Read FAQs</button>
+<!--          <button class="button outline">Meet the team</button>-->
         </div>
       </container>
     </div>
@@ -154,7 +154,7 @@
           View All Artists
         </button>
       </router-link>
-      
+
     </container>
   </div>
 </template>
