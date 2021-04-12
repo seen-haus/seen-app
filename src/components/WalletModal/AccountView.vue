@@ -117,10 +117,11 @@ export default {
     const usernameField = reactive(useField("username", "required"));
     const twitterField = reactive(useField("twitter", url => {
       const res = twitterRegx.exec(url);
+      if (!url) return true;
       return (res && res[1]) ? true : 'This is not a valid twitter address';
     }));
     const websiteField = reactive(useField("website", isValidHttpUrl));
-    const descriptionField = reactive(useField("description", "required|min:6"));
+    const descriptionField = reactive(useField("description"));
 
     const onSubmit = form.handleSubmit(async (values) => {
       const signer = useSigner();
