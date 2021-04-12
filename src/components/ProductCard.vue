@@ -17,8 +17,8 @@
       />
 
       <div class="tags flex absolute top-6 left-6 right-6">
-        <tag v-if="isNft" class="bg-tag-nft mr-1 text-white">NFT</tag>
-        <tag v-if="isTangible" class="bg-tag-tangible text-white">TANGIBLE</tag>
+        <tag v-if="isNft" class="bg-black mr-1 text-white">NFT</tag>
+        <tag v-if="isTangible" class="bg-black text-white">TANGIBLE</tag>
 
         <live-indicator :status="liveStatus" class="text-white ml-auto dark" />
       </div>

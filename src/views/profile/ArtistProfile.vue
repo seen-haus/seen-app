@@ -1,9 +1,6 @@
 <template>
   <div class="profile">
-    <div class="profile-background" :style="{backgroundImage: `url(${artist.avatar})`}">
-    
-    </div>
-    <container class="relative pb-20">
+    <container class="relative pb-20 pt-20">
       <div class="avatar">
         <div class="bg-background-gray rounded-full w-full h-full bg-contain bg-center" :style="{backgroundImage: `url(${artist.avatar})`}">
         </div>

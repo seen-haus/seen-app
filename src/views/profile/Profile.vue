@@ -89,7 +89,7 @@
             Load More
           </button>
         </div>
-        <div v-else class="text-xl text-center py-8">
+        <div v-else class="text-xl text-center py-8 mb-12">
           User has no collectables yet.
         </div>
       </div>
