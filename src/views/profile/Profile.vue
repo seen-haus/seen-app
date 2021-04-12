@@ -81,13 +81,15 @@
             ></div>
           </template>
 
-          <button
-            class="button dark mt-20 mx-auto w-full md:w-96"
-            v-if="hasMore"
-            @click="handleLoadMore"
-          >
-            Load More
-          </button>
+          <div class="flex justify-center">
+            <button
+              class="button dark mt-20 mx-auto w-full md:w-96"
+              v-if="hasMore"
+              @click="handleLoadMore"
+            >
+              Load More
+            </button>
+          </div>
         </div>
         <div v-else class="text-xl text-center py-8 mb-12">
           User has no collectables yet.
