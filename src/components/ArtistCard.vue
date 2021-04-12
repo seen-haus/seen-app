@@ -22,9 +22,9 @@
           }}</tag
         >
       </div>
-      
+
       <div
-        class="mt-3 text-gray-600"
+        class="mt-3 text-gray-600 text-lg"
         v-if="artistStatement != null"
         v-html="artistStatement"
       ></div>
