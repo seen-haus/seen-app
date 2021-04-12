@@ -52,7 +52,7 @@ export default {
       title: "Artists",
     });
     const router = useRouter();
-    const paginatedArtists = useArtistsWithPagination();
+    const paginatedArtists = useArtistsWithPagination(48);
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
     const hasMore = computed(() => paginatedArtists.hasMore.value);
 
