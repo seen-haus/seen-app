@@ -1,82 +1,83 @@
-import { OpenSeaAPIService } from "@/services/apiService";
-import { computed, reactive } from "vue";
+import {OpenSeaAPIService} from "@/services/apiService";
+import {computed, reactive} from "vue";
 
 export default function useUsersCollectionWithpagination(address = null) {
-  const state = reactive({
-    items: [null, null, null, null, null, null],
-    limit: 6,
-    offset: 0,
-    hasMore: false,
-    address,
-    error: null,
-  });
+    const state = reactive({
+        items: [null, null, null, null, null, null],
+        limit: 6,
+        offset: 0,
+        hasMore: false,
+        address,
+        error: null,
+    });
 
-  const setAddress = (address) => {
-    state.address = address;
-  }
-
-  async function load() {
-    state.limit = 6;
-    state.offset = 0;
-    state.hasMore = false;
-
-    state.items = [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-    ];
-
-    try {
-      const data = await OpenSeaAPIService.getProfileEntries(state.address, state.limit, state.offset);
-      state.items = data;
-      state.hasMore = data.length === state.limit;
-    } catch (e) {
-      state.error = e;
+    const setAddress = (address) => {
+        state.address = address;
     }
-  }
 
-  async function loadMore() {
-    if (!state.hasMore) return;
+    async function load() {
+        state.limit = 6;
+        state.offset = 0;
+        state.hasMore = false;
 
-    state.offset += state.limit;
-    state.items = [
-      ...state.items,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-    ];
+        state.items = [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+        ];
 
-    try {
-      const data = await OpenSeaAPIService.getProfileEntries(state.address, state.limit, state.offset);
-
-      state.items = [
-        ...state.items.filter((i) => i != null),
-        ...data,
-      ];
-
-      state.hasMore = data.assets.length === 6;
-    } catch (e) {
-      state.error = e;
+        try {
+            const data = await OpenSeaAPIService.getProfileEntries(state.address, state.limit, state.offset);
+            state.items = data;
+            state.hasMore = data.length === state.limit;
+        } catch (e) {
+            state.error = e;
+        }
     }
-  }
 
-  const listOfCollectables = computed(() => state.items);
-  const hasMore = computed(() => state.hasMore);
-  const error = computed(() => state.error);
+    async function loadMore() {
+        if (!state.hasMore) return;
 
-  return {
-    listOfCollectables,
-    load,
-    hasMore,
-    error,
-    loadMore,
-    setAddress,
-  };
+        state.offset += state.limit;
+        state.items = [
+            ...state.items,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+        ];
+        
+        try {
+            const data = await OpenSeaAPIService.getProfileEntries(state.address, state.limit, state.offset);
+
+            state.items = [
+                ...state.items.filter((i) => i != null),
+                ...data,
+            ];
+
+            state.hasMore = data.length === 6;
+        } catch (e) {
+            console.log(e)
+            state.error = e;
+        }
+    }
+
+    const listOfCollectables = computed(() => state.items);
+    const hasMore = computed(() => state.hasMore);
+    const error = computed(() => state.error);
+
+    return {
+        listOfCollectables,
+        load,
+        hasMore,
+        error,
+        loadMore,
+        setAddress,
+    };
 
 }

@@ -81,21 +81,20 @@
             ></div>
           </template>
 
-          <div class="flex justify-center">
-            <button
-              class="button dark mt-20 mx-auto w-full md:w-96"
-              v-if="hasMore"
-              @click="handleLoadMore"
-            >
-              Load More
-            </button>
-          </div>
         </div>
         <div v-else class="text-xl text-center py-8 mb-12">
           User has no collectables yet.
         </div>
       </div>
       <not-found v-else />
+          <div class="flex justify-center" v-if="listOfCollectables && listOfCollectables.length > 0 && hasMore">
+            <button
+              class="button dark mb-12 mx-auto w-full md:w-96"
+              @click="handleLoadMore"
+            >
+              Load More
+            </button>
+          </div>
     </container>
   </div>
 </template>

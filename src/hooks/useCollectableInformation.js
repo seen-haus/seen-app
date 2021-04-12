@@ -214,10 +214,10 @@ export default function useCollectableInformation(initialCollectable = {}) {
         const start = new Date(startsAt.value).getTime();
         const end = new Date(endsAt.value).getTime();
 
-        // TODO: Remove this call
-        initializeContractEvents(collectable.value);
+        // TODO: Remove this call & TEST
+        // initializeContractEvents(collectable.value);
 
-        if (now >= start && now < end) {
+        if (now >= start && now < end && !is_sold_out.value) {
             console.log('contract initialized');
             isContractEnabled.value = true;
             initializeContractEvents(collectable.value);
