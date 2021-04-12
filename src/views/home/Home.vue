@@ -182,9 +182,7 @@ export default {
     });
     const router = useRouter();
 
-    const paginatedCollectables = useCollectablesWithPagination(
-      PURCHASE_TYPE.AUCTION
-    );
+    const paginatedCollectables = useCollectablesWithPagination( 0);
     const listOfCollectables = computed(
       () => paginatedCollectables.listOfCollectables.value
     );

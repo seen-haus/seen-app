@@ -2,22 +2,23 @@
   <div class="hero-auction">
     <container class="py-15 flex flex-col lg:flex-row">
       <div
-        class="media relative flex items-center flex-1 cursor-pointer"
-        @click="navigateToCollectable(collectable.contract_address)"
+          class="media relative flex items-center flex-1 cursor-pointer"
+          @click="navigateToCollectable(collectable.contract_address)"
       >
         <media-loader
-          :src="firstMedia"
-          aspectRatio="100%"
-          class="overflow-hidden rounded-3xl flex-1"
-          muted
-          loop
-          autoplay
+            :src="firstMedia"
+            aspectRatio="100%"
+            class="overflow-hidden rounded-3xl flex-1"
+            muted
+            loop
+            autoplay
         />
 
         <div class="tags flex absolute top-6 left-6">
-          <tag v-if="isNft" class="bg-tag-nft mr-1 text-white">NFT</tag>
-          <tag v-if="isTangible" class="bg-tag-tangible text-white"
-            >TANGIBLE</tag
+          <tag v-if="isNft" class="bg-black mr-1 text-white">NFT</tag>
+          <tag v-if="isTangible" class="bg-black text-white"
+          >TANGIBLE
+          </tag
           >
         </div>
 
@@ -28,29 +29,29 @@
 
       <div class="description flex flex-1 flex-col justify-center">
         <fenced-title
-          class="text-white flex lg:hidden mt-6"
-          color="fence-dark"
-          text-align="center"
-          :closed="true"
-          ><span class="flex-shrink-0">{{ title }}</span></fenced-title
+            class="text-white flex lg:hidden mt-6"
+            color="fence-dark"
+            text-align="center"
+            :closed="true"
+        ><span class="flex-shrink-0">{{ title }}</span></fenced-title
         >
 
         <fenced-title
-          class="text-white hidden lg:flex"
-          color="fence-dark"
-          text-align="left"
-          :closed="true"
-          ><span class="flex-shrink-0">{{ title }}</span></fenced-title
+            class="text-white hidden lg:flex"
+            color="fence-dark"
+            text-align="left"
+            :closed="true"
+        ><span class="flex-shrink-0">{{ title }}</span></fenced-title
         >
 
         <div class="flex lg:justify-start items-center mt-2 justify-center">
           <user-badge
-            type="dark"
-            :url="artist.avatar"
-            :username="artist.name"
-            :artistSlug="artist.slug"
+              type="dark"
+              :url="artist.avatar"
+              :username="artist.name"
+              :artistSlug="artist.slug"
           />
-          <live-indicator :status="liveStatus" class="text-white ml-4" />
+          <live-indicator :status="liveStatus" class="text-white ml-4"/>
         </div>
 
         <div class="auction-action flex items-center pt-14">
@@ -59,20 +60,20 @@
           </button>
 
           <price-display
-            size="md"
-            type="Ether"
-            :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
-            :price="price"
-            :priceUSD="priceUSD"
+              size="md"
+              type="Ether"
+              :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
+              :price="price"
+              :priceUSD="isAuction ? priceUSD : priceUSDSold"
           />
         </div>
 
         <div class="timer pt-12">
           <progress-bar
-            :inversed="isAuction"
-            class="bg-fence-dark h-3"
-            :progress="progress"
-            :colorClass="
+              :inversed="isAuction"
+              class="bg-fence-dark h-3"
+              :progress="progress"
+              :colorClass="
               isCollectableActive
                 ? isUpcomming
                   ? 'bg-white'
@@ -83,33 +84,33 @@
 
           <template v-if="isAuction">
             <div
-              class="text-sm mt-2 text-gray-400 font-semibold"
-              v-if="is_sold_out"
+                class="text-sm mt-2 text-gray-400 font-semibold"
+                v-if="is_sold_out"
             >
               Sold Out
             </div>
             <progress-timer
-              v-else
-              ref="timerRef"
-              class="text-black text-sm mt-2"
-              :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
-              :startDate="startsAt"
-              :endDate="endsAt"
-              @onProgress="updateProgress"
+                v-else
+                ref="timerRef"
+                class="text-black text-sm mt-2"
+                :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
+                :startDate="startsAt"
+                :endDate="endsAt"
+                @onProgress="updateProgress"
             />
           </template>
 
           <template v-else>
             <div
-              class="text-sm font-bold mt-2"
-              :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
+                class="text-sm font-bold mt-2"
+                :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
             >
               {{
                 isCollectableActive
-                  ? `${items} out of ${itemsOf}`
-                  : is_sold_out
-                  ? "Sold Out"
-                  : "Ended"
+                    ? `${items} out of ${itemsOf}`
+                    : is_sold_out
+                    ? "Sold Out"
+                    : "Ended"
               }}
             </div>
           </template>
@@ -121,8 +122,8 @@
 
 
 <script>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import {ref} from "vue";
+import {useRouter} from "vue-router";
 
 import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
@@ -161,6 +162,7 @@ export default {
       collectableState,
       price,
       priceUSD,
+      priceUSDSold,
       items,
       itemsOf,
       progress,
@@ -196,7 +198,7 @@ export default {
       if (!isCollectableActive) return;
       router.push({
         name: "collectableAuction",
-        params: { contractAddress: props.collectable.contract_address },
+        params: {contractAddress: props.collectable.contract_address},
       });
     };
 
@@ -205,6 +207,7 @@ export default {
       collectableState,
       price,
       priceUSD,
+      priceUSDSold,
       items,
       itemsOf,
       progress,
