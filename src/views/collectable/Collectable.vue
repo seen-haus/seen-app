@@ -73,15 +73,15 @@
           <div class="text-lg text-gray-500 mt-6 description" v-html="description"></div>
 
           <template v-if="showAdditionalInformation">
-<!--            <div class="rounded-container flex items-center mt-12">-->
-<!--              <i-->
-<!--                  class="fas fa-truck text-3xl icon-right text-gray-500 mr-6"-->
-<!--              ></i>-->
+            <!--            <div class="rounded-container flex items-center mt-12">-->
+            <!--              <i-->
+            <!--                  class="fas fa-truck text-3xl icon-right text-gray-500 mr-6"-->
+            <!--              ></i>-->
 
-<!--              <div class="text-sm font-bold">-->
-<!--                The item will be shipped from Paris, France-->
-<!--              </div>-->
-<!--            </div>-->
+            <!--              <div class="text-sm font-bold">-->
+            <!--                The item will be shipped from Paris, France-->
+            <!--              </div>-->
+            <!--            </div>-->
 
             <div class="rounded-container flex items-center mt-6">
               <i
@@ -138,7 +138,7 @@
           <list-of-buyers class="mb-12" :list="events"/>
 
           <template v-if="isAuction">
-            <button class="button dark w-full">
+            <button class="button dark w-full" @click="openModal('video', 'https://www.youtube.com/watch?v=1G5caDyf-kA')">
               <i
                   class="fas fa-play-circle mr-2 text-xl icon-left text-white"
               ></i>
@@ -201,6 +201,8 @@ import {useToast} from "primevue/usetoast";
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
 import useContractEvents from "@/hooks/useContractEvents";
 import {getEtherscanLink} from "@/services/utils";
+import GLightbox from 'glightbox';
+import 'glightbox/dist/css/glightbox.css';
 
 export default {
   name: "Collectable",
@@ -343,6 +345,27 @@ export default {
       updateMeta();
     })();
 
+    const openModal = (type, url) => {
+      const lightbox = GLightbox({
+        touchNavigation: true,
+        loop: true,
+        autoplayVideos: true
+      });
+      if (type === 'video' || type.includes("mp4") || type.includes("video")) {
+        lightbox.setElements([{
+          'href': url,
+          'type': 'video',
+          'source': 'youtube', //vimeo, youtube or local
+        }])
+      } else {
+        lightbox.setElements([{
+          'href': url,
+          'type': 'image', //vimeo, youtube or local
+        }]);
+      }
+      lightbox.open();
+    };
+
     return {
       isLoading,
       collectable,
@@ -377,6 +400,7 @@ export default {
       updateProgress,
       viewOnEtherscan,
       viewOnOpenSea,
+      openModal,
       showAdditionalInformation,
       lastBid,
     };

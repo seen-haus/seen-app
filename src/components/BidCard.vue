@@ -65,7 +65,7 @@
         </div>
       </template>
 
-      <button class="button opensea mt-6" v-if="!isCollectableActive">
+      <button class="button opensea mt-6" v-if="!isCollectableActive" @click="viewOnOpenSea">
         Opensea
       </button>
       <template v-else>
@@ -92,8 +92,9 @@
         </div>
         <div v-else>
           <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold" >
-            SOLD OUT (40 items)
+            SOLD OUT ({{ items_of }} items)
           </div>
+
         </div>
         <button
             class="button dark mt-4 w-full"
@@ -385,6 +386,12 @@ export default {
       store.dispatch("application/openModal", "WalletModal");
     };
 
+     const viewOnOpenSea = () => {
+      let nftAddress = collectableData.value.nft_contract_address
+      let nftTokenId = collectableData.value.nft_token_id
+      window.location = `https://opensea.io/assets/${nftAddress}/${nftTokenId}`;
+    }
+
     return {
       account,
       currentProgress,
@@ -404,6 +411,7 @@ export default {
       auctionField,
       saleField,
       isFieldInvalid,
+      viewOnOpenSea
     };
   },
 };
