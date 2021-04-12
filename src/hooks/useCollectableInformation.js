@@ -33,7 +33,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const media = computed(() => collectable.value.media);
     const firstMedia = computed(() => { // Use preview image or first
         if (!media.value) return '';
-        const found = media.value.find(v => v.isPreview);
+        const found = media.value.find(v => v.is_preview);
 
         if (found) {
             return found.url;
@@ -104,7 +104,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const updateInformation = function (data) {
         // events.value = data.events.sort((a, b) => b.updatedAt - a.updatedAt);
         if (data.media && data.media.length) {
-            const sorted = [...data.media].sort((a, b) => a.position < b.position ? -1 : 1).filter(m => !m.isPreview);
+            const sorted = [...data.media].sort((a, b) => a.position < b.position ? -1 : 1).filter(m => !m.is_preview);
             const lastItem = sorted[sorted.length - 1];
             const mediaSlice = sorted.slice(0, -1);
             mediaSlice.unshift(lastItem);
