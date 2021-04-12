@@ -67,7 +67,15 @@
 
 
 <script>
-import { computed, onBeforeUnmount, onMounted, reactive, ref, toRefs, watchEffect } from "vue";
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  toRefs,
+  watchEffect,
+} from "vue";
 
 import PlayButton from "./components/PlayButton.vue";
 
@@ -200,14 +208,16 @@ export default {
     }
 
     function createObserver() {
-      if (mediaType.value === "video") {
-        const options = {
-          root: null,
-          threshold: "0",
-        };
+      if (window["IntersectionObserver"]) {
+        if (mediaType.value === "video") {
+          const options = {
+            root: null,
+            threshold: "0",
+          };
 
-        observer = new IntersectionObserver(handleIntersect, options);
-        observer.observe(videoRef.value);
+          observer = new IntersectionObserver(handleIntersect, options);
+          observer.observe(videoRef.value);
+        }
       }
     }
 
