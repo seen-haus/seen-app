@@ -6,12 +6,12 @@
       <header>
         <div class="flex items-center flex-wrap justify-between">
           <router-link to="/">
-            <div id="logo" class="flex items-center">
+            <div id="logo" class="flex items-center" style="width: 208px">
               <img src="@/assets/images/logo--black.png"  class="mr-4" alt="">
             </div>
           </router-link>
-          <div class="items-center hidden lg:flex lg:flex-grow xl:flex-grow-0 justify-between">
-            <desktop-menu/>
+          <div class="items-center hidden lg:flex lg:flex-grow justify-between">
+            <desktop-menu class="flex justify-center flex-1"/>
             <wallet-button/>            
           </div>
           <nav class="lg:hidden">

@@ -15,6 +15,14 @@
     <router-link :to="{ name: 'collectors'}" v-slot="{isActive}" class="routing-link block py-1 px-8">
       <span class="opacity-50 font-bold py-0.5" :class="{'active': isActive}">Collectors</span>
     </router-link>
+    <a
+      href="https://www.cryptovoxels.com/play?coords=S@105W,125N"
+      target="_blank"
+      class="routing-link block py-1 px-8"
+      ><span class="opacity-50 font-bold py-0.5 hover:opacity-100"
+        >VR Gallery</span
+      ></a
+    >
     <wallet-button class="pl-8"/>  
   </nav>
 </template>
@@ -73,6 +81,6 @@ export default {
 
   .icon-fire {
     height: 22px;
-    filter: brightness(0) saturate(100%) opacity(0.4);
+    filter: brightness(100) saturate(100%) opacity(0.4);
   }
 </style>
