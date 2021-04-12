@@ -5,13 +5,13 @@ import { computed, reactive } from "vue";
 export default function useArtistsWithPagination() {
   const state = reactive({
     items: [null, null, null, null, null, null],
-    perPage: 6,
+    perPage: 48,
     page: 1,
     hasMore: false
   });
 
   async function load() {
-    state.perPage = 6;
+    state.perPage = 48;
     state.page = 1;
     state.hasMore = false;
 
