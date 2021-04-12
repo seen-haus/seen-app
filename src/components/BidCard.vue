@@ -2,52 +2,53 @@
   <div class="bid-card shadow-lifted rounded-xl flex flex-col overflow-hidden">
     <div class="top-part flex flex-col p-8">
       <div
-        v-if="!isCollectableActive"
-        class="flex justify-start items-center text-gray-400 text-xs font-bold"
+          v-if="!isCollectableActive"
+          class="flex justify-start items-center text-gray-400 text-xs font-bold"
       >
         ITEM HAS BEEN SOLD
       </div>
       <div
-        v-else-if="!isAuction"
-        class="flex justify-start items-center text-gray-400 text-xs font-bold"
+          v-else-if="!isAuction"
+          class="flex justify-start items-center text-gray-400 text-xs font-bold"
       >
         <span class="tracking-widest mr-4">ITEMS LEFT </span>
         <tag class="bg-fence-light self-end text-gray-400 font-semibold"
-          >{{ items_of - items }}/{{ items_of }}</tag
+        >{{ items_of - items }}/{{ items_of }}
+        </tag
         >
       </div>
 
       <price-display
-        size="lg"
-        class="text-black self-start mt-5"
-        type="ETH"
-        :price="price"
-        :priceUSD="priceUSD"
-        :number-of-bids="isAuction ? numberOfBids : undefined"
+          size="lg"
+          class="text-black self-start mt-5"
+          type="ETH"
+          :price="price"
+          :priceUSD="priceUSD"
+          :number-of-bids="isAuction ? numberOfBids : undefined"
       />
 
       <template v-if="isCollectableActive">
         <div class="outlined-input mt-5" :class="{ invalid: hasError || isFieldInvalid }">
           <input
-            v-model="auctionField.value"
-            v-if="isAuction"
-            type="number"
-            placeholder="Enter your bid"
+              v-model="auctionField.value"
+              v-if="isAuction"
+              type="number"
+              placeholder="Enter your bid"
           />
           <input
-            v-model="saleField.value"
-            v-if="!isAuction"
-            step="1"
-            min="1"
-            type="number"
-            placeholder="Enter amount"
+              v-model="saleField.value"
+              v-if="!isAuction"
+              step="1"
+              min="1"
+              type="number"
+              placeholder="Enter amount"
           />
           <template v-if="isAuction">
             <div class="icon w-5 mr-1">
               <img
-                src="@/assets/icons/icon--ethereum.svg"
-                class="cursor-pointer mr-2 opacity-50"
-                alt="SEEN"
+                  src="@/assets/icons/icon--ethereum.svg"
+                  class="cursor-pointer mr-2 opacity-50"
+                  alt="SEEN"
               />
             </div>
             <div class="type font-bold">ETH</div>
@@ -75,9 +76,9 @@
           Insufficient funds
         </button>
         <button
-          v-if="!account"
-          class="cursor-pointer button primary flex-shrink-0"
-          @click="openWalletModal"
+            v-if="!account"
+            class="cursor-pointer button primary flex-shrink-0"
+            @click="openWalletModal"
         >
           <i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
         </button>
@@ -86,13 +87,18 @@
 
     <div class="bottom-part bg-background-gray border-t p-8">
       <template v-if="!isCollectableActive">
-        <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+        <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold" v-if="isAuction">
           AUCTION ENDED
         </div>
+        <div v-else>
+          <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold" >
+            SOLD OUT (40 items)
+          </div>
+        </div>
         <button
-          class="button dark mt-4 w-full"
-          @click="openWinnerModal"
-          v-if="isWinnerButtonShown"
+            class="button dark mt-4 w-full"
+            @click="openWinnerModal"
+            v-if="isWinnerButtonShown"
         >
           <i class="fas fa-play-circle mr-2 text-xl icon-left text-white"></i>
           Claim your winnings
@@ -104,18 +110,18 @@
           {{ isUpcomming ? "AUCTION STARTS IN" : "AUCTION ENDS IN" }}
         </div>
         <progress-timer
-          ref="timerRef"
-          class="text-black text-3xl mt-2"
-          :label="null"
-          :startDate="startsAt"
-          :endDate="endsAt"
-          @onProgress="updateProgress"
+            ref="timerRef"
+            class="text-black text-3xl mt-2"
+            :label="null"
+            :startDate="startsAt"
+            :endDate="endsAt"
+            @onProgress="updateProgress"
         />
         <progress-bar
-          :inversed="isAuction"
-          :progress="currentProgress"
-          class="bg-gray-300 h-3 mt-3"
-          :colorClass="
+            :inversed="isAuction"
+            :progress="currentProgress"
+            class="bg-gray-300 h-3 mt-3"
+            :colorClass="
             isCollectableActive
               ? isUpcomming
                 ? 'bg-opensea'
@@ -131,17 +137,17 @@
             AUCTION STARTS IN
           </div>
           <progress-timer
-            ref="timerRef"
-            class="text-black text-3xl mt-2"
-            :label="null"
-            :startDate="startsAt"
-            :endDate="endsAt"
-            @onProgress="updateProgress"
+              ref="timerRef"
+              class="text-black text-3xl mt-2"
+              :label="null"
+              :startDate="startsAt"
+              :endDate="endsAt"
+              @onProgress="updateProgress"
           />
           <progress-bar
-            :progress="currentProgress"
-            class="bg-gray-300 h-3 mt-3"
-            :colorClass="
+              :progress="currentProgress"
+              class="bg-gray-300 h-3 mt-3"
+              :colorClass="
               isCollectableActive
                 ? isUpcomming
                   ? 'bg-opensea'
@@ -158,7 +164,7 @@
           <div class="text-2.5xl font-bold py-2">
             {{ items_of - items }} out of {{ items_of }}
           </div>
-          <progress-bar :progress="progress" class="bg-gray-300 h-3 mt-3" />
+          <progress-bar :progress="progress" class="bg-gray-300 h-3 mt-3"/>
         </template>
       </template>
     </div>
@@ -167,8 +173,8 @@
 
 
 <script>
-import { ref, computed, watchEffect, reactive } from "vue";
-import { useStore } from "vuex";
+import {ref, computed, watchEffect, reactive} from "vue";
+import {useStore} from "vuex";
 import emitter from "@/services/utils/emitter";
 import useWeb3 from "@/connectors/hooks";
 
@@ -180,12 +186,12 @@ import useExchangeRate from "@/hooks/useExchangeRate.js";
 import {formatEther} from "@ethersproject/units";
 import useSigner from "@/hooks/useSigner";
 import useContractEvents from "@/hooks/useContractEvents";
-import { useToast } from "primevue/usetoast";
-import { useField, useForm } from "vee-validate";
+import {useToast} from "primevue/usetoast";
+import {useField, useForm} from "vee-validate";
 
 export default {
   name: "BidCard",
-  components: { Tag, PriceDisplay, ProgressBar, ProgressTimer },
+  components: {Tag, PriceDisplay, ProgressBar, ProgressTimer},
   props: {
     startsAt: String,
     endsAt: String,
@@ -212,7 +218,7 @@ export default {
     const toast = useToast();
     const store = useStore();
     const isAuction = ref(props.isAuction);
-    const { account } = useWeb3();
+    const {account} = useWeb3();
     const hasError = ref(null);
     const collectableData = ref(props.collectable);
     const winner = computed(() => collectableData.value.winner_address);
@@ -229,7 +235,8 @@ export default {
     const saleField = reactive(useField("amount", (val) => fieldValidatorSale(val)));
 
     const isFieldInvalid = computed(() => {
-      return isAuction.value ? auctionField.errors.length : saleField.errors.length});
+      return isAuction.value ? auctionField.errors.length : saleField.errors.length
+    });
 
     const fieldValidatorAuction = (value) => {
       if (value) {
@@ -263,8 +270,8 @@ export default {
 
     const isWinnerButtonShown = computed(() => {
       if (
-        typeof account.value === "string" &&
-        typeof winner.value === "string"
+          typeof account.value === "string" &&
+          typeof winner.value === "string"
       ) {
         return account.value.toLowerCase() === winner.value.toLowerCase();
       } else {
@@ -298,17 +305,22 @@ export default {
             throw new Error("not enough items");
           }
           onBuy(saleField.value);
-            
+
         }
         hasError.value = null;
       } catch (e) {
         hasError.value = true;
         console.error("Error when trying to bid", e);
-        toast.add({severity:'error', summary:'Error', detail:`Error placing ${isAuction.value ? 'a bid' : 'a buy order'}.`, life: 3000});
+        toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: `Error placing ${isAuction.value ? 'a bid' : 'a buy order'}.`,
+          life: 3000
+        });
       }
     };
 
-    const onBuy = async(event) => {
+    const onBuy = async (event) => {
       try {
         const currentPrice = price.value;
         const amount = +parseInt(event, 10);
@@ -320,7 +332,7 @@ export default {
         await buy(amount);
       } catch (e) {
         console.error("Error placing bid/buy", e);
-        toast.add({severity:'error', summary:'Error', detail:'Error placing a buy order.', life: 3000});
+        toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a buy order.', life: 3000});
       }
     };
 
@@ -334,7 +346,7 @@ export default {
         await bid(amount);
       } catch (e) {
         console.error("Error placing bid/buy", e);
-        toast.add({severity:'error', summary:'Error', detail:'Error placing a bid.', life: 3000});
+        toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a bid.', life: 3000});
       }
     };
 
@@ -346,7 +358,7 @@ export default {
       currentProgress.value = event;
     };
 
-    const { ethereum, convertEthToUSDAndFormat } = useExchangeRate();
+    const {ethereum, convertEthToUSDAndFormat} = useExchangeRate();
 
     const hasEnoughFunds = () => {
       if (!balance.value) return true;
@@ -415,10 +427,12 @@ export default {
     height: 56px;
     min-width: 0;
   }
+
   .button.disabled {
     cursor: not-allowed !important;
   }
 }
+
 .error-notice {
   @apply mt-1;
 }
