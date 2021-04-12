@@ -128,6 +128,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
                             let decodedEvt = JSON.parse(evt.raw)
                             return decodedEvt.amount + carry
                         }
+                        if (evt.value) {
+                            return parseInt(evt.value) + carry
+                        }
                         return carry
                     }, 0)
                 : 0); // Amount of items sold
@@ -140,7 +143,6 @@ export default function useCollectableInformation(initialCollectable = {}) {
                 price.value = +(data.start_bid || 0).toFixed(2);
                 priceUSD.value = +(data.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             } else {
-                console.log(items.value)
                 price.value = +(lastestEvent.value || 0).toFixed(2);
                 priceUSD.value = +(lastestEvent.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             }
@@ -151,6 +153,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
                 .reduce((carry, evt) => {
                     if (evt.value_in_usd) {
                         return carry + evt.value_in_usd
+                    }
+                    if (evt.value) {
+                        return evt.value + carry
                     }
                     if (evt.amount) {
                         return carry + (evt.amount * converEthToUSD(price.value))
@@ -165,7 +170,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
         // SALE
         if (!isAuction.value) {
-            progress.value = itemsOf.value / items.value;
+            progress.value = items.value === 0 || !items.value
+                ? 0
+                : items.value / itemsOf.value;
         }
     };
 
