@@ -31,7 +31,7 @@
                 <i class="fas fa-spinner fa-spin" v-if="!seenBalance"></i>
                 {{seenBalance ? `${seenBalance.substring(0, 4)} $seen` : ''}}
               </div>
-              <div class="text-grey-9">{{seenBalanceUSD}}</div>
+              <div class="text-grey-9 font-normal">{{seenBalanceUSD}}</div>
            </div>
         </a>
         <div class="mx-8 h-0.5 bg-background-gray"></div>
