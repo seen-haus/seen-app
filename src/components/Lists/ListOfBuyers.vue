@@ -7,14 +7,15 @@
     </template>
     <template v-else>
       <template
-        v-for="(buyer, index) in list.slice(0, showCount)"
-        :key="buyer.id"
+          v-for="(buyer, index) in list.slice(0, showCount)"
+          :key="buyer.id"
       >
-        <div class="list-tile flex items-center py-6">
+        <div class="list-tile flex items-center py-6 cursor-pointer"
+             @click="$router.push({name: 'profileWithAddress', params: {userAddress: buyer.wallet_address}})">
           <icon
-            :size="40"
-            :wallet-address="buyer.wallet_address"
-            class="mr-4"
+              :size="40"
+              :wallet-address="buyer.wallet_address"
+              class="mr-4"
           />
 
           <div class="flex flex-col flex-grow">
@@ -27,16 +28,16 @@
           </div>
 
           <price-display
-            size="xs"
-            class="items-end"
-            :price="buyer.value"
-            :priceUSD="buyer.value_in_usd"
+              size="xs"
+              class="items-end"
+              :price="buyer.value"
+              :priceUSD="buyer.value_in_usd"
           />
         </div>
 
         <div
-          v-if="index != 4"
-          class="divider h-0 border-t-2 border-gray-200"
+            v-if="index != 4"
+            class="divider h-0 border-t-2 border-gray-200"
         ></div>
       </template>
 
@@ -48,15 +49,15 @@
 </template>
 
 <script>
-import { computed, ref } from "vue";
-import { shortenAddress, getDaysAgo } from "@/services/utils/index";
+import {computed, ref} from "vue";
+import {shortenAddress, getDaysAgo} from "@/services/utils/index";
 
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
 import Icon from "@/components/Common/Icon.vue";
 
 export default {
   name: "ListOfBuyers",
-  components: { PriceDisplay, Icon },
+  components: {PriceDisplay, Icon},
   props: {
     list: Array,
   },

@@ -54,7 +54,7 @@
           color="fence-gray"
           textAlign="center"
           :closed="true"
-          >collection</fenced-title
+          >Collection</fenced-title
         >
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 my-8" v-if="listOfCollectables && listOfCollectables.length > 0">
           <template
