@@ -17,6 +17,19 @@ export function isAddress(value) {
 }
 
 /**
+ * Clean function
+ * @param obj
+ * @return {*}
+ */
+export function clean(obj) {
+  for (var propName in obj) {
+    if (obj[propName] === null || obj[propName] === undefined  || obj[propName] === "") {
+      delete obj[propName];
+    }
+  }
+  return obj
+}
+/**
  *
  * @type {{"1": string, "3": string, "4": string, "42": string}}
  */

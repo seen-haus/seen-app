@@ -1,5 +1,5 @@
 <template>
-  <a class="mr-8 cursor-pointer" :class="isVertical ? 'w-full block' : 'inline'" :href="social.url" target="_blank">
+  <a class="mr-8 cursor-pointer" :class="isVertical ? 'w-full block' : 'inline'" :href="social.url" target="_blank" v-if="getSocialText(social)">
     <i :class="'mr-2 text-sm ' + getSocialIcon(social)"></i>{{ getSocialText(social) }}
   </a>
 </template>
