@@ -109,8 +109,9 @@ export const OpenSeaAPIService = {
 
         const assets = data.assets;
 
-        //TODO Remove when the user has an owned nft
-        assets.push({ token_id: "42" });
+        if (!assets.length) {
+            return [];
+        }
 
         const tokenIds = assets.map(v => v.token_id);
         const collectables = await ApiService.post('collectables/map', { tokenIds });

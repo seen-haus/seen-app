@@ -56,7 +56,7 @@
           :closed="true"
           >collection</fenced-title
         >
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 my-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 my-8" v-if="listOfCollectables && listOfCollectables.length > 0">
           <template
             v-for="collectable in listOfCollectables"
             :key="collectable && collectable.data.id"
@@ -88,6 +88,9 @@
           >
             Load More
           </button>
+        </div>
+        <div v-else class="text-xl text-center py-8">
+          User has no collectables yet.
         </div>
       </div>
       <not-found v-else />
@@ -163,7 +166,7 @@ export default {
     const collection = useUsersCollectionWithPagination();
     watchEffect(() => {
       if (isOwnProfile.value && userLocal.value) {
-        collection.setAddress("0x43392235b6b13e0ce9d4b6cc48c8f5d2b46bff5f");
+        collection.setAddress(userLocal.value.wallet);
         collection.load();
       }
     })
