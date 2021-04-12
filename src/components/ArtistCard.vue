@@ -11,10 +11,10 @@
       />
 
       <div class="flex items-center mt-6">
-        <div class="text-title font-bold text-2.5xl ellipsis">
+        <div class="text-title font-bold text-2.5xl ellipsis  mr-4">
           {{ artist.name }}
         </div>
-        <tag class="bg-fence-light text-gray-400 font-semibold flex-shrink-0 ml-4">
+        <tag class="bg-fence-light text-gray-400 font-semibold flex-shrink-0" :class="{'ml-auto': $route.name !== 'collectableDrops'}">
           {{ collectablesCount }} CREATION{{
             collectablesCount > 1 || collectablesCount === 0
               ? "S"
