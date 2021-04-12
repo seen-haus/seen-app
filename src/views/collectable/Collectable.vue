@@ -51,27 +51,8 @@
 
     <container>
       <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32">
-        <div class="left-side col-span-7 py-6">
-          <fenced-title
-              class="text-black flex lg:hidden mt-6 title-small"
-              color="fence-dark"
-              text-align="center"
-              :closed="true"
-              hideBars
-          ><span class="flex-shrink-0">{{ title }}</span></fenced-title
-          >
-
-          <fenced-title
-              class="text-black hidden lg:flex title-small"
-              color="fence-dark"
-              text-align="left"
-              :closed="true"
-              hideBars
-          ><span class="flex-shrink-0">{{ title }}</span></fenced-title
-          >
-
-          <div class="text-lg text-gray-500 mt-6 description" v-html="description"></div>
-
+        <div class="left-side col-span-7 pb-6">
+          <div class="text-lg text-gray-500 description" v-html="description"></div>
           <template v-if="showAdditionalInformation">
             <!--            <div class="rounded-container flex items-center mt-12">-->
             <!--              <i-->
