@@ -4,7 +4,18 @@
 
 
     <button v-if="account" @click="isOpen = !isOpen" class="cursor-pointer button primary flex items-center wallet">
-      <div class="pt-1.5"><identicon/></div> <span class="ml-2">{{ shortenAddress(account) }}</span></button>
+      <div class="pt-1.5">
+        <identicon :size="36"/>
+      </div>
+      <div class="ml-2 flex flex-col items-start">
+        <span class="block">{{ balanceFormatted ? balanceFormatted.substring(0,8) : 'Fetching balance' }} ETH</span>
+        <span class="addressText">{{ shortenAddress(account) }}</span>
+      </div>
+      <div class="mr-4 ml-12">
+        <i class="fas fa-caret-down" v-if="!isOpen"></i>
+        <i class="fas fa-caret-up" v-if="isOpen"></i>
+      </div>
+    </button>
     <div class="dropdown-menu" v-if="isOpen">
       <div class="arrow-up"></div>
       <div class="py-6 px-8 bg-background-gray lg:rounded-t-lg">
@@ -13,9 +24,23 @@
         <p class="text-sm text-grey-9"><span v-if="dollarValue">{{dollarValue}}</span><i v-if="!dollarValue" class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i></p>
       </div>
       <div class="lg:bg-white lg:rounded-b-lg">
-        <button class="button dropdown-btn" @click="openWalletModal">
-           <img src="@/assets/icons/icon--person.svg" class="cursor-pointer mr-2" alt="SEEN"> View Your Profile
-        </button>
+        <a class="button dropdown-btn" :href="etherscanLink" target="_blank">
+           <div class="flex justify-between flex-grow">
+              <div class="flex flex-grow">
+                <img src="@/assets/icons/icon--seen.svg" class="cursor-pointer mr-2" alt="SEEN">
+                <i class="fas fa-spinner fa-spin" v-if="!seenBalance"></i>
+                {{seenBalance ? `${seenBalance.substring(0, 4)} $seen` : ''}}
+              </div>
+              <div>{{seenBalanceUSD}}</div>
+           </div>
+           
+        </a>
+        <div class="mx-8 h-0.5 bg-background-gray"></div>
+        <router-link :to="{ name: 'profile'}">
+          <button class="button dropdown-btn">
+           <img src="@/assets/icons/icon--person.svg" class="cursor-pointer mr-2" alt="SEEN"> Collections & Profile
+          </button>
+        </router-link>
         <div class="mx-8 h-0.5 bg-background-gray"></div>
         <button class="button dropdown-btn" @click="handleDisconnect">
            <img src="@/assets/icons/icon--disconnect.svg" class="cursor-pointer mr-2" alt="SEEN"> Disconnect
@@ -42,11 +67,15 @@ export default {
   name: 'WalletButton',
   components: {Identicon},
   setup() {
+    const store = useStore();
     const {error, account, deactivate, provider} = useWeb3();
-    const { ethereum, convertEthToUSDAndFormat } = useExchangeRate();
+    const { ethereum, convertEthToUSDAndFormat, convertSeenToUSDAndFormat } = useExchangeRate();
     const balance = ref(null);
     const balanceFormatted = computed(() => balance.value);
-    const dollarValue = computed(() => balance.value === null ? '' : convertEthToUSDAndFormat(balance.value))
+    const dollarValue = computed(() => balance.value === null ? '' : convertEthToUSDAndFormat(balance.value));
+    const seenBalance = computed(() => store.getters['application/balance'].seen);
+    const seenBalanceUSD = computed(() => seenBalance.value ? convertSeenToUSDAndFormat(seenBalance.value) : '');
+    const etherscanLink = computed(() => account.value ? `https://etherscan.io/address/${account.value}` : 'https://etherscan.io/token/0xCa3FE04C7Ee111F0bbb02C328c699226aCf9Fd33');
 
     watchEffect(async () => {
       if (provider.value) {
@@ -55,7 +84,6 @@ export default {
         balance.value = formatEther(balanceEncoded);
       }
     })
-    const store = useStore();
     let isOpen = ref(false);
     const openWalletModal = () => {
       isOpen.value = false;
@@ -77,6 +105,9 @@ export default {
       balance,
       balanceFormatted,
       dollarValue,
+      seenBalance,
+      seenBalanceUSD,
+      etherscanLink,
     }
   }
 }
@@ -92,5 +123,14 @@ export default {
     border-left:.5rem solid transparent;
     border-right: .5rem solid transparent;
     border-bottom: .5rem solid #F5F4F3;
+  }
+  .wallet {
+    padding: 0 .75rem !important;
+  }
+  .addressText {
+    color: #b8ffe8;
+    font-size: 13px;
+    font-weight: 400;
+    margin-top: -.25rem;
   }
 </style>
