@@ -1,6 +1,6 @@
 <template>
   <modal :visible="isOpen" class="rounded-lg">
-    <modal-header @back="handleBack" :is-profile-page="view === views.ACCOUNT" :has-back-button="hasBackButton" class="rounded-t-lg">{{ title }}</modal-header>
+    <modal-header @back="handleBack" :is-profile-page="view === views.ACCOUNT" :has-back-button="hasBackButton" class="rounded-t-lg font-title">{{ title }}</modal-header>
     <modal-content class="rounded-b-lg">
       <div>
         <account-view v-if="view === views.ACCOUNT" @change-view="setView"/>

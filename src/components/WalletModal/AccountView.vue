@@ -13,7 +13,7 @@
       <div>
         <div class="text-xs font-bold mb-3 uppercase">Connected with {{ name }}</div>
         <div class="flex">
-          <span class="mr-2 pt-1"><identicon/></span> <span class="text-lg">{{ account && shortenAddress(account) }}</span>
+          <span class="mr-2 pt-1"><identicon/></span> <span class="text-lg font-address">{{ account && shortenAddress(account) }}</span>
         </div>
       </div>
       <div>
@@ -50,14 +50,14 @@
           <span class="error-notice">{{ descriptionField.errors[0] }}</span>
         </div>
 
-        <div class="flex items-center justify-center mb-4 mt-8">
-          <button type="submit" class="cursor-pointer primary button mt-3 md:mt-0">
-            Submit
+        <div class="flex items-center justify-center my-8 mb-12">
+          <button type="submit" class="w-full cursor-pointer primary button mt-3 md:mt-0">
+            Save Changes
           </button>
         </div>
       </form>
     </div>
-    <div class="newsletter bg-black py-4 px-8 text-white align-center -mx-8 rounded-b-lg">
+    <!-- <div class="newsletter bg-black py-4 px-8 text-white align-center -mx-8 rounded-b-lg">
       <div class="w-full py-4 inline-flex flex-col justify-center text-center">
         <p class="text-2xl mb-1 font-bold">Be the first to to hear about upcoming drops!</p>
         <p class="color-white opacity-50 text-md">Join our newsletter TODAY!</p>
@@ -68,7 +68,7 @@
           Join&nbsp;Newsletter
         </button>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
