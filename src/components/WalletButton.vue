@@ -2,52 +2,54 @@
   <div class="py-3 relative">
     <button v-if="!account" class="cursor-pointer button primary flex-shrink-0" @click="openWalletModal"><i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet</button>
 
-
-    <button v-if="account" @click="isOpen = !isOpen" class="cursor-pointer button primary flex items-center wallet">
-      <div class="pt-1.5">
-        <identicon :size="36"/>
-      </div>
-      <div class="ml-2 flex flex-col items-start">
-        <span class="block">{{ balanceFormatted ? balanceFormatted.substring(0,8) : 'Fetching balance' }} ETH</span>
-        <span class="addressText">{{ shortenAddress(account) }}</span>
-      </div>
-      <div class="mr-4 ml-12">
-        <i class="fas fa-caret-down" v-if="!isOpen"></i>
-        <i class="fas fa-caret-up" v-if="isOpen"></i>
-      </div>
-    </button>
-    <div class="dropdown-menu" v-if="isOpen">
-      <div class="arrow-up"></div>
-      <div class="py-6 px-8 bg-background-gray lg:rounded-t-lg">
-        <p class="text-xs font-bold text-grey-9">YOUR WALLET BALANCE</p>
-        <p class="text-3xl font-bold text-black"><span v-if="balance">{{balanceFormatted}}</span><i v-if="!balance" class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i>  <span class="text-lg font-normal">ETH</span></p>
-        <p class="text-sm text-grey-9"><span v-if="dollarValue">{{dollarValue}}</span><i v-if="!dollarValue" class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i></p>
-      </div>
-      <div class="lg:bg-white lg:rounded-b-lg">
-        <a class="button dropdown-btn" :href="etherscanLink" target="_blank">
-           <div class="flex justify-between flex-grow">
-              <div class="flex flex-grow">
-                <img src="@/assets/icons/icon--seen.svg" class="cursor-pointer mr-2" alt="SEEN">
-                <i class="fas fa-spinner fa-spin" v-if="!seenBalance"></i>
-                {{seenBalance ? `${seenBalance.substring(0, 4)} $seen` : ''}}
-              </div>
-              <div>{{seenBalanceUSD}}</div>
-           </div>
-
-        </a>
-        <div class="mx-8 h-0.5 bg-background-gray"></div>
-        <router-link :to="{ name: 'profile'}">
-          <button class="button dropdown-btn">
-           <img src="@/assets/icons/icon--person.svg" class="cursor-pointer mr-2" alt="SEEN"> Collections & Profile
-          </button>
-        </router-link>
-        <div class="mx-8 h-0.5 bg-background-gray"></div>
-        <button class="button dropdown-btn" @click="handleDisconnect">
-           <img src="@/assets/icons/icon--disconnect.svg" class="cursor-pointer mr-2" alt="SEEN"> Disconnect
-        </button>
-      </div>
+    <div @click="toggle" class="pr-4 md:pr-0">
+      <button v-if="account" class="cursor-pointer button primary flex items-center wallet">
+        <div class="pt-1.5">
+          <identicon :size="36"/>
+        </div>
+        <div class="ml-2 flex flex-col items-start">
+          <span class="block">{{ balanceFormatted ? balanceFormatted.substring(0,8) : 'Fetching balance' }} ETH</span>
+          <span class="addressText">{{ shortenAddress(account) }}</span>
+        </div>
+        <div class="mr-4 ml-4 ml-md-12">
+          <i class="fas fa-caret-down" v-if="!isOpen"></i>
+          <i class="fas fa-caret-up" v-if="isOpen"></i>
+        </div>
+      </button>
     </div>
+    <OverlayPanel ref="op" appendTo="body" :showCloseIcon="false" id="overlay_panel" style="width: 280px" :breakpoints="{'960px': '75vw'}">
+      <div class="dropdown-menu">
+        <div class="arrow-up"></div>
+        <div class="py-6 px-8 bg-background-gray lg:rounded-t-lg">
+          <p class="text-xs font-bold text-grey-9">YOUR WALLET BALANCE</p>
+          <p class="text-3xl font-bold text-black"><span v-if="balance">{{balanceFormatted}}</span><i v-if="!balance" class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i>  <span class="text-lg font-normal">ETH</span></p>
+          <p class="text-sm text-grey-9"><span v-if="dollarValue">{{dollarValue}}</span><i v-if="!dollarValue" class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i></p>
+        </div>
+        <div class="lg:bg-white lg:rounded-b-lg">
+          <a class="button dropdown-btn" :href="etherscanLink" target="_blank">
+            <div class="flex justify-between flex-grow">
+                <div class="flex flex-grow">
+                  <img src="@/assets/icons/icon--seen.svg" class="cursor-pointer mr-2" alt="SEEN">
+                  <i class="fas fa-spinner fa-spin" v-if="!seenBalance"></i>
+                  {{seenBalance ? `${seenBalance.substring(0, 4)} $seen` : ''}}
+                </div>
+                <div>{{seenBalanceUSD}}</div>
+            </div>
 
+          </a>
+          <div class="mx-8 h-0.5 bg-background-gray"></div>
+          <router-link :to="{ name: 'profile'}">
+            <button class="button dropdown-btn">
+            <img src="@/assets/icons/icon--person.svg" class="cursor-pointer mr-2" alt="SEEN"> Collections & Profile
+            </button>
+          </router-link>
+          <div class="mx-8 h-0.5 bg-background-gray"></div>
+          <button class="button dropdown-btn" @click="handleDisconnect">
+            <img src="@/assets/icons/icon--disconnect.svg" class="cursor-pointer mr-2" alt="SEEN"> Disconnect
+          </button>
+        </div>
+      </div>
+    </OverlayPanel>
   </div>
 </template>
 
@@ -57,17 +59,17 @@ import {useStore} from "vuex"
 import Identicon from "@/components/Identicon/Identicon"
 import {shortenAddress} from "@/services/utils/index"
 import {ref, watchEffect, computed} from 'vue'
-import {Web3Provider} from "@ethersproject/providers"
-import {formatEther, parseEther} from "@ethersproject/units";
-import { BigNumber } from "@ethersproject/bignumber";
+import {formatEther} from "@ethersproject/units";
 import useSigner from "@/hooks/useSigner";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
+import OverlayPanel from 'primevue/overlaypanel';
 
 export default {
   name: 'WalletButton',
-  components: {Identicon},
+  components: {Identicon, OverlayPanel},
   setup() {
     const store = useStore();
+    const op = ref();
     const {error, account, deactivate, provider} = useWeb3();
     const { formatCrypto, convertEthToUSDAndFormat, convertSeenToUSDAndFormat } = useExchangeRate();
     const balance = ref(null);
@@ -76,6 +78,7 @@ export default {
     const seenBalance = computed(() => store.getters['application/balance'].seen ? formatCrypto(store.getters['application/balance'].seen) : 0);
     const seenBalanceUSD = computed(() => seenBalance.value ? convertSeenToUSDAndFormat(seenBalance.value) : '');
     const etherscanLink = computed(() => account.value ? `https://etherscan.io/address/${account.value}` : 'https://etherscan.io/token/0xCa3FE04C7Ee111F0bbb02C328c699226aCf9Fd33');
+    let isInitialOpen = true;
 
     watchEffect(async () => {
       if (provider.value) {
@@ -95,6 +98,27 @@ export default {
       deactivate();
     };
 
+    const toggle = (event) => {
+      op.value.toggle(event);
+      if (isInitialOpen) {
+        isInitialOpen = false;
+        const menuEl = op.value;
+        const oldAlignOverlay = menuEl.alignOverlay;
+        menuEl.popup = true;
+        menuEl.alignOverlay = function() {
+          oldAlignOverlay();
+          const targetRect = this.target.getBoundingClientRect();
+          const parentNode = this.container.parentNode;
+          this.container.style.left = '';
+          this.container.style.right = (parentNode.clientWidth - targetRect.right) + 'px';
+        }
+      }
+    }
+
+    const close = () => {
+      op.value.hide();
+    }
+
     return {
       error,
       account,
@@ -108,6 +132,8 @@ export default {
       seenBalance,
       seenBalanceUSD,
       etherscanLink,
+      toggle,
+      op,
     }
   }
 }
