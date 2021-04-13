@@ -1,5 +1,5 @@
 <template>
-  <div class="py-3 relative">
+  <div class="py-3 relative pl-8 pl-md-0">
     <button v-if="!account" class="cursor-pointer button primary flex-shrink-0" @click="openWalletModal"><i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet</button>
 
     <div @click="toggle" class="pr-4 md:pr-0">
