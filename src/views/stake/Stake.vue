@@ -113,13 +113,12 @@
               class="rounded-full bg-black text-white flex items-center justify-center w-8 h-8 mr-4"
               >5</span
             >
-            Redeem SEEN at any time by converting xSEEN back to SEEN.
+            Redeem SEEN at any time by converting xSEEN back to SEEN.*
           </div>
 
-<!--          <div class="text-2xs text-gray-400 px-4 mt-3">-->
-<!--            * If enough liquidity available. 24h period may apply due to HEGIC-->
-<!--            limitations.-->
-<!--          </div>-->
+          <div class="text-2xs text-gray-400 px-4 mt-3">
+            * All deposits are subject to a 3 day lockup period to prevent sandwich attacks.
+          </div>
         </div>
       </container>
     </div>

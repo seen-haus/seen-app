@@ -62,9 +62,6 @@ export default {
     let accountCurrent = null;
 
     watchEffect(async () => {
-      if (provider.value) {
-        console.log('PROVIDER', provider.value);
-      }
       if (account.value && account.value !== accountCurrent) {
         const signer = useSigner();
         if (signer) {
