@@ -9,49 +9,41 @@
       'bg-gray-200 border-gray-300': selected && isInFirstThree,
     }"
   >
-    <div class="flex-1 text-left flex items-center relative">
-      <icon
-        :size="isInFirstThree ? 56 : 40"
-        :wallet-address="user.wallet_address"
-        class="rounded-full mr-6"
-        :class="isInFirstThree ? 'my-6' : 'my-4'"
-        :style="{'min-width' : isInFirstThree ? '56px' : '40px'}"
-      />
+    <div
+      class="flex-1 flex-col lg:flex-row text-left flex items-center relative"
+    >
+      <div class="relative">
+        <icon
+          :size="isInFirstThree ? 56 : 40"
+          :wallet-address="user.wallet_address"
+          class="rounded-full lg:mr-6"
+          :class="isInFirstThree ? 'my-6' : 'my-4'"
+          :style="{ 'min-width': isInFirstThree ? '56px' : '40px' }"
+        />
+
+        <i
+          v-if="isInFirstThree"
+          :class="
+            'fas fa-trophy text-' +
+            colorAndText[0] +
+            ' absolute left-10 top-12 text-3xl'
+          "
+        ></i>
+      </div>
 
       <span>{{ name }}</span>
 
-      <template v-if="place === 0">
-        <i
-          class="fas fa-trophy text-place-gold absolute left-10 top-12 text-3xl"
-        ></i>
-        <div
-          class="place-tag bg-place-gold text-white text-xs font-semibold p-1 rounded text-shadow ml-3"
-        >
-          1ST PLACE
-        </div>
-      </template>
+      <div
+        v-if="isInFirstThree"
+        :class="
+          'place-tag bg-' +
+          colorAndText[0] +
+          ' text-white text-xs font-semibold p-1 rounded text-shadow lg:ml-3'
+        "
+      >
+        {{ colorAndText[1] }}
+      </div>
 
-      <template v-if="place === 1">
-        <i
-          class="fas fa-trophy text-place-silver absolute left-10 top-12 text-3xl"
-        ></i>
-        <div
-          class="place-tag bg-place-silver text-white text-xs font-semibold p-1 rounded text-shadow ml-3"
-        >
-          2ND PLACE
-        </div>
-      </template>
-
-      <template v-if="place === 2">
-        <i
-          class="fas fa-trophy text-place-bronze absolute left-10 top-12 text-3xl"
-        ></i>
-        <div
-          class="place-tag bg-place-bronze text-white text-xs font-semibold p-1 rounded text-shadow ml-3"
-        >
-          3RD PLACE
-        </div>
-      </template>
     </div>
     <div class="flex-shrink-0 w-20">{{ user.won || 0 }}</div>
 
@@ -62,7 +54,9 @@
       </div>
     </div> -->
 
-    <div class="flex-shrink-0 w-40">{{ (user.amount_spent || 0).toFixed(2) }} ETH</div>
+    <div class="flex-shrink-0 w-40">
+      {{ (user.amount_spent || 0).toFixed(2) }} ETH
+    </div>
   </div>
 </template>
 
@@ -107,9 +101,9 @@ export default {
       return "w-12 h-12 my-3";
     },
     colorAndText: function () {
-      if (this.place === 0) return ["#ffae00", "1ST PLACE"];
-      if (this.place === 1) return ["#ffae00", "2ND PLACE"];
-      if (this.place === 2) return ["#ffae00", "3RD PLACE"];
+      if (this.place === 0) return ["place-gold", "1ST PLACE"];
+      if (this.place === 1) return ["place-silver", "2ND PLACE"];
+      if (this.place === 2) return ["place-bronze", "3RD PLACE"];
       return null;
     },
   },
