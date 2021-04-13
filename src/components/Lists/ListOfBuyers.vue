@@ -15,7 +15,7 @@
           <icon
               :size="40"
               :wallet-address="buyer.wallet_address"
-              class="mr-4"
+              class="mr-4 hidden sm:block"
           />
 
           <div class="flex flex-col flex-grow">

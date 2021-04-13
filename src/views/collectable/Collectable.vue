@@ -31,7 +31,7 @@
               :username="artist.name"
               :artistSlug="artist.slug"
           />
-          <div class="tags flex mx-9">
+          <div class="tags flex flex-wrap md:flex-nowrap mx-9">
             <tag
                 v-if="isAuction"
                 class="bg-fence-light self-end text-gray-500 font-semibold mr-1"
@@ -50,7 +50,7 @@
     <hero-gallery :mediaResources="gallerySortedMedia"/>
 
     <container>
-      <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32">
+      <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-12 md:mt-0">
         <div class="left-side col-span-7 pb-6">
           <div class="text-lg text-gray-500 description" v-html="description"></div>
           <template v-if="showAdditionalInformation">

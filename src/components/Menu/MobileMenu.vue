@@ -23,7 +23,7 @@
         >VR Gallery</span
       ></a
     >
-    <wallet-button class="pl-8"/>  
+    <wallet-button class="mx-auto block pl-2 sm:pl-8"/>
   </nav>
 </template>
 
@@ -67,7 +67,7 @@ export default {
       })
     })
 
-    return {closeMobileMenu: () => store.commit('application/CLOSE_MOBILE_MENU')} 
+    return {closeMobileMenu: () => store.commit('application/CLOSE_MOBILE_MENU')}
   },
 }
 </script>
