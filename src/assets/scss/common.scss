@@ -53,3 +53,6 @@
 .p-overlaypanel {
   margin-top: 0 !important;
 }
+.p-overlaypanel:before, .p-overlaypanel:after {
+  display: none;
+}

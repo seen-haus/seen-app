@@ -57,6 +57,7 @@ export default {
 <style lang="scss" scoped>
   .quote-carousel-wrapper {
     max-width: 48rem;
+    width: 100%;
   }
   .swiper-button-next, .swiper-button-prev {
     top: 50%;

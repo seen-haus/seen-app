@@ -38,7 +38,7 @@
           </a>
           <div class="mx-8 h-0.5 bg-background-gray"></div>
           <router-link :to="{ name: 'profile'}">
-            <button class="button dropdown-btn">
+            <button class="button dropdown-btn" @click="close">
             <img src="@/assets/icons/icon--person.svg" class="cursor-pointer mr-2" alt="SEEN"> Collections & Profile
             </button>
           </router-link>
@@ -92,7 +92,7 @@ export default {
       store.dispatch('application/openModal', 'WalletModal')
     };
     const handleDisconnect = () => {
-      isOpen.value = false;
+      close();
       store.dispatch('user/setUser', null);
       deactivate();
     };
@@ -132,6 +132,7 @@ export default {
       seenBalanceUSD,
       etherscanLink,
       toggle,
+      close,
       op,
     }
   }
