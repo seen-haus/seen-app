@@ -109,6 +109,7 @@ export default {
 
     const toggle = (event) => {
       op.value.toggle(event);
+       isOpen.value = !isOpen.value;
       if (isInitialOpen) {
         isInitialOpen = false;
         const menuEl = op.value;
@@ -126,6 +127,8 @@ export default {
 
     const close = () => {
       op.value.hide();
+      console.log("JS")
+      isOpen.value = false
     }
 
     return {

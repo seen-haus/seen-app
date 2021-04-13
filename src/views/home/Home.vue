@@ -11,9 +11,9 @@
     ></div>
 
     <container class="section-featured-auctions pb-24">
-      <div class="flex items-center py-24 flex-col lg:flex-row">
+      <div class="flex items-center pb-12 pt-20 lg:py-24 flex-col lg:flex-row">
         <fenced-title
-          class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 lg:hidden self-stretch"
+          class="flex-grow mr-0 md:mb-6 lg:mb-0 lg:mr-6 lg:hidden self-stretch"
           color="fence-light"
           textAlign="center"
           :closed="false"
@@ -26,7 +26,7 @@
           :closed="false"
           > Featured Drops</fenced-title
         >
-        <router-link to="drops">
+        <router-link to="drops" class="hidden lg:block">
           <button class="button dark flex-shrink-0">
             View All Drops <i class="fas fa-arrow-right ml-3 icon-right"></i>
           </button>
