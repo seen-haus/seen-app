@@ -66,7 +66,7 @@ export default {
         const signer = useSigner();
         if (signer) {
           const tokenContract = useTokenContract('0xCa3FE04C7Ee111F0bbb02C328c699226aCf9Fd33');
-          const seenBalance = await tokenContract.balanceOf(account.value);
+          const seenBalance = await tokenContract.balanceOf("0xd74b12a60df20fe9c70946ee3e263db321511b7f");
           accountCurrent = account.value;
           const ethBalance = await signer.getBalance();
           store.dispatch('application/setBalance', {eth: formatEther(ethBalance), seen: formatEther(seenBalance)});

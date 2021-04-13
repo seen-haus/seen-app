@@ -4,6 +4,7 @@ import ERC20_ABI from "@/constants/abis/erc20.json"
 import TANGIBLE_V1_ABI from "@/constants/abis/tangibleABI.json"
 import ENGLISH_AUCTION_V1_ABI from "@/constants/abis/englishAuctionABI.json"
 import NFT_SALE_V1_ABI from "@/constants/abis/NFTSaleABI.json"
+import XSEEN_ABI from "@/constants/abis/xseenABI.json"
 import {Web3Provider, WebSocketProvider} from "@ethersproject/providers"
 
 function useContract(address, ABI, withSignerIfPossible = true) {
@@ -34,4 +35,14 @@ export function useV1NftContract(contract, withSignerIfPossible) {
 
 export function useV1TangibleContract(contract, withSignerIfPossible) {
     return useContract(contract, TANGIBLE_V1_ABI, withSignerIfPossible)
+}
+
+export function useStakingContract(withSignerIfPossible) {
+    const contractAddress = process.env.VUE_APP_XSEEN_CONTRACT_ADDRESS
+    return useContract(contractAddress, XSEEN_ABI, withSignerIfPossible)
+}
+
+export function useSEENContract(withSignerIfPossible) {
+    const contractAddress = "0xca3fe04c7ee111f0bbb02c328c699226acf9fd33"
+    return useContract(contractAddress, ERC20_ABI, withSignerIfPossible)
 }

@@ -10,8 +10,7 @@
       >
 
       <div class="description text-gray-600 mx-auto text-center py-4 text-lg">
-        The leaderboard is a great way to see who spent the most, how many
-        artworks they owned and how many bids they placed.
+        The leaderboard is a great way to see who in the community spent the most, and how many artworks they have acquired.
       </div>
     </container>
     <div class="pb-28">
@@ -96,7 +95,7 @@ export default {
     (async function () {
       state.isLoading = true;
       const { data } = await LeaderboardService.get();
-      
+
       state.users = data.sort((a, b) => +b.amount_spent - +a.amount_spent);
       state.isLoading = false;
     })();

@@ -18,7 +18,7 @@
           <div id="logo" class="flex items-center mb-6">
             <img src="@/assets/images/logo--white.png"  class="mr-4 footer-logo" alt="seen logo">
           </div>
-          <p class="opacity-70 text-md">Seen.haus is an innovative auction house of the future merging the physical and digital worlds of art. Each physical collectible sold through our platform is paired with a digital version that provides an exclusive record of ownership.</p>
+          <p class="opacity-70 text-md">SEEN HAUS is the innovative auction house of the future, merging the physical and digital worlds of art built upon blockchain technology. Our platform offers a curated NFT marketplace, hosting creators and artists whilst showcasing exclusive and unique artworks to collectors.</p>
         </div>
         <div class="links grid-cols-3 grid row-start-1 lg:row-auto mb-12 lg:mb-0">
           <div>
