@@ -1,5 +1,5 @@
 <template>
-    <div class="user-badge flex items-center rounded-full p-1.5 font-semibold shadow-lifted-sm cursor-pointer" :class="typeStyles" @click="navigateToArtist($event)">
+    <div class="user-badge flex-shrink-0 flex items-center rounded-full p-1.5 font-semibold shadow-lifted-sm cursor-pointer" :class="typeStyles" @click="navigateToArtist($event)">
         <img class="user-img rounded-full mr-2 h-6 w-6" :src="url" />
         <span class="text-sm mr-1.5">{{username}}</span>
     </div>

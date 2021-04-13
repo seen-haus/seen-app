@@ -24,10 +24,13 @@
       />
 
       <div class="title-and-price flex items-start">
-        <span
-          class="text-xl md:text-2xl font-title font-bold flex-1 text-black"
-          >{{ title }}</span
-        >
+        <span class="text-xl md:text-2xl font-title font-bold flex-1 text-gray-400">
+          {{ title }}
+        </span>
+<!--        <span-->
+<!--          class="text-xl md:text-2xl font-title font-bold flex-1 text-black"-->
+<!--          >{{ title }}</span-->
+<!--        >-->
         <h1 class="font-bold mr-1.5 text-2xl text-gray-400 items-end ml-2 -mt-0.5 md:mt-0.5">Gift</h1>
       </div>
     </div>
@@ -53,7 +56,7 @@ export default {
     const firstMedia = computed(() => props.collectable.image_url);
     const artist = computed(() => {
       return {
-        avatar: '/img/icon--seen-green.d1308baf.svg',
+        avatar: 'https://assets.seen.haus/seen/seen-founders-icon.jpg',
         name: 'SEEN HAUS'
       }
     });

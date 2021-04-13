@@ -31,7 +31,7 @@
               :username="artist.name"
               :artistSlug="artist.slug"
           />
-          <div class="tags flex mx-9">
+          <div class="tags flex flex-wrap md:flex-nowrap mx-9">
             <tag
                 v-if="isAuction"
                 class="bg-fence-light self-end text-gray-500 font-semibold mr-1"
@@ -50,38 +50,19 @@
     <hero-gallery :mediaResources="gallerySortedMedia"/>
 
     <container>
-      <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32">
-        <div class="left-side col-span-7 py-6">
-          <fenced-title
-              class="text-black flex lg:hidden mt-6 title-small"
-              color="fence-dark"
-              text-align="center"
-              :closed="true"
-              hideBars
-          ><span class="flex-shrink-0">{{ title }}</span></fenced-title
-          >
-
-          <fenced-title
-              class="text-black hidden lg:flex title-small"
-              color="fence-dark"
-              text-align="left"
-              :closed="true"
-              hideBars
-          ><span class="flex-shrink-0">{{ title }}</span></fenced-title
-          >
-
-          <div class="text-lg text-gray-500 mt-6 description" v-html="description"></div>
-
+      <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-12 md:mt-0">
+        <div class="left-side col-span-7 pb-6">
+          <div class="text-lg text-gray-500 description" v-html="description"></div>
           <template v-if="showAdditionalInformation">
-            <div class="rounded-container flex items-center mt-12">
-              <i
-                  class="fas fa-truck text-3xl icon-right text-gray-500 mr-6"
-              ></i>
+            <!--            <div class="rounded-container flex items-center mt-12">-->
+            <!--              <i-->
+            <!--                  class="fas fa-truck text-3xl icon-right text-gray-500 mr-6"-->
+            <!--              ></i>-->
 
-              <div class="text-sm font-bold">
-                The item will be shipped from Paris, France
-              </div>
-            </div>
+            <!--              <div class="text-sm font-bold">-->
+            <!--                The item will be shipped from Paris, France-->
+            <!--              </div>-->
+            <!--            </div>-->
 
             <div class="rounded-container flex items-center mt-6">
               <i
@@ -138,7 +119,7 @@
           <list-of-buyers class="mb-12" :list="events"/>
 
           <template v-if="isAuction">
-            <button class="button dark w-full">
+            <button class="button dark w-full" @click="openModal('video', 'https://www.youtube.com/watch?v=1G5caDyf-kA')">
               <i
                   class="fas fa-play-circle mr-2 text-xl icon-left text-white"
               ></i>
@@ -201,6 +182,8 @@ import {useToast} from "primevue/usetoast";
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
 import useContractEvents from "@/hooks/useContractEvents";
 import {getEtherscanLink} from "@/services/utils";
+import GLightbox from 'glightbox';
+import 'glightbox/dist/css/glightbox.css';
 
 export default {
   name: "Collectable",
@@ -343,6 +326,27 @@ export default {
       updateMeta();
     })();
 
+    const openModal = (type, url) => {
+      const lightbox = GLightbox({
+        touchNavigation: true,
+        loop: true,
+        autoplayVideos: true
+      });
+      if (type === 'video' || type.includes("mp4") || type.includes("video")) {
+        lightbox.setElements([{
+          'href': url,
+          'type': 'video',
+          'source': 'youtube', //vimeo, youtube or local
+        }])
+      } else {
+        lightbox.setElements([{
+          'href': url,
+          'type': 'image', //vimeo, youtube or local
+        }]);
+      }
+      lightbox.open();
+    };
+
     return {
       isLoading,
       collectable,
@@ -377,6 +381,7 @@ export default {
       updateProgress,
       viewOnEtherscan,
       viewOnOpenSea,
+      openModal,
       showAdditionalInformation,
       lastBid,
     };

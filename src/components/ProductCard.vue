@@ -1,99 +1,98 @@
 <template>
   <div
-    class="product-card flex flex-col overflow-hidden rounded-2xl shadow-lg cursor-pointer"
-    @mouseenter="handleHover(true)"
-    @mouseleave="handleHover(false)"
+      class="product-card flex flex-col overflow-hidden rounded-2xl shadow-lg cursor-pointer"
+      @mouseenter="handleHover(true)"
+      @mouseleave="handleHover(false)"
   >
     <div class="media relative">
       <!-- <img class="image absolute w-full h-full" :src="media" alt="" /> -->
       <media-loader
-        ref="mediaRef"
-        :src="firstMedia"
-        aspectRatio="100%"
-        muted
-        loop
-        :autoplay="autoplay"
-        class="overflow-hidden rounded-t-3xl flex-1"
+          ref="mediaRef"
+          :src="firstMedia"
+          aspectRatio="100%"
+          muted
+          loop
+          :autoplay="autoplay"
+          class="overflow-hidden rounded-t-3xl flex-1"
       />
 
       <div class="tags flex absolute top-6 left-6 right-6">
         <tag v-if="isNft" class="bg-black mr-1 text-white">NFT</tag>
         <tag v-if="isTangible" class="bg-black text-white">TANGIBLE</tag>
 
-        <live-indicator :status="liveStatus" class="text-white ml-auto dark" />
+        <live-indicator :status="liveStatus" class="text-white ml-auto dark"/>
       </div>
     </div>
     <div class="description relative p-6 pb-3 flex flex-col flex-grow">
       <user-badge
-        type="light"
-        :url="artist.avatar"
-        :username="artist.name"
-        :artistSlug="artist.slug"
-        class="absolute -top-4"
+          type="light"
+          :url="artist.avatar"
+          :username="artist.name"
+          :artistSlug="artist.slug"
+          class="absolute -top-4"
       />
 
       <div class="title-and-price flex items-start">
         <span
-          class="text-xl md:text-2xl font-title font-bold flex-1"
-          :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
-          >{{ title }}</span
+            class="text-xl md:text-2xl font-title font-bold flex-1"
+            :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+        >{{ title }}</span
         >
         <price-display
-          size="sm"
-          class="items-end ml-2 -mt-0.5 md:mt-0.5"
-          :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
-          type="Ether"
-          :price="price"
-          :priceUSD="priceUSD"
+            size="sm"
+            class="items-end ml-2 -mt-0.5 md:mt-0.5"
+            :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+            type="Ether"
+            :price="price"
+            :priceUSD="isAuction ? priceUSD : priceUSDSold"
         />
       </div>
-
       <div class="flex-1"></div>
 
       <progress-bar
-        :inversed="isAuction"
-        :progress="progress"
-        :colorClass="
+          :inversed="isAuction"
+          :progress="progress"
+          :colorClass="
           isCollectableActive
             ? isUpcomming
               ? 'bg-gray-300'
               : 'bg-primary'
             : 'bg-gray-300'
         "
-        class="bg-fence-light h-2 mt-10"
+          class="bg-fence-light h-2 mt-10"
       />
 
       <template v-if="isAuction">
         <progress-timer
-          ref="timerRef"
-          class="text-black text-sm mt-2"
-          :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
-          :startDate="startsAt"
-          :endDate="endsAt"
-          @onProgress="updateProgress"
-        />
-      </template>
-
-      <template v-else>
-        <template v-if="isUpcomming">
-          <progress-timer
             ref="timerRef"
             class="text-black text-sm mt-2"
             :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
             :startDate="startsAt"
             :endDate="endsAt"
             @onProgress="updateProgress"
+        />
+      </template>
+
+      <template v-else>
+        <template v-if="isUpcomming">
+          <progress-timer
+              ref="timerRef"
+              class="text-black text-sm mt-2"
+              :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+              :startDate="startsAt"
+              :endDate="endsAt"
+              @onProgress="updateProgress"
           />
         </template>
         <template v-else>
           <div
-            class="text-sm font-bold mt-2"
-            :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+              class="text-sm font-bold mt-2"
+              :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
           >
             {{
               isCollectableActive
-                ? `${items} out of ${itemsOf}`
-                : "Sold Out"
+                  ? `${items} out of ${itemsOf}`
+                  : "Sold Out"
             }}
           </div>
         </template>
@@ -103,7 +102,7 @@
 </template>
 
 <script lang="ts">
-import { ref } from "vue";
+import {ref} from "vue";
 
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
@@ -139,6 +138,7 @@ export default {
       collectableState,
       price,
       priceUSD,
+      priceUSDSold,
       items,
       itemsOf,
       progress,
@@ -187,6 +187,7 @@ export default {
       collectableState,
       price,
       priceUSD,
+      priceUSDSold,
       items,
       itemsOf,
       progress,

@@ -81,19 +81,20 @@
             ></div>
           </template>
 
-          <button
-            class="button dark mt-20 mx-auto w-full md:w-96"
-            v-if="hasMore"
-            @click="handleLoadMore"
-          >
-            Load More
-          </button>
         </div>
         <div v-else class="text-xl text-center py-8 mb-12">
           User has no collectables yet.
         </div>
       </div>
       <not-found v-else />
+          <div class="flex justify-center" v-if="listOfCollectables && listOfCollectables.length > 0 && hasMore">
+            <button
+              class="button dark mb-12 mx-auto w-full md:w-96"
+              @click="handleLoadMore"
+            >
+              Load More
+            </button>
+          </div>
     </container>
   </div>
 </template>
@@ -174,7 +175,7 @@ export default {
     if (address && !isOwnProfile.value) {
       const res = await UserService.get(address);
       data.value = res.data.user;
-      collection.setAddress("0x43392235b6b13e0ce9d4b6cc48c8f5d2b46bff5f");
+      collection.setAddress(address);
       collection.load();
     }
 

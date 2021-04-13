@@ -23,7 +23,7 @@
           ></div>
         </template>
       </div>
-      <button class="button dark mt-20 mx-auto w-full md:w-96" @click="handleLoadMore">
+      <button class="button dark mt-20 mx-auto w-full md:w-96" @click="handleLoadMore" v-if="hasMore">
         View All Artists
       </button>
     </container>
@@ -52,7 +52,7 @@ export default {
       title: "Artists",
     });
     const router = useRouter();
-    const paginatedArtists = useArtistsWithPagination();
+    const paginatedArtists = useArtistsWithPagination(48);
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
     const hasMore = computed(() => paginatedArtists.hasMore.value);
 

@@ -77,7 +77,7 @@
 import useWeb3 from "@/connectors/hooks";
 import {SUPPORTED_WALLETS} from "@/connectors/constants";
 import Identicon from "@/components/Identicon/Identicon";
-import {shortenAddress, getEtherscanLink} from "@/services/utils/index";
+import {shortenAddress, getEtherscanLink, clean} from "@/services/utils/index";
 import CopyHelper from "@/components/CopyHelper/CopyHelper";
 import {useStore} from "vuex";
 
@@ -137,6 +137,7 @@ export default {
             return e;
         });
 
+        values = clean(values);
         UserService.update(account.value, {...values, sig})
           .then(res => {
             store.dispatch('user/setUser', res.data.user);

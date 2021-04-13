@@ -17,14 +17,14 @@
           color="fence-light"
           textAlign="center"
           :closed="false"
-          >Future Drops</fenced-title
+          > Featured Drops</fenced-title
         >
         <fenced-title
           class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
           color="fence-light"
           textAlign="left"
           :closed="false"
-          >Future Drops</fenced-title
+          > Featured Drops</fenced-title
         >
         <router-link to="drops">
           <button class="button dark flex-shrink-0">
@@ -104,7 +104,7 @@
         <how-to-video class="my-12"></how-to-video>
 
         <div class="flex justify-center">
-          <button class="button dark">Read FAQs</button>
+          <button class="button dark" @click="$router.push({name: 'faq'})">Read FAQs</button>
         </div>
       </container>
     </div>
@@ -182,9 +182,7 @@ export default {
     });
     const router = useRouter();
 
-    const paginatedCollectables = useCollectablesWithPagination(
-      PURCHASE_TYPE.AUCTION
-    );
+    const paginatedCollectables = useCollectablesWithPagination( 0);
     const listOfCollectables = computed(
       () => paginatedCollectables.listOfCollectables.value
     );

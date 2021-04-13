@@ -67,7 +67,15 @@
 
 
 <script>
-import { computed, onMounted, reactive, ref, toRefs, watchEffect } from "vue";
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  toRefs,
+  watchEffect,
+} from "vue";
 
 import PlayButton from "./components/PlayButton.vue";
 
@@ -101,6 +109,7 @@ export default {
   },
   components: { PlayButton },
   setup(props) {
+    let observer = null;
     const { autoplay } = toRefs(props);
     const videoRef = ref(null);
     const imageRef = ref(null);
@@ -122,10 +131,12 @@ export default {
       if (mediaType.value === "image") return;
       if (!props.controls) return;
 
-      if (state.paused) playVideo();
-      else pauseVideo();
-
-      state.paused = !state.paused;
+      if (state.paused)  {
+        playVideo();
+      } else {
+        pauseVideo();
+      }
+      // state.paused = !state.paused;
     }
 
     function playVideo() {
@@ -138,6 +149,8 @@ export default {
       } else {
         videoRef.value.play();
       }
+
+      state.paused = false;
     }
     function pauseVideo() {
       if (mediaType.value === "image") return;
@@ -149,6 +162,8 @@ export default {
       } else {
         videoRef.value.pause();
       }
+
+      state.paused = true;
     }
     watchEffect(() => {
       if (!videoRef.value) return;
@@ -161,7 +176,9 @@ export default {
         if (videoRef.value.readyState >= 3) {
           isLoading.value = false;
           videoRef.value.removeEventListener("loadeddata", onLoadedCallback);
-          calculatedAspecRatio.value =  (videoRef.value.videoHeight / videoRef.value.videoWidth) * 100 + '%';
+          calculatedAspecRatio.value =
+            (videoRef.value.videoHeight / videoRef.value.videoWidth) * 100 +
+            "%";
         }
       }
 
@@ -172,13 +189,44 @@ export default {
       if (mediaType.value === "image") {
         isLoading.value = false;
         imageRef.value.removeEventListener("load", onLoadedCallback);
-        calculatedAspecRatio.value =  (imageRef.value.naturalHeight / imageRef.value.naturalWidth) * 100 + '%';
+        calculatedAspecRatio.value =
+          (imageRef.value.naturalHeight / imageRef.value.naturalWidth) * 100 +
+          "%";
+      }
+    }
+
+    function handleIntersect(entries, observer) {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          if (state.paused && autoplay.value) {
+            playVideo();
+          }
+        } else {
+          if (!state.paused && autoplay.value) {
+            pauseVideo();
+          }
+        }
+      });
+    }
+
+    function createObserver() {
+      if (window["IntersectionObserver"]) {
+        if (mediaType.value === "video") {
+          const options = {
+            root: null,
+            threshold: "0",
+          };
+
+          observer = new IntersectionObserver(handleIntersect, options);
+          observer.observe(videoRef.value);
+        }
       }
     }
 
     onMounted(() => {
       if (mediaType.value === "video") {
         videoRef.value.addEventListener("loadeddata", onLoadedCallback);
+        createObserver();
       }
       if (mediaType.value === "youtube") {
         // Need plugin
@@ -186,6 +234,13 @@ export default {
       }
       if (mediaType.value === "image") {
         imageRef.value.addEventListener("load", onLoadedCallback);
+      }
+    });
+
+    onBeforeUnmount(() => {
+      if (observer != null) {
+        observer.unobserve(videoRef.value);
+        observer = null;
       }
     });
 

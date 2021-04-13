@@ -2,16 +2,16 @@ import { ArtistService } from "@/services/apiService";
 import { computed, reactive } from "vue";
 
 
-export default function useArtistsWithPagination() {
+export default function useArtistsWithPagination(pagNumber = 6) {
   const state = reactive({
     items: [null, null, null, null, null, null],
-    perPage: 6,
+    perPage: pagNumber,
     page: 1,
     hasMore: false
   });
 
   async function load() {
-    state.perPage = 6;
+    state.perPage = pagNumber;
     state.page = 1;
     state.hasMore = false;
 

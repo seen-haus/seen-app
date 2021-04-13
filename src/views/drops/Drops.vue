@@ -34,7 +34,7 @@
       </div>
 
       <div
-        class="auction-list-big grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-5"
+        class="auction-list-big grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
       >
         <template
           v-for="collectable in listOfCollectables"

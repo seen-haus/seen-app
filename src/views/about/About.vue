@@ -28,7 +28,7 @@
       </div>
 
       <div
-        class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-24 text-center lg:text-left"
+        class="grid grid-cols-1 lg:grid-cols-2 gap-24 mb-24 text-center lg:text-left"
       >
         <img
           src="@/assets/images/thrustworthiness.jpg"
@@ -52,7 +52,7 @@
       </div>
 
       <div
-        class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-24 text-center lg:text-right"
+        class="grid grid-cols-1 lg:grid-cols-2 gap-24 mb-24 text-center lg:text-right"
       >
         <img
           src="@/assets/images/authenticity.jpg"
@@ -62,9 +62,9 @@
           class="rounded-3xl mx-auto lg:order-1"
         />
 
-        <div class="flex flex-col items-strech justify-center">
+        <div class="flex flex-col items-strech text-left justify-center">
           <div class="text-4xl font-title font-bold mb-6">Authenticity</div>
-          <div class="description text-gray-700 text-lg">
+          <div class="description text-left text-gray-700 text-lg">
             seen.haus’s Certificate of Authenticity (CoA) is unique and
             inscribed with blockchain details specific to the item that has been
             purchased. <br><br> Our CoA ensures that the buyer is given a physical proof
@@ -75,7 +75,7 @@
       </div>
 
       <div
-        class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-24 text-center lg:text-left"
+        class="grid grid-cols-1 lg:grid-cols-2 gap-24 mb-24 text-center lg:text-left"
       >
         <img
           src="@/assets/images/seen.jpg"

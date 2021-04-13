@@ -1,23 +1,23 @@
 <template>
-  <div class="title flex items-center">
+  <div class="title flex items-center fence-wrap" >
     <div
-      v-if="showLeft"
-      class="fence flex-shrink mr-6"
-      :class="{ 'fence-left': closed, ...colorClass }"
+        v-if="showLeft"
+        class="fence flex-shrink mr-6"
+        :class="{ 'fence-left': closed, ...colorClass }"
     ></div>
 
     <div
-      class="title-text text-center font-title lg:flex-shrink-0 font-bold"
-      :class="unshrinkable ? 'flex-shrink-0' : 'flex-shrink'"
-      :style="{ 'max-width': hideBars ? '100%' : '80%', 'width': hideBars ? '100%' : 'auto' }"
+        class="title-text text-center font-title lg:flex-shrink-0 font-bold"
+        :class="unshrinkable ? 'flex-shrink-0' : 'flex-shrink'"
+        :style="{ 'max-width': hideBars ? '100%' : '80%', 'width': hideBars ? '100%' : 'auto' }"
     >
-      <slot> Title </slot>
+      <slot> Title</slot>
     </div>
 
     <div
-      v-if="showRight"
-      class="fence flex-shrink ml-6"
-      :class="{ 'fence-right': closed, ...colorClass }"
+        v-if="showRight"
+        class="fence flex-shrink ml-6"
+        :class="{ 'fence-right': closed, ...colorClass }"
     ></div>
   </div>
 </template>
@@ -46,7 +46,7 @@ export default {
     },
     colorClass: function () {
       if (this.color == null) return {};
-      return { [this.color]: true };
+      return {[this.color]: true};
     },
   },
 };
@@ -57,15 +57,20 @@ export default {
 .title-small {
   .title-text {
     max-width: 80%;
-    font-size: 36px;
     margin-top: -6px;
+    font-size: 36px;
   }
 }
+
 .title-text {
   max-width: 80%;
-  font-size: 46px;
+  font-size: 36px;
   margin-top: -6px;
+  @screen md {
+    font-size: 46px;
+  }
 }
+
 .fence {
   width: 100%;
   height: 25px;
@@ -104,6 +109,29 @@ export default {
 
   &.fence-right {
     border-right: 5px solid;
+  }
+}
+
+.fence-wrap {
+  .title-text {
+    max-width: 100% !important;
+    width: 100% !important;
+    text-align: center;
+  }
+
+  .fence {
+    display: none !important;
+  }
+
+  @screen lg {
+    .title-text {
+      max-width: inherit !important;
+      width: auto !important;
+    }
+
+    .fence {
+      display: block !important;
+    }
   }
 }
 </style>

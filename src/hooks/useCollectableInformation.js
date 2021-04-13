@@ -1,4 +1,4 @@
-import { ref, computed, watch } from 'vue';
+import {ref, computed, watch} from 'vue';
 import useContractEvents from "@/hooks/useContractEvents";
 import {BigNumber} from "@ethersproject/bignumber";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
@@ -11,7 +11,7 @@ import {
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 
 export default function useCollectableInformation(initialCollectable = {}) {
-    const { converEthToUSD } = useExchangeRate();
+    const {converEthToUSD} = useExchangeRate();
     const {
         mergedEvents,
         lastBid,
@@ -24,6 +24,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const events = ref(collectable.value.events || []);
     const price = ref(0.0);
     const priceUSD = ref(0.0);
+    const priceUSDSold = ref(0.0);
     const progress = ref(0.0);
     const items = ref(0);
     const itemsOf = ref(0);
@@ -38,7 +39,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         if (found) {
             return found.url;
         }
-        
+
         return media.value[0].url || '';
     });
     const gallerySortedMedia = computed(() => collectable.value.mediaSorted);
@@ -115,7 +116,25 @@ export default function useCollectableInformation(initialCollectable = {}) {
         events.value = data.events.reverse();
         const lastestEvent = events.value[0];
 
-        items.value = events.value.length; // Amount of items sold
+        items.value = isAuction.value
+            ? events.value.length
+            : (events.value
+                ? (events.value || [])
+                    .reduce((carry, evt) => {
+                        if (evt.amount) {
+                            return evt.amount + carry
+                        }
+                        if (evt.raw && typeof evt.raw == "string") {
+                            let decodedEvt = JSON.parse(evt.raw)
+                            return decodedEvt.amount + carry
+                        }
+                        if (evt.value) {
+                            return parseInt(evt.value) + carry
+                        }
+                        return carry
+                    }, 0)
+                : 0); // Amount of items sold
+
         itemsOf.value = data.available_qty || 0;
 
         // AUCTION
@@ -130,11 +149,30 @@ export default function useCollectableInformation(initialCollectable = {}) {
         } else {
             price.value = +(data.price || 0).toFixed(2);
             priceUSD.value = +(data.value_in_usd || 0).toFixed(2);
+            priceUSDSold.value = (events.value || [])
+                .reduce((carry, evt) => {
+                    if (evt.value_in_usd) {
+                        return carry + evt.value_in_usd
+                    }
+                    if (evt.value) {
+                        return evt.value + carry
+                    }
+                    if (evt.amount) {
+                        return carry + (evt.amount * converEthToUSD(price.value))
+                    }
+                    if (evt.raw && typeof evt.raw == "string") {
+                        let decodedEvt = JSON.parse(evt.raw)
+                        return (carry + (decodedEvt.amount) * converEthToUSD(price.value))
+                    }
+                    return carry
+                }, 0).toFixed(2);
         }
 
         // SALE
         if (!isAuction.value) {
-            progress.value = itemsOf.value / items.value;
+            progress.value = items.value === 0 || !items.value
+                ? 0
+                : items.value / itemsOf.value;
         }
     };
 
@@ -175,11 +213,11 @@ export default function useCollectableInformation(initialCollectable = {}) {
         const now = Date.now();
         const start = new Date(startsAt.value).getTime();
         const end = new Date(endsAt.value).getTime();
-        
-        // TODO: Remove this call
-        initializeContractEvents(collectable.value);
 
-        if (now >= start && now < end) {
+        // TODO: Remove this call & TEST
+        // initializeContractEvents(collectable.value);
+
+        if (now >= start && now < end && !is_sold_out.value) {
             console.log('contract initialized');
             isContractEnabled.value = true;
             initializeContractEvents(collectable.value);
@@ -216,6 +254,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         collectable,
         price,
         priceUSD,
+        priceUSDSold,
         items,
         itemsOf,
         progress,

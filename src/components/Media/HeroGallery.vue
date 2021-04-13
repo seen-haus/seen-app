@@ -19,7 +19,7 @@
               :muted="true"
               class="overflow-hidden rounded-lg flex-1 media-loader-active"
             />
-            <p class="w-full text-grey-9 text-center mt-4 text-sm">{{mediaResource.type === 'video' ? 'Click to Expand' : '&nbsp;'}}</p>
+            <p class="w-full text-grey-9 text-center mt-4 text-sm">{{mediaResource.type === 'video' || mediaResource.type.includes("mp4") || mediaResource.type.includes("video") ? 'Click to Expand' : '&nbsp;'}}</p>
           </div>
         </swiper-slide>
       </swiper>
@@ -85,7 +85,7 @@ export default {
           loop: true,
           autoplayVideos: true
       });
-      if (type === 'video') {
+      if (type === 'video' || type.includes("mp4") || type.includes("video")) {
           lightbox.setElements([{
               'href': url,
               'type': 'video',
