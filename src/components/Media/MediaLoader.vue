@@ -198,11 +198,11 @@ export default {
     function handleIntersect(entries, observer) {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          if (state.paused) {
+          if (state.paused && autoplay.value) {
             playVideo();
           }
         } else {
-          if (!state.paused) {
+          if (!state.paused && autoplay.value) {
             pauseVideo();
           }
         }
