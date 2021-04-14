@@ -10,12 +10,15 @@ export default function useExchangeRate() {
     const formatterCrypto = new Intl.NumberFormat('en-US', {
         minimumFractionDigits: 4
     });
+    const formatterCrypto2 = new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 2
+    });
     const formatCurrency = function (value) {
         return formatter.format(value);
     };
 
-    const formatCrypto = function (value) {
-        return formatterCrypto.format(value);
+    const formatCrypto = function (value, currency = false) {
+        return currency ? formatterCrypto2.format(value) : formatterCrypto.format(value);
     };
 
     const convertEthToUSDAndFormat = function (numOfEth) {
