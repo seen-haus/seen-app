@@ -105,7 +105,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
     const updateInformation = function (data) {
         collectable.value.ends_at = data.ends_at;
-        // events.value = data.events.sort((a, b) => b.updatedAt - a.updatedAt);
+        events.value = data.events.sort((a, b) => b.created_at - a.created_at);
+        const lastestEvent = events.value[0];
+
         if (data.media && data.media.length) {
             const sorted = [...data.media].sort((a, b) => a.position < b.position ? -1 : 1).filter(m => !m.is_preview);
             const lastItem = sorted[sorted.length - 1];
@@ -115,10 +117,6 @@ export default function useCollectableInformation(initialCollectable = {}) {
         } else {
             collectable.value.mediaSorted = [];
         }
-        events.value = data.events.reverse();
-        const lastestEvent = events.value[0];
-
-        console.log('update info', data.events);
 
         // AUCTION
         if (isAuction.value) {
@@ -129,7 +127,6 @@ export default function useCollectableInformation(initialCollectable = {}) {
                 price.value = +(data.start_bid || 0).toFixed(2);
                 priceUSD.value = +(data.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             } else {
-                console.log('lastestEvent', lastestEvent);
                 price.value = +(lastestEvent.value || 0).toFixed(2);
                 priceUSD.value = +(lastestEvent.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             }
@@ -234,13 +231,13 @@ export default function useCollectableInformation(initialCollectable = {}) {
         enableContract(data);
     };
 
-    const updateFromBlockchain = function () {
-        console.log('updateFromBlockchain');
+    const updateFromBlockchain = function (newEvents) {
+        console.log('updateFromBlockchain', newEvents);
+        events.value = newEvents;
         const latestEvent = events.value[events.value.length - 1];
 
         // Update price and item count
         if (isAuction.value) {
-            console.log('auction');
             let endsAtNew = endsAt.value;
 
             if (endsAt.value != null) {
@@ -262,7 +259,6 @@ export default function useCollectableInformation(initialCollectable = {}) {
                 ends_at: endsAtNew,
             });
         } else {
-            console.log('sale');
             updateInformation({
                 ...collectable.value,
                 events: [...events.value],
@@ -291,19 +287,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     }
 
     // Blockchain watchers
-    watch(mergedEvents, (v) => {
-        console.log('updating events from chain', v);
-        events.value = v;
-
-        // updateFromBlockchain();
-    });
-
-    // watch(lastBid, (v) => {
-    //     console.log('updaing last bid', v);
-
-    //     price.value = +formatEther(v);
-    //     priceUSD.value = converEthToUSD(price.value);
-    // });
+    watch(mergedEvents, updateFromBlockchain);
 
     return {
         collectableState,
