@@ -116,8 +116,6 @@ export default function useContractEvents() {
         mergedEvents.value = collectableData.events;
         // !! IMPORTANT !! remove listeners on beforeDestroy
 
-        console.log('initialized');
-
         // ============= IF is AUCTION =============
         if (isAuction.value) {
             // EXAMPLE https://etherscan.io/address/0xCEDC9a3c76746F288C87c0eBb0468A1b57484cb1#readContract
@@ -146,12 +144,12 @@ export default function useContractEvents() {
                 // log_cab346fb
                 // log_1e644af9
                 const bids = await contract.queryFilter("Bid");
-                console.log("==== PAST EVENTS START ==== ")
+                console.group('Past Events - Auction')
                 bids.forEach(async (bid) => {
                     const event = await createNormalizedEvent(bid, 'bid');
                     mergeEvents(event);
                 });
-                console.log("==== PAST EVENTS END ====")
+                console.groupEnd('Past Events - Auction')
 
             }
 
@@ -180,12 +178,12 @@ export default function useContractEvents() {
                 })
 
                 const buys = await contract.queryFilter("Buy")
-                console.log("==== PAST EVENTS START ==== ")
+                console.group('Past Events - Sale')
                 buys.forEach(async (buy) => {
                     const event = await createNormalizedEvent(buy, 'buy');
                     mergeEvents(event)
                 });
-                console.log("==== PAST EVENTS END ==== ")
+                console.groupEnd('Past Events - Sale')
 
             }
             if (version.value === 2) {

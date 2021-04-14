@@ -33,7 +33,7 @@
               v-model="auctionField.value"
               v-if="isAuction"
               type="number"
-              placeholder="Enter your bid"
+              :placeholder="'Min bid price is ' + nextBidPrice + ' ETH'"
           />
           <input
               v-model="saleField.value"
@@ -202,7 +202,7 @@ export default {
 
     edition: Number,
     edition_of: Number,
-    items: Number,
+    items: [Number, String],
     items_of: Number,
     price: Number,
     priceUSD: Number,
@@ -212,7 +212,7 @@ export default {
     isUpcomming: Boolean,
     is_sold_out: Boolean,
     collectable: Object,
-    lastBid: Object,
+    nextBidPrice: Number,
   },
   setup(props, ctx) {
     const price = ref(props.price);
@@ -366,8 +366,8 @@ export default {
       const funds = parseFloat(balance.value);
       if (isAuction.value) {
         let valid = true;
-        if (props.lastBid) {
-          valid = funds > parseFloat(props.lastBid.toString());
+        if (props.nextBidPrice) {
+          valid = funds > parseFloat(props.nextBidPrice.toString());
         }
         if (valid) {
           valid = funds > parseFloat(auctionField.value ? auctionField.value : 0);

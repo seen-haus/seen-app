@@ -7,33 +7,35 @@
     ></div>
     <container class="relative">
       <div v-if="isUserFound">
-        <div class="avatar">
+        <div :class="user ? 'avatar' : 'no-avatar'">
           <div
+            v-if="hasUserData"
             class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5"
           >
             <identicon :size="100" />
           </div>
         </div>
-        <div class="mt-4 flex justify-between flex-wrap items-center">
-          <div class="flex justify-start flex-wrap">
-            <p class="font-bold text-3xl mr-4">{{ user.username }}</p>
+        <div class="mt-4 flex flex-wrap items-center" :class="user ? 'justify-between' : 'justify-center'">
+          <div class="flex justify-start flex-wrap" v-if="user">
+            <p class="font-bold text-3xl mr-4">{{ user ? user.username : 'New Profile' }}</p>
             <div class="wallet-address-badge flex justify-between items-center">
               <i class="fas fa-volleyball-ball text-lg"></i>
               <copy-helper
+                v-if="hasUserData"
                 :toCopy="user.wallet"
                 :isIconSuffix="true"
                 :text="cropWithExtension(user.wallet, 20)"
               />
             </div>
           </div>
-          <edit-profile
+          <edit-profile :class="user ? '' : 'mb-8'"
             :userData="user"
           ></edit-profile>
         </div>
-        <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-8">
+        <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-8" v-if="user">
           <div>
             {{
-              user.description ? user.description : "User has no description."
+              user?.description ? user.description : "User has no description."
             }}
           </div>
           <div class="text-xs text-gray-400">
@@ -56,7 +58,7 @@
           :closed="true"
           >Collection</fenced-title
         >
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 my-8" v-if="listOfCollectables && listOfCollectables.length > 0">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 my-8" v-if="user && listOfCollectables && listOfCollectables.length > 0">
           <template
             v-for="collectable in listOfCollectables"
             :key="collectable && collectable.data.id"
@@ -87,14 +89,14 @@
         </div>
       </div>
       <not-found v-else />
-          <div class="flex justify-center" v-if="listOfCollectables && listOfCollectables.length > 0 && hasMore">
-            <button
-              class="button dark mb-12 mx-auto w-full md:w-96"
-              @click="handleLoadMore"
-            >
-              Load More
-            </button>
-          </div>
+      <div class="flex justify-center" v-if="listOfCollectables && listOfCollectables.length > 0 && hasMore">
+        <button
+          class="button dark mb-12 mx-auto w-full md:w-96"
+          @click="handleLoadMore"
+        >
+          Load More
+        </button>
+      </div>
     </container>
   </div>
 </template>
@@ -179,10 +181,15 @@ export default {
       collection.load();
     }
 
-    const isUserFound = computed(() => !!user.value);
+    const isUserFound = computed(() => {
+      console.log((!!user.value) || (isOwnProfile.value && account.value));
+      return (!!user.value) || (isOwnProfile.value && account.value);
+    });
+
+    const hasUserData = computed(() => !!user.value);
 
     const socials = computed(() =>
-      user.value.socials
+      user.value && user.value.socials
         ? [
             { type: "twitter", url: user.value.socials.twitter },
             { type: "website", url: user.value.socials.website },
@@ -210,12 +217,14 @@ export default {
     return {
       user,
       isUserFound,
+      hasUserData,
       socials,
       assets,
       listOfCollectables,
       hasMore,
       handleLoadMore,
       navigateToCollectable,
+      userLocal,
     };
   },
 };
@@ -235,5 +244,8 @@ export default {
   width: 100%;
   background-size: cover;
   background-position: center;
+}
+.no-avatar {
+  @apply h-10;
 }
 </style>
