@@ -34,6 +34,7 @@
 </template>
 
 <script>
+  import {ref} from 'vue';
   import MediaLoader from "@/components/Media/MediaLoader.vue"
 
  // import Swiper core and required modules
@@ -60,7 +61,8 @@ export default {
   props: {
     mediaResources: Object,
   },
-  setup() {
+  setup(props) {
+    const media = ref(props.mediaResources);
     const breakpoints = {
       300: {
         slidesPerView: 1,
@@ -85,18 +87,28 @@ export default {
           loop: true,
           autoplayVideos: true
       });
-      if (type === 'video' || type.includes("mp4") || type.includes("video")) {
-          lightbox.setElements([{
-              'href': url,
+
+      const elementIndex = media.value.findIndex(el => el.url === url);
+      const reorderedMediaArray = media.value.slice(elementIndex).concat(media.value.slice(0, elementIndex));
+      const lightBoxElements = [];
+
+      reorderedMediaArray.forEach(m => {
+        if (m.type === 'video' || m.type.includes("mp4") || m.type.includes("video")) {
+          lightBoxElements.push({
+              'href': m.url,
               'type': 'video',
               'source': 'local', //vimeo, youtube or local
-          }])
-      } else {
-          lightbox.setElements([{
-              'href': url,
+          })
+        } else {
+          lightBoxElements.push({
+              'href': m.url,
               'type': 'image', //vimeo, youtube or local
-          }]);
-      }
+          });
+        }
+      });
+
+      lightbox.setElements(lightBoxElements)
+
       lightbox.open();
     };
     return { breakpoints, openModal }
