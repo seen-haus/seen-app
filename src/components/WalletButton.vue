@@ -127,7 +127,6 @@ export default {
 
     const close = () => {
       op.value.hide();
-      console.log("JS")
       isOpen.value = false
     }
 
