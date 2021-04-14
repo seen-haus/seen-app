@@ -202,7 +202,7 @@ export default {
 
     edition: Number,
     edition_of: Number,
-    items: Number,
+    items: [Number, String],
     items_of: Number,
     price: Number,
     priceUSD: Number,

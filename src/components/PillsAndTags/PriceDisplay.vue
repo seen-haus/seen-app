@@ -27,7 +27,7 @@ export default {
       default: 2.06,
     },
     priceUSD: {
-      type: Number,
+      type: [Number, String],
     },
     type: {
       type: String,
