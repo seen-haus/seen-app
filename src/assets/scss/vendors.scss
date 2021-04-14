@@ -36,3 +36,76 @@
 .slideout-open .slideout-menu {
   display: block;
 }
+
+$white: #fff;
+$black-dark: rgba(31, 41, 55,1);
+$black: #000;
+
+.tooltip {
+  position: relative;
+  cursor: pointer;
+
+  /* Base styles for the tooltip's content area */
+  .tip {
+    font-family: 'Inter', sans-serif;
+    box-sizing: content-box;
+    visibility: hidden;
+    cursor: pointer;
+    word-wrap: break-word; //Fixes hit loads of overlfow issues
+    white-space: normal;
+    text-align: center;
+    color: $white;
+    font-size: .75rem;
+    line-height: 160%;
+    opacity: 0;
+    transition: opacity 0.15s ease-in, visibility 0.15s ease-in;
+    pointer-events: none;
+    padding: .5rem;
+    max-width: 200px;
+    min-width: 100px;
+    background-color: $black-dark;
+    border-radius: 4px;
+    margin-left: -58px;
+    box-shadow: 0 0px 4px rgba(0,0,0,0.2);
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    z-index: 999;
+
+    &::after, &::before {
+      top: 100%;
+      left: 50%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+    }
+
+    &::after {
+      border-color: rgba(255, 255, 255, 0);
+      border-top-color: $black-dark;
+      border-width: 6px;
+      margin-left: -6px;
+    }
+    &::before {
+      border-color: rgba(204, 204, 204, 0);
+      border-top-color: $black;
+      border-width: 7px;
+      margin-left: -7px;
+    }
+  }
+
+  &.tooltip--wide .tip {
+    width: 200px;
+    margin-left: -108px;
+  }
+
+  &.tooltip--active .tip,
+  &:hover .tip {
+    visibility: visible;
+    opacity: 1;
+  }
+
+}

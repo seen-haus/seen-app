@@ -19,7 +19,7 @@
         </div>
       </button>
     </div>
-    <OverlayPanel ref="op" appendTo="body" :showCloseIcon="false" id="overlay_panel" style="width: 280px"
+    <OverlayPanel ref="op" appendTo="body" @hide="close" :showCloseIcon="false" id="overlay_panel" style="width: 280px"
                   :breakpoints="{'960px': '75vw'}">
       <div class="dropdown-menu">
         <div class="arrow-up"></div>

@@ -21,43 +21,45 @@
       >
         <div class="flex flex-col items-center xl:items-start mb-6 xl:mb-0">
           <div class="text-sm text-gray-400 font-semibold uppercase mb-1">
-            TLV (USD) <i class="fas fa-info-circle"></i>
+            TLV (USD) <i class="fas fa-info-circle" v-tooltip="{text: 'Total Value Locked (USD)'}"></i>
           </div>
-          <div class="text-3xl font-black">$7,184,371.38</div>
+          <div class="text-3xl font-black">{{ totalStakedUsd }}</div>
         </div>
 
         <div class="flex flex-col items-center xl:items-start mb-6 xl:mb-0">
           <div class="text-sm text-gray-400 font-semibold uppercase mb-1">
-            TOTAL SEEN LOCKED <i class="fas fa-info-circle"></i>
+            TOTAL SEEN LOCKED <i class="fas fa-info-circle" v-tooltip="{text: 'Total SEEN Locked'}"></i>
           </div>
           <div class="text-3xl font-black flex">
-            <i class="fas fa-circle text-lg text-gray-300 mr-2"></i>
-            23,091,369
-          </div>
-        </div>
-
-        <div class="flex flex-col items-center xl:items-start mb-6 md:mb-0">
-          <div class="text-sm text-gray-400 font-semibold uppercase mb-1">
-            Your stake <i class="fas fa-info-circle"></i>
-          </div>
-          <div class="text-3xl font-black flex">
-            <i class="fas fa-circle text-lg text-gray-300 mr-2"></i>623.6
+            <img src="@/assets/icons/icon--seen.svg" alt="SEEN" class="mr-1">
+            {{ formatCrypto(state.totalStaked, true) }}
           </div>
         </div>
 
         <div class="flex flex-col items-center xl:items-start">
           <div class="text-sm text-gray-400 font-semibold uppercase mb-1">
-            Your share of the pool <i class="fas fa-info-circle"></i>
+            Your share of the pool <i class="fas fa-info-circle" v-tooltip="{text: 'Your share of the pool'}"></i>
           </div>
-          <div class="text-3xl font-black">1,55%</div>
+          <div class="text-3xl font-black">{{ formatCrypto(state.shareOfThePool, true) }}%</div>
         </div>
+
+
+        <div class="flex flex-col items-center xl:items-start mb-6 md:mb-0">
+          <div class="text-sm text-gray-400 font-semibold uppercase mb-1">
+            Your fees earned <i class="fas fa-info-circle" v-tooltip="{text: 'Your staking fees earned in ETH'}"></i>
+          </div>
+          <div class="text-3xl font-black flex">
+            {{ formatCrypto(feesEarned, true) }} ETH
+          </div>
+        </div>
+
       </div>
 
       <div class="cards flex flex-col xl:flex-row">
 
-        <stake-or-withdraw-card @handle-click="handleDeposit" :amount="seenBalance"
+        <stake-or-withdraw-card :amount="seenBalance" :state="state"
                                 class="mr-0 mb-12 xl:mb-0 xl:mr-12" type-of="stake"/>
-        <stake-or-withdraw-card @handle-click="handleWithdraw" :amount="seenBalance" type-of="withdraw"/>
+        <stake-or-withdraw-card :amount="seenBalance" :state="state" type-of="withdraw"/>
       </div>
     </container>
 
@@ -134,34 +136,87 @@ import {useMeta} from "vue-meta";
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
 import StakeOrWithdrawCard from "@/views/stake/components/StakeOrWithdrawCard";
-import {computed} from "vue";
+import {computed, onBeforeMount, reactive, watchEffect} from "vue";
 import {useStore} from "vuex";
 import useExchangeRate from "@/hooks/useExchangeRate";
+import {useSEENContract, useStakingContract} from "@/hooks/useContract";
+import useWeb3 from "@/connectors/hooks";
+import {formatEther} from "@ethersproject/units";
+import BigNumber from "bignumber.js";
+import {Web3Provider, WebSocketProvider} from "@ethersproject/providers";
 
 export default {
   name: "Stake",
   components: {FencedTitle, Container, StakeOrWithdrawCard},
   setup() {
+    const {account, provider} = useWeb3();
     const {meta} = useMeta({
       title: "Stake",
     });
-    const {formatCrypto, convertEthToUSDAndFormat, convertSeenToUSDAndFormat} = useExchangeRate();
+    const state = reactive({
+
+      shareOfThePool: 0,
+      userSeenInPool: 0,
+      totalStaked: 0,
+      totalStakedUsd: 0,
+      totalxSeenSupply: 0,
+      contractEthBalance: 0,
+
+    })
+    const {formatCrypto, formatCurrency, convertSeenToUSDAndFormat} = useExchangeRate();
     const store = useStore();
     const seenBalance = computed(() => {
       return store.getters['application/balance'].seen
     });
-    const handleDeposit = (value) => {
 
-    }
-    const handleWithdraw = (value) => {
+    watchEffect(async () => {
+      if (account.value && state.totalxSeenSupply && state.totalStaked) {
+        const stakeContract = useStakingContract()
+        let balanceOf = await stakeContract.balanceOf(account.value)
+        balanceOf = formatEther(balanceOf.toString())
+        let share = BigNumber(balanceOf).dividedBy(state.totalxSeenSupply)
+        state.userSeenInPool = BigNumber(state.totalStaked).multipliedBy(share)
+        state.shareOfThePool = share.multipliedBy(100)
+      }
+    })
 
-    }
+    onBeforeMount(async () => {
+      const contract = useSEENContract()
+      let balance = await contract.balanceOf(process.env.VUE_APP_XSEEN_CONTRACT_ADDRESS)
+      state.totalStaked = formatEther(balance.toString())
+
+      const stakeContract = useStakingContract()
+      let totalSupplyxSeen = await stakeContract.totalSupply()
+      state.totalxSeenSupply = formatEther(totalSupplyxSeen.toString())
+      const library = provider.value
+          ? new Web3Provider(provider.value)
+          : new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+
+      const cb = await library.getBalance(process.env.VUE_APP_SEEN_CONTRACT_ADDRESS);
+      state.contractEthBalance = formatEther(cb.toString());
+    })
+
+    const totalStakedUsd = computed(() => {
+      return convertSeenToUSDAndFormat(state.totalStaked);
+    })
+
+    const feesEarned = computed(() => {
+      if (!state.shareOfThePool) {
+        return 0;
+      }
+      const contractEthBalance = new BigNumber(state.contractEthBalance)
+          .multipliedBy(state.shareOfThePool
+              .dividedBy(100))
+      return contractEthBalance;
+    })
 
     return {
       formatCrypto,
-      handleDeposit,
-      handleWithdraw,
+      formatCurrency,
       seenBalance,
+      state,
+      totalStakedUsd,
+      feesEarned
     }
   }
 };

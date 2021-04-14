@@ -24,18 +24,21 @@
       </div>
 
       <div class="text-sm text-gray-400 my-2">Wallet balance:
-        {{ formatCrypto(typeOf === "stake" ? seenBalance : balance, true) }} SEEN
+        {{ formatCrypto(typeOf === "stake" ? seenBalance : seenDeposited, true) }} SEEN
       </div>
       <button class="button primary w-full" @click="openWalletModal" v-if="!account">Connect Wallet
       </button>
-      <button class="button primary w-full" @click="approve"
-              v-if="account && typeOf === 'stake' && !state.isAllowed">Approve
+      <button class="button primary w-full" :class="{'cursor-wait': state.approving}" @click="approve"
+              v-if="account && typeOf === 'stake' && !state.isAllowed" :disabled="state.approving">
+        {{ state.approving ? "Approving..." : "Approve" }}
       </button>
       <button class="button primary w-full" @click="stake"
-              v-if="account && typeOf === 'stake' && state.isAllowed">Stake
+              v-if="account && typeOf === 'stake' && state.isAllowed" :class="{'cursor-wait': state.depositing}">
+        {{ state.depositing ? "Depositing..." : "Stake" }}
       </button>
       <button class="button primary w-full" @click="withdraw"
-              v-if="account && typeOf === 'withdraw'">Withdraw
+              v-if="account && typeOf === 'withdraw'"
+              :class="{'cursor-wait': state.withdrawing}"> {{ state.withdrawing ? "Withdrawing..." : "Withdraw" }}
       </button>
     </div>
 
@@ -55,8 +58,10 @@ import useWeb3 from "@/connectors/hooks";
 import {useStore} from "vuex";
 import BigNumber from "bignumber.js";
 import {useSEENContract, useStakingContract} from "@/hooks/useContract";
-import {parseEther} from "ethers/lib/utils";
+import {parseEther, formatEther, parseUnits} from "ethers/lib/utils";
 import {Web3Provider} from "@ethersproject/providers";
+import {useToast} from "primevue/usetoast";
+import parseError from "@/services/utils/parseError";
 
 export default {
   name: "StakeOrWithdrawCard",
@@ -64,17 +69,26 @@ export default {
     const {formatCrypto} = useExchangeRate();
 
     const state = reactive({
+      approving: false,
+      withdrawing: false,
+      depositing: false,
+
       number: 0,
       balance: 0,
+      rawbalance: 0,
       isAllowed: false,
     });
-
+    const toast = useToast();
     const store = useStore();
     const {account, provider} = useWeb3();
 
     const typeOf = computed(() => {
       return props.attrs["type-of"];
     })
+
+    const seenDeposited = computed(() => {
+      return props.attrs.state.userSeenInPool;
+    });
 
     watchEffect(async () => {
       if (account.value) {
@@ -85,7 +99,8 @@ export default {
         } else {
           const contract = useStakingContract()
           const balance = await contract.balanceOf(account.value)
-          state.balance = parseEther(balance.toString())
+          state.rawbalance = balance
+          state.balance = formatEther(balance.toString())
         }
       }
     })
@@ -98,9 +113,10 @@ export default {
     }
 
     const setPercent = (percent) => {
-      const number = props.attrs["type-of"] == 'stake' ? seenBalance.value : state.balance.value;
+      const number = props.attrs["type-of"] == 'stake' ? seenBalance.value : state.balance;
+
       if (number > 0) {
-        state.number = BigNumber(number)
+        state.number = BigNumber(numberHelper.removeDecimals(number))
             .dividedBy(100)
             .multipliedBy(percent)
       }
@@ -111,59 +127,134 @@ export default {
     })
     const approve = async () => {
       const temporaryProvider = new Web3Provider(provider.value);
-      const gasPrice = await temporaryProvider.getGasPrice();
-      let amount = parseEther((new BigNumber(99999999999999999)).toString());
+      const gasPrice = await temporaryProvider.getGasPrice()
+          .catch((e) => {
+            toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 3000});
+          });
+      let amount = parseEther(new BigNumber(999999999999).toString()).toString();
       const contract = useSEENContract(true)
+      state.approving = true;
       const tx = await contract.approve(process.env.VUE_APP_XSEEN_CONTRACT_ADDRESS, amount, {
-        gasPrice,
+        gasPrice: gasPrice.toString(),
         from: account.value
+      }).catch((e) => {
+        state.approving = false;
+        let message = parseError(e.message)
+        toast.add({severity: 'error', summary: 'Error', detail: message ? message : e.message, life: 3000});
+        return false;
       });
+
+      if (!tx) {
+        return;
+      }
       return tx.wait()
           .then(() => {
             state.isAllowed = true;
+            state.approving = false;
+            toast.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Approval was successful, now you can stake your seen by pressing STAKE.',
+              life: 3000
+            });
           }).catch((e) => {
+            let message = parseError(e.message)
+            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
             console.error(e);
+            state.approving = false;
           })
     }
 
     const stake = async () => {
-      if (state.number.value === 0) {
+      if (state.number == 0) {
         return
       }
       const temporaryProvider = new Web3Provider(provider.value);
-      const gasPrice = await temporaryProvider.getGasPrice();
+      const gasPrice = await temporaryProvider.getGasPrice().catch((e) => {
+        toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 3000});
+      });
+
       const contract = useStakingContract(true)
-      let amount = (parseEther((new BigNumber(state.number.value)).toString()));
-      const tx = contract.enter(amount, {gasPrice, from: account.value});
+      let amount = (parseEther((new BigNumber(state.number)).toString()));
+      state.depositing = true;
+
+      const tx = await contract.enter(amount, {gasPrice, from: account.value})
+          .catch((e) => {
+            console.error(e);
+            let message = parseError(e.message)
+            state.depositing = false;
+            toast.add({severity: 'error', summary: 'Error', detail: message ? message : e.message, life: 3000});
+          });
+      if (!tx) {
+        state.depositing = false;
+        return;
+      }
       return tx.wait()
           .then(() => {
-            state.number.value = 0;
-            window.reload();
+            state.number = 0;
+            toast.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'You have successfully staked your SEEN.',
+              life: 3000
+            });
+            setTimeout(() => {
+              window.location.reload();
+              state.depositing = false;
+            }, 3000)
           }).catch((e) => {
-            console.error(e);
+            state.depositing = false;
+            let message = parseError(e.message)
+            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
           })
     }
 
     const withdraw = async () => {
-      if (state.number.value === 0) {
+
+      let number = (new BigNumber(state.number)
+          .multipliedBy(new BigNumber(props.attrs.state.totalxSeenSupply)
+              .dividedBy(props.attrs.state.totalStaked)))
+
+      if (number.isLessThanOrEqualTo(0)) {
         return
       }
+
       const temporaryProvider = new Web3Provider(provider.value);
-      const gasPrice = await temporaryProvider.getGasPrice();
+      const gasPrice = await temporaryProvider.getGasPrice().catch((e) => {
+        toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH.`, life: 3000});
+      });
+
       const contract = useStakingContract(true)
-      let amount = (parseEther((new BigNumber(state.number.value)).toString()));
-      const tx = contract.enter(amount, {gasPrice, from: account.value});
+      let amount = (parseEther(number.toString()));
+      console.log(amount)
+      state.withdrawing = true;
+      const tx = await contract.leave(amount, {gasPrice, from: account.value})
+          .catch((e) => {
+            console.error(e);
+            state.withdrawing = false;
+            let message = parseError(e.message)
+            toast.add({severity: 'error', summary: 'Error', detail: message ? message : e.message, life: 3000});
+          });
+
+      if (!tx) {
+        state.withdrawing = false;
+        return;
+      }
+
       return tx.wait()
           .then(() => {
             state.number.value = 0;
-            window.reload();
+            toast.add({severity: 'success', summary: 'Success', detail: 'Your withdraw was successful.', life: 3000});
+            setTimeout(() => {
+              state.withdrawing = false;
+              window.location.reload();
+            }, 3000)
           }).catch((e) => {
             console.error(e);
+            state.withdrawing = false;
+            let message = parseEther(e.message)
+            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
           })
-    }
-
-    const handleClick = () => {
-
     }
 
     const isNumber = (value) => {
@@ -176,8 +267,8 @@ export default {
       account,
       seenBalance,
       typeOf,
+      seenDeposited,
       approve,
-      handleClick,
       isNumber,
       formatCrypto,
       openWalletModal,
