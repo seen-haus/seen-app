@@ -295,7 +295,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         console.log('updating events from chain', v);
         events.value = v;
 
-        // updateFromBlockchain();
+        updateFromBlockchain();
     });
 
     // watch(lastBid, (v) => {
