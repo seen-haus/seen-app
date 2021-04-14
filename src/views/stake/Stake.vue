@@ -79,7 +79,7 @@
               class="flex bg-white border rounded-lg p-4 items-center font-bold mb-2"
           >
             <span
-                class="rounded-full bg-black text-white flex items-center justify-center w-8 h-8 mr-4"
+                class="rounded-full bg-black text-white flex items-center justify-center w-8 h-8 mr-4 flex-shrink-0"
             >1</span
             >
             Deposit your SEEN
@@ -88,7 +88,7 @@
               class="flex bg-white border rounded-lg p-4 items-center font-bold mb-2"
           >
             <span
-                class="rounded-full bg-black text-white flex items-center justify-center w-8 h-8 mr-4"
+                class="rounded-full bg-black text-white flex items-center justify-center w-8 h-8 mr-4 flex-shrink-0"
             >2</span
             >
             Receive xSEEN in return
@@ -97,7 +97,7 @@
               class="flex bg-white border rounded-lg p-4 items-center font-bold mb-2"
           >
             <span
-                class="rounded-full bg-black text-white flex items-center justify-center w-8 h-8 mr-4"
+                class="rounded-full bg-black text-white flex items-center justify-center w-8 h-8 mr-4 flex-shrink-0"
             >3</span
             >
             Stake xSEEN in the xSEEN pool
@@ -106,7 +106,7 @@
               class="flex bg-white border rounded-lg p-4 items-center font-bold mb-2"
           >
             <span
-                class="rounded-full bg-black text-white flex items-center justify-center w-8 h-8 mr-4"
+                class="rounded-full bg-black text-white flex items-center justify-center w-8 h-8 mr-4 flex-shrink-0"
             >4</span
             >
             Start earning a portion of protocol fees
@@ -115,7 +115,7 @@
               class="flex bg-white border rounded-lg p-4 items-center font-bold mb-2"
           >
             <span
-                class="rounded-full bg-black text-white flex items-center justify-center w-8 h-8 mr-4"
+                class="rounded-full bg-black text-white flex items-center justify-center w-8 h-8 mr-4 flex-shrink-0"
             >5</span
             >
             Redeem SEEN at any time by converting xSEEN back to SEEN*
