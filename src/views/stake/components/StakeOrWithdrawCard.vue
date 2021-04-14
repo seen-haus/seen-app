@@ -18,7 +18,7 @@
       <div class="outlined-input mt-4">
         <input type="text" :placeholder="placeholder" @keypress="isNumber" v-model="state.number"/>
         <div class="icon w-5 mr-1">
-          <i class="fas fa-circle text-lg text-gray-300 mr-2"></i>
+          <img src="@/assets/icons/icon--seen.svg" alt="SEEN" class="mr-2">
         </div>
         <div class="type font-bold">SEEN</div>
       </div>
