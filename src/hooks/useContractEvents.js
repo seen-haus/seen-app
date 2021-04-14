@@ -116,8 +116,6 @@ export default function useContractEvents() {
         mergedEvents.value = collectableData.events;
         // !! IMPORTANT !! remove listeners on beforeDestroy
 
-        console.log('initialized');
-
         // ============= IF is AUCTION =============
         if (isAuction.value) {
             // EXAMPLE https://etherscan.io/address/0xCEDC9a3c76746F288C87c0eBb0468A1b57484cb1#readContract

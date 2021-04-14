@@ -24,6 +24,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
     const events = ref(collectable.value.events || []);
     const price = ref(0.0);
+    const nextBidPrice = ref(0.0);
     const priceUSD = ref(0.0);
     const priceUSDSold = ref(0.0);
     const progress = ref(0.0);
@@ -106,7 +107,8 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const updateInformation = function (data) {
         collectable.value.ends_at = data.ends_at;
         events.value = data.events.sort((a, b) => b.created_at - a.created_at);
-        const lastestEvent = events.value[0];
+
+        const lastestEvent = events.value[events.value.length - 1];
 
         if (data.media && data.media.length) {
             const sorted = [...data.media].sort((a, b) => a.position < b.position ? -1 : 1).filter(m => !m.is_preview);
@@ -125,9 +127,11 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
             if (events.value.length === 0) {
                 price.value = +(data.start_bid || 0).toFixed(2);
+                nextBidPrice.value = price.value;
                 priceUSD.value = +(data.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             } else {
                 price.value = +(lastestEvent.value || 0).toFixed(2);
+                nextBidPrice.value = +((lastestEvent.value || 0) * 1.05).toFixed(2);
                 priceUSD.value = +(lastestEvent.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             }
         }
@@ -278,7 +282,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
         events.value = [...events.value, mockBid];
         console.log('my god what', events.value);
-        updateFromBlockchain();
+        updateFromBlockchain(events.value);
     };
 
     // Update the information on load
@@ -295,6 +299,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         price,
         priceUSD,
         priceUSDSold,
+        nextBidPrice,
         items,
         itemsOf,
         progress,

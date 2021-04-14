@@ -110,7 +110,7 @@
               :is_sold_out="is_sold_out"
               :isCollectableActive="isCollectableActive"
               :isUpcomming="isUpcomming"
-              :lastBid="lastBid"
+              :nextBidPrice="nextBidPrice"
           />
 
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
@@ -238,10 +238,11 @@ export default {
       isNft,
       isAuction,
       version,
+      lastBid,
+      nextBidPrice,
       // Methods
       updateProgress,
       setCollectable,
-      lastBid,
       // updateInformation,
       // updateCollectableState,
     } = useCollectableInformation();
@@ -377,13 +378,14 @@ export default {
       isTangible,
       isNft,
       isAuction,
+      lastBid,
+      nextBidPrice,
       // Methods
       updateProgress,
       viewOnEtherscan,
       viewOnOpenSea,
       openModal,
       showAdditionalInformation,
-      lastBid,
     };
   },
 };

@@ -7,7 +7,7 @@
     </template>
     <template v-else>
       <template
-          v-for="(buyer, index) in list.slice(0, showCount)"
+          v-for="(buyer, index) in reversedList.slice(0, showCount)"
           :key="buyer.id"
       >
         <div class="list-tile flex items-center py-6 cursor-pointer"
@@ -62,6 +62,7 @@ export default {
     list: Array,
   },
   setup(props) {
+    const reversedList = computed(() => [...props.list].reverse());
     const showCount = ref(3);
     const showButton = computed(() => showCount.value < props.list.length);
 
@@ -83,6 +84,7 @@ export default {
       onLoadMore,
       showCount,
       showButton,
+      reversedList,
     };
   },
 };
