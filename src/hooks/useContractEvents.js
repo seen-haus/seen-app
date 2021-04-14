@@ -146,12 +146,12 @@ export default function useContractEvents() {
                 // log_cab346fb
                 // log_1e644af9
                 const bids = await contract.queryFilter("Bid");
-                console.log("==== PAST EVENTS START ==== ")
+                console.group('Past Events - Auction')
                 bids.forEach(async (bid) => {
                     const event = await createNormalizedEvent(bid, 'bid');
                     mergeEvents(event);
                 });
-                console.log("==== PAST EVENTS END ====")
+                console.groupEnd('Past Events - Auction')
 
             }
 
@@ -180,12 +180,12 @@ export default function useContractEvents() {
                 })
 
                 const buys = await contract.queryFilter("Buy")
-                console.log("==== PAST EVENTS START ==== ")
+                console.group('Past Events - Sale')
                 buys.forEach(async (buy) => {
                     const event = await createNormalizedEvent(buy, 'buy');
                     mergeEvents(event)
                 });
-                console.log("==== PAST EVENTS END ==== ")
+                console.groupEnd('Past Events - Sale')
 
             }
             if (version.value === 2) {
