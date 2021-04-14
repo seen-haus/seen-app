@@ -39,14 +39,14 @@ export const SUPPORTED_WALLETS = {
     //     href: null,
     //     color: '#315CF5',
     // },
-    FORMATIC: {
-        connector: fortmatic,
-        name: 'Fortmatic',
-        iconName: 'fortmaticIcon.png',
-        description: 'Login using Fortmatic hosted wallet',
-        href: null,
-        color: '#6748FF',
-    },
+    // FORMATIC: {
+    //     connector: fortmatic,
+    //     name: 'Fortmatic',
+    //     iconName: 'fortmaticIcon.png',
+    //     description: 'Login using Fortmatic hosted wallet',
+    //     href: null,
+    //     color: '#6748FF',
+    // },
     PORTIS: {
         connector: portis,
         name: 'Portis',
@@ -67,7 +67,7 @@ export const isValidHttpUrl = (string, optional = true) => {
         url = new URL(string);
     } catch (_) {
         console.log(invalidUrl);
-        return invalidUrl;  
+        return invalidUrl;
     }
 
     return (url.protocol === "http:" || url.protocol === "https:") ? true : invalidUrl;
