@@ -180,6 +180,7 @@ export default {
 
     function onLoadedCallback() {
       if (mediaType.value === "video") {
+        if (!videoRef.value) return;
         //Video should now be loaded but we can add a second check
         if (videoRef.value.readyState >= 3) {
           isLoading.value = false;
@@ -196,6 +197,7 @@ export default {
 
       if (mediaType.value === "image") {
         isLoading.value = false;
+        if (!imageRef.value) return;
         imageRef.value.removeEventListener("load", onLoadedCallback);
         calculatedAspecRatio.value =
           (imageRef.value.naturalHeight / imageRef.value.naturalWidth) * 100 +
