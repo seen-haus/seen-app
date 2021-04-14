@@ -23,7 +23,7 @@
               {{ shortenAddress(buyer.wallet_address) }}
             </div>
             <div class="time text-xs text-gray-400">
-              {{ daysAgo(buyer.updated_at) }}
+              {{ daysAgo(buyer.created_at) }}
             </div>
           </div>
 

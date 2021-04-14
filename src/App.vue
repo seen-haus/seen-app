@@ -65,11 +65,14 @@ export default {
       if (account.value && account.value !== accountCurrent) {
         const signer = useSigner();
         if (signer) {
+          // TODO: Uncomment next line, delete one after it.
           const tokenContract = useTokenContract('0xCa3FE04C7Ee111F0bbb02C328c699226aCf9Fd33');
+          // const tokenContract = useTokenContract('0xd15286b604eae2df642ffaf1fc959867eac8a6c1');
           const seenBalance = await tokenContract.balanceOf(account.value);
           accountCurrent = account.value;
           const ethBalance = await signer.getBalance();
           store.dispatch('application/setBalance', {eth: formatEther(ethBalance), seen: formatEther(seenBalance)});
+          // store.dispatch('application/setBalance', {eth: formatEther(ethBalance), seen: ''});
         }
       }
     });

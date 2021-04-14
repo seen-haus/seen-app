@@ -106,7 +106,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
     const updateInformation = function (data) {
         collectable.value.ends_at = data.ends_at;
-        events.value = data.events.sort((a, b) => b.created_at - a.created_at);
+        events.value = data.events.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
         const lastestEvent = events.value[events.value.length - 1];
 
@@ -141,11 +141,11 @@ export default function useCollectableInformation(initialCollectable = {}) {
             items.value = (events.value || [])
                 .reduce((carry, evt) => {
                     if (evt.amount) {
-                        return evt.amount + carry;
+                        return parseInt(evt.amount) + carry;
                     }
                     if (evt.raw && typeof evt.raw == "string") {
                         let decodedEvt = JSON.parse(evt.raw);
-                        return decodedEvt.amount + carry;
+                        return parseInt(decodedEvt.amount) + carry;
                     }
                     if (evt.value) {
                         return parseInt(evt.value) + carry;

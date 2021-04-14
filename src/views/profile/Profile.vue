@@ -12,7 +12,7 @@
             v-if="hasUserData"
             class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5"
           >
-            <identicon :size="100" />
+            <identicon :size="100" :address="user?.wallet" />
           </div>
         </div>
         <div class="mt-4 flex flex-wrap items-center" :class="user ? 'justify-between' : 'justify-center'">
@@ -176,6 +176,7 @@ export default {
 
     if (address && !isOwnProfile.value) {
       const res = await UserService.get(address);
+      if (!res.data) return;
       data.value = res.data.user;
       collection.setAddress(address);
       collection.load();

@@ -120,7 +120,9 @@ export default function useContractEvents() {
         if (isAuction.value) {
             // EXAMPLE https://etherscan.io/address/0xCEDC9a3c76746F288C87c0eBb0468A1b57484cb1#readContract
             if (version.value === 1) {
+                // TODO: Uncomment next line, delete one after it.
                 contract = useV1AuctionContract(contractAddress.value)
+                // contract = useV1AuctionContract('0x8b8f82719135fd2904e34ed7e515564304c76f95')
                 // last bid
                 lastBid.value = await contract.lastBid();
                 console.log("lastBid in ETH ", formatEther(lastBid.value))

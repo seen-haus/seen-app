@@ -163,7 +163,7 @@
             ITEMS LEFT
           </div>
           <div class="text-2.5xl font-bold py-2">
-            {{ items_of - items }} out of {{ items_of }}
+            {{ itemsLeft }} out of {{ items_of }}
           </div>
           <progress-bar :progress="progress" class="bg-gray-300 h-3 mt-3"/>
         </template>
@@ -241,6 +241,9 @@ export default {
 
     const fieldValidatorAuction = (value) => {
       if (value) {
+        if (value < parseFloat(props.nextBidPrice.toString())) {
+          return 'Entered sum must be 5% higher than the currently winning bid.'
+        }
         return hasEnoughFunds() ? true : 'You do not have enough funds';
       } else {
         return true;
@@ -291,13 +294,15 @@ export default {
       }
     });
 
+    const itemsLeft = computed(() => props.items_of - props.items)
+
     const placeABidOrBuy = () => {
       let amount = 0;
       try {
         if (isAuction.value) {
           amount = parseFloat(auctionField.value, 10);
           if (isNaN(amount)) throw new Error("invalid number");
-          if (amount < price.value) throw new Error("not enough funds");
+          if (amount < props.nextBidPrice) throw new Error("not enough funds");
           onBid(auctionField.value);
         } else {
           amount = parseInt(saleField.value, 10);
@@ -411,7 +416,8 @@ export default {
       auctionField,
       saleField,
       isFieldInvalid,
-      viewOnOpenSea
+      viewOnOpenSea,
+      itemsLeft,
     };
   },
 };

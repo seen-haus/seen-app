@@ -5,7 +5,7 @@
 <script>
 import useWeb3 from "@/connectors/hooks"
 import Jazzicon from 'jazzicon'
-import {ref, watchEffect} from 'vue'
+import {ref, watchEffect, computed} from 'vue'
 
 export default {
   name: "Identicon",
@@ -13,21 +13,32 @@ export default {
     size: {
       type: Number,
       default: 20,
+    },
+    address: {
+      type: String,
+      default: null,
     }
   },
   setup(props) {
     const {account} = useWeb3()
     const size = ref(props.size);
+    const currentAddress = computed(() => props.address);
 
     const root = ref(null)
     watchEffect(() => {
-      if (root.value && account.value) {
+      if (root.value) {
+        let accStr;
+        if (account.value && !currentAddress.value) {
+          accStr = account.value;
+        } else if (currentAddress.value) {
+          accStr = currentAddress.value;
+        }
         var child = root.value.firstElementChild; 
         while (child) {
             root.value.removeChild(child);
             child = root.value.firstElementChild;
         }
-        root.value.appendChild(Jazzicon(size.value, parseInt(account.value.slice(2, 10), 16)));
+        root.value.appendChild(Jazzicon(size.value, parseInt(accStr.slice(2, 10), 16)));
       } else {
         root.value = null
       }
