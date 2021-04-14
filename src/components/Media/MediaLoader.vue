@@ -139,7 +139,7 @@ export default {
       // state.paused = !state.paused;
     }
 
-    function playVideo() {
+    async function playVideo()  {
       if (mediaType.value === "image") return;
       if (mediaType.value === "youtube") {
         videoRef.value.contentWindow.postMessage(
@@ -147,12 +147,16 @@ export default {
           "*"
         );
       } else {
-        videoRef.value.play();
+        try {
+          await videoRef.value.play();
+        } catch (e) {
+          // oops
+        }
       }
 
       state.paused = false;
     }
-    function pauseVideo() {
+    async function pauseVideo() {
       if (mediaType.value === "image") return;
       if (mediaType.value === "youtube") {
         videoRef.value.contentWindow.postMessage(
@@ -160,7 +164,11 @@ export default {
           "*"
         );
       } else {
-        videoRef.value.pause();
+        try {
+          await videoRef.value.pause();
+        } catch (e) {
+          // oops
+        }
       }
 
       state.paused = true;
