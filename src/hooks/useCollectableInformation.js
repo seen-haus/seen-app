@@ -19,6 +19,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         mergedEvents,
         initializeContractEvents,
         supply,
+        endsAt: updatedEndsAt,
     } = useContractEvents();
 
     const collectable = ref(initialCollectable);
@@ -96,6 +97,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
     const updateProgress = function (event) {
         progress.value = event;
+        updateCollectableState();
     };
 
     const updateInformation = function (data) {
@@ -176,6 +178,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         const end = new Date(endsAt.value);
 
         if (now < start) {
+            console.log('bam');
             collectableState.value = COLLECTABLE_STATE.WAITING;
             return;
         }
@@ -200,19 +203,22 @@ export default function useCollectableInformation(initialCollectable = {}) {
         collectableState.value = COLLECTABLE_STATE.WAITING;
     };
 
+    let timeoutHandler = null;
     const enableContract = function () {
         if (collectable.value == null) return;
 
         const now = Date.now();
-        const start = new Date(startsAt.value).getTime();
+        const start = new Date(startsAt.value).getTime() - (15 * 60 * 1000);
         const end = new Date(endsAt.value).getTime();
-
-        // TODO: Remove this call & TEST
-        // initializeContractEvents(collectable.value);
 
         if (now >= start && now < end && !is_sold_out.value) {
             console.log('contract initialized');
             initializeContractEvents(collectable.value);
+        } else if (now < end && !is_sold_out.value) {
+            timeoutHandler = setTimeout(() => {
+                console.log('starting soon');
+                initializeContractEvents(collectable.value);
+            }, start - now)
         }
     };
 
@@ -230,42 +236,32 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const updateFromBlockchain = function (newEvents) {
         console.log('updateFromBlockchain', newEvents);
         events.value = newEvents;
-        const latestEvent = events.value[events.value.length - 1];
 
+        let endsAtNew = endsAt.value;
         // Update price and item count
         if (isAuction.value) {
-            let endsAtNew = endsAt.value;
-
-            if (endsAt.value != null) {
-                const endDate = new Date(endsAt.value).getTime();
-                const lastEventDate = new Date(latestEvent.created_at).getTime();
-                const addTime = 5 * 60 * 1000;
-
-                let newEndDate = endDate;
-                if (lastEventDate > endDate || (endDate - lastEventDate) < addTime) {
-                    newEndDate = lastEventDate + addTime;
-                }
-
-                endsAtNew = new Date(newEndDate).toString();
+            if (updatedEndsAt.value != null) {
+                endsAtNew = new Date(updatedEndsAt).toString();
             }
-
-            updateInformation({
-                ...collectable.value,
-                events: [...events.value],
-                ends_at: endsAtNew,
-            });
-            updateCollectableState();
-        } else {
-            updateInformation({
-                ...collectable.value,
-                events: [...events.value],
-            });
-            updateCollectableState();
         }
+
+        updateInformation({
+            ...collectable.value,
+            events: [...events.value],
+            ends_at: endsAtNew,
+        });
+        updateCollectableState();
     };
 
     // Blockchain watchers
     watch(mergedEvents, updateFromBlockchain);
+
+    onBeforeUnmount(() => {
+        if (timeoutHandler != null) {
+            clearTimeout(timeoutHandler);
+            timeoutHandler = null;
+        }
+    })
 
     return {
         collectableState,

@@ -96,12 +96,24 @@
                 :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
                 :startDate="startsAt"
                 :endDate="endsAt"
+                :isAuction="isAuction"
                 @onProgress="updateProgress"
             />
           </template>
 
           <template v-else>
+            <progress-timer
+                v-if="isUpcomming && isCollectableActive"
+                ref="timerRef"
+                class="text-black text-sm mt-2"
+                :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
+                :startDate="startsAt"
+                :endDate="endsAt"
+                :isAuction="isAuction"
+                @onTimerStateChange="updateState"
+            />
             <div
+                v-else
                 class="text-sm font-bold mt-2"
                 :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
             >
@@ -202,6 +214,10 @@ export default {
       });
     };
 
+    const updateState = function(e) {
+      updateProgress(progress.value);
+    }
+
     return {
       timerRef,
       collectableState,
@@ -229,6 +245,7 @@ export default {
       isUpcomming,
       // Methods
       updateProgress,
+      updateState,
       addTime,
       navigateToCollectable,
     };

@@ -36,6 +36,38 @@ export default function useCollectablesWithPagination(purchaseType = 1) {
       { type: state.filter, purchaseType },
     );
 
+    // Mock
+    // let mockData = [];
+    // if (state.page == 1) {
+    //   console.log('insert mocks');
+    //   const mockSale = { ...data[0] };
+
+    //   mockSale.id = 1000;
+    //   mockSale.starts_at = '2021-04-15T17:14:50.000Z';
+    //   mockSale.ends_at = '2021-04-17T07:00:00.000Z';
+    //   mockSale.is_sold_out = 0;
+    //   mockSale.title = 'MockSale';
+    //   mockSale.available_qty = 100;
+    //   mockSale.events = [];
+
+    //   const mockAuction = { ...data.filter(v => v.id === 23)[0] };
+
+    //   // console.log('mokc auticon', mockAuction);
+    //   mockAuction.id = 2000;
+    //   mockAuction.title = 'MockAuction';
+    //   mockAuction.ends_at = '2021-04-15T07:00:00.000Z';
+    //   mockAuction.is_sold_out = 0;
+    //   mockAuction.events = [];
+
+
+    //   console.log(mockSale);
+    //   console.log(mockAuction);
+
+    //   //data.unshift(mockAuction);
+    //   // data.unshift(mockSale);
+    //   mockData = [mockSale];
+    // }
+
     state.items = data;
     state.hasMore =
       metadata.pagination.totalPages > state.page;

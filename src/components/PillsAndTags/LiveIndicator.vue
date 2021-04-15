@@ -6,7 +6,7 @@
         'bg-primary blink': indicatorStatus === 'LIVE',
         'bg-gray-500': indicatorStatus === 'ENDED' 
                       || indicatorStatus === 'SOLD OUT',
-        'bg-accent': indicatorStatus === 'COMMING SOON',
+        'bg-accent': indicatorStatus === 'COMING SOON',
       }"
     ></div>
     <div class="font-bold">
@@ -31,7 +31,7 @@ export default {
           return "ENDED";
         case "sold out":
           return "SOLD OUT";
-        case "comming soon":
+        case "coming soon":
           return "COMING SOON";
         default:
           return "CUSTOM";
