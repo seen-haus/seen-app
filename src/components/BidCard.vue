@@ -13,7 +13,7 @@
       >
         <span class="tracking-widest mr-4">ITEMS LEFT </span>
         <tag class="bg-fence-light self-end text-gray-400 font-semibold"
-        >{{ items_of - items }}/{{ items_of }}
+        >{{ items }}/{{ items_of }}
         </tag
         >
       </div>
@@ -163,7 +163,7 @@
             ITEMS LEFT
           </div>
           <div class="text-2.5xl font-bold py-2">
-            {{ itemsLeft }} out of {{ items_of }}
+            {{ items }} out of {{ items_of }}
           </div>
           <progress-bar :progress="progress" class="bg-gray-300 h-3 mt-3"/>
         </template>
@@ -294,8 +294,6 @@ export default {
       }
     });
 
-    const itemsLeft = computed(() => props.items_of - props.items)
-
     const placeABidOrBuy = () => {
       let amount = 0;
       try {
@@ -417,7 +415,6 @@ export default {
       saleField,
       isFieldInvalid,
       viewOnOpenSea,
-      itemsLeft,
     };
   },
 };
