@@ -96,6 +96,7 @@
                 :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
                 :startDate="startsAt"
                 :endDate="endsAt"
+                :isAuction="isAuction"
                 @onProgress="updateProgress"
             />
           </template>
@@ -108,6 +109,7 @@
                 :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
                 :startDate="startsAt"
                 :endDate="endsAt"
+                :isAuction="isAuction"
                 @onTimerStateChange="updateState"
             />
             <div

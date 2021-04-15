@@ -113,6 +113,7 @@
         <progress-timer
             ref="timerRef"
             class="text-black text-3xl mt-2"
+            :isAuction="isAuction"
             :label="null"
             :startDate="startsAt"
             :endDate="endsAt"
@@ -140,6 +141,7 @@
           <progress-timer
               ref="timerRef"
               class="text-black text-3xl mt-2"
+              :isAuction="isAuction"
               :label="null"
               :startDate="startsAt"
               :endDate="endsAt"

@@ -13,6 +13,10 @@ import { computed, watch, ref, toRefs } from 'vue';
 export default {
   name: "ProgressTimer",
   props: {
+    isAuction: { 
+      type: Boolean,
+      default: true
+    },
     label: {
       type: String,
       default: "Ends in:",
@@ -42,7 +46,7 @@ export default {
 
     const labelText = computed(() => {
       if (timerState.value === TIMER_STATE.WAITING) {
-        return 'Launching in: ';
+        return props.isAuction ? 'Auction starts in: ' : 'Sale starts in: ';
       }
       if (timerState.value === TIMER_STATE.IN_PROGRESS) {
         return 'Ends in: ' || props.label;

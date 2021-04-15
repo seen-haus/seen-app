@@ -66,6 +66,7 @@
         <progress-timer
             ref="timerRef"
             class="text-black text-sm mt-2"
+            :isAuction="isAuction"
             :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
             :startDate="startsAt"
             :endDate="endsAt"
@@ -78,6 +79,7 @@
           <progress-timer
               ref="timerRef"
               class="text-black text-sm mt-2"
+              :isAuction="isAuction"
               :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
               :startDate="startsAt"
               :endDate="endsAt"
