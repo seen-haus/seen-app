@@ -14,8 +14,8 @@
           <span class="addressText">{{ shortenAddress(account) }}</span>
         </div>
         <div class="mr-4 ml-4 ml-md-12">
-          <i class="fas fa-caret-down" v-if="!isOpen"></i>
-          <i class="fas fa-caret-up" v-if="isOpen"></i>
+          <i class="fas fa-caret-down" v-if="isOpen"></i>
+          <i class="fas fa-caret-up" v-if="!isOpen"></i>
         </div>
       </button>
     </div>
@@ -98,7 +98,7 @@ export default {
     })
     let isOpen = ref(false);
     const openWalletModal = () => {
-      isOpen.value = false;
+      isOpen.value = false;  
       store.dispatch('application/openModal', 'WalletModal')
     };
     const handleDisconnect = () => {
@@ -107,9 +107,24 @@ export default {
       deactivate();
     };
 
+    var overlay;
+
+    const toggleFlag = (ev) => {
+      if (overlay) {
+        isOpen.value = false;
+        overlay = document.getElementsByTagName('body')[0];
+        overlay.removeEventListener('click', toggleFlag);
+      }
+    }
+
     const toggle = (event) => {
       op.value.toggle(event);
-       isOpen.value = !isOpen.value;
+      isOpen.value = !isOpen.value;
+      if (isOpen.value) {
+        overlay = document.getElementsByTagName('body')[0];
+        setTimeout(() => overlay.addEventListener('click', toggleFlag), 10)
+      }
+      
       if (isInitialOpen) {
         isInitialOpen = false;
         const menuEl = op.value;

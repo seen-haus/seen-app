@@ -16,6 +16,18 @@ export default {
             evt.preventDefault();
         }
     },
+    isInteger(evt) {
+        let value = evt.target.value;
+        if (this.isNumeric(evt.key)) {
+            value += parseInt(evt.key)
+        }
+        if (/^[0-9]*$/.test(evt.key)
+            && evt.key !== '.') {
+            return true;
+        } else {
+            evt.preventDefault();
+        }
+    },
     countDecimals(value) {
         if (Math.floor(value) !== value)
             return value.toString().split(".")[1].length || 0;

@@ -33,6 +33,7 @@
               v-model="auctionField.value"
               v-if="isAuction"
               type="number"
+              @keypress="isNumber"
               :placeholder="'Min bid price is ' + nextBidPrice + ' ETH'"
           />
           <input
@@ -40,6 +41,7 @@
               v-if="!isAuction"
               step="1"
               min="1"
+              @keypress="isInteger"
               type="number"
               placeholder="Enter amount"
           />
@@ -189,6 +191,7 @@ import useSigner from "@/hooks/useSigner";
 import useContractEvents from "@/hooks/useContractEvents";
 import {useToast} from "primevue/usetoast";
 import {useField, useForm} from "vee-validate";
+import numberHelper from "@/services/utils/numbers"
 
 export default {
   name: "BidCard",
@@ -395,6 +398,14 @@ export default {
       window.location = `https://opensea.io/assets/${nftAddress}/${nftTokenId}`;
     }
 
+    const isNumber = (value) => {
+      return numberHelper.isNumber(value)
+    }
+
+    const isInteger = (value) => {
+      return numberHelper.isInteger(value)
+    }
+
     return {
       account,
       currentProgress,
@@ -415,6 +426,8 @@ export default {
       saleField,
       isFieldInvalid,
       viewOnOpenSea,
+      isNumber,
+      isInteger,
     };
   },
 };
