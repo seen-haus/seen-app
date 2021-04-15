@@ -119,12 +119,12 @@ export default function useCollectableInformation(initialCollectable = {}) {
         // AUCTION
         if (isAuction.value) {
             if (events.value.length === 0) {
-                price.value = +(data.start_bid || 0).toFixed(2);
+                price.value = +(data.start_bid || 0);
                 nextBidPrice.value = price.value;
                 priceUSD.value = +(data.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             } else {
-                price.value = +(latestEvent.value || 0).toFixed(2);
-                nextBidPrice.value = +((latestEvent.value || 0) * 1.05).toFixed(2);
+                price.value = +(latestEvent.value || 0);
+                nextBidPrice.value = +((latestEvent.value || 0) * 1.05);
                 priceUSD.value = +(latestEvent.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             }
         }

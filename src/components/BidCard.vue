@@ -43,7 +43,7 @@
               min="1"
               @keypress="isInteger"
               type="number"
-              placeholder="Enter amount"
+              placeholder="Enter quantity"
           />
           <template v-if="isAuction">
             <div class="icon w-5 mr-1">
@@ -71,8 +71,11 @@
         Opensea
       </button>
       <template v-else>
-        <button class="button primary" v-if="account && hasEnoughFunds()" @click="placeABidOrBuy">
-          {{ isAuction ? "Place a bid" : "Buy now" }}
+        <button class="button primary"
+                :class="{'cursor-wait disabled opacity-50': isSubmitting}"
+                :disabled="isSubmitting" v-if="account && hasEnoughFunds()" @click="placeABidOrBuy">
+          <span v-if="!isSubmitting">{{ isAuction ? "Place a bid" : "Buy now" }}</span>
+          <span v-else>Submitting...</span>
         </button>
         <button class="button dark disabled opacity-50" v-if="account && !hasEnoughFunds()">
           Insufficient funds
@@ -93,7 +96,7 @@
           AUCTION ENDED
         </div>
         <div v-else>
-          <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold" >
+          <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
             SOLD OUT ({{ items_of }} items)
           </div>
 
@@ -138,7 +141,7 @@
       <template v-else>
         <template v-if="isUpcomming">
           <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            {{ isAuction ? "AUCTION STARTS IN" : "DROP OPENS IN"}}
+            {{ isAuction ? "AUCTION STARTS IN" : "DROP OPENS IN" }}
           </div>
           <progress-timer
               ref="timerRef"
@@ -226,6 +229,7 @@ export default {
     const isAuction = ref(props.isAuction);
     const {account} = useWeb3();
     const hasError = ref(null);
+    const isSubmitting = ref(false);
     const collectableData = ref(props.collectable);
     const winner = computed(() => collectableData.value.winner_address);
     const balance = computed(() => store.getters['application/balance'].eth);
@@ -310,6 +314,7 @@ export default {
         } else {
           amount = parseInt(saleField.value, 10);
           if (isNaN(amount)) throw new Error("invalid number");
+
           if (amount > props.items_of - props.items) {
             throw new Error("not enough items");
           }
@@ -337,8 +342,17 @@ export default {
         if (totalPrice > parseFloat(balance.value)) {
           throw new Error('Not enough funds in wallet!');
         }
-
-        await buy(amount);
+        isSubmitting.value = true
+        await buy(amount)
+            .then((response) => {
+              isSubmitting.value = false
+              if (response) {
+                saleField.resetField(null)
+              }
+            }).catch(e => {
+              toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a buy order.', life: 3000});
+              isSubmitting.value = false
+            });
       } catch (e) {
         console.error("Error placing bid/buy", e);
         toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a buy order.', life: 3000});
@@ -352,8 +366,19 @@ export default {
         if (amount > balance.value) {
           throw new Error('Not enough funds in wallet!');
         }
-        await bid(amount);
+        isSubmitting.value = true
+        await bid(amount)
+            .then((response) => {
+              if (response) {
+                auctionField.resetField(null)
+              }
+              isSubmitting.value = false
+            }).catch(e => {
+              toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a buy order.', life: 3000});
+              isSubmitting.value = false
+            });
       } catch (e) {
+        isSubmitting.value = false
         console.error("Error placing bid/buy", e);
         toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a bid.', life: 3000});
       }
@@ -394,7 +419,7 @@ export default {
       store.dispatch("application/openModal", "WalletModal");
     };
 
-     const viewOnOpenSea = () => {
+    const viewOnOpenSea = () => {
       let nftAddress = collectableData.value.nft_contract_address
       let nftTokenId = collectableData.value.nft_token_id
       window.location = `https://opensea.io/assets/${nftAddress}/${nftTokenId}`;
@@ -422,6 +447,7 @@ export default {
       numberOfItems,
       currentBidValue,
       hasError,
+      isSubmitting,
       openWalletModal,
       hasEnoughFunds,
       auctionField,

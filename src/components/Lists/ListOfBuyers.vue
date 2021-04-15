@@ -23,7 +23,7 @@
               {{ shortenAddress(buyer.wallet_address) }}
             </div>
             <div class="time text-xs text-gray-400">
-              {{ daysAgo(buyer.created_at) }}
+              {{ format(buyer.created_at) }}
             </div>
           </div>
 
@@ -51,7 +51,7 @@
 <script>
 import {computed, ref} from "vue";
 import {shortenAddress, getDaysAgo} from "@/services/utils/index";
-
+import {format} from 'timeago.js';
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
 import Icon from "@/components/Common/Icon.vue";
 
@@ -85,6 +85,7 @@ export default {
       showCount,
       showButton,
       reversedList,
+      format,
     };
   },
 };

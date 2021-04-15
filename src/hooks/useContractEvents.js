@@ -1,15 +1,18 @@
 import useWeb3 from "@/connectors/hooks";
-import { formatEther, parseEther } from "@ethersproject/units";
-import { BigNumber } from "@ethersproject/bignumber";
-import { useV1AuctionContract, useV1NftContract } from "@/hooks/useContract";
-import { computed, ref, onBeforeUnmount } from 'vue';
+import {formatEther, parseEther} from "@ethersproject/units";
+import {BigNumber} from "@ethersproject/bignumber";
+import {useV1AuctionContract, useV1NftContract} from "@/hooks/useContract";
+import {computed, ref, onBeforeUnmount} from 'vue';
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
-import { Web3Provider } from "@ethersproject/providers";
+import {Web3Provider} from "@ethersproject/providers";
+import parseError from "@/services/utils/parseError";
+import {useToast} from "primevue/usetoast";
 
 export default function useContractEvents() {
-    const { converEthToUSD } = useExchangeRate();
-    const { account, provider } = useWeb3();
+    const {converEthToUSD} = useExchangeRate();
+    const {account, provider} = useWeb3();
+    const toast = useToast();
     const collectable = ref(null);
     const contractAddress = ref(null);
     const mergedEvents = ref([]);
@@ -67,29 +70,24 @@ export default function useContractEvents() {
     const initializeContractEvents = async (collectableData, onlySaveContractAddress = false) => {
         collectable.value = collectableData;
         contractAddress.value = collectableData.contract_address;
-        // TODO: remove line below
-        contractAddress.value = '0xF8ac317D981bcAa97F7130E2b028550201A9DB9D';
         endsAt.value = new Date(collectable.value.ends_at).getTime();
 
         console.log('initials ends at', endsAt.value);
-
         if (onlySaveContractAddress) {
             return;
         }
         mergedEvents.value = collectableData.events;
-        // !! IMPORTANT !! remove listeners on beforeDestroy
 
+        // !! IMPORTANT !! remove listeners on beforeDestroy
         // ============= IF is AUCTION =============
         if (isAuction.value) {
-            // EXAMPLE https://etherscan.io/address/0xCEDC9a3c76746F288C87c0eBb0468A1b57484cb1#readContract
-            // TODO: Uncomment this, remove next line
-            // contract = version.value === 1
-            //     ? useV1AuctionContract(contractAddress.value)
-            //     : useV1AuctionContract(contractAddress.value); // Change dis
-            contract = useV1AuctionContract('0x8b8f82719135fd2904e34ed7e515564304c76f95')
+            contract = version.value === 1
+                ? useV1AuctionContract(contractAddress.value)
+                : useV1AuctionContract(contractAddress.value);
 
-            await contract.on("Bid", async (evt) => {
-                const event = createNormalizedEvent(evt, 'bid');
+            await contract.on("Bid", async (fromAddress, amount, evt) => {
+                console.log(fromAddress, amount, evt)
+                const event = await createNormalizedEvent(evt, 'bid');
                 if (version.value === 2) {
                     // endsAt.value = await contract.endBidTime();
                 }
@@ -106,14 +104,9 @@ export default function useContractEvents() {
                 // endsAt.value = await contract.endBidTime();
             }
         } else { // ============= IF is SALE =============
-            // TODO: Uncomment this, remove next line
-            // contract = version.value === 1
-            //     ? useV1NftContract(contractAddress.value)
-            //     : useV1NftContract(contractAddress.value);
-
-            contract = useV1NftContract('0xF8ac317D981bcAa97F7130E2b028550201A9DB9D');
-            debugger; // eslint-disable-line
-
+            contract = version.value === 1
+                ? useV1NftContract(contractAddress.value)
+                : useV1NftContract(contractAddress.value);
 
             let start = await contract.start();
             let price = await contract.price();
@@ -124,8 +117,9 @@ export default function useContractEvents() {
             console.log("PRICE ", price);
             console.log("SUPPLY LEFT ", supply.value);
 
-            await contract.on("Buy", async (evt) => {
+            await contract.on("Buy", async (fromAddress, amount, evt) => {
                 // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
+                console.log(fromAddress, amount.toString(), evt)
                 const event = await createNormalizedEvent(evt, 'buy');
                 mergeEvents(event);
                 supply.value = +(await contract.supply()).toString();
@@ -147,32 +141,75 @@ export default function useContractEvents() {
 
     const bid = async (amount) => {
         if (amount == null) return;
-        // 1. get new contract
-        if (!contractAddress.value) return; // do toastr
-        const temporaryContract = useV1AuctionContract(contractAddress.value, true); // contract.value
+
+        if (!contractAddress.value) return;
+         const temporaryContract  = version.value === 1
+                ? useV1AuctionContract(contractAddress.value, true)
+                : useV1AuctionContract(contractAddress.value, true)
+
         const temporaryProvider = new Web3Provider(provider.value);
-        const gasPrice = await temporaryProvider.getGasPrice();
-        amount = parseEther((BigNumber.from(amount)).toString());
-        let tx = await temporaryContract.bid({ from: account.value.toString(), value: amount.toString(), gasPrice });
-        console.log(tx);
-        // await tx.wait();
+        const gasPrice = await temporaryProvider.getGasPrice().catch((e) => {
+            toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 3000});
+        });
+
+        amount = parseEther((amount).toString());
+        let tx = await temporaryContract.bid({from: account.value.toString(), value: amount.toString(), gasPrice});
+        return tx.wait()
+            .then(() => {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Bid accepted.',
+                    life: 3000
+                });
+                return true;
+            }).catch((e) => {
+                let message = parseError(e.message)
+                toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                return false;
+            })
     };
 
     const buy = async (amount) => {
         const price = (collectable.value && collectable.value.price);
+
         const value = BigNumber.from(amount.toString()).mul(parseEther(price.toFixed(8)))
 
         if (price == null || amount == null) return;
-        // 1. get new contract
-        if (!contractAddress.value) return; // do toastr
-        let temporaryContract = useV1NftContract(contractAddress.value, true);
-        let qty = amount; // 1 ETH
-        const temporaryProvider = new Web3Provider(provider.value);
-        const gasPrice = await temporaryProvider.getGasPrice();
-        let tx = await temporaryContract.buy(qty.toString(), { gasPrice: gasPrice.toString(), value: value.toString(), from: account.value });
 
-        console.log(tx);
-        console.log(gasPrice);
+        if (!contractAddress.value) return;
+        let temporaryContract = useV1NftContract(contractAddress.value, true);
+        let qty = amount;
+
+        const temporaryProvider = new Web3Provider(provider.value);
+        const gasPrice = await temporaryProvider.getGasPrice()
+            .catch((e) => {
+                toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 3000});
+            });
+
+        let tx = await temporaryContract.buy(qty.toString(), {
+            gasPrice: gasPrice.toString(),
+            value: value.toString(),
+            from: account.value
+        }).catch(e => {
+            let message = parseError(e.message)
+            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+        });
+
+        return tx.wait()
+            .then(() => {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'You have successfully bought the drop.',
+                    life: 3000
+                });
+                return true;
+            }).catch((e) => {
+                let message = parseError(e.message)
+                toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                return false;
+            })
     };
 
     onBeforeUnmount(() => {
