@@ -97,6 +97,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
     const updateProgress = function (event) {
         progress.value = event;
+        updateCollectableState();
     };
 
     const updateInformation = function (data) {
@@ -177,6 +178,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         const end = new Date(endsAt.value);
 
         if (now < start) {
+            console.log('bam');
             collectableState.value = COLLECTABLE_STATE.WAITING;
             return;
         }
