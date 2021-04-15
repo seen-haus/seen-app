@@ -11,7 +11,6 @@ import {
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 
 export default function useCollectableInformation(initialCollectable = {}) {
-    const lastBidIncrease = 0.05; // 5% from last bid
     const { converEthToUSD } = useExchangeRate();
     const {
         mergedEvents,
@@ -219,20 +218,20 @@ export default function useCollectableInformation(initialCollectable = {}) {
         const end = new Date(endsAt.value).getTime();
 
         // TODO: Remove this call & TEST
-        // initializeContractEvents(collectable.value);
+        initializeContractEvents(collectable.value);
 
-        if (now >= start && now < end && !is_sold_out.value) {
-            console.log('contract initialized');
-            isContractEnabled.value = true;
-            initializeContractEvents(collectable.value);
-        }
+        // if (now >= start && now < end && !is_sold_out.value) {
+        //     console.log('contract initialized');
+        //     isContractEnabled.value = true;
+        //     initializeContractEvents(collectable.value);
+        // }
     };
 
     const setCollectable = function (data) {
         collectable.value = data;
         updateInformation(data);
         updateCollectableState();
-        enableContract(data);
+        enableContract(collectable.value);
     };
 
     const updateFromBlockchain = function (newEvents) {
