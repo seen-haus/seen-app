@@ -1,13 +1,13 @@
 <template>
   <nav>
-    <!-- <router-link :to="{ name: 'spaaaaace'}" v-slot="{isActive}" class="routing-link mr-12">
+    <!-- <router-link :to="{ name: 'spaaaaace'}" v-slot="{isActive}" class="routing-link mr-8 xl:mr-12">
       <img src="@/assets/icons/icon--spacenft.svg" :class="isActive ? 'active-green-icon' : ''" class="cursor-pointer mr-1 inline-flex" alt="SEEN">
       <span class="opacity-50 font-bold py-0.5 hover:opacity-100" :class="{'active': isActive}">Space NFT</span>
     </router-link> -->
     <router-link
       :to="{ name: 'drops' }"
       v-slot="{ isActive }"
-      class="routing-link mr-12"
+      class="routing-link mr-8 xl:mr-12"
     >
       <img
         src="@/assets/icons/icon-fire.svg"
@@ -24,7 +24,7 @@
     <router-link
       :to="{ name: 'artists' }"
       v-slot="{ isActive }"
-      class="routing-link mr-12"
+      class="routing-link mr-8 xl:mr-12"
     >
       <span
         class="opacity-50 font-bold py-0.5 hover:opacity-100"
@@ -33,9 +33,20 @@
       >
     </router-link>
     <router-link
+      :to="{ name: 'stake' }"
+      v-slot="{ isActive }"
+      class="routing-link mr-8 xl:mr-12"
+    >
+      <span
+        class="opacity-50 font-bold py-0.5 hover:opacity-100"
+        :class="{ active: isActive }"
+        >Stake</span
+      >
+    </router-link>
+    <router-link
       :to="{ name: 'collectors' }"
       v-slot="{ isActive }"
-      class="routing-link mr-12"
+      class="routing-link mr-8 xl:mr-12"
     >
       <span
         class="opacity-50 font-bold py-0.5 hover:opacity-100"
@@ -71,4 +82,4 @@ export default {
   filter: brightness(0) saturate(100%) opacity(0.4);
 }
 </style>
- 
+

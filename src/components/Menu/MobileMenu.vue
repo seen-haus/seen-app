@@ -12,6 +12,9 @@
     <router-link :to="{ name: 'artists'}" v-slot="{isActive}" class="routing-link block py-1 px-8">
       <span class="opacity-50 font-bold py-0.5" :class="{'active': isActive}">Artists</span>
     </router-link>
+    <router-link :to="{ name: 'stake'}" v-slot="{isActive}" class="routing-link block py-1 px-8">
+      <span class="opacity-50 font-bold py-0.5" :class="{'active': isActive}">Stake</span>
+    </router-link>
     <router-link :to="{ name: 'collectors'}" v-slot="{isActive}" class="routing-link block py-1 px-8">
       <span class="opacity-50 font-bold py-0.5" :class="{'active': isActive}">Collectors</span>
     </router-link>

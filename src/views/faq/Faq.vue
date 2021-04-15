@@ -116,16 +116,6 @@
 
         <collapsible-tile
           class="mx-auto mb-6"
-          title="Do I receive $SEEN when winning an item?"
-        >
-          <p>
-            Yes, all auction winners will receive $SEEN as a part of our auction
-            bid token mining program.
-          </p>
-        </collapsible-tile>
-
-        <collapsible-tile
-          class="mx-auto mb-6"
           title="How do I apply to have an item auctioned on seen.haus?"
         >
           <p>

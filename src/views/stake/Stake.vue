@@ -100,7 +100,7 @@
                 class="rounded-full bg-black text-white flex items-center justify-center w-8 h-8 mr-4 flex-shrink-0"
             >3</span
             >
-            Stake xSEEN in the xSEEN pool
+            Start earning a portion of protocol fees
           </div>
           <div
               class="flex bg-white border rounded-lg p-4 items-center font-bold mb-2"
@@ -109,16 +109,7 @@
                 class="rounded-full bg-black text-white flex items-center justify-center w-8 h-8 mr-4 flex-shrink-0"
             >4</span
             >
-            Start earning a portion of protocol fees
-          </div>
-          <div
-              class="flex bg-white border rounded-lg p-4 items-center font-bold mb-2"
-          >
-            <span
-                class="rounded-full bg-black text-white flex items-center justify-center w-8 h-8 mr-4 flex-shrink-0"
-            >5</span
-            >
-            Redeem SEEN at any time by converting xSEEN back to SEEN*
+            Redeem SEEN rewards by clicking withdraw*
           </div>
 
           <div class="text-2xs text-gray-400 px-4 mt-3">

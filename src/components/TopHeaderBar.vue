@@ -18,8 +18,7 @@
             <p v-else>{{ formatCurrency(seen) }}</p>
           </a>
           <a
-            href="https://app.sushi.com/pair/0xc5fa164247d2f8d68804139457146efbde8370f6"
-            target="_blank"
+            href=""
             class="btn-exchange"
           >
             <img
@@ -32,8 +31,7 @@
             <p v-else>{{ formatCurrency(ethereum) }}</p>
           </a>
           <a
-            href="https://app.sushi.com/pair/0xc5fa164247d2f8d68804139457146efbde8370f6"
-            target="_blank"
+            href=""
             class="btn-exchange"
           >
             <img

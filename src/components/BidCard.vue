@@ -135,7 +135,7 @@
       <template v-else>
         <template v-if="isUpcomming">
           <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            AUCTION STARTS IN
+            {{ isAuction ? "AUCTION STARTS IN" : "DROP OPENS IN"}}
           </div>
           <progress-timer
               ref="timerRef"

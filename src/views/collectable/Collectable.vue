@@ -302,12 +302,14 @@ export default {
     };
 
     const viewOnEtherscan = () => {
-      window.location = getEtherscanLink(1, route.params["contractAddress"], "address");
+      let url = getEtherscanLink(1, route.params["contractAddress"], "address")
+      window.open(url, '_blank').focus()
     }
     const viewOnOpenSea = () => {
       let nftAddress = collectable.value.nft_contract_address
       let nftTokenId = collectable.value.nft_token_id
-      window.location = `https://opensea.io/assets/${nftAddress}/${nftTokenId}`;
+      let url = `https://opensea.io/assets/${nftAddress}/${nftTokenId}`;
+      window.open(url, '_blank').focus()
     }
 
     (async function loadCollectable() {
