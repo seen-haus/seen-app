@@ -27,7 +27,9 @@ export default function useContractEvents() {
         // The same event will cale through event listener
         const evt = contractEvent.decode(contractEvent.data, contractEvent.topics);
         const wallet_address = type === 'bid' ? evt.who : evt.buyer;
-        const ethAmount = parseFloat(formatEther(evt.amount), 10);
+        const ethAmount = type === 'bid'
+            ? parseFloat(formatEther(evt.amount), 10)
+            : parseInt(evt.amount) * collectable.value.price;
 
         const event = {
             collectable_id: collectable.value.id,
@@ -37,6 +39,7 @@ export default function useContractEvents() {
             tx,
             updated_at: null,
             value: ethAmount,
+            amount: type === 'buy' ? evt.amount.toString() : 1,
             value_in_usd: converEthToUSD(ethAmount),
             wallet_address,
             raw: JSON.stringify(evt)

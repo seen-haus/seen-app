@@ -1,10 +1,10 @@
-import { $axios } from './api/axios';
+import {$axios} from './api/axios';
 
 $axios.defaults.baseURL = `${process.env.VUE_APP_API_URL}/`;
 export const ApiService = {
 
     query(resource, params) {
-        return $axios.get(resource, { params }).catch(error => {
+        return $axios.get(resource, {params}).catch(error => {
             throw new Error(`[RWV] ApiService ${error}`);
         });
     },
@@ -59,9 +59,9 @@ export const LeaderboardService = {
 };
 
 export const CollectablesService = {
-    list(pagination = { perPage: 6, page: 1 }, filter = {}) {
+    list(pagination = {perPage: 6, page: 1}, filter = {}) {
         // serialize
-        return ApiService.query('collectables', { ...pagination, ...filter });
+        return ApiService.query('collectables', {...pagination, ...filter});
     },
     show(contractAddress) {
         return ApiService.get(`collectables/${contractAddress}`);
@@ -78,7 +78,7 @@ export const SpotlightService = {
 };
 
 export const ArtistService = {
-    list(pagination = { perPage: 6, page: 1 }) {
+    list(pagination = {perPage: 6, page: 1}) {
         // serializeđ
         return ApiService.query('artists', pagination);
     },
@@ -94,9 +94,10 @@ export const ExchangeRateService = {
         });
     },
     getEthExchangeRate() {
-        return $axios.get(`https://api.coinpaprika.com/v1/tickers/eth-ethereum/historical?start=${parseInt(Date.now() / 1000) - 1100000}&limit=1&quote=usd&interval=5m`).catch(error => {
-            throw new Error(`[RWV] ApiService ${error}`);
-        });
+        return $axios.get(`https://api.coinpaprika.com/v1/tickers/eth-ethereum/historical?start=${parseInt(Date.now() / 1000) - 1100000}&limit=1&quote=usd&interval=5m`)
+            .catch(error => {
+                throw new Error(`[RWV] ApiService ${error}`);
+            });
     }
 };
 
@@ -114,15 +115,15 @@ export const OpenSeaAPIService = {
         }
 
         const tokenIds = assets.map(v => v.token_id);
-        const collectables = await ApiService.post('collectables/map', { tokenIds });
+        const collectables = await ApiService.post('collectables/map', {tokenIds});
         const mapped = [];
 
         assets.forEach(a => {
             const match = collectables.data.find(c => c.nft_token_id === a.token_id);
             if (match)
-                mapped.push({ asGift: false, data: match });
+                mapped.push({asGift: false, data: match});
             else
-                mapped.push({ asGift: true, data: a });
+                mapped.push({asGift: true, data: a});
         });
 
         return mapped;

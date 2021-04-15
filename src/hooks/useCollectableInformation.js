@@ -18,6 +18,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const {
         mergedEvents,
         initializeContractEvents,
+        supply,
     } = useContractEvents();
 
     const collectable = ref(initialCollectable);
@@ -129,7 +130,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
         // SALE
         if (!isAuction.value) {
             itemsOf.value = data.available_qty || 0;
-            items.value = itemsOf.value - (events.value || [])
+            items.value = supply.value
+                ? supply.value
+                : itemsOf.value - (events.value || [])
                 .reduce((carry, evt) => {
                     if (evt.amount) {
                         return parseInt(evt.amount) + carry;
@@ -137,9 +140,6 @@ export default function useCollectableInformation(initialCollectable = {}) {
                     if (evt.raw && typeof evt.raw == "string") {
                         let decodedEvt = JSON.parse(evt.raw);
                         return parseInt(decodedEvt.amount) + carry;
-                    }
-                    if (evt.value) {
-                        return parseInt(evt.value) + carry;
                     }
                     return carry;
                 }, 0);

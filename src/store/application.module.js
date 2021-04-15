@@ -1,4 +1,4 @@
-import { ExchangeRateService } from "@/services/apiService";
+import {ExchangeRateService} from "@/services/apiService";
 
 const state = {
     openModal: null,
@@ -39,12 +39,21 @@ const actions = {
         context.commit('CLOSE_MODAL')
     },
     async getExchangeRates(context) {
-        ExchangeRateService.get().then((data) => {
+        ExchangeRateService.get()
+            .then((data) => {
+                context.commit('SET_EXCHANGE_RATES', {
+                    seen: parseFloat(data.seen.usd, 10),
+                    bitcoin: parseFloat(data.bitcoin.usd, 10),
+                    ethereum: parseFloat(data.ethereum.usd, 10)
+                })
+            }).catch(e => {
+            console.log("ERROR")
             context.commit('SET_EXCHANGE_RATES', {
-                seen: parseFloat(data.seen.usd, 10),
-                bitcoin: parseFloat(data.bitcoin.usd, 10),
-                ethereum: parseFloat(data.ethereum.usd, 10)
+                seen: parseFloat("1.0", 10),
+                bitcoin: parseFloat("1.0", 10),
+                ethereum: parseFloat("1.0", 10)
             });
+            console.log(e)
         });
     },
     setBalance(context, balance) {
