@@ -1,8 +1,11 @@
-import { ref, computed, watch } from 'vue';
-import useContractEvents from "@/hooks/useContractEvents";
+import { ref, computed, watch, onBeforeUnmount } from 'vue';
+
+import useWeb3 from "@/connectors/hooks"
 import { BigNumber } from "@ethersproject/bignumber";
-import useExchangeRate from "@/hooks/useExchangeRate.js";
 import { formatEther, parseEther } from "@ethersproject/units";
+
+import useContractEvents from "@/hooks/useContractEvents";
+import useExchangeRate from "@/hooks/useExchangeRate.js";
 
 import {
     COLLECTABLE_TYPE,
@@ -11,17 +14,13 @@ import {
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 
 export default function useCollectableInformation(initialCollectable = {}) {
-    const lastBidIncrease = 0.05; // 5% from last bid
     const { converEthToUSD } = useExchangeRate();
     const {
         mergedEvents,
-        lastBid,
         initializeContractEvents,
     } = useContractEvents();
 
     const collectable = ref(initialCollectable);
-    const isContractEnabled = ref(false);
-
     const events = ref(collectable.value.events || []);
     const price = ref(0.0);
     const nextBidPrice = ref(0.0);
@@ -50,7 +49,6 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const title = computed(() => collectable.value.title);
     const description = computed(() => collectable.value.description);
     const version = computed(() => collectable.value.version);
-
     const is_sold_out = computed(
         () => {
             if (isAuction.value) return false;
@@ -63,22 +61,18 @@ export default function useCollectableInformation(initialCollectable = {}) {
             collectableState.value === COLLECTABLE_STATE.IN_PROGRESS
         );
     });
-
     const edition = computed(() => collectable.value.edition || 0);
     const edition_of = computed(() => collectable.value.edition_of || 0);
-
     const isTangible = computed(
         () =>
             type.value === COLLECTABLE_TYPE.TANGIBLE ||
             type.value === COLLECTABLE_TYPE.TANGIBLE_NFT
     );
-
     const isNft = computed(
         () =>
             type.value === COLLECTABLE_TYPE.NFT ||
             type.value === COLLECTABLE_TYPE.TANGIBLE_NFT
     );
-
     const liveStatus = computed(() => {
         if (collectableState.value === COLLECTABLE_STATE.DONE) return "ended";
         if (collectableState.value === COLLECTABLE_STATE.WAITING)
@@ -91,15 +85,14 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
         return "live";
     });
-
     const startsAt = computed(() => collectable.value.starts_at);
     const endsAt = computed(() => collectable.value.ends_at);
-
     const isAuction = computed(
         () => collectable.value.purchase_type === PURCHASE_TYPE.AUCTION
     );
-
     const isUpcomming = computed(() => collectableState.value === COLLECTABLE_STATE.WAITING);
+
+
     const updateProgress = function (event) {
         progress.value = event;
     };
@@ -108,7 +101,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         collectable.value.ends_at = data.ends_at;
         events.value = data.events.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
-        const lastestEvent = events.value[events.value.length - 1];
+        const latestEvent = events.value[events.value.length - 1];
 
         if (data.media && data.media.length) {
             const sorted = [...data.media].sort((a, b) => a.position < b.position ? -1 : 1).filter(m => !m.is_preview);
@@ -122,23 +115,21 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
         // AUCTION
         if (isAuction.value) {
-            items.value = events.value.length;
-            itemsOf.value = data.available_qty || 0;
-
             if (events.value.length === 0) {
                 price.value = +(data.start_bid || 0).toFixed(2);
                 nextBidPrice.value = price.value;
                 priceUSD.value = +(data.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             } else {
-                price.value = +(lastestEvent.value || 0).toFixed(2);
-                nextBidPrice.value = +((lastestEvent.value || 0) * 1.05).toFixed(2);
-                priceUSD.value = +(lastestEvent.value_in_usd || converEthToUSD(price.value)).toFixed(2);
+                price.value = +(latestEvent.value || 0).toFixed(2);
+                nextBidPrice.value = +((latestEvent.value || 0) * 1.05).toFixed(2);
+                priceUSD.value = +(latestEvent.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             }
         }
 
         // SALE
         if (!isAuction.value) {
-            items.value = (events.value || [])
+            itemsOf.value = data.available_qty || 0;
+            items.value = itemsOf.value - (events.value || [])
                 .reduce((carry, evt) => {
                     if (evt.amount) {
                         return parseInt(evt.amount) + carry;
@@ -152,7 +143,6 @@ export default function useCollectableInformation(initialCollectable = {}) {
                     }
                     return carry;
                 }, 0);
-            itemsOf.value = data.available_qty || 0;
 
             price.value = +(data.price || 0).toFixed(2);
             priceUSD.value = +(data.value_in_usd || 0).toFixed(2);
@@ -196,7 +186,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         }
 
         if (!isAuction.value) {
-            if (items.value >= itemsOf.value) {
+            if (items.value === 0) {
                 collectableState.value = COLLECTABLE_STATE.OUT_OF_STOCK;
                 return;
             }
@@ -212,7 +202,6 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
     const enableContract = function () {
         if (collectable.value == null) return;
-        if (isContractEnabled.value) return;
 
         const now = Date.now();
         const start = new Date(startsAt.value).getTime();
@@ -223,7 +212,6 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
         if (now >= start && now < end && !is_sold_out.value) {
             console.log('contract initialized');
-            isContractEnabled.value = true;
             initializeContractEvents(collectable.value);
         }
     };
@@ -234,6 +222,10 @@ export default function useCollectableInformation(initialCollectable = {}) {
         updateCollectableState();
         enableContract(data);
     };
+
+    if (collectable.value.type != null) {
+        setCollectable(collectable.value);
+    }
 
     const updateFromBlockchain = function (newEvents) {
         console.log('updateFromBlockchain', newEvents);
@@ -262,33 +254,15 @@ export default function useCollectableInformation(initialCollectable = {}) {
                 events: [...events.value],
                 ends_at: endsAtNew,
             });
+            updateCollectableState();
         } else {
             updateInformation({
                 ...collectable.value,
                 events: [...events.value],
             });
+            updateCollectableState();
         }
     };
-
-    window.testBid = () => {
-        let mockBid = { ...events.value[0] };
-        mockBid.id += 0.1;
-        mockBid.value += 0.1;
-        mockBid.value_in_usd += 1000;
-        mockBid.created_at = '2021-04-15T06:00:00.000Z';
-
-        console.log('add bid', mockBid);
-        console.log(JSON.stringify(events.value));
-
-        events.value = [...events.value, mockBid];
-        console.log('my god what', events.value);
-        updateFromBlockchain(events.value);
-    };
-
-    // Update the information on load
-    if (collectable.value.type != null) {
-        setCollectable(collectable.value);
-    }
 
     // Blockchain watchers
     watch(mergedEvents, updateFromBlockchain);
@@ -330,6 +304,5 @@ export default function useCollectableInformation(initialCollectable = {}) {
         setCollectable,
         updateInformation,
         updateCollectableState,
-        lastBid,
     };
 }
