@@ -257,7 +257,7 @@ export default {
 
     const fieldValidatorSale = (value) => {
       if (value) {
-        return hasEnoughFunds() ? true : 'You do not have enough funds';
+        return hasEnoughFunds(value) ? true : 'You do not have enough funds';
       } else {
         return true;
       }
@@ -334,7 +334,7 @@ export default {
         const currentPrice = price.value;
         const amount = +parseInt(event, 10);
         const totalPrice = amount * currentPrice;
-        if (totalPrice > balance.value) {
+        if (totalPrice > parseFloat(balance.value)) {
           throw new Error('Not enough funds in wallet!');
         }
 
@@ -382,7 +382,7 @@ export default {
         }
         return valid;
       } else {
-        return funds > (props.price * parseInt(numberOfItems));
+        return funds > (props.price * parseInt(form.values.amount || 0));
       }
     }
 

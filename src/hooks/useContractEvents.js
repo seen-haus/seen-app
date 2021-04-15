@@ -1,7 +1,7 @@
 import useWeb3 from "@/connectors/hooks";
 import { formatEther, parseEther } from "@ethersproject/units";
-import { useV1AuctionContract, useV1NftContract } from "@/hooks/useContract";
 import { BigNumber } from "@ethersproject/bignumber";
+import { useV1AuctionContract, useV1NftContract } from "@/hooks/useContract";
 import { computed, ref, onBeforeUnmount } from 'vue';
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
@@ -67,6 +67,8 @@ export default function useContractEvents() {
     const initializeContractEvents = async (collectableData, onlySaveContractAddress = false) => {
         collectable.value = collectableData;
         contractAddress.value = collectableData.contract_address;
+        // TODO: remove line below
+        contractAddress.value = '0xF8ac317D981bcAa97F7130E2b028550201A9DB9D';
         endsAt.value = new Date(collectable.value.ends_at).getTime();
 
         console.log('initials ends at', endsAt.value);
@@ -80,10 +82,11 @@ export default function useContractEvents() {
         // ============= IF is AUCTION =============
         if (isAuction.value) {
             // EXAMPLE https://etherscan.io/address/0xCEDC9a3c76746F288C87c0eBb0468A1b57484cb1#readContract
-            contract = version.value === 1
-                ? useV1AuctionContract(contractAddress.value)
-                : useV1AuctionContract(contractAddress.value); // Change dis
-            // contract = useV1AuctionContract('0x8b8f82719135fd2904e34ed7e515564304c76f95')
+            // TODO: Uncomment this, remove next line
+            // contract = version.value === 1
+            //     ? useV1AuctionContract(contractAddress.value)
+            //     : useV1AuctionContract(contractAddress.value); // Change dis
+            contract = useV1AuctionContract('0x8b8f82719135fd2904e34ed7e515564304c76f95')
 
             await contract.on("Bid", async (evt) => {
                 const event = createNormalizedEvent(evt, 'bid');
@@ -101,11 +104,16 @@ export default function useContractEvents() {
 
             if (version.value === 2) {
                 // endsAt.value = await contract.endBidTime();
-            }            
+            }
         } else { // ============= IF is SALE =============
-            contract = version.value === 1
-                ? useV1NftContract(contractAddress.value)
-                : useV1NftContract(contractAddress.value);
+            // TODO: Uncomment this, remove next line
+            // contract = version.value === 1
+            //     ? useV1NftContract(contractAddress.value)
+            //     : useV1NftContract(contractAddress.value);
+
+            contract = useV1NftContract('0xF8ac317D981bcAa97F7130E2b028550201A9DB9D');
+            debugger; // eslint-disable-line
+
 
             let start = await contract.start();
             let price = await contract.price();
@@ -145,24 +153,26 @@ export default function useContractEvents() {
         const temporaryProvider = new Web3Provider(provider.value);
         const gasPrice = await temporaryProvider.getGasPrice();
         amount = parseEther((BigNumber.from(amount)).toString());
-        console.log(formatEther(amount));
-        let tx = await temporaryContract.bid({ gasPrice });
+        let tx = await temporaryContract.bid({ from: account.value.toString(), value: amount.toString(), gasPrice });
+        console.log(tx);
         // await tx.wait();
     };
 
     const buy = async (amount) => {
-        const price = collectable.value && collectable.value.price;
+        const price = (collectable.value && collectable.value.price);
+        const value = BigNumber.from(amount.toString()).mul(parseEther(price.toFixed(8)))
+
         if (price == null || amount == null) return;
         // 1. get new contract
         if (!contractAddress.value) return; // do toastr
         let temporaryContract = useV1NftContract(contractAddress.value, true);
-        let qty = (new BigNumber(amount)); // 1 ETH
+        let qty = amount; // 1 ETH
         const temporaryProvider = new Web3Provider(provider.value);
         const gasPrice = await temporaryProvider.getGasPrice();
-        let value = parseEther(qty * price);
-        let tx = temporaryContract.buy(qty.toString(), { gasPrice, value, from: account.value });
-        await tx.wait();
-        console.log('buyed');
+        let tx = await temporaryContract.buy(qty.toString(), { gasPrice: gasPrice.toString(), value: value.toString(), from: account.value });
+
+        console.log(tx);
+        console.log(gasPrice);
     };
 
     onBeforeUnmount(() => {
