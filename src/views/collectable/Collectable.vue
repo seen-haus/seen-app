@@ -110,7 +110,7 @@
               :is_sold_out="is_sold_out"
               :isCollectableActive="isCollectableActive"
               :isUpcomming="isUpcomming"
-              :nextBidPrice="nextBidPrice"
+              :nextBidPrice="minBidPrice"
           />
 
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
@@ -239,7 +239,7 @@ export default {
       isAuction,
       version,
       lastBid,
-      nextBidPrice,
+      minBidPrice,
       // Methods
       updateProgress,
       setCollectable,
@@ -381,7 +381,7 @@ export default {
       isNft,
       isAuction,
       lastBid,
-      nextBidPrice,
+      minBidPrice,
       // Methods
       updateProgress,
       viewOnEtherscan,

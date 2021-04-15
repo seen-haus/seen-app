@@ -16,19 +16,21 @@ export default function useCollectableInformation(initialCollectable = {}) {
         mergedEvents,
         lastBid,
         initializeContractEvents,
+        price,
+        minBidPrice,
+        lastEvent,
+        supply,
+        priceUSD,
+        items,
+        itemsOf
     } = useContractEvents();
 
     const collectable = ref(initialCollectable);
     const isContractEnabled = ref(false);
 
     const events = ref(collectable.value.events || []);
-    const price = ref(0.0);
-    const nextBidPrice = ref(0.0);
-    const priceUSD = ref(0.0);
     const priceUSDSold = ref(0.0);
     const progress = ref(0.0);
-    const items = ref(0);
-    const itemsOf = ref(0);
     const collectableState = ref(COLLECTABLE_STATE.WAITING);
 
     const type = computed(() => collectable.value.type);
@@ -121,40 +123,11 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
         // AUCTION
         if (isAuction.value) {
-            items.value = events.value.length;
-            itemsOf.value = data.available_qty || 0;
-
-            if (events.value.length === 0) {
-                price.value = +(data.start_bid || 0).toFixed(2);
-                nextBidPrice.value = price.value;
-                priceUSD.value = +(data.value_in_usd || converEthToUSD(price.value)).toFixed(2);
-            } else {
-                price.value = +(lastestEvent.value || 0).toFixed(2);
-                nextBidPrice.value = +((lastestEvent.value || 0) * 1.05).toFixed(2);
-                priceUSD.value = +(lastestEvent.value_in_usd || converEthToUSD(price.value)).toFixed(2);
-            }
+            console.log();
         }
 
         // SALE
         if (!isAuction.value) {
-            items.value = (events.value || [])
-                .reduce((carry, evt) => {
-                    if (evt.amount) {
-                        return parseInt(evt.amount) + carry;
-                    }
-                    if (evt.raw && typeof evt.raw == "string") {
-                        let decodedEvt = JSON.parse(evt.raw);
-                        return parseInt(decodedEvt.amount) + carry;
-                    }
-                    if (evt.value) {
-                        return parseInt(evt.value) + carry;
-                    }
-                    return carry;
-                }, 0);
-            itemsOf.value = data.available_qty || 0;
-
-            price.value = +(data.price || 0).toFixed(2);
-            priceUSD.value = +(data.value_in_usd || 0).toFixed(2);
             priceUSDSold.value = (events.value || [])
                 .reduce((carry, evt) => {
                     if (evt.value_in_usd) {
@@ -172,6 +145,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
                     }
                     return carry;
                 }, 0).toFixed(2);
+
 
             progress.value = items.value === 0 || !items.value
                 ? 0
@@ -230,8 +204,8 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const setCollectable = function (data) {
         collectable.value = data;
         updateInformation(data);
-        updateCollectableState();
         enableContract(collectable.value);
+        updateCollectableState();
     };
 
     const updateFromBlockchain = function (newEvents) {
@@ -298,7 +272,6 @@ export default function useCollectableInformation(initialCollectable = {}) {
         price,
         priceUSD,
         priceUSDSold,
-        nextBidPrice,
         items,
         itemsOf,
         progress,
@@ -324,6 +297,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         isAuction,
         isUpcomming,
         version,
+        minBidPrice,
         // Methods
         updateProgress,
         setCollectable,

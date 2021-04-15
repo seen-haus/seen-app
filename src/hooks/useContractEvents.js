@@ -15,16 +15,17 @@ export default function useContractEvents() {
     let contract = null;
 
     // Things we need
-    const isAuction = ref(false);
-    const isLive = ref(false); // AUCTION: live, SALE: supply > 0
+    const isLive = ref(false); // AUCTION: live, SALE: items > 0
     const contractAddress = ref(null);
     const mergedEvents = ref([]);
     const endsAt = ref(null); // v1. No need to extend, v2. read start + bidtime
     // Auction
     const lastBid = ref(formatEther('0')); // from blockchian value BIGNUMBER
     // Sale
-    const supply = ref(0); // from blockchain
+    const isAuction = computed(() => collectable.value.purchase_type === PURCHASE_TYPE.AUCTION);
 
+    const items = ref(0);
+    const itemsOf = ref(0);
 
     const destroySubscriptions = () => {
         if (contract) {
@@ -36,10 +37,6 @@ export default function useContractEvents() {
         destroySubscriptions();
     });
 
-    // const isAuction = computed(
-    //     () => collectable.value.purchase_type === PURCHASE_TYPE.AUCTION
-    // );
-
     const version = computed(() => {
         return collectable.value ? collectable.value.version : '1.0';
     });
@@ -48,12 +45,14 @@ export default function useContractEvents() {
 
     const price = computed(() => { // Auction: LastBid, Sale: statis price
         if (isAuction.value) {
-            return +formatEther(lastBid.value);
+            return lastEvent.value ? lastEvent.value.value : collectable.value.start_bid;
         }
         else {
-            return +collectable.value.price;
+            return collectable.value ? +collectable.value.price : 0;
         }
     });
+
+    const priceUSD = computed(() => lastEvent.value ? lastEvent.value.value_in_usd : price.value);
 
     const minBidPrice = computed(() => { // lastBid + 5%
         if (isAuction.value) {
@@ -132,23 +131,22 @@ export default function useContractEvents() {
         return event;
     };
 
-    const setInitialCollectable = (collectable) => {
-        collectable.value = collectable;
-        contractAddress.value = collectable.contract_address;
-        mergedEvents.value = collectable.events || [];
-        endsAt.value = collectable.ends_at;
+    const setInitialCollectable = (collectableData) => {
+        collectable.value = collectableData;
+        contractAddress.value = collectableData.contract_address;
+        mergedEvents.value = collectableData.events || [];
+        endsAt.value = collectableData.ends_at;
         isLive.value = false;
-        isAuction.value = collectable.purchase_type === PURCHASE_TYPE.AUCTION;
 
         if (isAuction.value) {
             if (mergedEvents.value.length > 0) {
                 lastBid.value = parseEther(mergedEvents.value[mergedEvents.value.length - 1].value + '');
             } else {
-                lastBid.value = parseEther((collectable.start_bid + '') || '0');
+                lastBid.value = parseEther((collectableData.start_bid + '') || '0');
             }
         }
         else {
-            supply.value = (collectable.available_qty || 0) - (mergedEvents.value || [])
+            items.value = (collectableData.available_qty || 0) - (mergedEvents.value || [])
                 .reduce((carry, evt) => {
                     if (evt.amount) {
                         return parseInt(evt.amount) + carry;
@@ -162,14 +160,13 @@ export default function useContractEvents() {
                     }
                     return carry;
                 }, 0);
+            itemsOf.value = collectableData.available_qty || 0;
         }
     };
 
     const initializeContractEvents = async (collectableData, onlySaveContractAddress = false) => {
         setInitialCollectable(collectableData);
 
-
-        console.log('init', endsAt.value);
         const limit = Date.now() - 24 * 60 * 60 * 1000;
         const isContractTooOld = (limit > new Date(endsAt.value).getTime());
 
@@ -241,25 +238,25 @@ export default function useContractEvents() {
                 // useV1TangibleContract
                 contract = useV1NftContract(contractAddress.value);
                 let start = await contract.start();
-                let price = await contract.price();
+                let contractPrice = await contract.price();
                 let currentSupply = await contract.supply();
                 //
                 console.log("START TIME ", start);
-                console.log("PRICE ", price);
+                console.log("PRICE ", contractPrice);
                 console.log("SUPPLY LEFT ", currentSupply);
 
-                supply.value = +currentSupply.toString();
-                isLive.value = supply.value > 0;
+                items.value = +currentSupply.toString();
+                isLive.value = items.value > 0;
 
-                console.log("CHECKING", supply.value);
+                console.log("CHECKING", items.value);
 
                 await contract.on("Buy", async (evt) => {
-                    // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
+                    // Handle bid event: check ITEMS LEFT, add evt to Events (same decoding process as auction)
                     const event = await createNormalizedEvent(evt, 'buy');
                     mergeEvents(event);
                     currentSupply = await contract.supply();
-                    supply.value = +currentSupply.toString();
-                    isLive.value = supply.value > 0;
+                    items.value = +currentSupply.toString();
+                    isLive.value = items.value > 0;
                 });
 
                 const buys = await contract.queryFilter("Buy");
@@ -286,5 +283,11 @@ export default function useContractEvents() {
         initializeContractEvents,
         bid,
         buy,
+        price,
+        minBidPrice,
+        lastEvent,
+        priceUSD,
+        items,
+        itemsOf,
     };
 }

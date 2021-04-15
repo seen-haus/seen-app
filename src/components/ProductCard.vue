@@ -50,7 +50,7 @@
       <div class="flex-1"></div>
 
       <progress-bar
-          :inversed="isAuction"
+          :inversed="true"
           :progress="progress"
           :colorClass="
           isCollectableActive
@@ -91,7 +91,7 @@
           >
             {{
               isCollectableActive
-                  ? `${items} out of ${itemsOf}`
+                  ? `${itemsOf - items} out of ${itemsOf}`
                   : "Sold Out"
             }}
           </div>
