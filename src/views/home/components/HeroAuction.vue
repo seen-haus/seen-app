@@ -56,7 +56,7 @@
 
         <div class="auction-action flex items-center pt-14">
           <button class="button light mr-7" @click="navigateToCollectable">
-            View Drop <i class="fas fa-arrow-right ml-3 icon-right"></i>
+            {{ isUpcomming && !collectable.contract_address ? "SOON" : (isAuction ? "View Auction" : "View Drop") }} <i class="fas fa-arrow-right ml-3 icon-right"></i>
           </button>
 
           <price-display
@@ -207,7 +207,7 @@ export default {
     };
 
     const navigateToCollectable = function () {
-      if (!isCollectableActive) return;
+      if (!isCollectableActive || !props.collectable.contract_address) return;
       router.push({
         name: "collectableAuction",
         params: {contractAddress: props.collectable.contract_address},
