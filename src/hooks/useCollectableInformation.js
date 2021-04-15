@@ -236,12 +236,11 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const updateFromBlockchain = function (newEvents) {
         console.log('updateFromBlockchain', newEvents);
         events.value = newEvents;
-
         let endsAtNew = endsAt.value;
         // Update price and item count
         if (isAuction.value) {
             if (updatedEndsAt.value != null) {
-                endsAtNew = new Date(updatedEndsAt).toString();
+                endsAtNew = new Date(updatedEndsAt.value).toString();
             }
         }
 
