@@ -13,7 +13,7 @@
         The quality and attention to detail of my hoodie is crazy good. Love it!
       </div>
       <div class="flex pb-3 self-start pl-5">
-        <img src=http://placekitten.com/60/60 alt="" class="rounded-full
+        <img src=https://placekitten.com/60/60 alt="" class="rounded-full
         border-white border-3">
         <div class="flex flex-col justify-center items-start ml-5">
           <div class="name font-semibold">
