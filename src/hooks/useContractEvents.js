@@ -159,7 +159,7 @@ export default function useContractEvents() {
                 toast.add({
                     severity: 'success',
                     summary: 'Success',
-                    detail: 'Bid accepted.',
+                    detail: 'Your bid was accepted.',
                     life: 3000
                 });
                 return true;

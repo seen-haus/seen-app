@@ -44,6 +44,7 @@
               <router-link :to="{ name: 'about'}" class="block">
                 About Us
               </router-link>
+              <a href="https://seen-haus.medium.com" class="block" target="_blank">Blog</a>
               <router-link :to="{ name: 'faq'}" class="block">
                 FAQs
               </router-link>
@@ -83,16 +84,16 @@
       <div class="flex justify-between">
         <p class="text-grey-9 text-sm">© Seen.haus 2021, All rights reserved.</p>
         <div>
-           <a href="#"
-            target="_blank"
-            class="text-grey-9 text-sm mr-4 inline-block">
-            Privacy Policy
-          </a>
-          <a href="#"
-            target="_blank"
-            class="text-grey-9 text-sm inline-block">
-            Terms of Use
-          </a>
+<!--           <a href="#"-->
+<!--            target="_blank"-->
+<!--            class="text-grey-9 text-sm mr-4 inline-block">-->
+<!--            Privacy Policy-->
+<!--          </a>-->
+<!--          <a href="#"-->
+<!--            target="_blank"-->
+<!--            class="text-grey-9 text-sm inline-block">-->
+<!--            Terms of Use-->
+<!--          </a>-->
         </div>
       </div>
     </container>

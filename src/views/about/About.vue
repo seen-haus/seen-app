@@ -39,7 +39,7 @@
         />
 
         <div class="flex flex-col items-strech justify-center">
-          <div class="text-4xl font-title font-bold mb-6">Thrustworthiness</div>
+          <div class="text-4xl font-title font-bold mb-6">Trustworthiness</div>
           <div class="description text-gray-700 text-lg">
             We have created a trustworthy and on-trend exchange platform for
             buyers and sellers of limited edition physical and digital

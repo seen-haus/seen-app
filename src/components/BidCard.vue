@@ -422,7 +422,7 @@ export default {
     const viewOnOpenSea = () => {
       let nftAddress = collectableData.value.nft_contract_address
       let nftTokenId = collectableData.value.nft_token_id
-      window.location = `https://opensea.io/assets/${nftAddress}/${nftTokenId}`;
+      window.open(`https://opensea.io/assets/${nftAddress}/${nftTokenId}`, '_blank').focus()
     }
 
     const isNumber = (value) => {
