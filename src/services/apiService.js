@@ -50,6 +50,9 @@ export const UserService = {
     update(walletAddress, payload) {
         return ApiService.put('users/' + walletAddress, payload);
     },
+    getUsernames(payload) {
+        return ApiService.post(`users/usernames/`, payload);
+    },
 };
 
 export const LeaderboardService = {
