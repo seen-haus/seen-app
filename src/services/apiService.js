@@ -74,6 +74,15 @@ export const CollectablesService = {
     },
 };
 
+export const ClaimsService = {
+    show(contractAddress) {
+        return ApiService.get(`claims/${contractAddress}`);
+    },
+    claim(contractAddress, payload) {
+        return ApiService.post(`claims/${contractAddress}/claim`, payload);
+    }
+}
+
 export const SpotlightService = {
     submit(payload) {
         return ApiService.post('spotlight', payload);

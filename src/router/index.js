@@ -23,6 +23,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "collectableDrops" */ '../views/collectable/Collectable.vue')
     },
     {
+        path: '/claims/:contractAddress',
+        name: 'claims',
+        component: () => import(/* webpackChunkName: "claims" */ '../views/claim/Claim.vue')
+    },
+    {
         path: '/drops',
         name: 'drops',
         component: () => import(/* webpackChunkName: "drops" */ '../views/drops/Drops.vue')
