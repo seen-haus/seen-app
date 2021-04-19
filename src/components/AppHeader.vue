@@ -7,7 +7,7 @@
         <div class="flex items-center flex-wrap justify-between">
           <router-link to="/">
             <div id="logo" class="flex items-center" style="width:100%; max-width: 208px">
-              <img src="@/assets/images/logo--black.png"  class="mr-4" alt="">
+              <img src="@/assets/images/seen-web.png"  class="mr-4" alt="">
             </div>
           </router-link>
           <div class="items-center hidden lg:flex lg:flex-grow justify-between">
