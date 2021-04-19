@@ -8,7 +8,7 @@
 
     <div>
       <div
-          class="font-title text-2.5xl p-6 max-w-screen-sm italic sha"
+          class="font-title text-lg md:text-2.5xl p-6 max-w-screen-sm italic sha"
       >
         {{ text }}
       </div>

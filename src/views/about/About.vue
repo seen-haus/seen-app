@@ -1,6 +1,6 @@
 <template>
   <div>
-    <container class="section-featured-auctions pb-36">
+    <container class="section-featured-auctions pb-6 md:pb-36">
       <div class="flex items-center py-6 flex-col lg:flex-row">
         <fenced-title
           class="flex-grow mr-0 mb-2 self-stretch"
