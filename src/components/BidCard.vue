@@ -280,7 +280,6 @@ export default {
         initializeContractEvents(collectableData.value, true)
       }
     })
-
     const isWinnerButtonShown = computed(() => {
       if (
           typeof account.value === "string" &&
@@ -315,9 +314,9 @@ export default {
           amount = parseInt(saleField.value, 10);
           if (isNaN(amount)) throw new Error("invalid number");
 
-          if (amount > props.items_of - props.items) {
-            throw new Error("not enough items");
-          }
+          // if (amount > props.items_of - props.items) {
+          //   throw new Error("not enough items");
+          // }
           onBuy(saleField.value);
 
         }
@@ -339,9 +338,7 @@ export default {
         const currentPrice = price.value;
         const amount = +parseInt(event, 10);
         const totalPrice = amount * currentPrice;
-        if (totalPrice > parseFloat(balance.value)) {
-          throw new Error('Not enough funds in wallet!');
-        }
+
         isSubmitting.value = true
         await buy(amount)
             .then((response) => {
@@ -360,12 +357,8 @@ export default {
     };
 
     const onBid = async (event) => {
-      if (!balance.value) return;
       try {
         const amount = +parseFloat(event, 10);
-        if (amount > balance.value) {
-          throw new Error('Not enough funds in wallet!');
-        }
         isSubmitting.value = true
         await bid(amount)
             .then((response) => {

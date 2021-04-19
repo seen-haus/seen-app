@@ -106,10 +106,10 @@
           <p>You can purchase the seen.haus token on SushiSwap here:</p>
           <p>
             <a
-              href="https://sushiswap.fi/pair/0xc5fa164247d2f8d68804139457146efbde8370f6"
+              href="https://app.sushi.com/pair/0xc5fa164247d2f8d68804139457146efbde8370f6"
               target="_blank"
               class="underline"
-              >https://sushiswap.fi/pair/0xc5fa164247d2f8d68804139457146efbde8370f6</a
+              >https://app.sushi.com/pair/0xc5fa164247d2f8d68804139457146efbde8370f6</a
             >
           </p>
         </collapsible-tile>

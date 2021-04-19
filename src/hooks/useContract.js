@@ -3,6 +3,7 @@ import {getContract} from "@/services/utils"
 import ERC20_ABI from "@/constants/abis/erc20.json"
 import TANGIBLE_V1_ABI from "@/constants/abis/tangibleABI.json"
 import ENGLISH_AUCTION_V1_ABI from "@/constants/abis/englishAuctionABI.json"
+import ENGLISH_AUCTION_V2_ABI from "@/constants/abis/englishAuctionV2ABI.json"
 import NFT_SALE_V1_ABI from "@/constants/abis/NFTSaleABI.json"
 import XSEEN_ABI from "@/constants/abis/xseenABI.json"
 import {Web3Provider, WebSocketProvider} from "@ethersproject/providers"
@@ -27,6 +28,10 @@ export function useTokenContract(tokenAddress, withSignerIfPossible) {
 
 export function useV1AuctionContract(contract, withSignerIfPossible) {
     return useContract(contract, ENGLISH_AUCTION_V1_ABI, withSignerIfPossible)
+}
+
+export function useV2AuctionContract(contract, withSignerIfPossible) {
+    return useContract(contract, ENGLISH_AUCTION_V2_ABI, withSignerIfPossible)
 }
 
 export function useV1NftContract(contract, withSignerIfPossible) {

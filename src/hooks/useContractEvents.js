@@ -1,7 +1,7 @@
 import useWeb3 from "@/connectors/hooks";
 import {formatEther, parseEther} from "@ethersproject/units";
 import {BigNumber} from "@ethersproject/bignumber";
-import {useV1AuctionContract, useV1NftContract} from "@/hooks/useContract";
+import {useV1AuctionContract, useV1NftContract, useV2AuctionContract} from "@/hooks/useContract";
 import {computed, ref, onBeforeUnmount} from 'vue';
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
@@ -83,13 +83,22 @@ export default function useContractEvents() {
         if (isAuction.value) {
             contract = version.value === 1
                 ? useV1AuctionContract(contractAddress.value)
-                : useV1AuctionContract(contractAddress.value);
+                : useV2AuctionContract(contractAddress.value);
 
+            if (version.value === 2) {
+                let endTime = await contract.endTime()
+                collectable.value.ends_at = new Date(parseInt(endTime) * 1000)
+                endsAt.value = new Date(parseInt(endTime) * 1000)
+                console.log("UPDATED ===>>",  endsAt.value)
+            }
             await contract.on("Bid", async (fromAddress, amount, evt) => {
                 console.log(fromAddress, amount, evt)
                 const event = await createNormalizedEvent(evt, 'bid');
                 if (version.value === 2) {
-                    // endsAt.value = await contract.endBidTime();
+                    let endTime = await contract.endTime()
+                    console.log(endTime)
+                    collectable.value.ends_at = parseInt(endTime) * 1000
+                    endsAt.value = new Date(parseInt(endTime) * 1000)
                 }
                 mergeEvents(event);
             });
@@ -100,9 +109,6 @@ export default function useContractEvents() {
                 mergeEvents(event);
             });
 
-            if (version.value === 2) {
-                // endsAt.value = await contract.endBidTime();
-            }
         } else { // ============= IF is SALE =============
             contract = version.value === 1
                 ? useV1NftContract(contractAddress.value)
@@ -119,7 +125,7 @@ export default function useContractEvents() {
 
             await contract.on("Buy", async (fromAddress, amount, evt) => {
                 // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
-                console.log(fromAddress, amount.toString(), evt)
+                // console.log(fromAddress, amount.toString(), evt)
                 const event = await createNormalizedEvent(evt, 'buy');
                 mergeEvents(event);
                 supply.value = +(await contract.supply()).toString();
@@ -140,12 +146,12 @@ export default function useContractEvents() {
 
 
     const bid = async (amount) => {
+        console.log(amount, "BUT")
         if (amount == null) return;
-
         if (!contractAddress.value) return;
-         const temporaryContract  = version.value === 1
-                ? useV1AuctionContract(contractAddress.value, true)
-                : useV1AuctionContract(contractAddress.value, true)
+        const temporaryContract = version.value === 1
+            ? useV1AuctionContract(contractAddress.value, true)
+            : useV2AuctionContract(contractAddress.value, true)
 
         const temporaryProvider = new Web3Provider(provider.value);
         const gasPrice = await temporaryProvider.getGasPrice().catch((e) => {

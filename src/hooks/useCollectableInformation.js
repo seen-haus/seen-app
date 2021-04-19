@@ -209,8 +209,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
         const now = Date.now();
         const start = new Date(startsAt.value).getTime() - (15 * 60 * 1000);
-        const end = new Date(endsAt.value).getTime();
-
+        let endDate = new Date(endsAt.value)
+        endDate.setHours(endDate.getHours() + 6)
+        const end = endDate.getTime();
         if (now >= start && now < end && !is_sold_out.value) {
             console.log('contract initialized');
             initializeContractEvents(collectable.value);
@@ -234,7 +235,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     }
 
     const updateFromBlockchain = function (newEvents) {
-        console.log('updateFromBlockchain', newEvents);
+        // console.log('updateFromBlockchain', newEvents);
         events.value = newEvents;
         let endsAtNew = endsAt.value;
         // Update price and item count

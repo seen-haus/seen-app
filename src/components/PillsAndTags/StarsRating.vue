@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     ratingPercent: function () {
-      return (this.rating || 0.5) * 100 + "%";
+      return (this.rating || 1) * 100 + "%";
     },
   },
 };
