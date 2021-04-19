@@ -6,6 +6,7 @@ import { formatEther, parseEther } from "@ethersproject/units";
 
 import useContractEvents from "@/hooks/useContractEvents";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
+import orderBy from "lodash/orderBy"
 
 import {
     COLLECTABLE_TYPE,
@@ -42,8 +43,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
         if (found) {
             return found.url;
         }
-
-        return media.value[0].url || '';
+        let orderedMedia = orderBy(media.value, 'position')
+        console.log(orderedMedia)
+        return orderedMedia[0].url || '';
     });
     const gallerySortedMedia = computed(() => collectable.value.mediaSorted);
     const artist = computed(() => collectable.value.artist);
