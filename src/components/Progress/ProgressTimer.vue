@@ -1,19 +1,19 @@
 <template>
   <div>
     <span v-if="label != null" class="text-gray-400 mr-2">{{ labelText }}</span
-    ><span class="font-semibold">{{value}}</span>
+    ><span class="font-semibold">{{ value }}</span>
   </div>
 </template>
 
 
 <script>
 import useTimer, {TIMER_STATE} from "@/hooks/useTimer.js";
-import { computed, watch, ref, toRefs } from 'vue';
+import {computed, watch, ref, toRefs} from 'vue';
 
 export default {
   name: "ProgressTimer",
   props: {
-    isAuction: { 
+    isAuction: {
       type: Boolean,
       default: true
     },
@@ -33,14 +33,26 @@ export default {
   // TODO timer logic
   setup(props, ctx) {
     const timerState = ref(TIMER_STATE.WAITING);
-    const { startTimer, endTimer, addSeconds, percentage, value } = useTimer(timerStateChange);
+    const {startTimer, endTimer, addSeconds, percentage, value, ended} = useTimer(timerStateChange);
 
     watch(percentage, () => ctx.emit('onProgress', percentage.value));
     watch(timerState, () => ctx.emit('onTimerStateChange', timerState.value));
     watch(toRefs(props).endDate, (v, p) => {
       if (v !== p) {
-        const diff = new Date(v).getTime() - new Date(p).getTime();
-        addSeconds(diff / 1000);
+        let diff = new Date(v).getTime() - new Date(p).getTime();
+        addSeconds((diff) / 1000);
+        // Hack if server timestamp isn't up to date
+        if (ended.value && new Date() < new Date(p)) {
+          setTimeout(() => {
+            console.log(new Date() < new Date(p), ended.value, new Date(p))
+            if (ended.value && new Date() < new Date(p)) {
+              startTimer({
+                startDate: props.startDate,
+                endDate: props.endDate,
+              });
+            }
+          }, 4000)
+        }
       }
     });
 

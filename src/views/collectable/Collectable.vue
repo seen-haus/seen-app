@@ -245,18 +245,6 @@ export default {
     } = useCollectableInformation();
 
     const currentEndsAt = computed(() => {
-      // if (isAuction.value) {
-      //   const extension = 5 * 60 * 1000;
-      //   const orig = new Date(endsAt.value).getTime();
-      //   if (!lastBid.value) {
-      //     return endsAt.value;
-      //   }
-      //   const bid = new Date(lastBid.value.time).getTime();
-      //   if ((orig - bid) < extension) {
-      //     return new Date(bid + extension);
-      //   }
-      // }
-
       return endsAt.value;
     });
 

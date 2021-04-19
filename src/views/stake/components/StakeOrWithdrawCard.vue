@@ -28,17 +28,17 @@
       </div>
       <button class="button primary w-full" @click="openWalletModal" v-if="!account">Connect Wallet
       </button>
-      <button class="button primary w-full" :class="{'cursor-wait': state.approving}" @click="approve"
+      <button class="button primary w-full" :class="{'cursor-wait disabled opacity-50': state.approving}" @click="approve"
               v-if="account && typeOf === 'stake' && !state.isAllowed" :disabled="state.approving">
         {{ state.approving ? "Approving..." : "Approve" }}
       </button>
       <button class="button primary w-full" @click="stake"
-              v-if="account && typeOf === 'stake' && state.isAllowed" :class="{'cursor-wait': state.depositing}">
+              v-if="account && typeOf === 'stake' && state.isAllowed" :class="{'cursor-wait disabled opacity-50': state.depositing}">
         {{ state.depositing ? "Depositing..." : "Stake" }}
       </button>
       <button class="button primary w-full" @click="withdraw"
               v-if="account && typeOf === 'withdraw'"
-              :class="{'cursor-wait': state.withdrawing}"> {{ state.withdrawing ? "Withdrawing..." : "Withdraw" }}
+              :class="{'cursor-wait disabled opacity-50': state.withdrawing}"> {{ state.withdrawing ? "Withdrawing..." : "Withdraw" }}
       </button>
     </div>
 

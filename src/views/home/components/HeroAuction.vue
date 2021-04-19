@@ -95,7 +95,7 @@
                 class="text-black text-sm mt-2"
                 :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
                 :startDate="startsAt"
-                :endDate="endsAt"
+                :endDate="currentEndsAt"
                 :isAuction="isAuction"
                 @onProgress="updateProgress"
             />
@@ -108,7 +108,7 @@
                 class="text-black text-sm mt-2"
                 :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
                 :startDate="startsAt"
-                :endDate="endsAt"
+                :endDate="currentEndsAt"
                 :isAuction="isAuction"
                 @onTimerStateChange="updateState"
             />
@@ -134,7 +134,7 @@
 
 
 <script>
-import {ref} from "vue";
+import {computed, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 
 import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
@@ -218,6 +218,13 @@ export default {
       updateProgress(progress.value);
     }
 
+    const currentEndsAt = computed(() => {
+      if (endsAt.value && typeof endsAt.value == "string") {
+        return new Date(endsAt.value)
+      }
+      return endsAt.value;
+    });
+
     return {
       timerRef,
       collectableState,
@@ -235,6 +242,7 @@ export default {
       title,
       startsAt,
       endsAt,
+      currentEndsAt,
       liveStatus,
       is_sold_out,
       edition,
