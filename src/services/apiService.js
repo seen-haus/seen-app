@@ -66,8 +66,8 @@ export const CollectablesService = {
         // serialize
         return ApiService.query('collectables', {...pagination, ...filter});
     },
-    show(contractAddress) {
-        return ApiService.get(`collectables/${contractAddress}`);
+    show(slug) {
+        return ApiService.get(`collectables/${slug}`);
     },
     winner(contractAddress, payload) {
         return ApiService.post(`collectables/${contractAddress}/winner`, payload);

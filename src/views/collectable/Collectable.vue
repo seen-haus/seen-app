@@ -287,7 +287,8 @@ export default {
     };
 
     const viewOnEtherscan = () => {
-      let url = getEtherscanLink(1, route.params["contractAddress"], "address")
+      const address = state.collectable.contract_address;
+      let url = getEtherscanLink(1, address, "address");
       window.open(url, '_blank').focus()
     }
     const viewOnOpenSea = () => {
@@ -299,16 +300,14 @@ export default {
 
     (async function loadCollectable() {
       state.loading = true;
-      const contractAddress =
-          route.params["contractAddress"] ||
-          "0xeFb2de8e3464b5F33840d12d7f0259831bb381A7";
-      const {data} = await CollectablesService.show(contractAddress);
+      const slug = route.params["slug"];
+      const {data} = await CollectablesService.show(slug);
 
       // data.events.reverse(); // Right order
       // state.buyers.list = data.events;
       state.loading = false;
-      state.contractAddress = contractAddress;
       state.collectable = data;
+      state.contractAddress = data.contract_address;
 
       setCollectable(data);
       updateMeta();
