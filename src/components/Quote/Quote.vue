@@ -14,7 +14,7 @@
       </div>
       <div class="flex pb-3 self-start pl-5">
         <img :src="avatar" alt="" class="rounded-full
-        border-white border-3 avatar">
+        border-white border-3 avatar flex-shrink-0">
         <div class="flex flex-col justify-center items-start ml-5">
           <div class="name font-semibold">
             {{ author }},
