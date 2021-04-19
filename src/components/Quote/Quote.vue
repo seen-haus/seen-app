@@ -52,7 +52,7 @@ export default {
 
   .avatar {
     width: 60px;
-    height: auto;
+    height: 60px;
   }
 }
 </style>

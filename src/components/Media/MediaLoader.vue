@@ -43,6 +43,7 @@
         :src="src"
         :autoplay="autoplay"
         :muted="muted"
+        playsinline="playsinline"
         :loop="loop"
       ></video>
 

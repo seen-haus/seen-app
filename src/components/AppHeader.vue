@@ -3,28 +3,28 @@
     <top-header-bar/>
     <div :class="headerClasses">
       <container>
-      <header>
-        <div class="flex items-center flex-wrap justify-between">
-          <router-link to="/">
-            <div id="logo" class="flex items-center" style="width:100%; max-width: 208px">
-              <img src="@/assets/images/seen-web.png"  class="mr-4" alt="">
+        <header>
+          <div class="flex items-center flex-wrap justify-between">
+            <router-link to="/">
+              <div id="logo" class="flex items-center" style="width:100%; max-width: 208px">
+                <img src="@/assets/images/seen-web.png" class="mr-4" alt="">
+              </div>
+            </router-link>
+            <div class="items-center hidden lg:flex lg:flex-grow justify-between">
+              <desktop-menu class="flex justify-center flex-1"/>
+              <wallet-button/>
             </div>
-          </router-link>
-          <div class="items-center hidden lg:flex lg:flex-grow justify-between">
-            <desktop-menu class="flex justify-center flex-1"/>
-            <wallet-button/>
+            <nav class="lg:hidden">
+              <button
+                  @click="openMobileMenu"
+                  class="cursor-pointer button primary"
+              >
+                menu
+              </button>
+            </nav>
           </div>
-          <nav class="lg:hidden">
-            <button
-              @click="openMobileMenu"
-              class="cursor-pointer button primary"
-            >
-              menu
-            </button>
-          </nav>
-        </div>
-      </header>
-    </container>
+        </header>
+      </container>
     </div>
   </div>
 </template>
@@ -51,6 +51,17 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+#logo img {
+  width: 100%;
+  max-width: 180px
+}
+
+@screen lg {
+  #logo img {
+    width: 100%;
+    max-width: 208px
+  }
+}
 
 </style>
