@@ -18,6 +18,7 @@
               aspectRatio="100%"
               :autoplay="isActive"
               :muted="true"
+              :loop="true"
               class="overflow-hidden rounded-lg flex-1 media-loader-active"
             />
             <p class="w-full text-grey-9 text-center mt-4 text-sm">{{mediaResource.type === 'video' || mediaResource.type.includes("mp4") || mediaResource.type.includes("video") ? 'Click to Expand' : '&nbsp;'}}</p>
