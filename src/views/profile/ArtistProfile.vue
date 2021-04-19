@@ -37,7 +37,7 @@
           <product-card
             v-if="collectable != null"
             :collectable="collectable"
-            @click="navigateToCollectable(collectable.contract_address)"
+            @click="navigateToCollectable(collectable.slug)"
           />
           <div
             v-else
@@ -97,10 +97,10 @@ export default {
     const listOfCollectables = computed(
       () => paginatedCollectables.listOfCollectables.value
     );
-    const navigateToCollectable = function (address) {
+    const navigateToCollectable = function (slug) {
       router.push({
         name: "collectableAuction",
-        params: { contractAddress: address },
+        params: { slug: slug },
       });
     };
 

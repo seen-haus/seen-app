@@ -5,11 +5,12 @@
         :breakpoints="breakpoints"
         :loop="true"
         :height="600"
+        :centeredSlides="true"
         :pagination="{ clickable: true, el: '.swiper-pagination' }"
         :navigation="{nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev'}"
       >
         <swiper-slide v-for="mediaResource in mediaResources" :key="mediaResource.id"  v-slot="{ isNext }">
-          <div :class="'relative ' + (isNext ? 'active-slide' : '')">
+          <div class="relative">
             <media-loader
               @click="openModal(mediaResource.type, mediaResource.url)"
               ref="mediaRef"

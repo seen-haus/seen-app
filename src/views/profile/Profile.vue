@@ -72,7 +72,7 @@
                 v-else
                 :collectable="collectable.data"
                 @click="
-                  navigateToCollectable(collectable.data.contract_address)
+                  navigateToCollectable(collectable.data.slug)
                 "
               />
             </template>
@@ -202,10 +202,10 @@ export default {
       collection.loadMore();
     };
 
-    const navigateToCollectable = function (address) {
+    const navigateToCollectable = function (slug) {
       router.push({
         name: "collectableAuction",
-        params: { contractAddress: address },
+        params: { slug: slug },
       });
     };
 

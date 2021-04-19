@@ -47,7 +47,7 @@
       </div>
     </container>
 
-    <hero-gallery :mediaResources="gallerySortedMedia"/>
+    <hero-gallery :mediaResources="media"/>
 
     <container>
       <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-12 md:mt-0">

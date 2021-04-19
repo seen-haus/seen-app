@@ -3,7 +3,7 @@
     <container class="py-15 flex flex-col lg:flex-row">
       <div
           class="media relative flex items-center flex-1 cursor-pointer"
-          @click="navigateToCollectable(collectable.contract_address)"
+          @click="navigateToCollectable(collectable.slug)"
       >
         <media-loader
             :src="firstMedia"
@@ -207,10 +207,10 @@ export default {
     };
 
     const navigateToCollectable = function () {
-      if (!isCollectableActive || !props.collectable.contract_address) return;
+      if (!isCollectableActive || !props.collectable.slug) return;
       router.push({
         name: "collectableAuction",
-        params: {contractAddress: props.collectable.contract_address},
+        params: {slug: props.collectable.slug},
       });
     };
 
