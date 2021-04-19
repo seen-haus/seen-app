@@ -9,14 +9,14 @@
         :pagination="{ clickable: true, el: '.swiper-pagination' }"
         :navigation="{nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev'}"
       >
-        <swiper-slide v-for="mediaResource in mediaResources" :key="mediaResource.id"  v-slot="{ isNext }">
+        <swiper-slide v-for="mediaResource in mediaResources" :key="mediaResource.id"  v-slot="{ isActive }">
           <div class="relative">
             <media-loader
               @click="openModal(mediaResource.type, mediaResource.url)"
               ref="mediaRef"
               :src="mediaResource.url"
               aspectRatio="100%"
-              :autoplay="isNext"
+              :autoplay="isActive"
               :muted="true"
               class="overflow-hidden rounded-lg flex-1 media-loader-active"
             />
