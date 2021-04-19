@@ -43,7 +43,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         if (found) {
             return found.url;
         }
-        let orderedMedia = orderBy(media.value, 'position')
+        let orderedMedia = orderBy(media.value, 'position', "asc")
         console.log(orderedMedia)
         return orderedMedia[0].url || '';
     });
