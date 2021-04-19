@@ -1,7 +1,7 @@
 <template>
   <div class="py-2.5 bg-black text-white">
     <container>
-      <div class="flex justify-between flex-wrap">
+      <div class="flex justify-center md:justify-between flex-wrap">
         <div class="flex align-center py-1">
           <a
             href="https://app.sushi.com/pair/0xc5fa164247d2f8d68804139457146efbde8370f6"

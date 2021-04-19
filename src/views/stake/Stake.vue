@@ -46,10 +46,10 @@
 
         <div class="flex flex-col items-center xl:items-start mb-6 md:mb-0">
           <div class="text-sm text-gray-400 font-semibold uppercase mb-1">
-            Your fees earned <i class="fas fa-info-circle" v-tooltip="{text: 'Your staking fees earned in ETH'}"></i>
+            Your staked seen <i class="fas fa-info-circle" v-tooltip="{text: 'Your staking fees earned in ETH'}"></i>
           </div>
           <div class="text-3xl font-black flex">
-            {{ formatCrypto(feesEarned, true) }} ETH
+            {{ formatCrypto(feesEarned, true) }} SEEN
           </div>
         </div>
 
@@ -195,7 +195,7 @@ export default {
       if (!state.shareOfThePool) {
         return 0;
       }
-      const contractEthBalance = new BigNumber(state.contractEthBalance)
+      const contractEthBalance = new BigNumber(state.totalStaked)
           .multipliedBy(state.shareOfThePool
               .dividedBy(100))
       return contractEthBalance;
