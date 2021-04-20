@@ -1,12 +1,12 @@
 import { ref, computed, watch, onBeforeUnmount } from 'vue';
 
-import useWeb3 from "@/connectors/hooks"
+import useWeb3 from "@/connectors/hooks";
 import { BigNumber } from "@ethersproject/bignumber";
 import { formatEther, parseEther } from "@ethersproject/units";
 
 import useContractEvents from "@/hooks/useContractEvents";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
-import orderBy from "lodash/orderBy"
+import orderBy from "lodash/orderBy";
 
 import {
     COLLECTABLE_TYPE,
@@ -44,7 +44,6 @@ export default function useCollectableInformation(initialCollectable = {}) {
             return found.url;
         }
         let orderedMedia = orderBy(media.value, 'position', "asc")
-        console.log(orderedMedia)
         return orderedMedia[0].url || '';
     });
     const gallerySortedMedia = computed(() => collectable.value.mediaSorted);
@@ -59,6 +58,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
             return collectableState.value === COLLECTABLE_STATE.OUT_OF_STOCK;
         }
     );
+    const is_closed = computed(() => {
+        return collectable.value ? collectable.value.is_closed : false;
+    });
     const isCollectableActive = computed(() => {
         return (
             collectableState.value === COLLECTABLE_STATE.WAITING ||
@@ -78,6 +80,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
             type.value === COLLECTABLE_TYPE.TANGIBLE_NFT
     );
     const liveStatus = computed(() => {
+        if (collectableState.value === COLLECTABLE_STATE.CLOSED) return "closed";
         if (collectableState.value === COLLECTABLE_STATE.DONE) return "ended";
         if (collectableState.value === COLLECTABLE_STATE.WAITING)
             return "coming soon";
@@ -134,16 +137,16 @@ export default function useCollectableInformation(initialCollectable = {}) {
             items.value = supply.value
                 ? supply.value
                 : itemsOf.value - (events.value || [])
-                .reduce((carry, evt) => {
-                    if (evt.amount) {
-                        return parseInt(evt.amount) + carry;
-                    }
-                    if (evt.raw && typeof evt.raw == "string") {
-                        let decodedEvt = JSON.parse(evt.raw);
-                        return parseInt(decodedEvt.amount) + carry;
-                    }
-                    return carry;
-                }, 0);
+                    .reduce((carry, evt) => {
+                        if (evt.amount) {
+                            return parseInt(evt.amount) + carry;
+                        }
+                        if (evt.raw && typeof evt.raw == "string") {
+                            let decodedEvt = JSON.parse(evt.raw);
+                            return parseInt(decodedEvt.amount) + carry;
+                        }
+                        return carry;
+                    }, 0);
 
             price.value = +(data.price || 0).toFixed(2);
             priceUSD.value = +(data.value_in_usd || 0).toFixed(2);
@@ -176,8 +179,12 @@ export default function useCollectableInformation(initialCollectable = {}) {
         const start = new Date(startsAt.value);
         const end = new Date(endsAt.value);
 
+        if (is_closed.value) {
+            collectableState.value = COLLECTABLE_STATE.CLOSED;
+            return;
+        }
+
         if (now < start) {
-            console.log('bam');
             collectableState.value = COLLECTABLE_STATE.WAITING;
             return;
         }
@@ -208,8 +215,8 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
         const now = Date.now();
         const start = new Date(startsAt.value).getTime() - (15 * 60 * 1000);
-        let endDate = new Date(endsAt.value)
-        endDate.setHours(endDate.getHours() + 6)
+        let endDate = new Date(endsAt.value);
+        endDate.setHours(endDate.getHours() + 6);
         const end = endDate.getTime();
         if (now >= start && now < end && !is_sold_out.value) {
             console.log('contract initialized');
@@ -218,7 +225,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
             timeoutHandler = setTimeout(() => {
                 console.log('starting soon');
                 initializeContractEvents(collectable.value);
-            }, start - now)
+            }, start - now);
         }
     };
 
@@ -260,7 +267,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
             clearTimeout(timeoutHandler);
             timeoutHandler = null;
         }
-    })
+    });
 
     return {
         collectableState,
@@ -287,6 +294,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         endsAt,
         liveStatus,
         is_sold_out,
+        is_closed,
         edition,
         edition_of,
         isTangible,

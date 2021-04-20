@@ -13,6 +13,7 @@ export const COLLECTABLE_TYPE = Object.freeze({
 
 
 export const COLLECTABLE_STATE = Object.freeze({
+    CLOSED: 'CLOSED',
     WAITING: 'WAITING',
     IN_PROGRESS: 'IN_PROGRESS',
     OUT_OF_STOCK: 'OUT_OF_STOCK',
