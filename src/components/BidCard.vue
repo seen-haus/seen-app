@@ -5,7 +5,7 @@
           v-if="!isCollectableActive"
           class="flex justify-start items-center text-gray-400 text-xs font-bold"
       >
-        ITEM HAS BEEN SOLD
+        {{ is_closed ? (isAuction ? 'AUCTION CLOSED' : 'SALE CLOSED') : 'ITEM HAS BEEN SOLD'}}
       </div>
       <div
           v-else-if="!isAuction"
@@ -97,9 +97,8 @@
         </div>
         <div v-else>
           <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            SOLD OUT ({{ items_of }} items)
+            {{ is_closed ? 'CLOSED' : 'SOLD OUT (' + items_of + ' items)'}}
           </div>
-
         </div>
         <button
             class="button dark mt-4 w-full"
@@ -223,6 +222,7 @@ export default {
     isCollectableActive: Boolean,
     isUpcomming: Boolean,
     is_sold_out: Boolean,
+    is_closed: Boolean,
     collectable: Object,
     nextBidPrice: Number,
   },

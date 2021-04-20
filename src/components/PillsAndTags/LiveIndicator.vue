@@ -5,6 +5,7 @@
       :class="{
         'bg-primary blink': indicatorStatus === 'LIVE',
         'bg-gray-500': indicatorStatus === 'ENDED' 
+                      || indicatorStatus === 'CLOSED'
                       || indicatorStatus === 'SOLD OUT',
         'bg-accent': indicatorStatus === 'COMING SOON',
       }"
@@ -33,6 +34,8 @@ export default {
           return "SOLD OUT";
         case "coming soon":
           return "COMING SOON";
+        case "closed":
+          return "CLOSED";
         default:
           return "CUSTOM";
       }

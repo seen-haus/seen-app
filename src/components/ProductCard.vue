@@ -96,7 +96,7 @@
             {{
               isCollectableActive
                   ? `${items} out of ${itemsOf}`
-                  : "Sold Out"
+                  : is_closed ? "Closed" : "Sold Out"
             }}
           </div>
         </template>
@@ -157,6 +157,7 @@ export default {
       endsAt,
       liveStatus,
       is_sold_out,
+      is_closed,
       edition,
       edition_of,
       isTangible,
@@ -206,6 +207,7 @@ export default {
       endsAt,
       liveStatus,
       is_sold_out,
+      is_closed,
       edition,
       edition_of,
       isTangible,

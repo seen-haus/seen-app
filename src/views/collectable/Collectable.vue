@@ -108,6 +108,7 @@
               :priceUSD="priceUSD"
               :progress="progress"
               :is_sold_out="is_sold_out"
+              :is_closed="is_closed"
               :isCollectableActive="isCollectableActive"
               :isUpcomming="isUpcomming"
               :nextBidPrice="nextBidPrice"
@@ -233,6 +234,7 @@ export default {
       endsAt,
       liveStatus,
       is_sold_out,
+      is_closed,
       edition,
       edition_of,
       isTangible,
@@ -361,6 +363,7 @@ export default {
       currentEndsAt,
       liveStatus,
       is_sold_out,
+      is_closed,
       edition,
       edition_of,
       isTangible,
