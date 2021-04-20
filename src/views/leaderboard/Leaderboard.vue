@@ -10,7 +10,7 @@
       >
 
       <div class="description text-gray-600 mx-auto text-center py-4 text-lg">
-        The leaderboard is a great way to see who in the community spent the most, and how many artworks they have acquired.
+        Here’s a list of our Top Collectors.
       </div>
     </container>
     <div class="pb-28">

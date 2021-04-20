@@ -53,14 +53,16 @@ export default {
 
 <style lang="scss" scoped>
 #logo img {
-  width: 100%;
-  max-width: 180px
+  width: auto;
+  max-width: 180px;
+  height: 34px;
 }
 
 @screen lg {
   #logo img {
-    width: 100%;
-    max-width: 208px
+    width: auto;
+    max-width: 208px;
+    height: 34px;
   }
 }
 

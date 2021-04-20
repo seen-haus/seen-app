@@ -84,7 +84,9 @@ export default function useContractEvents() {
             contract = version.value === 1
                 ? useV1AuctionContract(contractAddress.value)
                 : useV2AuctionContract(contractAddress.value);
-
+            if (!contract) {
+               return;
+            }
             if (version.value === 2) {
                 let endTime = await contract.endTime()
                 collectable.value.ends_at = new Date(parseInt(endTime) * 1000)
@@ -114,6 +116,9 @@ export default function useContractEvents() {
                 ? useV1NftContract(contractAddress.value)
                 : useV1NftContract(contractAddress.value);
 
+            if (!contract) {
+               return;
+            }
             let start = await contract.start();
             let price = await contract.price();
 

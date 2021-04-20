@@ -99,7 +99,7 @@
                 minlength="20"
                 v-model.trim="links"
                 class="outlined-input"
-                placeholder="Who your are, what you do, etc."
+                placeholder="Don’t be shy!"
                 required
               ></textarea>
               <div class="validation-error text-sm text-red-700 mt-1">

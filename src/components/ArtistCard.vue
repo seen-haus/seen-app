@@ -28,8 +28,7 @@
         v-if="artistStatement != null"
         v-html="artistStatement"
       ></div>
-      <div class="mt-3 text-gray-600" v-else>
-        {{ artist.bio }}
+      <div class="mt-3 text-gray-600" v-else v-html="artist.bio">
       </div>
 
       <div class="h-0.5 my-4 w-full rounded-full bg-gray-200"></div>
