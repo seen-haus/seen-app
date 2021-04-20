@@ -8,6 +8,7 @@
         selected && !isInFirstThree,
       'bg-gray-200 border-gray-300': selected && isInFirstThree,
     }"
+    @click="$router.push({name: 'profileWithAddress', params: {userAddress: user.wallet_address}})"
   >
     <div
       class="flex-1 flex-col lg:flex-row text-left flex items-center relative"
