@@ -91,7 +91,7 @@
             Seen.haus is governed by the $SEEN token which is designed to help
             curate and guide the future of project. $SEEN holders will have a
             say in seen.haus collaborations, drops, auction styles, and much
-            more. <br><br> The $SEEN token can be purchased <a href="https://app.sushi.com/pair/0xc5fa164247d2f8d68804139457146efbde8370f6" class="text-green-500" target="_blank">here</a>.
+            more. <br><br> The $SEEN token can be purchased <a href="https://app.sushi.com/swap?outputCurrency=0xca3fe04c7ee111f0bbb02c328c699226acf9fd33" class="text-green-500" target="_blank">here</a>.
           </div>
         </div>
       </div>
