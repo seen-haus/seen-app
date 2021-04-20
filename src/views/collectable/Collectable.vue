@@ -111,6 +111,7 @@
               :isCollectableActive="isCollectableActive"
               :isUpcomming="isUpcomming"
               :nextBidPrice="nextBidPrice"
+              @update-state="updateCollectableState"
           />
 
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
@@ -242,6 +243,7 @@ export default {
       // Methods
       updateProgress,
       setCollectable,
+      updateCollectableState,
     } = useCollectableInformation();
 
     const currentEndsAt = computed(() => {
@@ -371,6 +373,7 @@ export default {
       viewOnOpenSea,
       openModal,
       showAdditionalInformation,
+      updateCollectableState
     };
   },
 };

@@ -71,6 +71,7 @@
             :startDate="startsAt"
             :endDate="endsAt"
             @onProgress="updateProgress"
+            @onTimerStateChange="updateCollectableState"
         />
       </template>
 
@@ -84,6 +85,7 @@
               :startDate="startsAt"
               :endDate="endsAt"
               @onProgress="updateProgress"
+              @onTimerStateChange="updateCollectableState"
           />
         </template>
         <template v-else>
@@ -165,7 +167,7 @@ export default {
       updateProgress,
       // setCollectable,
       // updateInformation,
-      // updateCollectableState,
+      updateCollectableState,
     } = useCollectableInformation(props.collectable);
 
     const addTime = function () {
@@ -214,6 +216,7 @@ export default {
       updateProgress,
       addTime,
       handleHover,
+      updateCollectableState,
     };
   },
 };

@@ -123,6 +123,7 @@
             :startDate="startsAt"
             :endDate="endsAt"
             @onProgress="updateProgress"
+            @onTimerStateChange="updateState"
         />
         <progress-bar
             :inversed="isAuction"
@@ -152,6 +153,7 @@
               :startDate="startsAt"
               :endDate="endsAt"
               @onProgress="updateProgress"
+              @onTimerStateChange="updateState"
           />
           <progress-bar
               :progress="currentProgress"
@@ -386,6 +388,10 @@ export default {
       currentProgress.value = event;
     };
 
+    const updateState = function () {
+      ctx.emit('updateState');
+    }
+
     const {ethereum, convertEthToUSDAndFormat} = useExchangeRate();
 
     const hasEnoughFunds = () => {
@@ -432,6 +438,7 @@ export default {
       currentProgress,
       addTime,
       updateProgress,
+      updateState,
       ethereum,
       convertEthToUSDAndFormat,
       openWinnerModal,

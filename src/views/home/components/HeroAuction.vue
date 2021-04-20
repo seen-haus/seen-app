@@ -97,7 +97,8 @@
                 :startDate="startsAt"
                 :endDate="currentEndsAt"
                 :isAuction="isAuction"
-                @onProgress="updateProgress"
+                @onProgress="updateState"
+                @onTimerStateChange="updateState"
             />
           </template>
 
@@ -199,7 +200,7 @@ export default {
       updateProgress,
       // setCollectable,
       // updateInformation,
-      // updateCollectableState,
+      updateCollectableState,
     } = useCollectableInformation(props.collectable);
 
     const addTime = function () {
@@ -216,6 +217,7 @@ export default {
 
     const updateState = function(e) {
       updateProgress(progress.value);
+      updateCollectableState();
     }
 
     const currentEndsAt = computed(() => {
