@@ -30,7 +30,7 @@
       <div class="flex flex-col lg:flex-row mb-18">
         <div class="video flex items-center flex-1 lg:order-3">
           <media-loader
-            src="https://www.youtube.com/embed/1G5caDyf-kA?controls=0&modestbranding&origin=https://seen.haus"
+            src="https://www.youtube.com/embed/1G5caDyf-kA"
             aspectRatio="56.25%"
             controls
             class="overflow-hidden rounded-3xl flex-1"

@@ -19,7 +19,7 @@ export default {
   name: "InstructionalVideo",
   computed: {
     url() {
-      return window.location.protocol + "//www.youtube.com/embed/1G5caDyf-kA?controls=0&modestbranding&origin=" + window.location.origin
+      return window.location.protocol + "//www.youtube.com/embed/1G5caDyf-kA"
     }
   },
   components: {

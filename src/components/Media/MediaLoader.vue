@@ -31,7 +31,6 @@
 
       <div
         class="video-overlay flex items-center justify-center"
-        v-if="isPaused"
         @click="togglePlay()"
       >
         <play-button v-if="controls && isPaused" />

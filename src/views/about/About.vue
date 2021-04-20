@@ -19,7 +19,7 @@
       <div class="video-container overflow-hidden justify-center my-12 mb-32">
         <div class="relative mx-auto max-w-full lg:max-w-screen-md">
           <media-loader
-            src="https://www.youtube.com/embed/I6BcTbTDWHc?controls=0&modestbranding&origin=https://seen.haus"
+            src="https://www.youtube.com/embed/I6BcTbTDWHc"
             aspectRatio="56.25%"
             controls
             class="overflow-hidden rounded-3xl"
