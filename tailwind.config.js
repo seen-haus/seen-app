@@ -12,6 +12,7 @@ module.exports = {
                 /^router-link(|-exact)-active$/,
                 /.*swiper.*/,
                 /.*glightbox.*/,
+                /.*place.*/,
             ],
         },
     },
