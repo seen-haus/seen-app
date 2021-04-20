@@ -56,7 +56,7 @@
 
         <div class="auction-action flex items-center pt-14">
           <button class="button light mr-7" @click="navigateToCollectable">
-            {{ isUpcomming && !collectable.contract_address ? "SOON" : (isAuction ? "View Auction" : "View Drop") }} <i class="fas fa-arrow-right ml-3 icon-right"></i>
+            {{ isUpcomming && !collectable.contract_address ? "Preview" : (isAuction ? "View Auction" : "View Drop") }} <i class="fas fa-arrow-right ml-3 icon-right"></i>
           </button>
 
           <price-display

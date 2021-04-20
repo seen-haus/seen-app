@@ -18,7 +18,6 @@
             <p v-else>{{ formatCurrency(seen) }}</p>
           </a>
           <a
-            href=""
             class="btn-exchange"
           >
             <img
@@ -31,7 +30,6 @@
             <p v-else>{{ formatCurrency(ethereum) }}</p>
           </a>
           <a
-            href=""
             class="btn-exchange"
           >
             <img

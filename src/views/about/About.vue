@@ -19,7 +19,7 @@
       <div class="video-container overflow-hidden justify-center my-12 mb-32">
         <div class="relative mx-auto max-w-full lg:max-w-screen-md">
           <media-loader
-            src="https://www.youtube.com/embed/I6BcTbTDWHc?controls=0&modestbranding"
+            src="https://www.youtube.com/embed/I6BcTbTDWHc"
             aspectRatio="56.25%"
             controls
             class="overflow-hidden rounded-3xl"
@@ -91,7 +91,7 @@
             Seen.haus is governed by the $SEEN token which is designed to help
             curate and guide the future of project. $SEEN holders will have a
             say in seen.haus collaborations, drops, auction styles, and much
-            more. <br><br> The $SEEN token can be purchased <a href="#" class="text-green-500">here</a>.
+            more. <br><br> The $SEEN token can be purchased <a href="https://app.sushi.com/pair/0xc5fa164247d2f8d68804139457146efbde8370f6" class="text-green-500" target="_blank">here</a>.
           </div>
         </div>
       </div>
@@ -114,7 +114,7 @@ export default {
   },
   setup() {
     const { meta } = useMeta({
-      title: "About seen.haus",
+      title: "About",
     });
   },
 };

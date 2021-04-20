@@ -136,6 +136,7 @@
               : 'bg-gray-300'
           "
         />
+        <p class="mt-6 text-gray-400 text-sm">Bids placed in the last 15 minutes will extend the auction for another 15 minutes.</p>
       </template>
 
       <template v-else>

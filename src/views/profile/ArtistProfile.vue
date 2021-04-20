@@ -15,8 +15,7 @@
         </div>
       </div>
       <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-8">
-        <div>
-          {{artist?.bio ? artist.bio : 'No biography available.'}}
+        <div v-html="artist?.bio ? artist.bio : 'No biography available.'">
         </div>
         <div class="text-xs text-gray-400">
           <social-line class="my-1" :social="social" :isVertical="true" v-for="social in artist.socials" :key="social.url" />

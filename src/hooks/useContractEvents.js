@@ -81,10 +81,12 @@ export default function useContractEvents() {
         // !! IMPORTANT !! remove listeners on beforeDestroy
         // ============= IF is AUCTION =============
         if (isAuction.value) {
+            if (!contractAddress.value) {
+               return;
+            }
             contract = version.value === 1
                 ? useV1AuctionContract(contractAddress.value)
                 : useV2AuctionContract(contractAddress.value);
-
             if (version.value === 2) {
                 let endTime = await contract.endTime()
                 collectable.value.ends_at = new Date(parseInt(endTime) * 1000)
@@ -110,6 +112,9 @@ export default function useContractEvents() {
             });
 
         } else { // ============= IF is SALE =============
+            if (!contractAddress.value) {
+               return;
+            }
             contract = version.value === 1
                 ? useV1NftContract(contractAddress.value)
                 : useV1NftContract(contractAddress.value);

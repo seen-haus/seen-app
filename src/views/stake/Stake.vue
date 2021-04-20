@@ -46,7 +46,7 @@
 
         <div class="flex flex-col items-center xl:items-start mb-6 md:mb-0">
           <div class="text-sm text-gray-400 font-semibold uppercase mb-1">
-            Your staked seen <i class="fas fa-info-circle" v-tooltip="{text: 'Your staking fees earned in ETH'}"></i>
+            Your staked seen <i class="fas fa-info-circle" v-tooltip="{text: 'Your amount of SEEN staked'}"></i>
           </div>
           <div class="text-3xl font-black flex">
             {{ formatCrypto(feesEarned, true) }} SEEN
