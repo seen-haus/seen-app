@@ -1,17 +1,19 @@
 module.exports = {
     purge: {
-        enabled: false,
+        enabled: true,
         content: [
             './public/**/*.html',
             './src/**/*.vue',
         ],
-        whitelistPatterns: [
-            /-(leave|enter|appear)(|-(to|from|active))$/,
-            /^(?!(|.*?:)cursor-move).+-move$/,
-            /^router-link(|-exact)-active$/,
-            /.*swiper.*/,
-            /.*glightbox.*/,
-        ],
+        options: {
+            safelist: [
+                /-(leave|enter|appear)(|-(to|from|active))$/,
+                /^(?!(|.*?:)cursor-move).+-move$/,
+                /^router-link(|-exact)-active$/,
+                /.*swiper.*/,
+                /.*glightbox.*/,
+            ],
+        },
     },
     darkMode: false, // or 'media' or 'class'
     theme: {
