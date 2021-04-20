@@ -1,7 +1,7 @@
 <template>
   <container>
     <div class="loading-mask" v-if="!isLoading">
-      <h3 class="font-bold text-3xl text-black text-center block w-full cursor-pointer" @click="navigateToCollectable">{{claim.collectable.title}}</h3>
+      <h3 class="font-bold text-3xl text-black text-center block w-full">{{claim.collectable.title}}</h3>
       <form @submit="onSubmit" class="font-semibold uppercase text-md text-black">
         <div class="fc mb-4">
           <label for="winner-email">Email</label>
@@ -155,13 +155,6 @@ export default {
       }
     });
 
-    const navigateToCollectable = function () {
-      router.push({
-        name: "collectableAuction",
-        params: { contractAddress: state.contractAddress },
-      });
-    };
-
     const isLoading = computed(() => state.loading);
 
     (async function loadClaim() {
@@ -187,7 +180,6 @@ export default {
       claim,
       isLoading,
       onSubmit,
-      navigateToCollectable,
       emailField,
       firstNameField,
       lastNameField,
