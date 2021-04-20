@@ -206,7 +206,7 @@ export default {
 </script>
 
 
-<style lang="scss">
+<style lang="scss" scoped>
 .description {
   p {
     margin-bottom: 1rem;
