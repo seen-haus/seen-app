@@ -1,6 +1,6 @@
 <template>
   <div
-    class="leaderboard-tile flex flex-col lg:flex-row text-center lg:text-right py-8 lg:py-0 w-full items-center text-lg break-all"
+    class="leaderboard-tile flex flex-col lg:flex-row text-center lg:text-right py-8 lg:py-0 w-full items-center text-lg break-all cursor-pointer"
     :class="{
       'font-bold': isInFirstThree,
       'text-gray-600': !isInFirstThree,
