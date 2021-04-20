@@ -196,7 +196,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .submission-form {
   margin-top: -228px;
 }
@@ -208,6 +208,16 @@ export default {
 
   .submission-form {
     max-width: 880px;
+  }
+}
+
+input, textarea {
+  box-shadow: none !important;
+  &:focus {
+    outline: none !important;
+  }
+  &::-moz-focus-inner {
+    outline: none
   }
 }
 </style>
