@@ -79,6 +79,7 @@ import Container from "@/components/Container.vue";
 import {ClaimsService} from "@/services/apiService";
 
 import { useField, useForm } from "vee-validate";
+import useSigner from "@/hooks/useSigner";
 import useWeb3 from "@/connectors/hooks"
 import {useToast} from "primevue/usetoast";
 import {countryList} from '@/connectors/constants';
@@ -130,7 +131,6 @@ export default {
       const msg = `I would like to save my shipping information for wallet address ${account.value.toLowerCase()}.`;
       const signer = useSigner();
 
-      let signer = true;
       if (signer) {
         const sig = await signer
           .signMessage(msg)
@@ -145,7 +145,6 @@ export default {
             return e;
         });
 
-        const sig = 10;
         ClaimsService.claim(claim.value.collectable.contract_address, {...values, sig, wallet_address: account.value})
           .then(() => {
             toast.add({severity:'success', summary:'Success', detail:'Claimer details successfully saved.', life: 3000});
