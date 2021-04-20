@@ -23,14 +23,14 @@ export const SUPPORTED_WALLETS = {
         href: null,
         color: '#4196FC',
     },
-    WALLET_LINK: {
-        connector: walletlink,
-        name: 'Coinbase Wallet',
-        iconName: 'coinbaseWalletIcon.svg',
-        description: 'Use Coinbase Wallet app on mobile device',
-        href: null,
-        color: '#315CF5'
-    },
+    // WALLET_LINK: {
+    //     connector: walletlink,
+    //     name: 'Coinbase Wallet',
+    //     iconName: 'coinbaseWalletIcon.svg',
+    //     description: 'Use Coinbase Wallet app on mobile device',
+    //     href: null,
+    //     color: '#315CF5'
+    // },
     // LATTICE: {
     //     connector: lattice,
     //     name: 'Lattice',
