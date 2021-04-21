@@ -130,9 +130,10 @@ export default function useCollectableInformation(initialCollectable = {}) {
                 priceUSD.value = +(latestEvent.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             }
         }
-
-        // Remove rounding errors in nextBidPrice // 1.000000000001
-        nextBidPrice.value = +nextBidPrice.value.toFixed(7);
+        if (isAuction.value) {
+            // Remove rounding errors in nextBidPrice // 1.000000000001
+            nextBidPrice.value = +nextBidPrice.value.toFixed(7);
+        }
 
         // SALE
         if (!isAuction.value) {

@@ -50,7 +50,7 @@ export default {
   setup() {
     const quotes = [
       {
-        text: 'SEEN HAUS is doing NFTs right. Physical art paired with a dope matching #NFT, QR code on the back that directs to the Opensea page. This is the future.',
+        text: 'SEEN HAUS is doing NFTs right. Physical art paired with a dope matching NFT, QR code on the back that directs to the Opensea page. This is the future.',
         author: 'Doublewordscore',
         title: 'Collector',
         avatar: 'https://assets.seen.haus/quotes/doublescore.jpg',
