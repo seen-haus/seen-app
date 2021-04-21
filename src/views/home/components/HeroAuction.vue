@@ -111,6 +111,7 @@
                 :startDate="startsAt"
                 :endDate="currentEndsAt"
                 :isAuction="isAuction"
+                @onProgress="updateState"
                 @onTimerStateChange="updateState"
             />
             <div
@@ -216,7 +217,7 @@ export default {
     };
 
     const updateState = function(e) {
-      updateProgress(progress.value);
+      updateProgress(e);
       updateCollectableState();
     }
 
