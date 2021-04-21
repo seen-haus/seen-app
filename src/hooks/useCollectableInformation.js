@@ -131,6 +131,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
             }
         }
 
+        // Remove rounding errors
+        nextBidPrice.value = +nextBidPrice.value.toFixed(7);
+
         // SALE
         if (!isAuction.value) {
             itemsOf.value = data.available_qty || 0;
