@@ -129,8 +129,6 @@ export default function useCollectableInformation(initialCollectable = {}) {
                 nextBidPrice.value = +((latestEvent.value || 0) * 1.05);
                 priceUSD.value = +(latestEvent.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             }
-        }
-        if (isAuction.value) {
             // Remove rounding errors in nextBidPrice // 1.000000000001
             nextBidPrice.value = +nextBidPrice.value.toFixed(7);
         }
