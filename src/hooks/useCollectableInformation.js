@@ -131,7 +131,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
             }
         }
 
-        // Remove rounding errors
+        // Remove rounding errors in nextBidPrice // 1.000000000001
         nextBidPrice.value = +nextBidPrice.value.toFixed(7);
 
         // SALE
