@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import {computed, ref, watch} from "vue";
+import {computed, ref, toRefs, watch} from "vue";
 import { UserService } from "@/services/apiService"
 import {shortenAddress, getDaysAgo} from "@/services/utils/index";
 import {format} from 'timeago.js';
@@ -63,6 +63,7 @@ export default {
     list: Array,
   },
   setup(props) {
+    const {list: inputList} = toRefs(props);
     const usernames = ref({});
     const reversedList = computed(() => [...props.list]
       .reverse()
@@ -100,7 +101,7 @@ export default {
       });
     }
 
-    watch(props.list, getUsernames);
+    watch(inputList, getUsernames);
     getUsernames(props.list);
 
     return {
