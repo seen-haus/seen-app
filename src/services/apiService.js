@@ -53,6 +53,9 @@ export const UserService = {
     getUsernames(payload) {
         return ApiService.post(`users/usernames/`, payload);
     },
+    avatar(payload) {
+        return ApiService.post(`users/avatars/`, payload);
+    }
 };
 
 export const LeaderboardService = {
