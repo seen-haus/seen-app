@@ -21,7 +21,7 @@
       >
         <div class="flex flex-col items-center xl:items-start mb-6 xl:mb-0">
           <div class="text-sm text-gray-400 font-semibold uppercase mb-1">
-            TLV (USD) <i class="fas fa-info-circle" v-tooltip="{text: 'Total Value Locked (USD)'}"></i>
+            TVL (USD) <i class="fas fa-info-circle" v-tooltip="{text: 'Total Value Locked (USD)'}"></i>
           </div>
           <div class="text-3xl font-black">{{ totalStakedUsd }}</div>
         </div>
