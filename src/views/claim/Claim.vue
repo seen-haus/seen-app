@@ -147,7 +147,8 @@ export default {
 
         ClaimsService.claim(claim.value.collectable.contract_address, {...values, sig, wallet_address: account.value})
           .then(() => {
-            toast.add({severity:'success', summary:'Success', detail:'Claimer details successfully saved.', life: 3000});
+            let message = 'Your artwork will be delivered within 3 - 4 weeks, keep in mind it may take longer due to COVID restrictions in certain countries';
+            toast.add({severity: 'success', summary: 'Success', detail: message, life: 10000});
           })
           .catch(() => toast.add({severity:'error', summary:'Error', detail:'Could not submit your details. Please try to enter them later.', life: 3000}));
       } else {
