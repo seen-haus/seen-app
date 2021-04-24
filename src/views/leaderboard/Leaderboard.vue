@@ -37,7 +37,7 @@
                 class="first-three flex flex-col rounded-lg shadow-lifted-sm"
               >
                 <template
-                  v-for="(user, index) in users.slice(0, 3)"
+                  v-for="(user, index) in extendedUsers.slice(0, 3)"
                   :key="user.id"
                 >
                   <leaderboard-tile class="px-8" :place="index" :user="user" />
@@ -50,7 +50,7 @@
 
               <div class="others flex flex-col pt-8">
                 <leaderboard-tile
-                  v-for="user in users.slice(3)"
+                  v-for="user in extendedUsers.slice(3)"
                   :key="user.id"
                   :user="user"
                   class="px-8"
@@ -65,9 +65,10 @@
 </template>
 
 <script>
-import { computed, reactive } from "vue";
+import { computed, reactive, watch, ref } from "vue";
 import { useMeta } from "vue-meta";
 import { LeaderboardService } from "@/services/apiService";
+import { UserService } from "@/services/apiService"
 
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
@@ -88,9 +89,16 @@ export default {
       isLoading: true,
       users: [],
     });
+    const extendedUserData = ref({});
 
     const isLoading = computed(() => state.isLoading);
     const users = computed(() => state.users);
+
+    const extendedUsers = computed(() => [...state.users].map(v => {
+        const ud = extendedUserData.value[v.wallet_address.toLowerCase()];
+        return {...v, username: ud && ud.username, image: ud && ud.image}
+      })
+    );
 
     (async function () {
       state.isLoading = true;
@@ -100,9 +108,29 @@ export default {
       state.isLoading = false;
     })();
 
+    function getExtendedUserData(newList) {
+      if (!newList && newList.length === 0) return;
+
+      const payload = {
+        walletAddresses: newList.map(v => v.wallet_address)
+      };
+
+      UserService.getExtendedUserData(payload).then(res => {
+        extendedUserData.value = res.data.reduce((p, v) => {
+          p[v.walletAddress.toLowerCase()] = {username: v.username, image: 'https://assets.seen.haus/media/avatars/1619184025504171485062_303648204450622_4035436110001106920_n.jpg'};
+          return p;
+        }, {});
+      }).catch(e => {
+        console.error(e);
+      });
+    }
+
+    watch(users, getExtendedUserData);
+
     return {
       isLoading,
       users,
+      extendedUsers,
     };
   },
 };

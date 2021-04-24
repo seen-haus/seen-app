@@ -12,8 +12,8 @@
             v-if="hasUserData"
             class="bg-background-gray rounded-full w-full h-full flex justify-center items-center overflow-hidden"
           >
-            <div class="pt-1.5 profile-avatar" :style="{ backgroundImage: `url(${user?.image})` }">
-              <identicon :size="100" :address="user?.wallet" v-if="user && !user.image"/>
+            <div class="pt-1 profile-avatar" :style="{ backgroundImage: `url(${user?.image})` }">
+              <identicon :size="100" :address="user?.wallet" v-if="user && !user.image" class="flex justify-center"/>
             </div>
           </div>
         </div>

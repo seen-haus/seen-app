@@ -15,12 +15,18 @@
     >
       <div class="relative">
         <icon
+          v-if="!user.image"
           :size="isInFirstThree ? 56 : 40"
           :wallet-address="user.wallet_address"
           class="rounded-full lg:mr-6"
           :class="isInFirstThree ? 'my-6' : 'my-4'"
           :style="{ 'min-width': isInFirstThree ? '56px' : '40px' }"
         />
+        <div
+          v-if="user.image"
+          :class="isInFirstThree ? 'leaderboard-img-big my-6' : 'leaderboard-img-small my-4'"
+          class="profile-avatar leaderboard-img rounded-full lg:mr-6 my-4"
+          :style="{ backgroundImage: `url(${user?.image})` }"></div>
 
         <i
           v-if="isInFirstThree"
@@ -107,6 +113,23 @@ export default {
       if (this.place === 2) return ["place-bronze", "3RD PLACE"];
       return null;
     },
+    image: function() {
+      return this.user.image;
+    }
   },
 };
 </script>
+
+<style lang="scss" scoped>
+  .leaderboard-img-big {
+    height: 56px;
+    width: 56px;
+  }
+  .leaderboard-img-small {
+    height: 40px;
+    width: 40px;
+  }
+  .leaderboard-img {
+    border-radius: 2rem;
+  }
+</style>

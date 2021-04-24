@@ -6,8 +6,8 @@
 
     <div @click="toggle" class="pr-4 md:pr-0">
       <button v-if="account" class="cursor-pointer button primary flex items-center wallet">
-        <div class="pt-1.5">
-          <identicon :size="36"/>
+        <div class="profile-avatar wallet-button-avatar" :style="{ backgroundImage: `url(${userLocal?.image})` }">
+          <identicon :size="36" :address="account" v-if="!userLocal?.image"/>
         </div>
         <div class="ml-2 flex flex-col items-start">
           <span class="block">{{ balanceFormatted ? balanceFormatted.substring(0, 8) : 'Fetching balance' }} ETH</span>
@@ -96,6 +96,9 @@ export default {
         balance.value = formatEther(balanceEncoded);
       }
     })
+
+    const userLocal = computed(() => store.getters['user/user']);
+
     let isOpen = ref(false);
     const openWalletModal = () => {
       isOpen.value = false;
@@ -162,6 +165,7 @@ export default {
       toggle,
       close,
       op,
+      userLocal,
     }
   }
 }
@@ -189,5 +193,10 @@ export default {
   font-size: 13px;
   font-weight: 400;
   margin-top: -.25rem;
+}
+.wallet-button-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 2rem;
 }
 </style>
