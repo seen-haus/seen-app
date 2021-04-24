@@ -11,7 +11,8 @@
         </div>
         <div class="ml-2 flex flex-col items-start">
           <span class="block">{{ balanceFormatted ? balanceFormatted.substring(0, 8) : 'Fetching balance' }} ETH</span>
-          <span class="addressText">{{ shortenAddress(account) }}</span>
+          <span class="addressText" v-if="!userLocal?.username">{{ shortenAddress(account) }}</span>
+          <span class="usernameText" v-if="userLocal?.username">{{ userLocal.username }}</span>
         </div>
         <div class="mr-4 ml-4 ml-md-12">
           <i class="fas fa-caret-down" v-if="!isOpen"></i>
@@ -198,5 +199,12 @@ export default {
   width: 36px;
   height: 36px;
   border-radius: 2rem;
+}
+.usernameText {
+  width: 100px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
