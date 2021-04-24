@@ -117,7 +117,7 @@ export default {
 
       UserService.getExtendedUserData(payload).then(res => {
         extendedUserData.value = res.data.reduce((p, v) => {
-          p[v.walletAddress.toLowerCase()] = {username: v.username, image: 'https://assets.seen.haus/media/avatars/1619184025504171485062_303648204450622_4035436110001106920_n.jpg'};
+          p[v.walletAddress.toLowerCase()] = {username: v.username, image: v.image};
           return p;
         }, {});
       }).catch(e => {
