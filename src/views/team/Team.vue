@@ -210,18 +210,18 @@ const advisors = [
       },
     ],
   },
-  {
-    avatar: require("@/assets/images/team/Fidi Bu.jpg"),
-    name: "Fidi Bu",
-    title: "Advisor",
-    socials: [
-      {
-        url: "https://www.instagram.com/ferdinandoverderi/",
-        type: "instagram",
-        handle: "ferdinandoverderi",
-      },
-    ],
-  },
+  // {
+  //   avatar: require("@/assets/images/team/Fidi Bu.jpg"),
+  //   name: "Fidi Bu",
+  //   title: "Advisor",
+  //   socials: [
+  //     {
+  //       url: "https://www.instagram.com/ferdinandoverderi/",
+  //       type: "instagram",
+  //       handle: "ferdinandoverderi",
+  //     },
+  //   ],
+  // },
 ];
 
 const communityContributors = [
