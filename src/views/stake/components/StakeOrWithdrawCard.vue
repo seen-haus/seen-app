@@ -20,11 +20,11 @@
         <div class="icon w-5 mr-1">
           <img src="@/assets/icons/icon--seen.svg" alt="SEEN" class="mr-2">
         </div>
-        <div class="type font-bold">SEEN</div>
+        <div class="type font-bold">{{ typeOf === "stake" ? "SEEN" : "xSEEN" }}</div>
       </div>
 
-      <div class="text-sm text-gray-400 my-2">Wallet balance:
-        {{ formatCrypto(typeOf === "stake" ? seenBalance : seenDeposited, true) }} SEEN
+      <div class="text-sm text-gray-400 my-2">{{ typeOf === "stake" ? "Wallet balance:" : "Balance:" }}
+        {{ formatCrypto(typeOf === "stake" ? seenBalance : seenDeposited, true) }} {{ typeOf === "stake" ? "SEEN" : "xSEEN" }}
       </div>
       <button class="button primary w-full" @click="openWalletModal" v-if="!account">Connect Wallet
       </button>
@@ -113,7 +113,7 @@ export default {
     }
 
     const setPercent = (percent) => {
-      const number = props.attrs["type-of"] == 'stake' ? seenBalance.value : state.balance;
+      const number = props.attrs["type-of"] == 'stake' ? seenBalance.value : seenDeposited.value;
 
       if (number > 0) {
         state.number = BigNumber(numberHelper.removeDecimals(number))
@@ -211,11 +211,14 @@ export default {
 
     const withdraw = async () => {
 
-      let number = (new BigNumber(state.number)
-          .multipliedBy(new BigNumber(props.attrs.state.totalxSeenSupply)
-              .dividedBy(props.attrs.state.totalStaked)))
-
-      if (number.isLessThanOrEqualTo(0)) {
+      // let number = (seenDeposited.value
+      //     .multipliedBy(new BigNumber(props.attrs.state.totalxSeenSupply)
+      //         .dividedBy(props.attrs.state.totalStaked)))
+      console.log(state.number)
+      if (state.number == 0) {
+        return
+      }
+      if (seenDeposited.value.isLessThanOrEqualTo(0)) {
         return
       }
 
@@ -225,7 +228,7 @@ export default {
       });
 
       const contract = useStakingContract(true)
-      let amount = (parseEther(number.toString()));
+      let amount = (parseEther(state.number.toString()));
       console.log(amount)
       state.withdrawing = true;
       const tx = await contract.leave(amount, {gasPrice, from: account.value})
@@ -284,7 +287,7 @@ export default {
     label: function () {
       return this.typeOf === "stake"
           ? "AMOUNT OF SEEN TO STAKE"
-          : "AMOUNT OF SEEN TO WITHDRAW";
+          : "AMOUNT OF xSEEN TO WITHDRAW";
     },
     placeholder: function () {
       return this.typeOf === "stake" ? "Enter your stake" : "Enter your withdrawal amount";
