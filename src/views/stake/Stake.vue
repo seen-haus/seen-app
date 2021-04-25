@@ -49,7 +49,7 @@
             Your staked seen <i class="fas fa-info-circle" v-tooltip="{text: 'Your amount of SEEN staked'}"></i>
           </div>
           <div class="text-3xl font-black flex">
-            {{ formatCrypto(feesEarned, true) }} SEEN
+            {{ formatCrypto(state.xSeenBalance, true) }} SEEN
           </div>
         </div>
 
@@ -152,6 +152,7 @@ export default {
       totalStakedUsd: 0,
       totalxSeenSupply: 0,
       contractEthBalance: 0,
+      xSeenBalance: 0,
 
     })
     const {formatCrypto, formatCurrency, convertSeenToUSDAndFormat} = useExchangeRate();
@@ -165,8 +166,9 @@ export default {
         const stakeContract = useStakingContract()
         let balanceOf = await stakeContract.balanceOf(account.value)
         balanceOf = formatEther(balanceOf.toString())
-        let share = BigNumber(balanceOf).dividedBy(state.totalxSeenSupply)
-        state.userSeenInPool = BigNumber(state.totalStaked).multipliedBy(share)
+        state.xSeenBalance = BigNumber(balanceOf)
+        let share = BigNumber(balanceOf)
+            .dividedBy(state.totalxSeenSupply)
         state.shareOfThePool = share.multipliedBy(100)
       }
     })

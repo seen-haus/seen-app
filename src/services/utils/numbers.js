@@ -29,8 +29,10 @@ export default {
         }
     },
     countDecimals(value) {
-        if (Math.floor(value) !== value)
+        if (Math.floor(value) !== value) {
             return value.toString().split(".")[1].length || 0;
+        }
+
         return 0;
     },
     removeDecimals(value, num = 3) {

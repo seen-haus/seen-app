@@ -87,7 +87,7 @@ export default {
     })
 
     const seenDeposited = computed(() => {
-      return props.attrs.state.userSeenInPool;
+      return props.attrs.state.xSeenBalance;
     });
 
     watchEffect(async () => {
@@ -113,10 +113,13 @@ export default {
     }
 
     const setPercent = (percent) => {
-      const number = props.attrs["type-of"] == 'stake' ? seenBalance.value : seenDeposited.value;
+
+      const number = props.attrs["type-of"] == 'stake'
+          ? new BigNumber(seenBalance.value)
+          : seenDeposited.value;
 
       if (number > 0) {
-        state.number = BigNumber(numberHelper.removeDecimals(number))
+        state.number = number
             .dividedBy(100)
             .multipliedBy(percent)
       }
@@ -210,11 +213,6 @@ export default {
     }
 
     const withdraw = async () => {
-
-      // let number = (seenDeposited.value
-      //     .multipliedBy(new BigNumber(props.attrs.state.totalxSeenSupply)
-      //         .dividedBy(props.attrs.state.totalStaked)))
-      console.log(state.number)
       if (state.number == 0) {
         return
       }
@@ -228,8 +226,10 @@ export default {
       });
 
       const contract = useStakingContract(true)
-      let amount = (parseEther(state.number.toString()));
-      console.log(amount)
+      let amount = typeof state.number != "string"
+          ? (parseEther(state.number.dp(18).toString()))
+          : parseEther(state.number.toString())
+
       state.withdrawing = true;
       const tx = await contract.leave(amount, {gasPrice, from: account.value})
           .catch((e) => {
