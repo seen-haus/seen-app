@@ -309,7 +309,7 @@ const multisig = [
   {
     avatar: require("@/assets/images/team/0xMaki.jpg"),
     name: "0xMaki",
-    title: "Advisor",
+    title: "Signee",
     socials: [
       { url: "https://twitter.com/0xMaki", type: "twitter", handle: "0xMaki" },
       { url: "https://sushiswap.fi/", type: "website" },
@@ -318,7 +318,7 @@ const multisig = [
   {
     avatar: require("@/assets/images/team/Solarcurve.jpg"),
     name: "Solarcurve",
-    title: "Advisor",
+    title: "Signee",
     socials: [
       {
         url: "https://twitter.com/SolarCurve",
@@ -330,7 +330,7 @@ const multisig = [
   {
     avatar: require("@/assets/images/team/Laserbach.jpg"),
     name: "Laserbach",
-    title: "Advisor",
+    title: "Signee",
     socials: [
       {
         url: "https://twitter.com/Laserbacher",
@@ -342,7 +342,7 @@ const multisig = [
   {
     avatar: require("@/assets/images/team/Jigglybuff69.jpg"),
     name: "Jigglybuff69",
-    title: "Advisor",
+    title: "Signee",
     socials: [
       {
         url: "https://twitter.com/JIGGLYBUFF69",
@@ -354,7 +354,7 @@ const multisig = [
   {
     avatar: require("@/assets/images/team/Jiigsaw01.jpg"),
     name: "Jiigsaw01",
-    title: "Advisor",
+    title: "Signee",
     socials: [
       {
         url: "https://twitter.com/jiigsaw01",
@@ -366,7 +366,7 @@ const multisig = [
   {
     avatar: require("@/assets/images/team/CryptoSamurai.jpg"),
     name: "CryptoSamurai",
-    title: "Advisor",
+    title: "Signee",
     socials: [
       {
         url: "https://twitter.com/CryptoSamurai",
@@ -378,7 +378,7 @@ const multisig = [
   {
     avatar: require("@/assets/images/team/Andy8052.jpg"),
     name: "Andy8052",
-    title: "Advisor",
+    title: "Signee",
     socials: [
       {
         url: "https://twitter.com/andy8052",
