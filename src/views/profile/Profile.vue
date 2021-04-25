@@ -3,16 +3,18 @@
     <div
       class="profile-background"
       :style="{ backgroundImage: `url(${user.picture})` }"
-      v-if="user && user.image"
+      v-if="user && user.picture"
     ></div>
     <container class="relative">
       <div v-if="isUserFound">
         <div :class="user ? 'avatar' : 'no-avatar'">
           <div
             v-if="hasUserData"
-            class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5"
+            class="bg-background-gray rounded-full w-full h-full flex justify-center items-center overflow-hidden"
           >
-            <identicon :size="100" :address="user?.wallet" />
+            <div class="pt-1 profile-avatar" :style="{ backgroundImage: `url(${user?.image})` }">
+              <identicon :size="100" :address="user?.wallet" v-if="user && !user.image" class="flex justify-center"/>
+            </div>
           </div>
         </div>
         <div class="mt-4 flex flex-wrap items-center" :class="user ? 'justify-between' : 'justify-center'">

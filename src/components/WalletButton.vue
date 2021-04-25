@@ -6,12 +6,13 @@
 
     <div @click="toggle" class="pr-4 md:pr-0">
       <button v-if="account" class="cursor-pointer button primary flex items-center wallet">
-        <div class="pt-1.5">
-          <identicon :size="36"/>
+        <div class="profile-avatar wallet-button-avatar" :style="{ backgroundImage: `url(${userLocal?.image})` }">
+          <identicon :size="36" :address="account" v-if="!userLocal?.image"/>
         </div>
         <div class="ml-2 flex flex-col items-start">
           <span class="block">{{ balanceFormatted ? balanceFormatted.substring(0, 8) : 'Fetching balance' }} ETH</span>
-          <span class="addressText">{{ shortenAddress(account) }}</span>
+          <span class="addressText" v-if="!userLocal?.username">{{ shortenAddress(account) }}</span>
+          <span class="usernameText" v-if="userLocal?.username">{{ userLocal.username }}</span>
         </div>
         <div class="mr-4 ml-4 ml-md-12">
           <i class="fas fa-caret-down" v-if="!isOpen"></i>
@@ -96,6 +97,9 @@ export default {
         balance.value = formatEther(balanceEncoded);
       }
     })
+
+    const userLocal = computed(() => store.getters['user/user']);
+
     let isOpen = ref(false);
     const openWalletModal = () => {
       isOpen.value = false;
@@ -162,6 +166,7 @@ export default {
       toggle,
       close,
       op,
+      userLocal,
     }
   }
 }
@@ -189,5 +194,17 @@ export default {
   font-size: 13px;
   font-weight: 400;
   margin-top: -.25rem;
+}
+.wallet-button-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 2rem;
+}
+.usernameText {
+  width: 100px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

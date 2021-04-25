@@ -12,11 +12,13 @@
       >
         <div class="list-tile flex items-center py-6 cursor-pointer"
              @click="$router.push({name: 'profileWithAddress', params: {userAddress: buyer.wallet_address}})">
-          <icon
+          <icon v-if="!buyer.image"
               :size="40"
               :wallet-address="buyer.wallet_address"
               class="mr-4 hidden sm:block"
           />
+
+          <div class="profile-avatar buyer-profile-photo mr-2" :style="{ backgroundImage: `url(${buyer?.image})` }"></div>
 
           <div class="flex flex-col flex-grow">
             <div class="address text-gray-500 tracking-widest">
@@ -64,10 +66,13 @@ export default {
   },
   setup(props) {
     const {list: inputList} = toRefs(props);
-    const usernames = ref({});
+    const extendedUserData = ref({});
     const reversedList = computed(() => [...props.list]
       .reverse()
-      .map(v => ({...v, username: usernames.value[v.wallet_address.toLowerCase()]}))
+      .map(v => {
+        const ud = extendedUserData.value[v.wallet_address.toLowerCase()];
+        return {...v, username: ud && ud.username, image: ud && ud.image}
+      })
     );
     const showCount = ref(3);
     const showButton = computed(() => showCount.value < props.list.length);
@@ -84,16 +89,16 @@ export default {
       showCount.value = showCount.value + 3;
     }
 
-    function getUsernames(newList) {
+    function getExtendedUserData(newList) {
       if (!newList && newList.length === 0) return;
 
       const payload = {
         walletAddresses: newList.map(v => v.wallet_address)
       };
 
-      UserService.getUsernames(payload).then(res => {
-        usernames.value = res.data.reduce((p, v) => {
-          p[v.walletAddress.toLowerCase()] = v.username;
+      UserService.getExtendedUserData(payload).then(res => {
+        extendedUserData.value = res.data.reduce((p, v) => {
+          p[v.walletAddress.toLowerCase()] = {username: v.username, image: v.image};
           return p;
         }, {});
       }).catch(e => {
@@ -101,8 +106,8 @@ export default {
       });
     }
 
-    watch(inputList, getUsernames);
-    getUsernames(props.list);
+    watch(inputList, getExtendedUserData);
+    getExtendedUserData(props.list);
 
     return {
       shortenAddress,
@@ -116,3 +121,11 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="scss">
+  .buyer-profile-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 2rem;
+  }
+</style>

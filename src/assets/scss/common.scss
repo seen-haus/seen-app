@@ -56,3 +56,9 @@
 .p-overlaypanel:before, .p-overlaypanel:after {
   display: none;
 }
+
+.profile-avatar {
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+}

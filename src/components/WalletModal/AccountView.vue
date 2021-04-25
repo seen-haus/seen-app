@@ -2,12 +2,13 @@
   <div class="-mb-8 pt-9 relative">
     <div class="flex justify-center text-grey-9">
       <div class="avatar absolute">
-        <div class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5">
-          <identicon :size="100"/>
-          <!-- <img src="@/assets/icons/avatar.svg" class="h-16 cursor-pointer" alt="SEEN"> -->
+        <div class="absolute clear-image-icon" v-if="temporaryImageUrl" @click="resetTemporaryImage"><i class="fas fa-times"></i></div>
+        <div class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5 profile-avatar" :style="{ backgroundImage: `url(${temporaryImageUrl ? temporaryImageUrl : user?.image})` }">
+          <img src="@/assets/icons/avatar.svg" class="h-16 cursor-pointer" alt="SEEN" v-if="!user?.image && !temporaryImageUrl">
+          <input type="file" id="profileAvatarUpload" class="hidden" @change="uploadImage" accept="image/*">
         </div>
       </div>
-      <!-- <button class="text-sm mb-8"><i class="fas fa-pencil-alt"></i> Change Avatar</button> -->
+      <button class="text-sm mb-8" @click="openUploadWindow"><i class="fas fa-pencil-alt"></i> Change Avatar</button>
     </div>
     <div class="flex justify-between items-center mb-4 my-8">
       <div>
@@ -81,7 +82,7 @@ import {shortenAddress, getEtherscanLink, clean} from "@/services/utils/index";
 import CopyHelper from "@/components/CopyHelper/CopyHelper";
 import {useStore} from "vuex";
 
-import {reactive, computed} from 'vue';
+import {reactive, computed, ref} from 'vue';
 import { useField, useForm } from "vee-validate";
 import { UserService } from "@/services/apiService"
 import useSigner from "@/hooks/useSigner";
@@ -96,6 +97,7 @@ export default {
     const store = useStore()
     const user = computed(() => store.getters['user/user']);
     const toast = useToast();
+    const temporaryImageUrl = ref('');
 
     const {ethereum} = window;
     const isMetaMask = !!(ethereum && ethereum.isMetaMask)
@@ -114,6 +116,35 @@ export default {
       },
     });
 
+    const resetTemporaryImage = () => {
+      temporaryImageUrl.value = '';
+    }
+
+    const uploadImage = (event) => {
+      const fd = new FormData();
+      const file = event.target.files[0];
+      if (file && file.size > 500000) {
+        toast.add({severity:'error', summary:'Error', detail:'Profile image must be less than 0.5 MB.', life: 3000});
+        return;
+      }
+      fd.append('files', file);
+
+      UserService.avatar(fd)
+        .then(res => {
+          const imageSrc = res.data.url;
+          temporaryImageUrl.value = imageSrc;
+          form.setFieldValue('image', imageSrc);
+        })
+        .catch(e => {
+          console.error(e)
+          toast.add({severity:'error', summary:'Error', detail:'Profile avatar upload failed.', life: 3000});
+      });
+    }
+
+    const openUploadWindow = () => {
+      document.getElementById('profileAvatarUpload').click();
+    }
+
     const usernameField = reactive(useField("username", "required"));
     const twitterField = reactive(useField("twitter", url => {
       const res = twitterRegx.exec(url);
@@ -124,6 +155,7 @@ export default {
     const descriptionField = reactive(useField("description"));
 
     const onSubmit = form.handleSubmit(async (values) => {
+      values.image = temporaryImageUrl.value;
       const signer = useSigner();
       const msg = `I would like to update my account preferences for ${account.value}.`
 
@@ -143,6 +175,7 @@ export default {
             store.dispatch('user/setUser', res.data.user);
             toast.add({severity:'info', summary:'Success', detail:'Your profile has been updated.', life: 3000});
             store.dispatch('application/closeModal');
+            temporaryImageUrl.value = '';
           })
           .catch(e => {
             console.error(e)
@@ -165,7 +198,12 @@ export default {
       twitterField,
       websiteField,
       descriptionField,
-      onSubmit
+      onSubmit,
+      uploadImage,
+      openUploadWindow,
+      user,
+      temporaryImageUrl,
+      resetTemporaryImage,
     }
   }
 }
@@ -183,5 +221,20 @@ export default {
 .input-width {
   width: 65%;
   min-width:300px;
+}
+.clear-image-icon {
+  right: .5rem;
+  top: .5rem;
+  color: black;
+  background: white;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(0,0,0,.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .75rem;
+  cursor: pointer;
 }
 </style>

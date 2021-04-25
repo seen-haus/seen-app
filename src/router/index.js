@@ -49,6 +49,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "artists" */ '../views/artists/Artists.vue')
     },
     {
+        path: '/team',
+        name: 'team',
+        component: () => import(/* webpackChunkName: "team" */ '../views/team/Team.vue')
+    },
+    {
         path: '/editions/:slug',
         name: 'collectableEdition',
         redirect: to => `/drops/${to.params.slug}`,
