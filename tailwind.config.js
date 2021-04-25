@@ -54,6 +54,7 @@ module.exports = {
             },
             fontSize: {
                 '10px': '10px', // 10px
+                '11px': '11px', // 11px
                 '2xs': '0.8125rem', // 13px
                 '2.5xl': '1.6875rem', // 27px
                 '4xl': '2.25rem', // 36px
