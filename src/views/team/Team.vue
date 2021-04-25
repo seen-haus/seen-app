@@ -111,7 +111,7 @@ const foundingMembers = [
   {
     avatar: require("@/assets/images/team/CryptoSamurai.jpg"),
     name: "CryptoSamurai",
-    title: "Front End Developer",
+    title: "Fullstack Developer",
     socials: [
       {
         url: "https://twitter.com/CryptoSamurai",
