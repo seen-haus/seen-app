@@ -21,8 +21,6 @@
           </tag
           >
         </div>
-
-        <i v-if="true" class="video-type-indicator fas fa-video"></i>
       </div>
 
       <div class="w-12"></div>
