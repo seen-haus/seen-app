@@ -45,6 +45,9 @@
               <router-link :to="{ name: 'about'}" class="block">
                 About Us
               </router-link>
+              <router-link :to="{ name: 'team'}" class="block">
+                Team
+              </router-link>
               <a href="https://seen-haus.medium.com" class="block" target="_blank">Blog</a>
               <router-link :to="{ name: 'faq'}" class="block">
                 FAQs
