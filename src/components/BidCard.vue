@@ -254,7 +254,7 @@ export default {
     const fieldValidatorAuction = (value) => {
       if (value) {
         if (value < parseFloat(props.nextBidPrice.toString())) {
-          return 'Entered sum must be 5% higher than the currently winning bid.'
+          return 'Entered sum must be 10% higher than the currently winning bid.'
         }
         return hasEnoughFunds() ? true : 'You do not have enough funds';
       } else {

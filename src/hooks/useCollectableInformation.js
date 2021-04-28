@@ -122,11 +122,11 @@ export default function useCollectableInformation(initialCollectable = {}) {
         if (isAuction.value) {
             if (events.value.length === 0) {
                 price.value = +(data.start_bid || 0);
-                nextBidPrice.value = price.value;
+                nextBidPrice.value = (price.value * 1.10);
                 priceUSD.value = +(data.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             } else {
                 price.value = +(latestEvent.value || 0);
-                nextBidPrice.value = +((latestEvent.value || 0) * 1.05);
+                nextBidPrice.value = +((latestEvent.value || 0) * 1.10);
                 priceUSD.value = +(latestEvent.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             }
             // Remove rounding errors in nextBidPrice // 1.000000000001
