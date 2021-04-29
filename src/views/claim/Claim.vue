@@ -5,7 +5,7 @@
         class="font-bold text-3xl text-black text-center block w-full cursor-pointer"
         @click="navigateToCollectable"
       >
-        {{ claim.collectable.title }}
+        {{ title }}
       </h3>
       <template v-if="claim.contract_address">
         <button
@@ -160,6 +160,7 @@
 </template>
 
 <script>
+import { Web3Provider } from "@ethersproject/providers";
 import { computed, ref, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -171,7 +172,9 @@ import useSigner from "@/hooks/useSigner";
 import { useClaimContract } from "@/hooks/useContract";
 import { useField, useForm } from "vee-validate";
 import { useToast } from "primevue/usetoast";
+import { useMeta } from "vue-meta";
 import { countryList } from "@/connectors/constants";
+import parseError from "@/services/utils/parseError";
 
 export default {
   name: "Collectable",
@@ -179,16 +182,24 @@ export default {
     Container,
   },
   setup() {
+    // TODO:
+    // 1. add Title column
+    // 2. test wiring
+
     const toast = useToast();
     const route = useRoute();
     const router = useRouter();
     const claim = ref({});
+    const title = ref("Claim");
     const state = reactive({
       loading: true,
       contractAddress: null,
     });
     const countries = countryList;
-    const { account } = useWeb3();
+    const { account, provider } = useWeb3();
+    const { meta } = useMeta({
+      title: title.value,
+    });
 
     const form = useForm({
       initialValues: {
@@ -216,9 +227,61 @@ export default {
     const zipField = reactive(useField("zip", "required"));
     const countryField = reactive(useField("country", "required"));
 
-    const onClaim = () => {
-      const claimContract = useClaimContract();
-      claimContract.claim();
+    const onClaim = async () => {
+      console.log(provider.value);
+      const temporaryProvider = new Web3Provider(provider.value);
+      const gasPrice = await temporaryProvider.getGasPrice().catch(() => {
+        toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: `You may be out of ETH`,
+          life: 3000,
+        });
+      });
+
+      const claimContract = useClaimContract(claim.value.contract_address);
+      const tx = await claimContract
+        .claim({
+          gasPrice: gasPrice.toString(),
+          from: account.value,
+        })
+        .catch((e) => {
+          let message = parseError(e.message);
+          toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: message ? message : e.message,
+            life: 3000,
+          });
+          return false;
+        });
+
+      if (!tx) {
+        return;
+      }
+
+      return tx
+        .wait()
+        .then(() => {
+          toast.add({
+            severity: "success",
+            summary: "Success",
+            detail:
+              "Claim was successful. Please contact us if you do not receive your NFTs within 24 hours.",
+            life: 3000,
+          });
+        })
+        .catch((e) => {
+          let message = parseError(e.message);
+          toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: `${message}`,
+            life: 3000,
+          });
+          console.error(e);
+          state.approving = false;
+        });
     };
 
     const onSubmit = form.handleSubmit(async (values) => {
@@ -242,10 +305,20 @@ export default {
           return e;
         });
 
-        ClaimsService.claim(claim.value.collectable.contract_address, {...values, sig, wallet_address: account.value})
+        ClaimsService.claim(claim.value.collectable.contract_address, {
+          ...values,
+          sig,
+          wallet_address: account.value,
+        })
           .then(() => {
-            let message = 'Your artwork will be delivered within 3 - 4 weeks, keep in mind it may take longer due to COVID restrictions in certain countries';
-            toast.add({severity: 'success', summary: 'Success', detail: message, life: 10000});
+            let message =
+              "Your artwork will be delivered within 3 - 4 weeks, keep in mind it may take longer due to COVID restrictions in certain countries";
+            toast.add({
+              severity: "success",
+              summary: "Success",
+              detail: message,
+              life: 10000,
+            });
           })
           .catch(() =>
             toast.add({
@@ -276,12 +349,19 @@ export default {
         return;
       }
 
+      if (data.title) {
+        title.value = data.title;
+      } else if (data.collectable) {
+        title.value = data.collectable.title;
+      }
+
       state.loading = false;
       state.contractAddress = contractAddress;
       claim.value = data;
     })();
 
     return {
+      title,
       claim,
       isLoading,
       onClaim,
