@@ -1,88 +1,180 @@
 <template>
   <container>
     <div class="loading-mask" v-if="!isLoading">
-      <h3 class="font-bold text-3xl text-black text-center block w-full">{{claim.collectable.title}}</h3>
-      <form @submit="onSubmit" class="font-semibold uppercase text-md text-black">
-        <div class="fc mb-4">
-          <label for="winner-email">Email</label>
-          <input type="email" id="winner-email" class="w-full outlined-input mt-2" autocomplete="email" v-model="emailField.value" />
-          <span class="error-notice">{{ emailField.errors[0] }}</span>
-        </div>
-        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+      <h3
+        class="font-bold text-3xl text-black text-center block w-full cursor-pointer"
+        @click="navigateToCollectable"
+      >
+        {{ title }}
+      </h3>
+      <template v-if="claim.contract_address">
+        <button
+          class="button dark mt-20 mx-auto w-full md:w-96"
+          @click="onClaim"
+        >
+          Claim
+        </button>
+      </template>
+      <template v-else>
+        <form
+          @submit="onSubmit"
+          class="font-semibold uppercase text-md text-black"
+        >
           <div class="fc mb-4">
-            <label for="winner-name">Name</label>
-            <input type="text" id="winner-name" class="w-full outlined-input mt-2" autocomplete="given-name" v-model="firstNameField.value" />
-            <span class="error-notice">{{ firstNameField.errors[0] }}</span>
+            <label for="winner-email">Email</label>
+            <input
+              type="email"
+              id="winner-email"
+              class="w-full outlined-input mt-2"
+              autocomplete="email"
+              v-model="emailField.value"
+            />
+            <span class="error-notice">{{ emailField.errors[0] }}</span>
+          </div>
+          <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div class="fc mb-4">
+              <label for="winner-name">Name</label>
+              <input
+                type="text"
+                id="winner-name"
+                class="w-full outlined-input mt-2"
+                autocomplete="given-name"
+                v-model="firstNameField.value"
+              />
+              <span class="error-notice">{{ firstNameField.errors[0] }}</span>
+            </div>
+            <div class="fc mb-4">
+              <label for="winner-last-name">Last name</label>
+              <input
+                type="text"
+                id="winner-last-name"
+                class="w-full outlined-input mt-2"
+                autocomplete="family-name"
+                v-model="lastNameField.value"
+              />
+              <span class="error-notice">{{ lastNameField.errors[0] }}</span>
+            </div>
           </div>
           <div class="fc mb-4">
-            <label for="winner-last-name">Last name</label>
-            <input type="text" id="winner-last-name" class="w-full outlined-input mt-2" autocomplete="family-name" v-model="lastNameField.value" />
-            <span class="error-notice">{{ lastNameField.errors[0] }}</span>
-          </div>
-        </div>
-        <div class="fc mb-4">
-          <label for="winner-phone">Phone</label>
-          <input type="phone" id="winner-phone" class="w-full outlined-input mt-2" autocomplete="tel" v-model="phoneField.value" />
-          <span class="error-notice">{{ phoneField.errors[0] }}</span>
-        </div>
-        <div class="fc mb-4">
-          <label for="winner-telegram">Telegram Username (optional)</label>
-          <input type="text" id="winner-telegram" class="w-full outlined-input mt-2" autocomplete="new-password" v-model="telegramUsernameField.value" />
-          <span class="error-notice">{{ telegramUsernameField.errors[0] }}</span>
-        </div>
-        <div class="fc mb-4">
-          <label for="winner-address">Address</label>
-          <input type="text" id="winner-address" class="w-full outlined-input mt-2" autocomplete="street-address" v-model="addressField.value" />
-          <span class="error-notice">{{ addressField.errors[0] }}</span>
-        </div>
-        <div class="fc mb-4">
-          <label for="winner-city">City</label>
-          <input type="text" id="winner-city" class="w-full outlined-input mt-2" autocomplete="address-level2" v-model="cityField.value" />
-          <span class="error-notice">{{ cityField.errors[0] }}</span>
-        </div>
-        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <div class="fc mb-4">
-            <label for="winner-state">State / Province</label>
-            <input type="text" id="winner-state" class="w-full outlined-input mt-2" autocomplete="address-level1" v-model="provinceField.value" />
-            <span class="error-notice">{{ provinceField.errors[0] }}</span>
+            <label for="winner-phone">Phone</label>
+            <input
+              type="phone"
+              id="winner-phone"
+              class="w-full outlined-input mt-2"
+              autocomplete="tel"
+              v-model="phoneField.value"
+            />
+            <span class="error-notice">{{ phoneField.errors[0] }}</span>
           </div>
           <div class="fc mb-4">
-            <label for="winner-zip">ZIP</label>
-            <input type="text" id="winner-zip" class="w-full outlined-input mt-2" autocomplete="postal-code" v-model="zipField.value" />
-            <span class="error-notice">{{ zipField.errors[0] }}</span>
+            <label for="winner-telegram">Telegram Username (optional)</label>
+            <input
+              type="text"
+              id="winner-telegram"
+              class="w-full outlined-input mt-2"
+              autocomplete="new-password"
+              v-model="telegramUsernameField.value"
+            />
+            <span class="error-notice">{{
+              telegramUsernameField.errors[0]
+            }}</span>
           </div>
-        </div>
-        <div class="fc mb-4">
-          <label for="winner-country">Country</label>
-          <select v-model="countryField.value" name="winner-country" id="winner-country" autocomplete="country-name" class="w-full outlined-input mt-2">
-            <option :value="country" v-for="country in countries" :key="country">{{country}}</option>
-          </select>
-          <span class="error-notice">{{ countryField.errors[0] }}</span>
-        </div>
+          <div class="fc mb-4">
+            <label for="winner-address">Address</label>
+            <input
+              type="text"
+              id="winner-address"
+              class="w-full outlined-input mt-2"
+              autocomplete="street-address"
+              v-model="addressField.value"
+            />
+            <span class="error-notice">{{ addressField.errors[0] }}</span>
+          </div>
+          <div class="fc mb-4">
+            <label for="winner-city">City</label>
+            <input
+              type="text"
+              id="winner-city"
+              class="w-full outlined-input mt-2"
+              autocomplete="address-level2"
+              v-model="cityField.value"
+            />
+            <span class="error-notice">{{ cityField.errors[0] }}</span>
+          </div>
+          <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div class="fc mb-4">
+              <label for="winner-state">State / Province</label>
+              <input
+                type="text"
+                id="winner-state"
+                class="w-full outlined-input mt-2"
+                autocomplete="address-level1"
+                v-model="provinceField.value"
+              />
+              <span class="error-notice">{{ provinceField.errors[0] }}</span>
+            </div>
+            <div class="fc mb-4">
+              <label for="winner-zip">ZIP</label>
+              <input
+                type="text"
+                id="winner-zip"
+                class="w-full outlined-input mt-2"
+                autocomplete="postal-code"
+                v-model="zipField.value"
+              />
+              <span class="error-notice">{{ zipField.errors[0] }}</span>
+            </div>
+          </div>
+          <div class="fc mb-4">
+            <label for="winner-country">Country</label>
+            <select
+              v-model="countryField.value"
+              name="winner-country"
+              id="winner-country"
+              autocomplete="country-name"
+              class="w-full outlined-input mt-2"
+            >
+              <option
+                :value="country"
+                v-for="country in countries"
+                :key="country"
+              >
+                {{ country }}
+              </option>
+            </select>
+            <span class="error-notice">{{ countryField.errors[0] }}</span>
+          </div>
 
-        <div class="flex items-center justify-center mb-4 mt-8">
-          <button type="submit" class="cursor-pointer primary button mt-3 md:mt-0">
-            Submit
-          </button>
-        </div>
-      </form>
+          <div class="flex items-center justify-center mb-4 mt-8">
+            <button
+              type="submit"
+              class="cursor-pointer primary button mt-3 md:mt-0"
+            >
+              Submit
+            </button>
+          </div>
+        </form></template
+      >
     </div>
   </container>
 </template>
 
-
 <script>
-import {computed, ref, reactive} from "vue";
-import {useRoute, useRouter} from "vue-router";
+import { Web3Provider } from "@ethersproject/providers";
+import { computed, ref, reactive } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import Container from "@/components/Container.vue";
-import {ClaimsService} from "@/services/apiService";
+import { ClaimsService } from "@/services/apiService";
 
-import { useField, useForm } from "vee-validate";
+import useWeb3 from "@/connectors/hooks";
 import useSigner from "@/hooks/useSigner";
-import useWeb3 from "@/connectors/hooks"
-import {useToast} from "primevue/usetoast";
-import {countryList} from '@/connectors/constants';
+import { useClaimContract } from "@/hooks/useContract";
+import { useField, useForm } from "vee-validate";
+import { useToast } from "primevue/usetoast";
+import { useMeta } from "vue-meta";
+import { countryList } from "@/connectors/constants";
+import parseError from "@/services/utils/parseError";
 
 export default {
   name: "Collectable",
@@ -90,16 +182,24 @@ export default {
     Container,
   },
   setup() {
+    // TODO:
+    // 1. add Title column
+    // 2. test wiring
+
     const toast = useToast();
     const route = useRoute();
     const router = useRouter();
     const claim = ref({});
+    const title = ref("Claim");
     const state = reactive({
       loading: true,
       contractAddress: null,
     });
     const countries = countryList;
-    const { account } = useWeb3();
+    const { account, provider } = useWeb3();
+    const { meta } = useMeta({
+      title: title.value,
+    });
 
     const form = useForm({
       initialValues: {
@@ -127,30 +227,108 @@ export default {
     const zipField = reactive(useField("zip", "required"));
     const countryField = reactive(useField("country", "required"));
 
+    const onClaim = async () => {
+      console.log(provider.value);
+      const temporaryProvider = new Web3Provider(provider.value);
+      const gasPrice = await temporaryProvider.getGasPrice().catch(() => {
+        toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: `You may be out of ETH`,
+          life: 3000,
+        });
+      });
+
+      const claimContract = useClaimContract(claim.value.contract_address);
+      const tx = await claimContract
+        .claim({
+          gasPrice: gasPrice.toString(),
+          from: account.value,
+        })
+        .catch((e) => {
+          let message = parseError(e.message);
+          toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: message ? message : e.message,
+            life: 3000,
+          });
+          return false;
+        });
+
+      if (!tx) {
+        return;
+      }
+
+      return tx
+        .wait()
+        .then(() => {
+          toast.add({
+            severity: "success",
+            summary: "Success",
+            detail:
+              "Claim was successful. Please contact us if you do not receive your NFTs within 24 hours.",
+            life: 3000,
+          });
+        })
+        .catch((e) => {
+          let message = parseError(e.message);
+          toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: `${message}`,
+            life: 3000,
+          });
+          console.error(e);
+          state.approving = false;
+        });
+    };
+
     const onSubmit = form.handleSubmit(async (values) => {
       const msg = `I would like to save my shipping information for wallet address ${account.value.toLowerCase()}.`;
       const signer = useSigner();
 
       if (signer) {
-        const sig = await signer
-          .signMessage(msg)
-          .catch((e) => {
-            toast.add({severity:'error', summary:'Error', detail:'Message signing failed.', life: 3000});
-            // let msg = 'Error has occurred. Try again later.';
-            // if (e.code === 4001) {
-            //     msg = 'Request was rejected.';
-            // }
-            // ToastifyService.fail(msg);
-            //this.submitting = false;
-            return e;
+        const sig = await signer.signMessage(msg).catch((e) => {
+          toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Message signing failed.",
+            life: 3000,
+          });
+          // let msg = 'Error has occurred. Try again later.';
+          // if (e.code === 4001) {
+          //     msg = 'Request was rejected.';
+          // }
+          // ToastifyService.fail(msg);
+          //this.submitting = false;
+          return e;
         });
 
-        ClaimsService.claim(claim.value.collectable.contract_address, {...values, sig, wallet_address: account.value})
+        ClaimsService.claim(claim.value.collectable.contract_address, {
+          ...values,
+          sig,
+          wallet_address: account.value,
+        })
           .then(() => {
-            let message = 'Your artwork will be delivered within 3 - 4 weeks, keep in mind it may take longer due to COVID restrictions in certain countries';
-            toast.add({severity: 'success', summary: 'Success', detail: message, life: 10000});
+            let message =
+              "Your artwork will be delivered within 3 - 4 weeks, keep in mind it may take longer due to COVID restrictions in certain countries";
+            toast.add({
+              severity: "success",
+              summary: "Success",
+              detail: message,
+              life: 10000,
+            });
           })
-          .catch(() => toast.add({severity:'error', summary:'Error', detail:'Could not submit your details. Please try to enter them later.', life: 3000}));
+          .catch(() =>
+            toast.add({
+              severity: "error",
+              summary: "Error",
+              detail:
+                "Could not submit your details. Please try to enter them later.",
+              life: 3000,
+            })
+          );
       } else {
         // toastr to login
       }
@@ -160,10 +338,9 @@ export default {
 
     (async function loadClaim() {
       state.loading = true;
-      const contractAddress =
-          route.params["contractAddress"];
+      const contractAddress = route.params["contractAddress"];
 
-      const {data} = await ClaimsService.show(contractAddress);
+      const { data } = await ClaimsService.show(contractAddress);
       if (!data) {
         router.push({
           name: "home",
@@ -172,14 +349,22 @@ export default {
         return;
       }
 
+      if (data.title) {
+        title.value = data.title;
+      } else if (data.collectable) {
+        title.value = data.collectable.title;
+      }
+
       state.loading = false;
       state.contractAddress = contractAddress;
       claim.value = data;
     })();
 
     return {
+      title,
       claim,
       isLoading,
+      onClaim,
       onSubmit,
       emailField,
       firstNameField,
@@ -196,7 +381,6 @@ export default {
   },
 };
 </script>
-
 
 <style lang="scss" scoped>
 .description {
