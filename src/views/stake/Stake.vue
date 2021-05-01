@@ -57,7 +57,7 @@
             xSEEN to SEEN ratio <i class="fas fa-info-circle" v-tooltip="{text: 'The amount of SEEN that 1 xSEEN is worth'}"></i>
           </div>
           <div class="text-3xl font-black flex">
-            {{ formatCrypto(state.xSeenToSeenRatio, true, 8) }}
+            {{ formatCrypto(state.xSeenToSeenRatio, true, state.xSeenToSeenRatio === 0 ? 2 : 8) }}
           </div>
         </div>
 
