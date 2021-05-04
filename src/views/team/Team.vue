@@ -105,7 +105,7 @@ const foundingMembers = [
         type: "twitter",
         handle: "Buddyart00",
       },
-      { url: "www.buddyart00.com", type: "webpage" },
+      { url: "https://www.buddyart00.com", type: "webpage" },
     ],
   },
   {
