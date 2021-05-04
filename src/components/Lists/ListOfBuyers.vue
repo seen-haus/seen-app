@@ -10,15 +10,21 @@
           v-for="(buyer, index) in reversedList.slice(0, showCount)"
           :key="buyer.id"
       >
-        <div class="list-tile flex items-center py-6 cursor-pointer"
-             @click="$router.push({name: 'profileWithAddress', params: {userAddress: buyer.wallet_address}})">
+        <div 
+          class="list-tile flex items-center py-6 cursor-pointer"
+          v-bind:class="{
+            'pt-2': index === 0, // First item
+            'pb-2': (index === showCount - 1) || (index === list.length - 1) // Last item
+          }"
+          @click="$router.push({name: 'profileWithAddress', params: {userAddress: buyer.wallet_address}})"
+        >
           <icon v-if="!buyer.image"
               :size="40"
               :wallet-address="buyer.wallet_address"
-              class="mr-4 hidden sm:block"
+              class="mr-6 hidden sm:block"
           />
 
-          <div class="profile-avatar buyer-profile-photo mr-2" :style="{ backgroundImage: `url(${buyer?.image})` }"></div>
+          <div v-if="buyer.image" class="profile-avatar buyer-profile-photo mr-6" :style="{ backgroundImage: `url(${buyer?.image})` }"></div>
 
           <div class="flex flex-col flex-grow">
             <div class="address text-gray-500 tracking-widest">
@@ -38,7 +44,7 @@
         </div>
 
         <div
-            v-if="index != 4"
+            v-if="(index != showCount - 1) && (index !== list.length - 1)"
             class="divider h-0 border-t-2 border-gray-200"
         ></div>
       </template>
