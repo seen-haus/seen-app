@@ -34,13 +34,12 @@
         ><span class="flex-shrink-0">{{ title }}</span></fenced-title
         >
 
-        <fenced-title
+        <unfenced-title
             class="text-white hidden lg:flex"
             color="fence-dark"
             text-align="left"
             :closed="true"
-        ><span class="flex-shrink-0">{{ title }}</span></fenced-title
-        >
+        ><span class="flex-shrink-0">{{ title }}</span></unfenced-title>
 
         <div class="flex lg:justify-start items-center mt-2 justify-center">
           <user-badge
@@ -145,6 +144,7 @@ import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
+import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
 
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
@@ -160,6 +160,7 @@ export default {
     LiveIndicator,
     Container,
     FencedTitle,
+    UnfencedTitle,
     MediaLoader,
   },
   props: {
