@@ -46,12 +46,12 @@
               class="button dark mr-0 mb-4 lg:mr-4 lg:mb-0 w-full lg:w-auto"
             >
               <i class="fas fa-file-pdf mr-2 text-xl icon-left text-white"></i>
-              <span style="font-size: 14px;">More about the Launch</span>
+              <span style="font-size: 14px;">More About the Launch</span>
             </button>
 
             <button class="button discord w-full lg:w-auto"><a href="https://discord.com/invite/dad8J4f" target="_blank">
               <i class="fab fa-discord mr-2 text-xl icon-left text-white"></i>
-            <span style="font-size: 14px;">Discuss on Discord</span></a>
+              <span style="font-size: 14px;">Discuss on Discord</span></a>
             </button>
           </div>
         </div>
