@@ -154,27 +154,41 @@ export default {
 
 <style lang="scss">
 .collage-tile {
-  &.upcoming {
-    filter: grayscale(100%);
-    opacity: 0.25;
+  border: 2px solid #a0a0a0;
+  cursor: pointer;
+
+  &.upcoming,
+  &.ended {
+    opacity: 0.6;
 
     &:hover {
-      cursor: pointer;
+      opacity: 1;
+    }
+  }
+
+  &.upcoming {
+    // border-color: #0071D9;
+    filter: grayscale(100%);
+  }
+
+  &.ended {
+    border-color: #CA347C;
+
+    .indicator-icon {
+      background-color: #CA347C;
+    }
+
+    .progress-bar {
+      display: none;
     }
   }
 
   &.live {
-    &:hover {
-      cursor: pointer;
-    }
-  }
+    border-color: #34CA98;
 
-  &.ended {
-    filter: sepia(100%);
-    opacity: 0.5;
-
-    &:hover {
-      cursor: pointer;
+    .content {
+      visibility: visible;
+      background: rgba(#000, 0.75);
     }
   }
 }
@@ -184,37 +198,14 @@ export default {
 }
 
 @screen lg {
-  .collage-tile.upcoming {
-    &:hover {
-      cursor: pointer;
-
-      .content {
-        visibility: visible;
-        background: rgba(0, 0, 0, 0.75);
-      }
-    }
+  .collage-tile.upcoming:hover .content {
+    visibility: visible;
+    background: rgba(#000, 0.6);
   }
 
-  .collage-tile.live {
-    &:hover {
-      cursor: pointer;
-
-      .content {
-        visibility: visible;
-        background: rgba(0, 0, 0, 0.75);
-      }
-    }
-  }
-
-  .collage-tile.ended {
-    &:hover {
-      cursor: pointer;
-
-      .content {
-        visibility: visible;
-        background: rgba(0, 0, 0, 0.75);
-      }
-    }
+  .collage-tile.ended:hover .content {
+    visibility: visible;
+    background: rgba(#000, 0.75);
   }
 }
 </style>
