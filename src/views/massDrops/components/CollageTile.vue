@@ -154,8 +154,13 @@ export default {
 
 <style lang="scss">
 .collage-tile {
-  border: 2px solid #a0a0a0;
   cursor: pointer;
+  margin: 2px;
+
+  .content {
+    border: 3px solid transparent;
+    border-radius: 0.5rem;
+  }
 
   &.upcoming,
   &.ended {
@@ -167,12 +172,14 @@ export default {
   }
 
   &.upcoming {
-    // border-color: #0071D9;
     filter: grayscale(100%);
   }
 
   &.ended {
-    border-color: #CA347C;
+
+    .content {
+      border-color: #CA347C;
+    }
 
     .indicator-icon {
       background-color: #CA347C;
@@ -184,7 +191,10 @@ export default {
   }
 
   &.live {
-    border-color: #34CA98;
+
+    .content {
+      border-color: #34CA98;
+    }
 
     .content {
       visibility: visible;
@@ -198,11 +208,7 @@ export default {
 }
 
 @screen lg {
-  .collage-tile.upcoming:hover .content {
-    visibility: visible;
-    background: rgba(#000, 0.6);
-  }
-
+  .collage-tile.upcoming:hover .content,
   .collage-tile.ended:hover .content {
     visibility: visible;
     background: rgba(#000, 0.75);
