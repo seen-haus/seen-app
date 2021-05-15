@@ -4,7 +4,7 @@ import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 import { computed, reactive } from "vue";
 
 
-export default function useDropsWithPagination(artistId = null, perPage = 12) {
+export default function useDropsWithPagination(artistId = null, perPage = 12, includeIsHiddenFromDropList = false) {
   const state = reactive({
     items: [null, null, null, null, null, null],
     perPage: perPage,
@@ -12,6 +12,7 @@ export default function useDropsWithPagination(artistId = null, perPage = 12) {
     hasMore: false,
     filter: PURCHASE_TYPE.BOTH,
     artistId,
+    includeIsHiddenFromDropList: includeIsHiddenFromDropList,
   });
 
   async function load() {
@@ -36,6 +37,9 @@ export default function useDropsWithPagination(artistId = null, perPage = 12) {
     const filtrationOptions = { purchaseType: state.filter };
     if (artistId != null) {
       filtrationOptions.artistId = artistId;
+    }
+    if (includeIsHiddenFromDropList !== false) {
+      filtrationOptions.includeIsHiddenFromDropList = true;
     }
 
     const { data, metadata } = await CollectablesService.list(
@@ -100,6 +104,9 @@ export default function useDropsWithPagination(artistId = null, perPage = 12) {
     const filtrationOptions = { purchaseType: state.filter };
     if (artistId != null) {
       filtrationOptions.artistId = artistId;
+    }
+    if (includeIsHiddenFromDropList !== false) {
+      filtrationOptions.includeIsHiddenFromDropList = true;
     }
 
     const { data, metadata } = await CollectablesService.list(
