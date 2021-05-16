@@ -19,6 +19,7 @@ export default {
       metaTitle: "Spaace",
       dropTitle: "Space NFT",
       artistSlug: 'jisbar',
+      bundleChildId: 'jisbar-space',
       gridWidth: 4,
       artistId: 29,
       numberOfItems: 40,

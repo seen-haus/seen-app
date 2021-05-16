@@ -36,7 +36,7 @@
           <product-card
             v-if="collectable != null"
             :collectable="collectable"
-            @click="navigateToCollectable(collectable.slug)"
+            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route)"
           />
           <div
             v-else
@@ -96,11 +96,17 @@ export default {
     const listOfCollectables = computed(
       () => paginatedCollectables.listOfCollectables.value
     );
-    const navigateToCollectable = function (slug) {
-      router.push({
-        name: "collectableAuction",
-        params: { slug: slug },
-      });
+    const navigateToCollectable = function (slug, isSlugFullRoute) {
+      if(isSlugFullRoute) {
+        router.push({
+          name: slug,
+        });
+      }else{
+        router.push({
+          name: "collectableAuction",
+          params: { slug: slug },
+        });
+      }
     };
 
     return {

@@ -25,6 +25,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
     const collectable = ref(initialCollectable);
     const events = ref(collectable.value.events || []);
+    const bundleChildItems = computed(() => collectable.value.bundleChildItems);
     const price = ref(0.0);
     const nextBidPrice = ref(0.0);
     const priceUSD = ref(0.0);
@@ -292,6 +293,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         title,
         description,
         events,
+        bundleChildItems,
         startsAt,
         endsAt,
         liveStatus,

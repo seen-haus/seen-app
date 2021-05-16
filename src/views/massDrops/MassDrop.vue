@@ -157,7 +157,7 @@ export default {
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
     paginatedArtists.load();
 
-    const paginatedCollectables = useDropsWithPagination(props.drop.artistId, props.drop.numberOfItems, true);
+    const paginatedCollectables = useDropsWithPagination(null, props.drop.numberOfItems, true, props.drop.bundleChildId);
     const listOfCollectables = computed(() => {
       let list = paginatedCollectables.listOfCollectables.value;
       return orderBy(list, 'id', "asc")

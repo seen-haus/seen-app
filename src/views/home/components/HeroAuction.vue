@@ -3,7 +3,7 @@
     <container class="py-15 flex flex-col lg:flex-row">
       <div
           class="media relative flex items-center flex-1 cursor-pointer"
-          @click="navigateToCollectable(collectable.slug)"
+          @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route)"
       >
         <media-loader
             :src="firstMedia"
@@ -59,6 +59,7 @@
           <price-display
               size="md"
               type="Ether"
+              v-if="!shouldHidePrice"
               :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
               :price="price"
               :priceUSD="isAuction ? priceUSD : priceUSDSold"
@@ -91,7 +92,7 @@
                 ref="timerRef"
                 class="text-black text-sm mt-2"
                 :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
-                :startDate="startsAt"
+                :startDate="getStartsAt"
                 :endDate="currentEndsAt"
                 :isAuction="isAuction"
                 @onProgress="updateState"
@@ -105,7 +106,7 @@
                 ref="timerRef"
                 class="text-black text-sm mt-2"
                 :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
-                :startDate="startsAt"
+                :startDate="getStartsAt"
                 :endDate="currentEndsAt"
                 :isAuction="isAuction"
                 @onProgress="updateState"
@@ -201,6 +202,7 @@ export default {
       // setCollectable,
       // updateInformation,
       updateCollectableState,
+      bundleChildItems,
     } = useCollectableInformation(props.collectable);
 
     const addTime = function () {
@@ -209,10 +211,16 @@ export default {
 
     const navigateToCollectable = function () {
       if (!isCollectableActive || !props.collectable.slug) return;
-      router.push({
-        name: "collectableAuction",
-        params: {slug: props.collectable.slug},
-      });
+      if(props.collectable.is_slug_full_route) {
+        router.push({
+          name: props.collectable.slug,
+        });
+      }else{
+        router.push({
+          name: "collectableAuction",
+          params: {slug: props.collectable.slug},
+        });
+      }
     };
 
     const updateState = function(e) {
@@ -221,10 +229,50 @@ export default {
     }
 
     const currentEndsAt = computed(() => {
-      if (endsAt.value && typeof endsAt.value == "string") {
+      if(bundleChildItems && bundleChildItems.value && bundleChildItems.value.length > 0) {
+        let latestBundleItemEndsAt = false;
+        for(let bundleItem of bundleChildItems.value) {
+          if(!latestBundleItemEndsAt) {
+            latestBundleItemEndsAt = bundleItem.ends_at;
+          }else if(bundleItem.ends_at > latestBundleItemEndsAt) {
+            latestBundleItemEndsAt = bundleItem.ends_at;
+          }
+        }
+        if (latestBundleItemEndsAt && latestBundleItemEndsAt == "string") {
+          return new Date(latestBundleItemEndsAt)
+        }
+        return latestBundleItemEndsAt;
+      } else if (endsAt.value && typeof endsAt.value == "string") {
         return new Date(endsAt.value)
       }
       return endsAt.value;
+    });
+
+    const getStartsAt = computed(() => {
+      if(bundleChildItems && bundleChildItems.value && bundleChildItems.value.length > 0) {
+        let earliestBundleItemStartsAt = false;
+        for(let bundleItem of bundleChildItems.value) {
+          if(!earliestBundleItemStartsAt) {
+            earliestBundleItemStartsAt = bundleItem.starts_at;
+          }else if(bundleItem.starts_at < earliestBundleItemStartsAt) {
+            earliestBundleItemStartsAt = bundleItem.starts_at;
+          }
+        }
+        if (earliestBundleItemStartsAt && earliestBundleItemStartsAt == "string") {
+          return new Date(earliestBundleItemStartsAt)
+        }
+        return earliestBundleItemStartsAt;
+      } else if (startsAt.value && typeof startsAt.value == "string") {
+        return new Date(startsAt.value)
+      }
+      return startsAt.value;
+    });
+
+    const shouldHidePrice = computed(() => {
+      if(bundleChildItems && bundleChildItems.value && bundleChildItems.value.length > 0) {
+        return true;
+      }
+      return false;
     });
 
     return {
@@ -244,7 +292,6 @@ export default {
       title,
       startsAt,
       endsAt,
-      currentEndsAt,
       liveStatus,
       is_sold_out,
       edition,
@@ -258,6 +305,9 @@ export default {
       updateState,
       addTime,
       navigateToCollectable,
+      shouldHidePrice,
+      currentEndsAt,
+      getStartsAt,
     };
   },
 };

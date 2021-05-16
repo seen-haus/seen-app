@@ -74,7 +74,7 @@
                 v-else
                 :collectable="collectable.data"
                 @click="
-                  navigateToCollectable(collectable.data.slug)
+                  navigateToCollectable(collectable.data.slug, collectable.data.is_slug_full_route)
                 "
               />
             </template>
@@ -204,11 +204,17 @@ export default {
       collection.loadMore();
     };
 
-    const navigateToCollectable = function (slug) {
-      router.push({
-        name: "collectableAuction",
-        params: { slug: slug },
-      });
+    const navigateToCollectable = function (slug, isSlugFullRoute) {
+      if(isSlugFullRoute) {
+        router.push({
+          name: slug,
+        });
+      }else{
+        router.push({
+          name: "collectableAuction",
+          params: { slug: slug },
+        });
+      }
     };
 
     const listOfCollectables = computed(

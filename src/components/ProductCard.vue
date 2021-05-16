@@ -39,6 +39,7 @@
         >{{ title }}</span
         >
         <price-display
+            v-if="!shouldHidePrice"
             size="sm"
             class="items-end ml-2 -mt-0.5 md:mt-0.5"
             :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
@@ -68,8 +69,8 @@
             class="text-black text-sm mt-2"
             :isAuction="isAuction"
             :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
-            :startDate="startsAt"
-            :endDate="endsAt"
+            :startDate="getStartsAt"
+            :endDate="getEndsAt"
             @onProgress="updateProgress"
             @onTimerStateChange="updateCollectableState"
         />
@@ -82,8 +83,8 @@
               class="text-black text-sm mt-2"
               :isAuction="isAuction"
               :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
-              :startDate="startsAt"
-              :endDate="endsAt"
+              :startDate="getStartsAt"
+              :endDate="getEndsAt"
               @onProgress="updateProgress"
               @onTimerStateChange="updateCollectableState"
           />
@@ -132,6 +133,42 @@ export default {
   props: {
     collectable: Object,
   },
+  computed: {
+    getStartsAt() {
+      if(this.bundleChildItems && this.bundleChildItems && this.bundleChildItems.length > 0) {
+        let startsAt = false;
+        for(let bundleItem of this.bundleChildItems) {
+          if(!startsAt) {
+            startsAt = bundleItem.starts_at;
+          }else if(bundleItem.starts_at < startsAt) {
+            startsAt = bundleItem.starts_at;
+          }
+        }
+        return startsAt;
+      }
+      return this.startsAt;
+    },
+    getEndsAt() {
+      if(this.bundleChildItems && this.bundleChildItems && this.bundleChildItems.length > 0) {
+        let endsAt = false;
+        for(let bundleItem of this.bundleChildItems) {
+          if(!endsAt) {
+            endsAt = bundleItem.ends_at;
+          }else if(bundleItem.ends_at > endsAt) {
+            endsAt = bundleItem.ends_at;
+          }
+        }
+        return endsAt;
+      }
+      return this.endsAt;
+    },
+    shouldHidePrice() {
+      if(this.bundleChildItems && this.bundleChildItems && this.bundleChildItems.length > 0) {
+        return true;
+      }
+      return false;
+    }
+  },
   setup(props) {
     const autoplay = true;
     // console.log('ProductCard', props.collectable);
@@ -169,6 +206,7 @@ export default {
       // setCollectable,
       // updateInformation,
       updateCollectableState,
+      bundleChildItems,
     } = useCollectableInformation(props.collectable);
 
     const addTime = function () {
@@ -219,6 +257,7 @@ export default {
       addTime,
       handleHover,
       updateCollectableState,
+      bundleChildItems,
     };
   },
 };
