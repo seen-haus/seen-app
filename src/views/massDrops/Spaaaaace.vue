@@ -39,9 +39,9 @@ export default {
               {class: "bg-fence-light self-end text-gray-400 font-semibold mr-1 my-2", text:"EDITION 40/40"},
               {class: "bg-tag-nft mr-1 text-white my-2", text:"NFT"},
               {class: "bg-tag-tangible text-white my-2", text: "TANGIBLE"}],
-      artistStatement: "Be Part of History",
-      artistText: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum.",
-      videoUrl: "https://www.youtube.com/embed/1G5caDyf-kA",
+      artistStatement: "Make NFT History",
+      artistText: "Jisbar will be adventuring towards space for a second time and to accomplish another historic milestone: this time, in teamwork with SEEN HAUS, he will be sending the very first NFT-backed painting into space. Space NFT is a portrait of renowned digital artist Beeple, depicted with the reflection of the galaxy on the lenses of his eyeglasses. The overlapping space motifs, imagery of rocket ships, and references towards “going to the moon” are particularly fitting, as those ideals resonate with the cryptocurrency community at large.",
+      videoUrl: "https://www.youtube.com/embed/oNdIXBrgz4M",
       faq: [
           {question: "Q1", answer: "<p>A1 <br> :)</p>"},
           {question: "Q2", answer: "A2"},
