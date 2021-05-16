@@ -43,13 +43,13 @@ export default {
       artistStatement: "Make NFT History",
       artistText: "Jisbar will be adventuring towards space for a second time and to accomplish another historic milestone: this time, in teamwork with SEEN HAUS, he will be sending the very first NFT-backed painting into space. Space NFT is a portrait of renowned digital artist Beeple, depicted with the reflection of the galaxy on the lenses of his eyeglasses. The overlapping space motifs, imagery of rocket ships, and references towards “going to the moon” are particularly fitting, as those ideals resonate with the cryptocurrency community at large.",
       videoUrl: "https://www.youtube.com/embed/oNdIXBrgz4M",
-      faq: [
-          {question: "Q1", answer: "<p>A1 <br> :)</p>"},
-          {question: "Q2", answer: "A2"},
-          {question: "Q3", answer: "A3"},
-          {question: "Q4", answer: "A4"},
-          {question: "Q5", answer: "A5"},
-          ]
+      // faq: [
+      //     {question: "Q1", answer: "<p>A1 <br> :)</p>"},
+      //     {question: "Q2", answer: "A2"},
+      //     {question: "Q3", answer: "A3"},
+      //     {question: "Q4", answer: "A4"},
+      //     {question: "Q5", answer: "A5"},
+      //     ]
     };
     return {
       drop
