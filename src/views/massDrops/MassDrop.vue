@@ -33,27 +33,21 @@
 
         <div class="w-12 h-12 lg:order-2"></div>
 
-        <div
-          class="description flex flex-col justify-center text-center lg:text-left flex-1 lg:order-1"
-        >
+        <div class="description flex flex-col justify-center text-center lg:text-left flex-1 lg:order-1">
           <div class="text-4xl font-title font-bold mb-4">{{ drop.artistStatement }}</div>
-          <div class="text-xl text-gray-500">{{ drop.artistText }}</div>
+          <div class="artist-text text-gray-500">{{ drop.artistText }}</div>
 
-          <div
-            class="flex flex-col justify-start items-center lg:flex-row mt-9"
-          >
-            <button
-              class="button dark mr-0 mb-4 lg:mr-4 lg:mb-0 w-full lg:w-auto"
-            >
-              <i class="fas fa-file-pdf mr-2 text-xl icon-left text-white"></i>
-              <span style="font-size: 14px;">More About the Launch</span>
-            </button>
-
-            <button class="button discord w-full lg:w-auto"><a href="https://discord.com/invite/dad8J4f" target="_blank">
-              <i class="fab fa-discord mr-2 text-xl icon-left text-white"></i>
-              <span style="font-size: 14px;">Discuss on Discord</span></a>
-            </button>
+          <div class="flex flex-col justify-start items-center lg:flex-row mt-9">
+              <template v-for="button in drop.buttons" :key="button">
+                <button :class="button.class">
+                    <a :href="button.url" target="_blank">
+                        <i :class="button.image"></i>
+                        <span style="font-size: 14px;">{{ button.displayText }}</span>
+                    </a>
+                </button>
+              </template>
           </div>
+
         </div>
       </div>
 
@@ -63,10 +57,7 @@
       </div>
 
       <div class="collage-image overflow-auto mb-36">
-        <div
-          class="image-container mx-auto relative"
-          style="min-width: 700px; max-width: 1140px"
-        >
+        <div class="image-container mx-auto relative" style="min-width: 700px; max-width: 1140px">
           <div class="grid" :style="gridStyle">
         <template
           v-for="collectable in listOfCollectables" :key="collectable && collectable.id">
@@ -74,12 +65,29 @@
           />
         </template>
       </div>
-
         </div>
       </div>
 
+      <div v-if="drop.faq" class="faq-list">
+          <div class="flex items-center py-6 flex-col lg:flex-row">
+            <fenced-title
+              class="flex-grow mr-0 mb-2 self-stretch"
+              color="fence-gray"
+              textAlign="center"
+              :closed="true"
+              >FAQs
+            </fenced-title>
+          </div>
+          <div class="text-center md:w-1/2 md:mx-auto text-gray-600 text-lg">
+              You got questions? We got the answers.
+          </div>
+          <template v-for="question in drop.faq" :key="question">
+            <collapsible-tile class="mx-auto mb-6" :title="question.question">
+                <span v-html="question.answer"></span>
+            </collapsible-tile>
+          </template>
+      </div>
     </container>
-
   </div>
 </template>
 
@@ -104,6 +112,7 @@ import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
 import orderBy from "lodash/orderBy";
 import { ArtistService } from "@/services/apiService";
+import CollapsibleTile from "@/views/faq/components/CollapsibleTile.vue"
 
 
 export default {
@@ -124,6 +133,7 @@ export default {
     Tag,
     LiveIndicator,
     CollageTile,
+    CollapsibleTile
   },
   computed: {
     gridStyle() {
@@ -191,5 +201,9 @@ export default {
 .discord {
   background-color: rgb(50, 93, 218);
   color: white;
+}
+
+.artist-text {
+  line-height: 1.75rem;
 }
 </style>
