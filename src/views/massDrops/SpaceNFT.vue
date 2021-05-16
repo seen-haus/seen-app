@@ -7,7 +7,7 @@ import { useMeta } from "vue-meta";
 import MassDrop from "@/views/massDrops/MassDrop.vue";
 
 export default {
-  name: "Spaaaaace",
+  name: "SpaceNFT",
   components: {
     MassDrop
   },
@@ -16,7 +16,7 @@ export default {
       title: "Space NFT",
     });
     const drop = {
-      metaTitle: "Spaace",
+      metaTitle: "Space NFT",
       dropTitle: "Space NFT",
       artistSlug: 'jisbar',
       bundleChildId: 'jisbar-space',

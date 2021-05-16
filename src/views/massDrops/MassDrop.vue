@@ -35,7 +35,7 @@
 
         <div class="description flex flex-col justify-center text-center lg:text-left flex-1 lg:order-1">
           <div class="text-4xl font-title font-bold mb-4">{{ drop.artistStatement }}</div>
-          <div class="text-xl text-gray-500">{{ drop.artistText }}</div>
+          <div class="artist-text text-gray-500">{{ drop.artistText }}</div>
 
           <div class="flex flex-col justify-start items-center lg:flex-row mt-9">
               <template v-for="button in drop.buttons" :key="button">
@@ -201,5 +201,9 @@ export default {
 .discord {
   background-color: rgb(50, 93, 218);
   color: white;
+}
+
+.artist-text {
+  line-height: 1.75rem;
 }
 </style>
