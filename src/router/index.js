@@ -86,7 +86,7 @@ const routes = [
     },
     {
         path: '/space-nft',
-        name: 'spaceNFT',
+        name: 'space-nft',
         component: () => import(/* webpackChunkName: "spaceNFT" */ '../views/massDrops/SpaceNFT.vue')
     },
 ]
