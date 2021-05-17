@@ -33,6 +33,10 @@
   );
 }
 
+.bg-dark-blue {
+  background-color: #0071D9;
+}
+
 .active-green-icon {
   filter: brightness(0) saturate(100%) invert(65%) sepia(65%) saturate(420%)
     hue-rotate(109deg) brightness(89%) contrast(91%) !important;
