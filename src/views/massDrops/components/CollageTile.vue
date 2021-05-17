@@ -1,7 +1,12 @@
 <template>
   <div
     class="collage-tile rounded-lg overflow-hidden relative"
-    :class="{ upcoming: isUpcomming, ended: isEnded, live: isLive }"
+    :class="{ 
+      upcoming: styleNextPhase || styleIsReserved ? false : isUpcomming,
+      ended: isEnded || styleIsReserved,
+      live: !styleIsReserved ? isLive : false,
+      nextphase: styleNextPhase && !styleIsReserved,
+    }"
     :style="{'padding-bottom': aspectRatio,}"
   >
 
@@ -25,11 +30,13 @@
 
     <div class="content flex flex-col absolute top-0 left-0 w-full h-full p-4">
       <div class="flex justify-between items-start flex-1">
-        <price-display :price=price :priceUSD=priceUSD size="xs" class="text-white self-start" type="ETH" />
-        <live-indicator :status=liveStatus class="pt-1 text-white"></live-indicator>
+        <price-display v-if="!styleIsReserved" :price=price :priceUSD=priceUSD size="xs" class="text-white self-start" type="ETH" />
+        <live-indicator v-if="!styleIsReserved" :status="styleNextPhase ? 'next phase' : liveStatus" class="pt-1 text-white"></live-indicator>
+        <live-indicator v-if="styleIsReserved" :status="'reserved'" :status-override="reservedTitleOverride" class="pt-1 text-white"></live-indicator>
       </div>
 
       <progress-bar
+          v-if="!styleIsReserved"
           :inversed="isAuction"
           :progress="progress"
           :colorClass="isCollectableActive ? isUpcomming ? 'bg-gray-300': 'bg-primary' : 'bg-gray-300'"
@@ -37,6 +44,7 @@
       />
 
       <progress-timer
+            v-if="!styleIsReserved"
             ref="timerRef"
             class="text-xs text-white mt-2 w-auto"
             :isAuction="isAuction"
@@ -76,6 +84,12 @@ export default {
       type: String,
       default: "56.25%",
     },
+    isNextPhase: Boolean,
+    isReserved: {
+      type: Boolean,
+      default: false,
+    },
+    reservedTitleOverride: String,
   },
 
   computed: {
@@ -144,7 +158,9 @@ export default {
       isTangible,
       isNft,
       isAuction,
-      isUpcomming
+      isUpcomming,
+      styleNextPhase: props.isNextPhase ? props.isNextPhase : false,
+      styleIsReserved: props.isReserved ? props.isReserved : false,
     };
   }
 
@@ -162,6 +178,7 @@ export default {
     border-radius: 0.5rem;
   }
 
+  // &.nextphase,
   &.upcoming,
   &.ended {
     opacity: 0.6;
@@ -190,6 +207,18 @@ export default {
     }
   }
 
+  &.nextphase {
+    .content {
+      border-color: #0071D9;
+    }
+
+    .content {
+      // visibility: visible;
+      background: rgba(#000, 0.75);
+    }
+  }
+  
+
   &.live {
 
     .content {
@@ -208,6 +237,7 @@ export default {
 }
 
 @screen lg {
+  .collage-tile.nextphase:hover .content,
   .collage-tile.upcoming:hover .content,
   .collage-tile.ended:hover .content {
     visibility: visible;

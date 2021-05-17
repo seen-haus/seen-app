@@ -10,11 +10,12 @@
           indicatorStatus === 'ENDED' ||
           indicatorStatus === 'CLOSED' ||
           indicatorStatus === 'SOLD OUT',
+        'bg-dark-blue': indicatorStatus === 'NEXT PHASE',
         'bg-accent': indicatorStatus === 'COMING SOON',
       }"
     ></div>
     <div class="font-bold">
-      <slot>{{ indicatorStatus }}</slot>
+      <slot>{{ indicatorStatusOverride ? indicatorStatusOverride : indicatorStatus }}</slot>
     </div>
   </div>
 </template>
@@ -25,6 +26,7 @@ export default {
   name: "LiveIndicator",
   props: {
     status: { type: String, default: "live" },
+    statusOverride: { type: String, default: "" },
   },
   computed: {
     indicatorStatus: function () {
@@ -39,10 +41,20 @@ export default {
           return "COMING SOON";
         case "closed":
           return "CLOSED";
+        case "next phase":
+          return "NEXT PHASE";
+        case "reserved":
+          return "RESERVED";
         default:
           return "CUSTOM";
       }
     },
+    indicatorStatusOverride: function () {
+      if(this.statusOverride?.length > 0) {
+        return this.statusOverride;
+      }
+      return false;
+    }
   },
 };
 </script>

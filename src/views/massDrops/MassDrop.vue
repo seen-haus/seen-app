@@ -52,8 +52,8 @@
       </div>
 
       <div class="countdown flex flex-col items-center">
-        <progress-bar v-if="minStartTime && maxEndTime" :progress="(new Date(maxEndTime.ends_at).getTime() - new Date().getTime())/(new Date(maxEndTime.ends_at).getTime() - new Date(minStartTime.starts_at).getTime())" colorClass="bg-rainbow" class="bg-topbar h-3 w-full"/>
-        <progress-timer v-if="minStartTime && maxEndTime" class="text-lg my-4" :start-date="minStartTime.starts_at" :end-date="maxEndTime.ends_at" />
+        <progress-bar v-if="minStartTime && maxEndTime && !isNaN(currentPhaseIndex)" :progress="(new Date(maxEndTime.ends_at).getTime() - new Date().getTime())/(new Date(maxEndTime.ends_at).getTime() - new Date(minStartTime.starts_at).getTime())" colorClass="bg-rainbow" class="bg-topbar h-3 w-full"/>
+        <progress-timer :overrideStartsInLabel="`Phase ${currentPhaseIndex + 1}/${phases.length} starts in: `" :overrideEndsInLabel="`Phase ${currentPhaseIndex + 1}/${phases.length} ends in: `" v-if="minStartTime && maxEndTime" class="text-lg my-4" :start-date="minStartTime.starts_at" :end-date="maxEndTime.ends_at" />
       </div>
 
       <div class="collage-image overflow-auto mb-36">
@@ -61,7 +61,13 @@
           <div class="grid" :style="gridStyle">
         <template
           v-for="collectable in listOfCollectables" :key="collectable && collectable.id">
-          <collage-tile v-if="collectable != null" :collectable="collectable" @click="navigateToCollectable(collectable.slug)"
+          <collage-tile 
+            v-if="collectable != null"
+            :reserved-title-override="collectable && !isNaN(reservedId) && collectable.id === reservedId && reservedTitleOverride"
+            :is-reserved="collectable && !isNaN(reservedId) && collectable.id === reservedId"
+            :is-next-phase="collectable && nextPhaseIds && nextPhaseIds.indexOf(collectable.id) > -1"
+            :collectable="collectable"
+            @click="collectable.id !== reservedId && navigateToCollectable(collectable.slug)"
           />
         </template>
       </div>
@@ -120,6 +126,12 @@ export default {
   props: {
     drop: Object
   },
+  data() {
+    return {
+      interval: null,
+      time: null,
+    }
+  },
   components: {
     Container,
     FencedTitle,
@@ -145,7 +157,76 @@ export default {
     live() {
       return this.progress > 0 && this.progress < 1 ? 'live' : this.progress > 1 ? 'coming soon' : 'ended';
     },
-
+    currentPhaseIndex() {
+      let list = [...this.paginatedCollectables.listOfCollectables.value];
+      let latestPhase = false;
+      if(list) {
+        // Find latest phase which has started
+        if(this.phases && this.time) {
+          for(let phase of this.phases) {
+            let incrementPhase = false;
+            for(let item of list) {
+              if(item) {
+                if(phase.indexOf(item.id) > -1) {
+                  if(new Date(item.starts_at).getTime() < new Date().getTime()) {
+                    incrementPhase = true;
+                  }
+                }
+                if(incrementPhase) {
+                  break;
+                }
+              }
+            }
+            if(incrementPhase) {
+              if(latestPhase === false){
+                latestPhase = 0;
+              }else{
+                latestPhase++
+              }
+            }
+          }
+        }
+      }
+      return latestPhase;
+    },
+    nextPhaseIds() {
+      if(this.currentPhaseIndex === false) {
+        return this.phases[0]
+      } else if(this.phases && !isNaN(this.currentPhaseIndex) && this.phases[this.currentPhaseIndex + 1]) {
+        return this.phases[this.currentPhaseIndex + 1]
+      }
+      return [];
+    },
+    currentPhaseIds() {
+      if(this.phases && !isNaN(this.currentPhaseIndex) && this.phases[this.currentPhaseIndex]) {
+        return this.phases[this.currentPhaseIndex]
+      }
+      return [];
+    },
+    minStartTime() {
+      let list = this.paginatedCollectables.listOfCollectables.value;
+      if(this.currentPhaseIds?.length > 0 && this.nextPhaseIds?.length === 0) {
+        list = this.paginatedCollectables.listOfCollectables.value.filter(item => item && this.currentPhaseIds.indexOf(item.id) > -1);
+      }else if(this.currentPhaseIds?.length === 0 && this.nextPhaseIds?.length > 0){
+        list = this.paginatedCollectables.listOfCollectables.value.filter(item => item && this.nextPhaseIds.indexOf(item.id) > -1);
+      }
+      if(list.length === 0) {
+        list = this.paginatedCollectables.listOfCollectables.value;
+      }
+      return orderBy(list, 'starts_at', "asc")[0]
+    },
+    maxEndTime() {
+      let list = this.paginatedCollectables.listOfCollectables.value;
+      if(this.currentPhaseIds?.length > 0) {
+        list = this.paginatedCollectables.listOfCollectables.value.filter(item => item && this.currentPhaseIds.indexOf(item.id) > -1);
+      }else if(this.currentPhaseIds?.length === 0 && this.nextPhaseIds?.length > 0){
+        list = this.paginatedCollectables.listOfCollectables.value.filter(item => item && this.nextPhaseIds.indexOf(item.id) > -1);
+      }
+      if(list.length === 0) {
+        list = this.paginatedCollectables.listOfCollectables.value;
+      }
+      return orderBy(list, 'ends_at', "desc")[0]
+    },
   },
   async setup(props) {
 
@@ -165,16 +246,6 @@ export default {
 
     paginatedCollectables.load();
 
-    const minStartTime = computed(() => {
-      let list = paginatedCollectables.listOfCollectables.value;
-      return orderBy(list, 'starts_at', "asc")[0]
-    });
-
-    const maxEndTime = computed(() => {
-      let list = paginatedCollectables.listOfCollectables.value;
-      return orderBy(list, 'ends_at', "desc")[0]
-    });
-
     const navigateToCollectable = function (slug) {
       router.push({
         name: "collectableAuction",
@@ -187,11 +258,24 @@ export default {
       listOfArtists,
       listOfCollectables,
       artist,
-      minStartTime,
-      maxEndTime,
+      paginatedCollectables,
+      phases: props?.drop?.phases,
+      reservedId: props?.drop?.reservedId,
+      reservedTitleOverride: props?.drop?.reservedTitleOverride,
       // Methods
       navigateToCollectable,
     };
+  },
+  beforeUnmount() {
+    // prevent memory leak
+    clearInterval(this.interval)
+  },
+  created() {
+    // update the time every 5 seconds
+    // this is used to get the currentPhaseIndex to be rechecked
+    this.interval = setInterval(() => {
+      this.time = new Date().getTime()
+    }, 5000)
   }
 };
 </script>

@@ -29,6 +29,14 @@ export default {
       type: String,
       default: "2021-03-16T10:00:00.000Z",
     },
+    overrideStartsInLabel: {
+      type: String,
+      default: "",
+    },
+    overrideEndsInLabel: {
+      type: String,
+      default: "",
+    }
   },
   // TODO timer logic
   setup(props, ctx) {
@@ -58,9 +66,15 @@ export default {
 
     const labelText = computed(() => {
       if (timerState.value === TIMER_STATE.WAITING) {
+        if(props.overrideStartsInLabel) {
+          return props.overrideStartsInLabel;
+        }
         return props.isAuction ? 'Auction starts in: ' : 'Sale starts in: ';
       }
       if (timerState.value === TIMER_STATE.IN_PROGRESS) {
+        if(props.overrideEndsInLabel) {
+          return props.overrideEndsInLabel;
+        }
         return 'Ends in: ' || props.label;
       }
       if (timerState.value === TIMER_STATE.DONE) {
