@@ -205,7 +205,7 @@ export default {
     },
     minStartTime() {
       let list = this.paginatedCollectables.listOfCollectables.value;
-      if(this.currentPhaseIds?.length > 0 && this.nextPhaseIds?.length === 0) {
+      if(this.currentPhaseIds?.length > 0) {
         list = this.paginatedCollectables.listOfCollectables.value.filter(item => item && this.currentPhaseIds.indexOf(item.id) > -1);
       }else if(this.currentPhaseIds?.length === 0 && this.nextPhaseIds?.length > 0){
         list = this.paginatedCollectables.listOfCollectables.value.filter(item => item && this.nextPhaseIds.indexOf(item.id) > -1);
