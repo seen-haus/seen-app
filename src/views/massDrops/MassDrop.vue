@@ -290,4 +290,18 @@ export default {
 .artist-text {
   line-height: 1.75rem;
 }
+
+/* Responsive hotfix for image collage */
+@media screen and (max-width: 767px) {
+  .collage-image {
+    transform: scale(0.75);
+    margin: -100px -140px;
+  }
+}
+@media screen and (max-width: 530px) {
+  .collage-image {
+    transform: scale(0.5);
+    margin: -240px -190px;
+  }
+}
 </style>
