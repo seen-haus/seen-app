@@ -129,7 +129,7 @@ export default {
   data() {
     return {
       interval: null,
-      time: null,
+      time: new Date().getTime(),
     }
   },
   components: {
