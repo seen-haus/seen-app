@@ -178,9 +178,8 @@ export default {
     border-radius: 0.5rem;
   }
 
-  // &.nextphase,
   &.upcoming,
-  &.ended {
+  &.nextphase {
     opacity: 0.6;
 
     &:hover {
@@ -188,7 +187,8 @@ export default {
     }
   }
 
-  &.upcoming {
+  &.upcoming > img,
+  &.nextphase > img {
     filter: grayscale(100%);
   }
 
