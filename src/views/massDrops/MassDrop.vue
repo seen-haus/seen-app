@@ -52,7 +52,14 @@
       </div>
 
       <div class="countdown flex flex-col items-center">
-        <progress-bar v-if="minStartTime && maxEndTime && !isNaN(currentPhaseIndex)" :progress="(new Date(maxEndTime.ends_at).getTime() - new Date().getTime())/(new Date(maxEndTime.ends_at).getTime() - new Date(minStartTime.starts_at).getTime())" colorClass="bg-rainbow" class="bg-topbar h-3 w-full"/>
+        <progress-bar 
+          :endDate="'2021-05-20T14:20:00.000Z'"
+          v-if="minStartTime && maxEndTime && !isNaN(currentPhaseIndex)"
+          :progress="(new Date(maxEndTime.ends_at).getTime() - new Date().getTime())/(new Date(maxEndTime.ends_at).getTime() - new Date(minStartTime.starts_at).getTime())"
+          colorClass="bg-rainbow"
+          class="bg-topbar h-3 w-full"
+          progressBackgroundColor="bg-gray-300"
+        />
         <progress-timer :overrideStartsInLabel="`Phase ${currentPhaseIndex + 1}/${phases.length} starts in: `" :overrideEndsInLabel="`Phase ${currentPhaseIndex + 1}/${phases.length} ends in: `" v-if="minStartTime && maxEndTime" class="text-lg my-4" :start-date="minStartTime.starts_at" :end-date="maxEndTime.ends_at" />
       </div>
 

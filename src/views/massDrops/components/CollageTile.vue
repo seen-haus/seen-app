@@ -38,7 +38,9 @@
       <progress-bar
           v-if="!styleIsReserved"
           :inversed="isAuction"
-          :progress="progress"
+          :progress="currentProgress"
+          :endDate="endsAt"
+          progressBackgroundColor="bg-gray-300"
           :colorClass="isCollectableActive ? isUpcomming ? 'bg-gray-300': 'bg-primary' : 'bg-gray-300'"
           class="bg-gray-600 h-1 w-full"
       />
@@ -60,6 +62,7 @@
 
 
 <script>
+import {ref} from "vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
@@ -89,9 +92,8 @@ export default {
       type: Boolean,
       default: false,
     },
-    reservedTitleOverride: String,
+    reservedTitleOverride: [String, Boolean],
   },
-
   computed: {
     isLive() {
       let now = new Date().getTime();
@@ -132,6 +134,11 @@ export default {
     } = useCollectableInformation(props.collectable);
     console.log(title);
 
+    const currentProgress = ref(progress);
+
+    const updateProgress = function (event) {
+      currentProgress.value = event;
+    };
 
         return {
       collectableState,
@@ -140,7 +147,7 @@ export default {
       priceUSDSold,
       items,
       itemsOf,
-      progress,
+      currentProgress,
       isCollectableActive,
       // Static
       type,
@@ -161,6 +168,7 @@ export default {
       isUpcomming,
       styleNextPhase: props.isNextPhase ? props.isNextPhase : false,
       styleIsReserved: props.isReserved ? props.isReserved : false,
+      updateProgress,
     };
   }
 
@@ -203,7 +211,7 @@ export default {
     }
 
     .progress-bar {
-      display: none;
+      opacity: 0;
     }
   }
 

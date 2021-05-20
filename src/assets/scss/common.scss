@@ -33,6 +33,14 @@
   );
 }
 
+.bg-progress-bar-vibrant {
+  background-image: linear-gradient( 78.1deg,  rgba(177,14,236,1) 5.5%, rgba(255,19,15,1) 92.8% );
+}
+
+.bg-green-progress-bar {
+  background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgba(4,159,108,1) 0%, rgb(0, 224, 0) 90.1% );
+}
+
 .bg-dark-blue {
   background-color: #0071D9;
 }

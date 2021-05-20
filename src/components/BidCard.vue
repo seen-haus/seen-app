@@ -127,7 +127,9 @@
         <progress-bar
             :inversed="isAuction"
             :progress="currentProgress"
-            class="bg-gray-300 h-3 mt-3"
+            :endDate="endsAt"
+            class="h-3 mt-3"
+            progressBackgroundColor="bg-gray-300"
             :colorClass="
             isCollectableActive
               ? isUpcomming
@@ -156,7 +158,8 @@
           />
           <progress-bar
               :progress="currentProgress"
-              class="bg-gray-300 h-3 mt-3"
+              class="h-3 mt-3"
+              progressBackgroundColor="bg-gray-300"
               :colorClass="
               isCollectableActive
                 ? isUpcomming
@@ -174,7 +177,7 @@
           <div class="text-2.5xl font-bold py-2">
             {{ items }} out of {{ items_of }}
           </div>
-          <progress-bar :progress="progress" class="bg-gray-300 h-3 mt-3"/>
+          <progress-bar :progress="progress" progressBackgroundColor="bg-gray-300" class="h-3 mt-3"/>
         </template>
       </template>
     </div>

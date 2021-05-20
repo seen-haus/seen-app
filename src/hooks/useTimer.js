@@ -78,6 +78,13 @@ export default function useTimer(callback) {
             duration = progress;
             progressLeft = progress;
         }
+
+        if(Math.floor(progressLeft / 1000) <= 900) {
+            duration = 900 * 1000
+            progressLeft = state.endDate - now;
+            progress = duration - progressLeft;
+        }
+        
         state.percentage = +(progress / duration).toFixed(2);
         if (progressLeft <= 0) {
             timerState.value = TIMER_STATE.DONE;

@@ -53,6 +53,7 @@
       <progress-bar
           :inversed="isAuction"
           :progress="progress"
+          :endDate="endsAt"
           :colorClass="
           isCollectableActive
             ? isUpcomming
@@ -60,7 +61,8 @@
               : 'bg-primary'
             : 'bg-gray-300'
         "
-          class="bg-fence-light h-2 mt-10"
+          progressBackgroundColor="bg-fence-light"
+          class="h-2 mt-10"
       />
 
       <template v-if="isAuction">
