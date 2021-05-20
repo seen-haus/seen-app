@@ -69,7 +69,9 @@
         <div class="timer pt-12">
           <progress-bar
               :inversed="isAuction"
-              class="bg-fence-dark h-3"
+              class="h-3"
+              progressBackgroundColor="bg-fence-dark"
+              :endDate="currentEndsAt"
               :progress="progress"
               :colorClass="
               isCollectableActive
