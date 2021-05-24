@@ -95,6 +95,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     });
     const startsAt = computed(() => collectable.value.starts_at);
     const endsAt = computed(() => collectable.value.ends_at);
+    const claim = computed(() => collectable.value.claim ? collectable.value.claim : false);
     const isAuction = computed(
         () => collectable.value.purchase_type === PURCHASE_TYPE.AUCTION
     );
@@ -306,6 +307,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         isAuction,
         isUpcomming,
         version,
+        claim,
         // Methods
         updateProgress,
         setCollectable,

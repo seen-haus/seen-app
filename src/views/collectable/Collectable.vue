@@ -112,6 +112,7 @@
               :isCollectableActive="isCollectableActive"
               :isUpcomming="isUpcomming"
               :nextBidPrice="nextBidPrice"
+              :claim="claim"
               @update-state="updateCollectableState"
           />
 
@@ -246,6 +247,7 @@ export default {
       updateProgress,
       setCollectable,
       updateCollectableState,
+      claim,
     } = useCollectableInformation();
 
     const currentEndsAt = computed(() => {
@@ -376,7 +378,8 @@ export default {
       viewOnOpenSea,
       openModal,
       showAdditionalInformation,
-      updateCollectableState
+      updateCollectableState,
+      claim,
     };
   },
 };

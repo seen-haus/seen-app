@@ -67,6 +67,9 @@
         </div>
       </template>
 
+      <button class="button primary mt-6" v-if="!isNaN(claimId)" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
+        Claim Physical
+      </button>
       <button class="button opensea mt-6" v-if="!isCollectableActive" @click="viewOnOpenSea">
         Opensea
       </button>
@@ -227,6 +230,7 @@ export default {
     is_closed: Boolean,
     collectable: Object,
     nextBidPrice: Number,
+    claim: [Number, Boolean],
   },
   setup(props, ctx) {
     const price = ref(props.price);
@@ -460,6 +464,7 @@ export default {
       viewOnOpenSea,
       isNumber,
       isInteger,
+      claimId: props.claim?.id ? props.claim.id : null,
     };
   },
 };
