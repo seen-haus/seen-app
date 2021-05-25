@@ -44,15 +44,19 @@
         </div>
 
         <div class="flex align-center py-1">
-          <router-link :to="{ name: 'faq' }" class="btn-exchange">
-              <i class="fas fa-question-circle mr-2 text-lg"></i>
-              Help
-          </router-link>
+          <a href="https://discord.com/invite/dad8J4f" target="_blank" class="btn-exchange">
+              <i class="fab fa-discord mr-2 text-lg"></i>
+          </a>
 
-          <router-link :to="{ name: 'spotlight' }" class="btn-exchange">
-              <i class="fas fa-palette mr-2 text-lg"></i>
-              Spotlight
-          </router-link>
+          <a href="https://open.spotify.com/show/4b9DLCFMYKy1LTESYshCPZ" target="_blank" class="btn-exchange">
+              <i class="fab fa-spotify mr-2 text-lg"></i>
+          </a>
+          <a href="https://seen-haus.medium.com/" target="_blank" class="btn-exchange">
+              <i class="fab fa-medium mr-2 text-lg"></i>
+          </a>
+          <a href="https://twitter.com/seen_haus" target="_blank" class="btn-exchange">
+              <i class="fab fa-twitter mr-2 text-lg"></i>
+          </a>
         </div>
       </div>
     </container>
@@ -79,5 +83,14 @@ export default {
   &:last-child {
     @apply mr-0;
   }
+}
+.fab {
+  color: #fff;
+  opacity: 60%;
+  transition-duration: 0.2s;
+}
+.fab:hover {
+  color: #34ca98;
+  opacity: 100%;
 }
 </style>

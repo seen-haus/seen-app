@@ -1,31 +1,54 @@
 <template>
   <nav id="menu" class="min-h-screen slideout-menu bg-black text-white pt-13">
     <button class="button w-full text-white" @click="closeMobileMenu">CLOSE</button>
-    <!-- <router-link :to="{ name: 'spaaaaace'}" v-slot="{isActive}" class="routing-link block py-1 px-8">
-      <img src="@/assets/icons/icon--spacenft.svg" :class="isActive ? 'active-green-icon' : ''" class="cursor-pointer mr-1 inline-flex" alt="SEEN">
-      <span class="opacity-50 font-bold py-0.5 hover:opacity-100" :class="{'active': isActive}">Space NFT</span>
-    </router-link> -->
-    <router-link :to="{ name: 'drops'}" v-slot="{isActive}" class="routing-link block py-1 px-8" @click="closeMobileMenu">
-      <img src="@/assets/icons/icon-fire.svg" :class="isActive ? 'active-green-icon' : ''" class="cursor-pointer mr-2 inline-flex icon-fire" alt="SEEN">
-      <span class="opacity-50 font-bold py-0.5" :class="{'active': isActive}">Drops</span>
-    </router-link>
-    <router-link :to="{ name: 'artists'}" v-slot="{isActive}" class="routing-link block py-1 px-8" @click="closeMobileMenu">
-      <span class="opacity-50 font-bold py-0.5" :class="{'active': isActive}">Artists</span>
-    </router-link>
-    <router-link :to="{ name: 'stake'}" v-slot="{isActive}" class="routing-link block py-1 px-8" @click="closeMobileMenu">
-      <span class="opacity-50 font-bold py-0.5" :class="{'active': isActive}">Stake</span>
-    </router-link>
-    <router-link :to="{ name: 'collectors'}" v-slot="{isActive}" class="routing-link block py-1 px-8" @click="closeMobileMenu">
-      <span class="opacity-50 font-bold py-0.5" :class="{'active': isActive}">Collectors</span>
-    </router-link>
-    <a
-      href="https://www.cryptovoxels.com/play?coords=S@105W,125N"
-      target="_blank"
-      class="routing-link block py-1 px-8"
-      ><span class="opacity-50 font-bold py-0.5 hover:opacity-100"
-        >VR Gallery</span
-      ></a
-    >
+
+    <template v-for="item in menu" :key="item">
+
+      <router-link v-if="typeof item.url === 'string'" :key="item" :to="{ name: item.url }" v-slot="{isActive}" class="routing-link block py-1 px-8" @click="closeMobileMenu">
+        <img v-if="item.icon != null" :src="require('@/assets/icons/' + item.icon)" :class="isActive ? 'active-green-icon' : ''" class="cursor-pointer mr-2 inline-flex icon-fire" alt="SEEN">
+        <span class="opacity-50 font-bold py-0.5" :class="{'active': isActive}">{{ item.title }}</span>
+      </router-link>
+
+      <span v-else>
+
+        <a class="routing-link block py-1 px-8">
+            <img v-if="item.icon != null"
+                :src="require('@/assets/icons/' + item.icon)"
+                :class="isActive ? 'active-green-icon' : ''"
+                class="cursor-pointer mr-2 inline-flex icon-fire"
+            />
+            <span
+                class="opacity-50 font-bold py-0.5 hover:opacity-100"
+                :class="{ active: isActive }"
+            >{{ item.title }}&nbsp;<i v-if="true" class="fas fa-caret-down"></i></span>
+        </a>
+
+        <template v-for="(value, name) in item.url" :key="value && name">
+              <router-link v-if="!value.url.includes('http')"
+                  :to="{ name: value.url }"
+                  v-slot="{ isActive }"
+                  class="routing-link block py-1 px-10"
+                  @click="closeMobileMenu"
+              >
+              <span
+                  class="opacity-50 font-bold py-0.5 hover:opacity-100"
+                  :class="{ active: isActive }"
+              >{{ value.title }}</span>
+              </router-link>
+              <a v-else
+                :href="value.url"
+                target="_blank"
+                class="routing-link block py-1 px-10"
+                ><span class="opacity-50 font-bold py-0.5 hover:opacity-100"
+                  >{{ value.title }}</span>
+              </a>
+        </template>
+
+
+      </span>
+
+    </template>
+
     <wallet-button class="mx-auto block pl-2 sm:pl-8"/>
   </nav>
 </template>
@@ -35,9 +58,11 @@ import {useStore} from "vuex";
 import {watchEffect, onMounted, ref, computed} from "vue";
 import Slideout from "slideout";
 import WalletButton from "@/components/WalletButton";
+import Menu from "@/components/Menu/Menu.js";
 
 export default {
   name: "MobileMenu",
+  mixins: [Menu],
   components: {WalletButton},
   setup() {
     const store = useStore()
