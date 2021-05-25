@@ -39,14 +39,14 @@
                             <router-link v-if="!value.url.includes('http')"
                                 :to="{ name: value.url }"
                                 v-slot="{ isActive }"
-                                class="routing-link py-3 px-6  opacity-50 hover:opacity-100"
+                                class="routing-link py-3 px-6 opacity-50 hover:opacity-100"
                             >
                             <span
                                 :class="{ active: isActive }"
                                 >{{ value.title }}</span>
                             </router-link>
 
-                            <a v-else target="_blank" :href="value.url" class="py-3 px-6  opacity-50 hover:opacity-100">
+                            <a v-else target="_blank" :href="value.url" class="py-3 px-6 opacity-50 hover:opacity-100">
                                 <span
                                 :class="{ active: isActive }"
                                 >{{ value.title }}<sup>&nbsp;<i class="fa fa-external-link"></i></sup></span>
@@ -107,9 +107,6 @@ export default {
 
   a { display: block; }
 }
-
-
-.pr-8 { padding-right: 3rem; }
 
 .router-link-active {
   opacity: 1;
