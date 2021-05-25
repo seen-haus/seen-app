@@ -21,7 +21,7 @@
 
             <ul class="w-full">
               <li class="dropdown inline cursor-pointer font-bold text-base tracking-wide relative opacity-50 hover:opacity-100">
-                <a class="py-3 pr-8">
+                <a class="py-3 pr-6">
                     <img v-if="item.icon != null"
                         :src="require('@/assets/icons/' + item.icon)"
                         :class="isActive ? 'active-green-icon' : ''"
@@ -117,4 +117,4 @@ export default {
 }
 
 </style>
-
+git st
