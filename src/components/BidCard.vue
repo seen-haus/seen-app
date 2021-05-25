@@ -67,7 +67,7 @@
         </div>
       </template>
 
-      <button class="button primary mt-6" v-if="!isNaN(claimId)" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
+      <button class="button primary mt-6" v-if="claimId !== null" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
         Claim Physical
       </button>
       <button class="button opensea mt-6" v-if="!isCollectableActive" @click="viewOnOpenSea">
