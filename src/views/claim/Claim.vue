@@ -145,6 +145,12 @@
             <span class="error-notice">{{ countryField.errors[0] }}</span>
           </div>
 
+          <div class="fc mb-4">
+            <label for="claim-message">Message/Instructions <span v-if="state.messageHelper" style="opacity: 0.5"> - {{state.messageHelper}}</span></label>
+            <textarea name="claim-message" id="claim-message" class="w-full outlined-input mt-2" :required="state.requiresMessage ? true : false" v-model="messageField.value"></textarea>
+            <span class="error-notice">{{ messageField.errors[0] }}</span>
+          </div>
+
           <div class="flex items-center justify-center mb-4 mt-8">
             <button
               type="submit"
@@ -170,7 +176,7 @@ import { ClaimsService } from "@/services/apiService";
 import useWeb3 from "@/connectors/hooks";
 import useSigner from "@/hooks/useSigner";
 import { useClaimContract } from "@/hooks/useContract";
-import { useField, useForm } from "vee-validate";
+import { useField, useForm, ValidationObserver } from "vee-validate";
 import { useToast } from "primevue/usetoast";
 import { useMeta } from "vue-meta";
 import { countryList } from "@/connectors/constants";
@@ -194,6 +200,8 @@ export default {
     const state = reactive({
       loading: true,
       contractAddress: null,
+      requiresMessage: false,
+      messageHelper: null,
     });
     const countries = countryList;
     const { account, provider } = useWeb3();
@@ -213,6 +221,7 @@ export default {
         province: "",
         zip: "",
         country: "",
+        message: "",
       },
     });
 
@@ -226,6 +235,7 @@ export default {
     const provinceField = reactive(useField("province"));
     const zipField = reactive(useField("zip", "required"));
     const countryField = reactive(useField("country", "required"));
+    const messageField = reactive(useField("message"));
 
     const onClaim = async () => {
       console.log(provider.value);
@@ -357,6 +367,8 @@ export default {
 
       state.loading = false;
       state.contractAddress = contractAddress;
+      state.requiresMessage = data.requires_message;
+      state.messageHelper = data.message_helper;
       claim.value = data;
     })();
 
@@ -377,6 +389,8 @@ export default {
       zipField,
       countryField,
       countries,
+      messageField,
+      state,
     };
   },
 };
