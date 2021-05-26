@@ -103,14 +103,14 @@
             {{ is_closed ? 'CLOSED' : 'SOLD OUT (' + items_of + ' items)'}}
           </div>
         </div>
-        <button
+        <!-- <button
             class="button dark mt-4 w-full"
             @click="openWinnerModal"
             v-if="isWinnerButtonShown"
         >
           <i class="fas fa-play-circle mr-2 text-xl icon-left text-white"></i>
           Claim your winnings
-        </button>
+        </button> -->
       </template>
 
       <template v-else-if="isAuction">
