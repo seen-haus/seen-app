@@ -44,8 +44,16 @@
             class="items-end ml-2 -mt-0.5 md:mt-0.5"
             :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
             type="Ether"
-            :price="price"
-            :priceUSD="isAuction ? priceUSD : priceUSDSold"
+            :price="overridePriceEth ? overridePriceEth : price"
+            :priceUSD="
+              isAuction 
+                ? overridePriceUsd 
+                  ? overridePriceUsd
+                  : priceUSD
+                : overridePriceUsd
+                  ? overridePriceUsd
+                  : priceUSDSold
+            "
         />
       </div>
       <div class="flex-1"></div>
@@ -110,6 +118,7 @@
 
 <script lang="ts">
 import {ref} from "vue";
+import BigNumber from "bignumber.js";
 
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
@@ -164,12 +173,36 @@ export default {
       }
       return this.endsAt;
     },
-    shouldHidePrice() {
+    overridePriceEth() {
+      let response = new BigNumber(0);
       if(this.bundleChildItems && this.bundleChildItems && this.bundleChildItems.length > 0) {
+        for(let bundleChildItem of this.bundleChildItems) {
+          if(bundleChildItem.events && bundleChildItem.events.length > 0) {
+            let latestEvent = bundleChildItem.events.sort((a, b) => b.value - a.value)[0]
+            response = response.plus(new BigNumber(latestEvent.value))
+          }
+        }
+      }
+      return response.toNumber() ? response.toNumber() : false;
+    },
+    overridePriceUsd() {
+      let response = new BigNumber(0);
+      if(this.bundleChildItems && this.bundleChildItems && this.bundleChildItems.length > 0) {
+        for(let bundleChildItem of this.bundleChildItems) {
+          if(bundleChildItem.events && bundleChildItem.events.length > 0) {
+            let latestEvent = bundleChildItem.events.sort((a, b) => b.value_in_usd - a.value_in_usd)[0]
+            response = response.plus(new BigNumber(latestEvent.value_in_usd))
+          }
+        }
+      }
+      return response.toNumber() ? response.toNumber() : false;
+    },
+    shouldHidePrice() {
+      if(this.bundleChildItems && this.bundleChildItems && this.bundleChildItems.length > 0 && this.overridePriceEth === false && this.overridePriceUsd === false) {
         return true;
       }
       return false;
-    }
+    },
   },
   setup(props) {
     const autoplay = true;
