@@ -198,7 +198,7 @@ export default {
       return response.toNumber() ? response.toNumber() : false;
     },
     shouldHidePrice() {
-      if(this.bundleChildItems && this.bundleChildItems && this.bundleChildItems.length > 0 && this.overridePriceEth === false && this.overridePriceUsd === false) {
+      if(this.bundleChildItems && this.bundleChildItems && (this.bundleChildItems.length > 0) && (this.overridePriceEth === false) && (this.overridePriceUsd === false)) {
         return true;
       }
       return false;
