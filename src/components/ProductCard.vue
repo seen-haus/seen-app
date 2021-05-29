@@ -188,7 +188,7 @@ export default {
         return true;
       }
       return false;
-    },
+    }
   },
   setup(props) {
     const autoplay = true;
