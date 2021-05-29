@@ -44,7 +44,7 @@
             class="items-end ml-2 -mt-0.5 md:mt-0.5"
             :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
             type="Ether"
-            :price="overridePriceEth ? overridePriceEth : price"
+            :price="overridePriceEth || price"
             :priceUSD="
               isAuction 
                 ? overridePriceUsd 
@@ -117,7 +117,7 @@
 </template>
 
 <script lang="ts">
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import BigNumber from "bignumber.js";
 
 import Tag from "@/components/PillsAndTags/Tag.vue";
@@ -173,32 +173,18 @@ export default {
       }
       return this.endsAt;
     },
-    overridePriceEth() {
-      let response = new BigNumber(0);
-      if(this.bundleChildItems && this.bundleChildItems && this.bundleChildItems.length > 0) {
-        for(let bundleChildItem of this.bundleChildItems) {
-          if(bundleChildItem.events && bundleChildItem.events.length > 0) {
-            let latestEvent = bundleChildItem.events.sort((a, b) => b.value - a.value)[0]
-            response = response.plus(new BigNumber(latestEvent.value))
-          }
-        }
-      }
-      return response.toNumber() ? response.toNumber() : false;
-    },
-    overridePriceUsd() {
-      let response = new BigNumber(0);
-      if(this.bundleChildItems && this.bundleChildItems && this.bundleChildItems.length > 0) {
-        for(let bundleChildItem of this.bundleChildItems) {
-          if(bundleChildItem.events && bundleChildItem.events.length > 0) {
-            let latestEvent = bundleChildItem.events.sort((a, b) => b.value_in_usd - a.value_in_usd)[0]
-            response = response.plus(new BigNumber(latestEvent.value_in_usd))
-          }
-        }
-      }
-      return response.toNumber() ? response.toNumber() : false;
-    },
     shouldHidePrice() {
-      if(this.bundleChildItems && this.bundleChildItems && (this.bundleChildItems.length > 0) && (this.overridePriceEth === false) && (this.overridePriceUsd === false)) {
+      let hasBundledItems = false;
+      let hasBundledItemEvents = false;
+      if(this.bundleChildItems && this.bundleChildItems && (this.bundleChildItems.length > 0)) {
+        hasBundledItems = true;
+        for(let bundleChildItem of this.bundleChildItems) {
+          if(bundleChildItem.events && bundleChildItem.events.length > 0) {
+            hasBundledItemEvents = true;
+          }
+        }
+      }
+      if(hasBundledItems && !hasBundledItemEvents) {
         return true;
       }
       return false;
@@ -258,6 +244,25 @@ export default {
       }
     };
 
+    let overridePriceUsd = 0;
+    let overridePriceEth = 0;
+
+    watchEffect(() => {
+      let responseUsd = new BigNumber(0);
+      let responseEth = new BigNumber(0);
+      if(bundleChildItems && bundleChildItems.value && bundleChildItems.value.length > 0) {
+        for(let bundleChildItem of bundleChildItems.value) {
+          if(bundleChildItem.events && bundleChildItem.events.length > 0) {
+            let latestEvent = bundleChildItem.events.sort((a, b) => b.value - a.value)[0];
+            responseUsd = responseUsd.plus(new BigNumber(latestEvent.value_in_usd));
+            responseEth = responseEth.plus(new BigNumber(latestEvent.value));
+          }
+        }
+      }
+      overridePriceUsd = responseUsd.toNumber();
+      overridePriceEth = responseEth.toNumber();
+    })
+
     return {
       autoplay,
       timerRef,
@@ -293,6 +298,8 @@ export default {
       handleHover,
       updateCollectableState,
       bundleChildItems,
+      overridePriceUsd,
+      overridePriceEth,
     };
   },
 };
