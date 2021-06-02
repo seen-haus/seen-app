@@ -45,7 +45,7 @@
           <user-badge
               type="dark"
               :url="artist.avatar"
-              :username="artist.name"
+              :username="pillOverride ? pillOverride : artist.name"
               :artistSlug="artist.slug"
           />
           <live-indicator :status="liveStatus" class="text-white ml-4"/>
@@ -205,6 +205,7 @@ export default {
       // updateInformation,
       updateCollectableState,
       bundleChildItems,
+      pillOverride,
     } = useCollectableInformation(props.collectable);
 
     const addTime = function () {
@@ -310,6 +311,7 @@ export default {
       shouldHidePrice,
       currentEndsAt,
       getStartsAt,
+      pillOverride,
     };
   },
 };
