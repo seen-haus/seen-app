@@ -187,17 +187,21 @@ export default {
       () => paginatedCollectables.listOfCollectables.value
     );
 
-    const heroCollectable = computed(() => listOfCollectables.value[0]);
+    const listOfNonHeroCollectables = computed(
+      () => paginatedCollectables.listOfCollectables.value.filter(item =>  item && !item.featured_drop)
+    );
+
+    const heroCollectable = computed(() => listOfCollectables.value.filter(item =>  item && item.featured_drop)[0] || listOfCollectables.value[0]);
     const featuredCollectables = computed(() =>
-      [listOfCollectables.value[1], listOfCollectables.value[2]].filter(
+      [listOfNonHeroCollectables.value[0], listOfNonHeroCollectables.value[1]].filter(
         (i) => i !== undefined
       )
     );
     const otherCollectables = computed(() =>
       [
-        listOfCollectables.value[3],
-        listOfCollectables.value[4],
-        listOfCollectables.value[5],
+        listOfNonHeroCollectables.value[2],
+        listOfNonHeroCollectables.value[3],
+        listOfNonHeroCollectables.value[4],
       ].filter((i) => i !== undefined)
     );
 
