@@ -28,7 +28,7 @@
           <user-badge
               type="light"
               :url="artist.avatar"
-              :username="artist.name"
+              :username="pillOverride ? pillOverride : artist.name"
               :artistSlug="artist.slug"
           />
           <div class="tags flex flex-wrap md:flex-nowrap mx-9">
@@ -248,6 +248,7 @@ export default {
       setCollectable,
       updateCollectableState,
       claim,
+      pillOverride,
     } = useCollectableInformation();
 
     const currentEndsAt = computed(() => {
@@ -380,6 +381,7 @@ export default {
       showAdditionalInformation,
       updateCollectableState,
       claim,
+      pillOverride,
     };
   },
 };

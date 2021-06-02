@@ -27,7 +27,7 @@
       <user-badge
           type="light"
           :url="artist.avatar"
-          :username="artist.name"
+          :username="pillOverride ? pillOverride : artist.name"
           :artistSlug="artist.slug"
           class="absolute -top-4"
       />
@@ -228,6 +228,7 @@ export default {
       // updateInformation,
       updateCollectableState,
       bundleChildItems,
+      pillOverride,
     } = useCollectableInformation(props.collectable);
 
     const addTime = function () {
@@ -300,6 +301,7 @@ export default {
       bundleChildItems,
       overridePriceUsd,
       overridePriceEth,
+      pillOverride,
     };
   },
 };
