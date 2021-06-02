@@ -118,13 +118,13 @@
               @update-state="updateCollectableState"
           />
 
-          <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
+          <div v-if="collectable.nft_contract_address && collectable.nft_token_id" class="text-3xl font-title font-bold text-center mb-6 mt-12">
             {{ isAuction ? "Recent bids" : "Recent buys" }}
           </div>
-          <list-of-buyers class="mb-12" :list="events"/>
+          <list-of-buyers v-if="collectable.nft_contract_address && collectable.nft_token_id" :list="events"/>
 
           <template v-if="isAuction">
-            <button class="button dark w-full" @click="openModal('video', 'https://www.youtube.com/watch?v=1G5caDyf-kA')">
+            <button class="button dark w-full mt-12" @click="openModal('video', 'https://www.youtube.com/watch?v=1G5caDyf-kA')">
               <i
                   class="fas fa-play-circle mr-2 text-xl icon-left text-white"
               ></i>
@@ -136,11 +136,11 @@
             </div>
           </template>
 
-          <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
+          <div v-if="collectable.nft_contract_address && collectable.nft_token_id" class="text-3xl font-title font-bold text-center mb-6 mt-12">
             Proof of Authenticity
           </div>
 
-          <div class="rounded-container">
+          <div v-if="collectable.nft_contract_address && collectable.nft_token_id" class="rounded-container">
             <button class="button outline w-full" @click="viewOnEtherscan">
               View on Etherscan
               <i
