@@ -11,6 +11,9 @@
   margin-right: 0 !important;
   width: 100% !important;
 }
+.swiper-wrapper {
+  align-items: center;
+}
 .swiper-pagination-bullet {
   width: 12px !important;
   height: 12px !important;
@@ -31,7 +34,7 @@
   box-shadow: 0 1px 15px 0 rgba(0, 0, 0, 0.15);
   background-color: #ffffff;
   border-radius: 50%;
-  top: calc(50% - 1.5rem);
+  top: calc(50% - 1.2rem);
   &:after {
     display: none;
   }
