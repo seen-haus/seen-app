@@ -18,6 +18,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "faq" */ '../views/faq/Faq.vue')
     },
     {
+        path: '/drops/first-real-estate-nft',
+        name: 'collectablePropyDrop',
+        component: () => import(/* webpackChunkName: "collectablePropyDrop" */ '../views/collectable/propy/Collectable.vue')
+    },
+    {
         path: '/drops/:slug',
         name: 'collectableDrops',
         component: () => import(/* webpackChunkName: "collectableDrops" */ '../views/collectable/Collectable.vue')
