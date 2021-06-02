@@ -24,14 +24,16 @@
         >{{ title }}
         </fenced-title>
 
-        <div class="status flex justify-center items-center">
+        <div class="status flex justify-center items-center mb-5">
           <user-badge
-              type="light"
-              :url="artist.avatar"
-              :username="pillOverride ? pillOverride : artist.name"
-              :artistSlug="artist.slug"
-          />
-          <div class="tags flex flex-wrap md:flex-nowrap mx-9">
+                type="light"
+                :url="artist.avatar"
+                :username="pillOverride ? pillOverride : artist.name"
+                :artistSlug="artist.slug"
+            />
+        </div>
+        <div class="status flex justify-center items-center">
+          <div class="tags flex flex-wrap md:flex-nowrap mr-4">
             <tag
                 v-if="isAuction"
                 class="bg-fence-light self-end text-gray-500 font-semibold mr-1"
