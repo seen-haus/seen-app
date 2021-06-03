@@ -27,7 +27,7 @@
       <user-badge
           type="light"
           :url="artist.avatar"
-          :username="artist.name"
+          :username="pillOverride ? pillOverride : artist.name"
           :artistSlug="artist.slug"
           class="absolute -top-4"
       />
@@ -44,8 +44,16 @@
             class="items-end ml-2 -mt-0.5 md:mt-0.5"
             :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
             type="Ether"
-            :price="price"
-            :priceUSD="isAuction ? priceUSD : priceUSDSold"
+            :price="overridePriceEth || price"
+            :priceUSD="
+              isAuction 
+                ? overridePriceUsd 
+                  ? overridePriceUsd
+                  : priceUSD
+                : overridePriceUsd
+                  ? overridePriceUsd
+                  : priceUSDSold
+            "
         />
       </div>
       <div class="flex-1"></div>
@@ -109,7 +117,8 @@
 </template>
 
 <script lang="ts">
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
+import BigNumber from "bignumber.js";
 
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
@@ -165,7 +174,17 @@ export default {
       return this.endsAt;
     },
     shouldHidePrice() {
-      if(this.bundleChildItems && this.bundleChildItems && this.bundleChildItems.length > 0) {
+      let hasBundledItems = false;
+      let hasBundledItemEvents = false;
+      if(this.bundleChildItems && this.bundleChildItems && (this.bundleChildItems.length > 0)) {
+        hasBundledItems = true;
+        for(let bundleChildItem of this.bundleChildItems) {
+          if(bundleChildItem.events && bundleChildItem.events.length > 0) {
+            hasBundledItemEvents = true;
+          }
+        }
+      }
+      if(hasBundledItems && !hasBundledItemEvents) {
         return true;
       }
       return false;
@@ -209,6 +228,7 @@ export default {
       // updateInformation,
       updateCollectableState,
       bundleChildItems,
+      pillOverride,
     } = useCollectableInformation(props.collectable);
 
     const addTime = function () {
@@ -224,6 +244,25 @@ export default {
         if (mediaRef.value != null) mediaRef.value.pauseVideo();
       }
     };
+
+    let overridePriceUsd = 0;
+    let overridePriceEth = 0;
+
+    watchEffect(() => {
+      let responseUsd = new BigNumber(0);
+      let responseEth = new BigNumber(0);
+      if(bundleChildItems && bundleChildItems.value && bundleChildItems.value.length > 0) {
+        for(let bundleChildItem of bundleChildItems.value) {
+          if(bundleChildItem.events && bundleChildItem.events.length > 0) {
+            let latestEvent = bundleChildItem.events.sort((a, b) => b.value - a.value)[0];
+            responseUsd = responseUsd.plus(new BigNumber(latestEvent.value_in_usd));
+            responseEth = responseEth.plus(new BigNumber(latestEvent.value));
+          }
+        }
+      }
+      overridePriceUsd = responseUsd.toNumber();
+      overridePriceEth = responseEth.toNumber();
+    })
 
     return {
       autoplay,
@@ -260,6 +299,9 @@ export default {
       handleHover,
       updateCollectableState,
       bundleChildItems,
+      overridePriceUsd,
+      overridePriceEth,
+      pillOverride,
     };
   },
 };

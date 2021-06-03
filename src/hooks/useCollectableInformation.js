@@ -26,6 +26,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const collectable = ref(initialCollectable);
     const events = ref(collectable.value.events || []);
     const bundleChildItems = computed(() => collectable.value.bundleChildItems);
+    const pillOverride = computed(() => collectable.value.pill_override || false);
     const price = ref(0.0);
     const nextBidPrice = ref(0.0);
     const priceUSD = ref(0.0);
@@ -95,6 +96,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     });
     const startsAt = computed(() => collectable.value.starts_at);
     const endsAt = computed(() => collectable.value.ends_at);
+    const claim = computed(() => collectable.value.claim ? collectable.value.claim : false);
     const isAuction = computed(
         () => collectable.value.purchase_type === PURCHASE_TYPE.AUCTION
     );
@@ -306,6 +308,8 @@ export default function useCollectableInformation(initialCollectable = {}) {
         isAuction,
         isUpcomming,
         version,
+        claim,
+        pillOverride,
         // Methods
         updateProgress,
         setCollectable,

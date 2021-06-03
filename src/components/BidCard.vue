@@ -67,6 +67,9 @@
         </div>
       </template>
 
+      <button class="button primary mt-6" v-if="claimId !== null" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
+        Claim Physical
+      </button>
       <button class="button opensea mt-6" v-if="!isCollectableActive" @click="viewOnOpenSea">
         Opensea
       </button>
@@ -100,14 +103,14 @@
             {{ is_closed ? 'CLOSED' : 'SOLD OUT (' + items_of + ' items)'}}
           </div>
         </div>
-        <button
+        <!-- <button
             class="button dark mt-4 w-full"
             @click="openWinnerModal"
             v-if="isWinnerButtonShown"
         >
           <i class="fas fa-play-circle mr-2 text-xl icon-left text-white"></i>
           Claim your winnings
-        </button>
+        </button> -->
       </template>
 
       <template v-else-if="isAuction">
@@ -227,6 +230,7 @@ export default {
     is_closed: Boolean,
     collectable: Object,
     nextBidPrice: Number,
+    claim: [Number, Boolean],
   },
   setup(props, ctx) {
     const price = ref(props.price);
@@ -460,6 +464,7 @@ export default {
       viewOnOpenSea,
       isNumber,
       isInteger,
+      claimId: props.claim?.id ? props.claim.id : null,
     };
   },
 };
