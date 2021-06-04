@@ -72,7 +72,7 @@
           <contact-agent class="shadow-md" artist-name="Propy" :socials="contactAgent"/>
 
           <div class="text-4xl font-title font-bold mt-14 mb-6">
-            Artist statement
+            Agent statement
           </div>
           <artist-card class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
         </div>
@@ -258,16 +258,20 @@ export default {
             {question: "Q3", answer: "Answer"}
             ];
     const highlights = [
-            {icon: "fas fa-bath", text: "Highlight 1"},
-            {icon: "fas fa-bed", text: "Highlight 2"},
-            {icon: "fas fa-tv", text: "Highlight 3"},
-            {icon: "fas fa-blender", text: "Highlight 4"},
-            {icon: "fas fa-coffee", text: "Highlight 5"},
-            {icon: "fas fa-couch", text: "Highlight 6"},
-            {icon: "fas fa-fan", text: "Highlight 7"},
-            {icon: "fas fa-faucet", text: "Highlight 8"},
-            {icon: "fas fa-lightbulb", text: "Highlight 9"},
-            {text: "Highlight 10"},
+            {icon: "fas fa-circle", text: "683 sq/foot (63.5 Sq/Meters)"},
+            {icon: "fas fa-circle", text: "Granite Countertops & Backsplash"},
+            {icon: "fas fa-circle", text: "Oven & Electric Stove"},
+            {icon: "fas fa-circle", text: "Decorative Herrington Paneling "},
+            {icon: "fas fa-circle", text: "Tiled Entryway "},
+            {icon: "fas fa-circle", text: "Laminate Floors Throughout"},
+            {icon: "fas fa-circle", text: "Roman Blinds"},
+            {icon: "fas fa-circle", text: "Decorative Light Fixtures"},
+            {icon: "fas fa-circle", text: "Ample Closet Space"},
+            {icon: "fas fa-circle", text: "Washing Machine"},
+            {icon: "fas fa-circle", text: "Renovated Bathroom"},
+            {icon: "fas fa-circle", text: "Wood Vanity"},
+            {icon: "fas fa-circle", text: "Full Sized Bathtub & Shower"},
+            {icon: "fas fa-circle", text: "Eco Friendly Toilet"},
             ];
     const video = "https://www.youtube.com/embed/1G5caDyf-kA";
     const contactAgent = [
@@ -474,5 +478,23 @@ export default {
   p {
     margin-bottom: 1rem;
   }
+}
+
+// Isolate scope to highlights list items
+ul {
+  margin: 30px 0 0;
+}
+
+li {
+  display: block;
+  clear: both;
+  border-bottom: 1px dotted #ccc;
+  padding: 0 0 15px;
+  margin: 0 0 15px;
+}
+
+.fa-circle {
+  float: left;
+  font-size: 5px;
 }
 </style>
