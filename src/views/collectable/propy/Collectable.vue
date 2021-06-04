@@ -54,40 +54,22 @@
     <container>
       <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-12 md:mt-0">
         <div class="left-side col-span-7 pb-6">
+
+          <span class="title-text font-title text-4xl font-bold">Tokenized Real Estate</span>
+
           <div class="text-lg text-gray-500 description" v-html="description"></div>
-          <template v-if="showAdditionalInformation">
-            <!--            <div class="rounded-container flex items-center mt-12">-->
-            <!--              <i-->
-            <!--                  class="fas fa-truck text-3xl icon-right text-gray-500 mr-6"-->
-            <!--              ></i>-->
 
-            <!--              <div class="text-sm font-bold">-->
-            <!--                The item will be shipped from Paris, France-->
-            <!--              </div>-->
-            <!--            </div>-->
+          <div class="gap-12 py-6">
+            <product-video :src="video"></product-video>
+          </div>
+          <div class="gap-12 py-6">
+            <highlights v-if="highlights" :highlights="highlights"></highlights>
+          </div>
 
-            <div class="rounded-container flex items-center mt-6">
-              <i
-                  class="fas fa-id-card text-3xl icon-right text-gray-500 mr-6"
-              ></i>
+          <faq v-if="faq" :faq="faq"/>
 
-              <div class="text-sm font-bold">
-                All winners will be required to submit their KYC information
-                for settlement purposes after the auction ends.
-              </div>
-            </div>
 
-            <div class="rounded-container flex items-center mt-6" v-if="!isAuction">
-              <i
-                  class="fas fa-trash-alt text-3xl icon-right text-gray-500 mr-6"
-              ></i>
-
-              <div class="text-sm font-bold">
-                Once your item is shipped your information will be deleted from
-                our registry.
-              </div>
-            </div>
-          </template>
+          <contact-agent class="shadow-md" artist-name="Propy" :socials="contactAgent"/>
 
           <div class="text-4xl font-title font-bold mt-14 mb-6">
             Artist statement
@@ -136,6 +118,43 @@
             </div>
           </template>
 
+          <template v-if="showAdditionalInformation">
+            <!--            <div class="rounded-container flex items-center mt-12">-->
+            <!--              <i-->
+            <!--                  class="fas fa-truck text-3xl icon-right text-gray-500 mr-6"-->
+            <!--              ></i>-->
+
+            <!--              <div class="text-sm font-bold">-->
+            <!--                The item will be shipped from Paris, France-->
+            <!--              </div>-->
+            <!--            </div>-->
+
+            <div class="rounded-container flex items-center mt-6">
+              <i
+                  class="fas fa-id-card text-3xl icon-right text-gray-500 mr-6"
+              ></i>
+
+              <div class="text-sm font-bold">
+                All winners will be required to submit their KYC information
+                for settlement purposes after the auction ends.
+              </div>
+            </div>
+
+            <div class="rounded-container flex items-center mt-6" v-if="!isAuction">
+              <i
+                  class="fas fa-trash-alt text-3xl icon-right text-gray-500 mr-6"
+              ></i>
+
+              <div class="text-sm font-bold">
+                Once your item is shipped your information will be deleted from
+                our registry.
+              </div>
+            </div>
+
+
+          </template>
+
+
           <div v-if="collectable.nft_contract_address && collectable.nft_token_id" class="text-3xl font-title font-bold text-center mb-6 mt-12">
             Proof of Authenticity
           </div>
@@ -160,6 +179,15 @@
               ></i>
             </button>
           </div>
+
+          <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
+            <GMapMap :center="{lat: 51.093048, lng: 6.842120}" :zoom="16" map-type-id="roadmap" style="height: 400px"></GMapMap>
+          </div>
+
+          <div v-if="partnersPress" class="text-3xl font-title font-bold text-center mb-6 mt-12">
+            <partners-and-press :partners="partnersPress"></partners-and-press>
+          </div>
+
         </div>
       </div>
     </container>
@@ -183,6 +211,12 @@ import ListOfBuyers from "@/components/Lists/ListOfBuyers.vue";
 import HeroGallery from "@/components/Media/HeroGallery.vue";
 import {CollectablesService} from "@/services/apiService";
 import {useToast} from "primevue/usetoast";
+import MediaLoader from "@/components/Media/MediaLoader.vue";
+import Highlights from "@/views/collectable/components/Highlights.vue";
+import ProductVideo from "@/views/collectable/components/ProductVideo.vue";
+import ContactAgent from "@/views/collectable/components/ContactAgent.vue";
+import Faq from "@/views/collectable/components/FAQ.vue";
+import PartnersAndPress from "@/views/collectable/components/PartnersAndPress.vue";
 
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
 import useContractEvents from "@/hooks/useContractEvents";
@@ -202,6 +236,12 @@ export default {
     BidCard,
     ListOfBuyers,
     HeroGallery,
+    MediaLoader,
+    Highlights,
+    ProductVideo,
+    ContactAgent,
+    Faq,
+    PartnersAndPress
   },
   setup() {
     const toast = useToast();
@@ -212,6 +252,36 @@ export default {
       collectable: {},
       buyersVisible: 3,
     });
+    const faq = [
+            {question: "Q1", answer: "Answer"},
+            {question: "Q2", answer: "Answer"},
+            {question: "Q3", answer: "Answer"}
+            ];
+    const highlights = [
+            {icon: "fas fa-bath", text: "Highlight 1"},
+            {icon: "fas fa-bed", text: "Highlight 2"},
+            {icon: "fas fa-tv", text: "Highlight 3"},
+            {icon: "fas fa-blender", text: "Highlight 4"},
+            {icon: "fas fa-coffee", text: "Highlight 5"},
+            {icon: "fas fa-couch", text: "Highlight 6"},
+            {icon: "fas fa-fan", text: "Highlight 7"},
+            {icon: "fas fa-faucet", text: "Highlight 8"},
+            {icon: "fas fa-lightbulb", text: "Highlight 9"},
+            {text: "Highlight 10"},
+            ];
+    const video = "https://www.youtube.com/embed/1G5caDyf-kA";
+    const contactAgent = [
+            {type: 'website', url: 'https://example.com/'},
+            {type: 'telegram', url: 'https://example.com/'},
+            {type: 'twitter', url: 'https://example.com/'},
+            {type: 'discord', url: 'https://example.com/'},
+            ];
+    const partnersPress = [
+        {image: require("@/assets/images/team/Jigglybuff69.jpg"), url: 'https://example.com/'},
+        {image: require("@/assets/images/team/Buddyart00.jpg"), url: 'https://example.com/'},
+        {image: require("@/assets/images/team/Jiigsaw01.jpg"), url: 'https://example.com/'},
+      ];
+
 
     const {
       collectable,
@@ -343,6 +413,10 @@ export default {
       lightbox.open();
     };
 
+    (async function setBackgroundImage(){
+      artist.background_image = '@/assets/images/artist-background-placeholder.jpg';
+    })();
+
     return {
       isLoading,
       collectable,
@@ -384,6 +458,11 @@ export default {
       updateCollectableState,
       claim,
       pillOverride,
+      faq,
+      highlights,
+      video,
+      contactAgent,
+      partnersPress
     };
   },
 };

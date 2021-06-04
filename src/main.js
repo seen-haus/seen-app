@@ -10,6 +10,7 @@ import Toast from "primevue/toast";
 import PrimeVue from 'primevue/config';
 import Dialog from "primevue/dialog";
 import {createMetaManager, defaultConfig, useMeta, deepestResolver} from 'vue-meta';
+import VueGoogleMaps from '@fawmi/vue-google-maps'
 
 import directives from "@/directives"
 import "primevue/resources/themes/saga-blue/theme.css"; //theme
@@ -29,6 +30,11 @@ app.use(router)
 app.use(PrimeVue)
 app.use(metaManager)
 app.use(ToastService)
+app.use(VueGoogleMaps, {
+    load: {
+        key: process.env.VUE_APP_GOOGLE_MAPS_KEY
+    },
+})
 app.component("Toast", Toast)
 app.component("Dialog", Dialog)
 app.mount('#app');

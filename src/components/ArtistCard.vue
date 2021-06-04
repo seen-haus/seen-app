@@ -3,6 +3,9 @@
     class="artist-card overflow-hidden rounded-lg custom-shadow cursor-pointer"
     @click="navigateToArtist"
   >
+<!-- TODO: This is a Temp Solution til new DB column is implemented   -->
+    <img v-if="artist.name === 'Propy'" :src="require('@/assets/images/artist-background-placeholder.jpg')" class="mr-4" alt="">
+<!-- End   -->
     <div class="description flex flex-col p-6">
       <img
         :src="artist.avatar"
