@@ -479,22 +479,4 @@ export default {
     margin-bottom: 1rem;
   }
 }
-
-// Isolate scope to highlights list items
-ul {
-  margin: 30px 0 0;
-}
-
-li {
-  display: block;
-  clear: both;
-  border-bottom: 1px dotted #ccc;
-  padding: 0 0 15px;
-  margin: 0 0 15px;
-}
-
-.fa-circle {
-  float: left;
-  font-size: 5px;
-}
 </style>

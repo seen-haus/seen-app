@@ -19,8 +19,23 @@ ul {
   columns: 2;
   -webkit-columns: 2;
   -moz-columns: 2;
+  margin: 30px 0 0;
+
 }
 i {
     padding: 10px;
+}
+
+li {
+  display: block;
+  clear: both;
+  border-bottom: 1px dotted #ccc;
+  padding: 0 0 15px;
+  margin: 0 0 15px;
+}
+
+.fa-circle {
+  float: left;
+  font-size: 5px;
 }
 </style>
