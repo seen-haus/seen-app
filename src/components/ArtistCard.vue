@@ -3,14 +3,15 @@
     class="artist-card overflow-hidden rounded-lg custom-shadow cursor-pointer"
     @click="navigateToArtist"
   >
-<!-- TODO: This is a Temp Solution til new DB column is implemented   -->
-    <img v-if="artist.name === 'Propy'" :src="require('@/assets/images/artist-background-placeholder.jpg')" class="mr-4" alt="">
-<!-- End   -->
+    <div class="top-bar">
+    <img v-if="artist.header_image" :src="artist.header_image" class="mr-4 header" alt="">
+    <img v-else :src="artist.avatar" class="mr-4 blur" alt="">
+    </div>
     <div class="description flex flex-col p-6">
       <img
         :src="artist.avatar"
         alt=""
-        class="rounded-full border-white border-3 left-6 -top-12.5 w-25 h-25"
+        class="rounded-full border-white border-3 left-6 -top-12.5 w-25 h-25 avatar"
       />
 
       <div class="flex items-center mt-6">
@@ -92,7 +93,28 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .custom-shadow {
+.custom-shadow {
     box-shadow: 0px 3px 15px rgba(0,0,0,.1);
-  }
+}
+
+.avatar {
+  z-index: 2;
+}
+.description {
+  margin-top: -70px;
+}
+.top-bar img.header {
+  width: 100%;
+  height: 187px;
+  z-index: 1;
+  position: relative;
+}
+.top-bar img.blur {
+  transform: translate(-50%,-50%);
+  width: 100%;
+  height: 187px;
+  filter: blur(51.2px);
+  opacity: .42;
+}
+
 </style>
