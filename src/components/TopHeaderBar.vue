@@ -48,6 +48,10 @@
               <i class="fab fa-discord mr-2 text-lg"></i>
           </a>
 
+          <a href="https://t.me/seenhaus" target="_blank" class="btn-exchange">
+              <i class="fab fa-telegram mr-2 text-lg"></i>
+          </a>
+
           <a href="https://open.spotify.com/show/4b9DLCFMYKy1LTESYshCPZ" target="_blank" class="btn-exchange">
               <i class="fab fa-spotify mr-2 text-lg"></i>
           </a>
