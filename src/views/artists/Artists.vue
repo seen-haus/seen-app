@@ -7,7 +7,7 @@
           color="fence-gray"
           textAlign="center"
           :closed="true"
-          >Artists
+          >Creators
         </fenced-title>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
@@ -24,7 +24,7 @@
         </template>
       </div>
       <button class="button dark mt-20 mx-auto w-full md:w-96" @click="handleLoadMore" v-if="hasMore">
-        View All Artists
+        View All Creators
       </button>
     </container>
   </div>
@@ -49,7 +49,7 @@ export default {
   },
   setup() {
     const { meta } = useMeta({
-      title: "Artists",
+      title: "Creators",
     });
     const router = useRouter();
     const paginatedArtists = useArtistsWithPagination(48);

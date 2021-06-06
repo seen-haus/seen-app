@@ -44,12 +44,12 @@ const routes = [
         component: () => import(/* webpackChunkName: "collectableAuction" */ '../views/collectable/Collectable.vue')
     },
     {
-        path: '/artists/:artistSlug',
+        path: '/creators/:artistSlug',
         name: 'artistProfile',
         component: () => import(/* webpackChunkName: "artistProfile" */ '../views/profile/ArtistProfile.vue')
     },
     {
-        path: '/artists',
+        path: '/creators',
         name: 'artists',
         component: () => import(/* webpackChunkName: "artists" */ '../views/artists/Artists.vue')
     },

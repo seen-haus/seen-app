@@ -16,7 +16,7 @@ export default {
                         title: 'Gallery',
                         url: [
                             {
-                                title: 'Artists',
+                                title: 'Creators',
                                 url: 'artists'
                             },
                             {

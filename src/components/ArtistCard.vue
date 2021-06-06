@@ -102,19 +102,27 @@ export default {
 }
 .description {
   margin-top: -70px;
+  z-index: 4;
+  background-color: white;
+}
+.top-bar {
+    height: 187px;
+    width: 100%;
+    position: relative;
+    overflow:hidden;
 }
 .top-bar img.header {
-  width: 100%;
-  height: 187px;
-  z-index: 1;
-  position: relative;
+
+  position: absolute;
+  top:-100%; left:0; right: 0; bottom:-100%;
+  margin: auto;
 }
 .top-bar img.blur {
-  transform: translate(-50%,-50%);
+  transform: translate(-10%,-10%);
   width: 100%;
-  height: 187px;
-  filter: blur(51.2px);
-  opacity: .42;
+  filter: blur(70px);
+  opacity: .7;
 }
 
 </style>
+A

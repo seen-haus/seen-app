@@ -1,28 +1,39 @@
 <template>
   <div class="profile">
-    <container class="relative pb-20 pt-20">
-      <div class="avatar">
-        <div class="bg-background-gray rounded-full w-full h-full bg-contain bg-center" :style="{backgroundImage: `url(${artist.avatar})`}">
+    <container class="relative pb-20">
+      <div class="content-center">
+        <div class="top-bar">
+          <img v-if="artist.header_image" :src="artist.header_image" class="mr-4 header" alt="">
+          <img v-else :src="artist.avatar" class="mr-4 blur" alt="">
         </div>
-      </div>
-      <div class="mt-4 flex justify-between flex-wrap items-center">
-        <div class="flex justify-start flex-wrap">
-          <p class="font-bold text-3xl mr-4">{{artist.name}}</p>
-          <!-- <div class="wallet-address-badge flex justify-between items-center">
-            <i class="fas fa-volleyball-ball text-lg"></i>
-            <copy-helper :toCopy="user.wallet" :isIconSuffix="true" :text="cropWithExtension(user.wallet, 20)"/>
-          </div> -->
-        </div>
-      </div>
-      <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-8">
-        <div v-html="artist?.bio ? artist.bio : 'No biography available.'">
-        </div>
-        <div class="text-xs text-gray-400">
-          <social-line class="my-1" :social="social" :isVertical="true" v-for="social in artist.socials" :key="social.url" />
+
+        <div class="description flex flex-col p-6">
+          <img
+            :src="artist.avatar"
+            alt=""
+            class="rounded-full border-white border-3 left-6 -top-12.5 w-25 h-25 avatar mx-auto"
+          />
+          <div class="mt-4 flex justify-between flex-wrap items-center mx-auto">
+            <div class="flex justify-start flex-wrap">
+            <p class="font-bold text-3xl mr-4">{{artist.name}}</p>
+            <!-- <div class="wallet-address-badge flex justify-between items-center">
+              <i class="fas fa-volleyball-ball text-lg"></i>
+              <copy-helper :toCopy="user.wallet" :isIconSuffix="true" :text="cropWithExtension(user.wallet, 20)"/>
+            </div> -->
+          </div>
+          </div>
+          <div class="mt-4 flex justify-between flex-wrap items-center mx-auto">
+            <div v-html="artist?.bio ? artist.bio : 'No biography available.'"></div>
+          </div>
+          <div class="mt-4 flex justify-between flex-wrap items-center mx-auto">
+            <div class="text-xs text-gray-400">
+              <social-line class="my-1" :social="social" v-for="social in artist.socials" :key="social.url" />
+            </div>
+          </div>
         </div>
       </div>
       <fenced-title
-        class="flex-grow mr-0 mb-2 self-stretch"
+        class="flex-grow mr-0 mb-2 pt-20 self-stretch"
         color="fence-gray"
         textAlign="center"
         :closed="true"
@@ -130,10 +141,33 @@ export default {
   @apply pr-3.5 py-1 pl-2 rounded-3xl w-66 font-address;
   box-shadow: 0 1px 15px 0 rgba(0, 0, 0, 0.15);
 }
-.profile-background {
-  height: 235px;
+
+.avatar {
+  z-index: 2;
+  margin-top: -75px;
+}
+
+.description {
+  z-index: 4;
+  background-color: white;
+}
+
+.top-bar {
+    height: 255px;
+    width: 100%;
+    position: relative;
+    overflow:hidden;
+}
+.top-bar img.header {
+
+  position: absolute;
+  top:-100%; left:0; right: 0; bottom:-100%;
+  margin: auto;
+}
+.top-bar img.blur {
+  transform: translate(-10%,-10%);
   width: 100%;
-  background-size: cover;
-  background-position: center;
+  filter: blur(170px);
+  opacity: .7;
 }
 </style>
