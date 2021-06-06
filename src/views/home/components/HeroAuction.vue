@@ -17,7 +17,7 @@
         <div class="tags flex absolute top-6 left-6">
           <tag v-if="isNft" class="bg-black mr-1 text-white">NFT</tag>
           <tag v-if="isTangible" class="bg-black text-white"
-          >TANGIBLE
+          >PHYSICAL
           </tag
           >
         </div>
