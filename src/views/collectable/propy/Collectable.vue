@@ -115,6 +115,7 @@
               :isUpcomming="isUpcomming"
               :nextBidPrice="nextBidPrice"
               :claim="claim"
+              :requiresRegistration="requiresRegistration"
               @update-state="updateCollectableState"
           />
 
@@ -251,6 +252,7 @@ export default {
       updateCollectableState,
       claim,
       pillOverride,
+      requiresRegistration,
     } = useCollectableInformation();
 
     const currentEndsAt = computed(() => {
@@ -384,6 +386,7 @@ export default {
       updateCollectableState,
       claim,
       pillOverride,
+      requiresRegistration,
     };
   },
 };

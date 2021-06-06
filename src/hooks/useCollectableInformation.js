@@ -27,6 +27,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const events = ref(collectable.value.events || []);
     const bundleChildItems = computed(() => collectable.value.bundleChildItems);
     const pillOverride = computed(() => collectable.value.pill_override || false);
+    const requiresRegistration = computed(() => collectable.value.requires_registration || false);
     const price = ref(0.0);
     const nextBidPrice = ref(0.0);
     const priceUSD = ref(0.0);
@@ -310,6 +311,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         version,
         claim,
         pillOverride,
+        requiresRegistration,
         // Methods
         updateProgress,
         setCollectable,
