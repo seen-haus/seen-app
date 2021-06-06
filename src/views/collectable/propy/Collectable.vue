@@ -181,7 +181,7 @@
           </div>
 
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
-            <GMapMap :center="{lat: 51.093048, lng: 6.842120}" :zoom="16" map-type-id="roadmap" style="height: 400px"></GMapMap>
+            <GMapMap :center="{lat: 50.4497888, lng: 30.5181305}" :zoom="16" map-type-id="roadmap" style="height: 400px"></GMapMap>
           </div>
 
           <div v-if="partnersPress" class="text-3xl font-title font-bold text-center mb-6 mt-12">
@@ -253,18 +253,30 @@ export default {
       buyersVisible: 3,
     });
     const faq = [
-            {question: "Q1", answer: "Answer"},
-            {question: "Q2", answer: "Answer"},
-            {question: "Q3", answer: "Answer"},
-            {question: "Q4", answer: "Answer"},
-            {question: "Q5", answer: "Answer"},
-            {question: "Q6", answer: "Answer"},
-            {question: "Q7", answer: "Answer"},
-            {question: "Q8", answer: "Answer"},
-            {question: "Q9", answer: "Answer"},
-            {question: "Q10", answer: "Answer"},
-            {question: "Q11", answer: "Answer"},
-            {question: "Q12", answer: "Answer"},
+            {question: "Why is this NFT sale so important?", answer: "This first NFT sale is important as the first transaction because it’s based on US legislation and will unlock future NFT sales representing properties in the US."},
+            {question: "Is the property registered in the Ukrainian Property Registry?", answer: "Yes, it is. The registry has a record of the owner, which is an LLC, owned by Michael Arrington since 2017. It is also recorded in the blockchain. When NFT is sold the Ukranian Registry will still have the same LLC as the owner. But the owner of the LLC will be different. The new owner will have to declare the LLC change, which Propy will assist."},
+            {question: "How will the new owner pay taxes, utility bills, and any other expenses?", answer: "There are no property taxes for this size of the property in Ukraine. Propy will collect utility bills and LLC maintenance payments annually (total ~ $500) and pay the bills on behalf of the owner in case the owner will purely hold the property. In case the owner will rent the property out, Propy will connect the owner to a prominent local property management company. In case the owner will occupy the dwelling, the owner will pay utility bills on their own and will only pay LLC maintenance fees to Propy annually."},
+            {question: "Is an NFT equivalent to a title?", answer: "In the current legal environment, title deeds cannot be directly represented by a token, but legal entities can. The apartment is owned by a Delaware Limited Liability Company (LLC). The LLC is “tokenized into” a specific NFT and made available for purchase."},
+            {question: "How is ownership transferred?", answer: "Each sale of an NFT will effect a complete, self-contained transfer of rights to acquire full membership in the LLC, which owns the property."},
+            {question: "Are property taxes required with an NFT sale?", answer: "The apartment is located in Ukraine and according to local law, the property qualifies for tax exemption. The traders of the NFT will not have to pay more taxes than they would pay if they transferred property ownership or LLC ownership rights without an NFT. The taxes involved are for capital gains or losses in accordance with the laws of the NFT trader's country of residency and/or citizenship, the portion of property taxes, and SPV administrative expenses."},
+            {question: "Where is the LLC registered?", answer: "Delaware, United States"},
+            {question: "What if I sell the NFT?", answer: "Selling the NFT is the same as selling one’s rights to be registered as the owner of the SPV holding legal title to the underlying property. The new NFT Owner is required to provide their real name and other personal information to execute the transfer of ownership."},
+            {question: "Does NFT trading require the use of the Propy platform?", answer: "NFT trading can be done on the Propy Platform and other NFT platforms. Property ownership is not dependent on Propy’s operations. The LLC will continue to exist even if Propy is ever liquidated. The LLC owner has the ability to fully control the LLC and the underlying property. The NFT owner has the right to demand the passage of ownership rights even in the absence of Propy. This right is enforceable in Delaware court."},
+            {question: "Is there a refund policy?", answer: "A refund policy will be introduced after the completion of the first NFT sale. There is no refund policy technically integrated into the NFT of the Ukrainian property."},
+            {question: "Can I sell the apartment via traditional real estate sales methods in the future?", answer: "You can sell the apartment in both the traditional way and via an NFT. If you’d like to sell it traditionally then Propy will help you to burn the NFT."},
+            {question: "Do I need to pay for the apartment in cryptocurrency?", answer: "Yes, because the auction is being run on an NFT platform that accepts cryptocurrency."},
+            {question: "What are the gas/transaction fees associated with the purchase?", answer: "Normal gas fees on Ethereum (we know they are high, but it’s real property and there are no additional ownership transfer fees needed to be paid by you)."},
+            {question: "Do I need to use Propy to sell the apartment in the future?", answer: "No, but you will need to find a platform that can support NFT/Blockchain transactions."},
+            {question: "Why is Propy doing this?", answer: "Propy is committed to supporting innovative self-driving transactions that utilize the security and speed of blockchain. Selling a property as an NFT is an exciting new property-sale use-case that will initiate a wave of RE NFT sales and will make them available as collateral for crypto borrowers and investors.\n"},
+            {question: "I want to sell a property via NFT? Are there any requirements to do so?", answer: "Since an NFT is technically a “collectible,” an NFT property should be in high demand or unique in some way - structure, location, artwork, historical relevance, price - similar to the property that we are currently auctioning.\n"},
+            {question: "How quickly can I move into the apartment after purchasing it?", answer: "You may move into the property immediately after the transaction is completed."},
+            {question: "Can I view the property in person before bidding on it?", answer: "You can view a live virtual tour that will be conducted on June 7th."},
+            {question: "Does Ukraine property require title insurance?", answer: "No, Ukraine does not have this practice. Proof of ownership will be provided to whitelisted auction candidates on June 7th."},
+            {question: "Can I view any inspections or disclosures for the property?", answer: "Inspections and disclosures will be provided to whitelisted auction candidates on June 7th. This is not a common practice in Eastern European countries."},
+            {question: "What is the property currently appraised at?", answer: "The appraising process works differently in Ukraine. We estimate the property price to be between $43,000 to $57,000 USD. Access to comparables will be provided to whitelisted auction candidates on June 7th."},
+            {question: "How do I get keys to the property?", answer: "Once the transaction is completed, our Property Management Firm of the Developer of the building will work with you to provide the keys and help you move in.\n"},
+            {question: "What happens if Ethereum fluctuations occur during bidding? Is the minimum price based on dollars or Ethereum?", answer: "The price is based on the dollar value."},
+
             ];
     const highlights = [
             {icon: "fas fa-circle", text: "683 sq/foot (63.5 Sq/Meters)"},
@@ -282,17 +294,16 @@ export default {
             {icon: "fas fa-circle", text: "Full Sized Bathtub & Shower"},
             {icon: "fas fa-circle", text: "Eco Friendly Toilet"},
             ];
-    const video = "https://www.youtube.com/embed/1G5caDyf-kA";
+    const video = "https://www.youtube.com/embed/mrLAhlHExjk";
     const contactAgent = [
-            {type: 'website', url: 'https://example.com/'},
-            {type: 'telegram', url: 'https://example.com/'},
-            {type: 'twitter', url: 'https://example.com/'},
-            {type: 'discord', url: 'https://example.com/'},
+            {type: 'website', url: 'https://propy.com/browse/propy-nft/'},
+            {type: 'telegram', url: 'https://t.me/propy/'},
+            {type: 'twitter', url: 'https://twitter.com/propyinc'},
+            {type: 'discord', url: 'https://discord.gg/hR73KhhzMc'},
             ];
     const partnersPress = [
-        {image: require("@/assets/images/team/Jigglybuff69.jpg"), url: 'https://example.com/'},
-        {image: require("@/assets/images/team/Buddyart00.jpg"), url: 'https://example.com/'},
-        {image: require("@/assets/images/team/Jiigsaw01.jpg"), url: 'https://example.com/'},
+        {image: require("@/assets/images/partners/coindesk.jpg"), url: 'https://coindesk.com/'},
+        {image: require("@/assets/images/partners/techcrunch.jpg"), url: 'https://techcrunch.com/'},
       ];
 
 

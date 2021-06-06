@@ -1,9 +1,9 @@
 <template>
     <div class="rounded-lg">
         <span class="title-text font-title text-4xl font-bold flex items-center justify-center">Partners & Press</span>
-        <div class="h-48 flex flex-wrap content-start flex items-center justify-center">
-            <a v-for="item in partners" :key="item" :href="item.url">
-                <img :src="item.image" class="h-16 mx-auto"/>
+        <div class="content-start flex items-center justify-center overlay py-4">
+            <a v-for="item in partners" :key="item" :href="item.url" target="_blank" class="p-4">
+                <img :src="item.image" class=" h-6"/>
             </a>
         </div>
     </div>
@@ -19,5 +19,8 @@
 </script>
 
 <style scoped>
-
+.overlay {
+    filter: grayscale(100%);
+    opacity: .3;
+}
 </style>
