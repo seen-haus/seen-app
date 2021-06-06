@@ -9,16 +9,16 @@ export default {
                         icon: 'icon-fire.svg'
                     },
                     {
+                        title: 'Creators',
+                        url: 'artists'
+                    },
+                    {
                         title: 'Stake',
                         url: 'stake',
                     },
                     {
                         title: 'Gallery',
                         url: [
-                            {
-                                title: 'Creators',
-                                url: 'artists'
-                            },
                             {
                                 title: 'Top Collectors',
                                 url: 'collectors'

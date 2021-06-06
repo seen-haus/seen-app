@@ -1,6 +1,6 @@
 <template>
   <nav v-if="menu">
-      <template v-for="item in menu" :key="item && item.title">
+      <template v-for="(item, index) in menu" :key="item && item.title">
         <router-link v-if="typeof item.url === 'string'"
             :to="{ name: item.url }"
             v-slot="{ isActive }"
@@ -21,7 +21,7 @@
 
             <ul class="w-full">
               <li class="dropdown inline cursor-pointer font-bold text-base tracking-wide relative opacity-50 hover:opacity-100">
-                <a class="py-3 pr-8">
+                <a class="py-3" :class="index !== menu.length - 1 && 'pr-8'">
                     <img v-if="item.icon != null"
                         :src="require('@/assets/icons/' + item.icon)"
                         :class="isActive ? 'active-green-icon' : ''"
