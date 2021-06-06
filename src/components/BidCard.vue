@@ -84,11 +84,16 @@
           Insufficient funds
         </button>
         <template v-if="account && requiresRegistration && !isRegisteredBidder">
+          <div class="text-gray-400 text-sm py-2">
+            <p>
+              Your real information is required for identity verification only. You can become an owner <b>only</b> if you’re older than 18 years old, and provide your name as per your ID.
+            </p>
+          </div>
           <div class="outlined-input mt-2" :class="{ invalid: hasError || isFieldInvalid }">
             <input
                 v-model="firstNameField.value"
                 autocomplete="given-name"
-                :placeholder="'First Name'"
+                :placeholder="'First Name as per ID'"
             />
           </div>
           <span class="error-notice">{{ firstNameField.errors[0] }}</span>
@@ -96,7 +101,7 @@
             <input
                 v-model="lastNameField.value"
                 autocomplete="family-name"
-                :placeholder="'Last Name'"
+                :placeholder="'Last Name as per ID'"
             />
           </div>
           <span class="error-notice">{{ lastNameField.errors[0] }}</span>
@@ -109,11 +114,18 @@
             />
           </div>
           <span class="error-notice">{{ emailField.errors[0] }}</span>
-          <div class="text-center text-gray-400 text-sm py-2">
-            <p>
-              The above information is required by Propy for all bidders. Propy's <a href="https://propy.com/browse/terms-and-conditions/" style="color: #2196F3" target="_blank" rel="noopener noreferrer">terms and conditions</a>.
+          <div class="text-gray-400 flex text-sm py-2">
+            <input
+              class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
+              v-model="acceptTermsField.value"
+              type="checkbox"
+              :placeholder="'Email Address'"
+            />
+            <p style="width: calc(100% - 30px)">
+              I agree with Propy's <a href="https://propy.com/browse/terms-and-conditions/" style="color: #2196F3;" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> and <a href="https://propy.com/browse/privacy-policy/" style="color: #2196F3" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. I hereby declare that the information provided is true and correct, and I am not subject to any sanctions imposed by a regulatory body.
             </p>
           </div>
+          <span class="error-notice">{{ acceptTermsField.errors[0] }}</span>
           <button
               class="cursor-pointer button primary flex-shrink-0 mt-2"
               @click="registerToBid"
@@ -298,6 +310,7 @@ export default {
     const firstNameField = reactive(useField("first name", "required|min:3"));
     const lastNameField = reactive(useField("last name", "required|min:3"));
     const emailField = reactive(useField("email", "email"));
+    const acceptTermsField = reactive(useField("terms and conditions", (val) => fieldValidatorAcceptTerms(val)));
 
     const isFieldInvalid = computed(() => {
       return isAuction.value ? auctionField.errors.length : saleField.errors.length
@@ -340,6 +353,14 @@ export default {
         return hasEnoughFunds(value) ? true : 'You do not have enough funds';
       } else {
         return true;
+      }
+    }
+
+    const fieldValidatorAcceptTerms = (value) => {
+      if (value) {
+        return true;
+      } else {
+        return 'Please accept the Terms and Conditions as well as the Privacy Policy to continue';
       }
     }
 
@@ -414,18 +435,21 @@ export default {
       let lastName = "";
       let email = "";
       let collectableId = "";
+      let acceptTerms = false;
       try {
         firstName = firstNameField.value;
         lastName = lastNameField.value;
         email = emailField.value;
+        acceptTerms = acceptTermsField.value;
         collectableId = collectableData.value.id;
 
         if (!firstName || firstName.length < 3) throw new Error("first name required");
         if (!lastName || lastName.length < 3) throw new Error("last name required");
         if (!email || email.length < 3) throw new Error("email required");
+        if (!acceptTerms) throw new Error("Please accept the Terms and Conditions to continue")
         if (!collectableId) throw new Error("collectable ID required");
 
-        const msg = `First name: ${firstName}\nLast name: ${lastName}\nEmail: ${email}\nCollectable ID: ${collectableId}`;
+        const msg = `First name: ${firstName}\nLast name: ${lastName}\nEmail: ${email}\nCollectable ID: ${collectableId}\nI accept Propy's terms and conditions and privacy policy.`;
         const signer = useSigner();
 
         if (signer) {
@@ -451,7 +475,7 @@ export default {
           severity: 'error',
           summary: 'Error',
           detail: `${e}`,
-          life: 3000
+          life: 5000
         });
       }
     };
@@ -576,6 +600,7 @@ export default {
       firstNameField,
       lastNameField,
       emailField,
+      acceptTermsField,
       isFieldInvalid,
       viewOnOpenSea,
       isNumber,
