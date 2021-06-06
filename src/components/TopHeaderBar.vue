@@ -59,7 +59,7 @@
               <i class="fab fa-medium mr-2 text-lg"></i>
           </a>
           <a href="https://twitter.com/seen_haus" target="_blank" class="btn-social">
-              <i class="fab fa-twitter mr-2 text-lg"></i>
+              <i class="fab fa-twitter mr-0.5 text-lg"></i>
           </a>
         </div>
       </div>
