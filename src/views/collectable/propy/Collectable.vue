@@ -255,7 +255,16 @@ export default {
     const faq = [
             {question: "Q1", answer: "Answer"},
             {question: "Q2", answer: "Answer"},
-            {question: "Q3", answer: "Answer"}
+            {question: "Q3", answer: "Answer"},
+            {question: "Q4", answer: "Answer"},
+            {question: "Q5", answer: "Answer"},
+            {question: "Q6", answer: "Answer"},
+            {question: "Q7", answer: "Answer"},
+            {question: "Q8", answer: "Answer"},
+            {question: "Q9", answer: "Answer"},
+            {question: "Q10", answer: "Answer"},
+            {question: "Q11", answer: "Answer"},
+            {question: "Q12", answer: "Answer"},
             ];
     const highlights = [
             {icon: "fas fa-circle", text: "683 sq/foot (63.5 Sq/Meters)"},
