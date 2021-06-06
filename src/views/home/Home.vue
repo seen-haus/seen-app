@@ -135,7 +135,7 @@
         </template>
       </div>
 
-      <router-link to="artists">
+      <router-link to="creators">
         <button class="button dark mt-20 mx-auto w-full md:w-96">
           View All Creators
         </button>
