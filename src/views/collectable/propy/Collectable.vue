@@ -55,7 +55,7 @@
       <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-12 md:mt-0">
         <div class="left-side col-span-7 pb-6">
 
-          <span class="title-text font-title text-4xl font-bold">Tokenized Real Estate</span>
+          <div class="title-text font-title text-4xl font-bold mb-3">NFT Real Estate</div>
 
           <div class="text-lg text-gray-500 description" v-html="description"></div>
 
@@ -67,9 +67,6 @@
           </div>
 
           <faq v-if="faq" :faq="faq"/>
-
-
-          <contact-agent class="shadow-md" artist-name="Propy" :socials="contactAgent"/>
 
           <div class="text-4xl font-title font-bold mt-14 mb-6">
             Agent statement
@@ -181,12 +178,14 @@
           </div>
 
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
-            <GMapMap :center="{lat: 50.4497888, lng: 30.5181305}" :zoom="16" map-type-id="roadmap" style="height: 400px"></GMapMap>
+            <GMapMap :center="{lat: 50.464400766446346, lng: 30.345023136173992}" :zoom="13" map-type-id="roadmap" style="height: 400px"></GMapMap>
           </div>
 
           <div v-if="partnersPress" class="text-3xl font-title font-bold text-center mb-6 mt-12">
             <partners-and-press :partners="partnersPress"></partners-and-press>
           </div>
+
+          <contact-agent class="shadow-md" artist-name="Propy" :socials="contactAgent"/>
 
         </div>
       </div>
@@ -279,20 +278,16 @@ export default {
 
             ];
     const highlights = [
-            {icon: "fas fa-circle", text: "683 sq/foot (63.5 Sq/Meters)"},
-            {icon: "fas fa-circle", text: "Granite Countertops & Backsplash"},
-            {icon: "fas fa-circle", text: "Oven & Electric Stove"},
+            {icon: "fas fa-circle", text: "505.9 sq/foot (47 Sq/Meters)"},
             {icon: "fas fa-circle", text: "Decorative Herrington Paneling "},
             {icon: "fas fa-circle", text: "Tiled Entryway "},
             {icon: "fas fa-circle", text: "Laminate Floors Throughout"},
-            {icon: "fas fa-circle", text: "Roman Blinds"},
             {icon: "fas fa-circle", text: "Decorative Light Fixtures"},
+            {icon: "fas fa-circle", text: "Physical + Digital Artwork by Chizz"},
             {icon: "fas fa-circle", text: "Ample Closet Space"},
-            {icon: "fas fa-circle", text: "Washing Machine"},
-            {icon: "fas fa-circle", text: "Renovated Bathroom"},
             {icon: "fas fa-circle", text: "Wood Vanity"},
             {icon: "fas fa-circle", text: "Full Sized Bathtub & Shower"},
-            {icon: "fas fa-circle", text: "Eco Friendly Toilet"},
+            {icon: "fas fa-circle", text: "Be Part of a World First"},
             ];
     const video = "https://www.youtube.com/embed/mrLAhlHExjk";
     const contactAgent = [
@@ -300,10 +295,11 @@ export default {
             {type: 'telegram', url: 'https://t.me/propy/'},
             {type: 'twitter', url: 'https://twitter.com/propyinc'},
             {type: 'discord', url: 'https://discord.gg/hR73KhhzMc'},
+            {type: 'mail', url: 'mailto:info@propy.com'},
             ];
     const partnersPress = [
-        {image: require("@/assets/images/partners/coindesk.jpg"), url: 'https://coindesk.com/'},
-        {image: require("@/assets/images/partners/techcrunch.jpg"), url: 'https://techcrunch.com/'},
+        {image: require("@/assets/images/partners/coindesk.jpg"), url: 'https://www.coindesk.com/tag/propy'},
+        {image: require("@/assets/images/partners/techcrunch.jpg"), url: 'https://techcrunch.com/tag/propy/'},
       ];
 
 
