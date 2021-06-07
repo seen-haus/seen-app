@@ -76,7 +76,7 @@
       <template v-else>
         <button class="button primary"
                 :class="{'cursor-wait disabled opacity-50': isSubmitting}"
-                :disabled="isSubmitting" v-if="account && hasEnoughFunds()" @click="placeABidOrBuy">
+                :disabled="isSubmitting" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
           <span v-if="!isSubmitting">{{ isAuction ? "Place a bid" : "Buy now" }}</span>
           <span v-else>Submitting...</span>
         </button>
