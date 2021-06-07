@@ -39,7 +39,7 @@ export default {
       tags: [
               {class: "bg-fence-light self-end text-gray-400 font-semibold mr-1 my-2", text:"EDITION 40/40"},
               {class: "bg-tag-nft mr-1 text-white my-2", text:"NFT"},
-              {class: "bg-tag-tangible text-white my-2", text: "TANGIBLE"}],
+              {class: "bg-tag-tangible text-white my-2", text: "PHYSICAL"}],
       phases: [
         [55, 57, 63, 66, 71, 74, 77, 85, 87, 88, 89, 90, 93],
         [61, 62, 64, 70, 76, 82, 84, 86, 91, 92, 94, 95, 96],

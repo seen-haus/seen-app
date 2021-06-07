@@ -27,7 +27,7 @@
           :number-of-bids="isAuction ? numberOfBids : undefined"
       />
 
-      <template v-if="isCollectableActive">
+      <template v-if="isCollectableActive && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
         <div class="outlined-input mt-5" :class="{ invalid: hasError || isFieldInvalid }">
           <input
               v-model="auctionField.value"
@@ -76,13 +76,63 @@
       <template v-else>
         <button class="button primary"
                 :class="{'cursor-wait disabled opacity-50': isSubmitting}"
-                :disabled="isSubmitting" v-if="account && hasEnoughFunds()" @click="placeABidOrBuy">
+                :disabled="isSubmitting" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
           <span v-if="!isSubmitting">{{ isAuction ? "Place a bid" : "Buy now" }}</span>
           <span v-else>Submitting...</span>
         </button>
-        <button class="button dark disabled opacity-50" v-if="account && !hasEnoughFunds()">
+        <button class="button dark disabled opacity-50" v-if="account && !hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
           Insufficient funds
         </button>
+        <template v-if="account && requiresRegistration && !isRegisteredBidder">
+          <div class="text-gray-400 text-sm py-2">
+            <p>
+              Your real information is required for identity verification only. You can become an owner <b>only</b> if you’re older than 18 years old, and provide your name as per your ID.
+            </p>
+          </div>
+          <div class="outlined-input mt-2" :class="{ invalid: hasError || isFieldInvalid }">
+            <input
+                v-model="firstNameField.value"
+                autocomplete="given-name"
+                :placeholder="'First Name as per ID'"
+            />
+          </div>
+          <span class="error-notice">{{ firstNameField.errors[0] }}</span>
+          <div class="outlined-input mt-2" :class="{ invalid: hasError || isFieldInvalid }">
+            <input
+                v-model="lastNameField.value"
+                autocomplete="family-name"
+                :placeholder="'Last Name as per ID'"
+            />
+          </div>
+          <span class="error-notice">{{ lastNameField.errors[0] }}</span>
+          <div class="outlined-input mt-2" :class="{ invalid: hasError || isFieldInvalid }">
+            <input
+                v-model="emailField.value"
+                autocomplete="email"
+                type="email"
+                :placeholder="'Email Address'"
+            />
+          </div>
+          <span class="error-notice">{{ emailField.errors[0] }}</span>
+          <div class="text-gray-400 flex text-sm py-2">
+            <input
+              class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
+              v-model="acceptTermsField.value"
+              type="checkbox"
+              :placeholder="'Email Address'"
+            />
+            <p style="width: calc(100% - 30px)">
+              I agree with Propy's <a href="https://propy.com/browse/terms-and-conditions/" style="color: #2196F3;" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> and <a href="https://propy.com/browse/privacy-policy/" style="color: #2196F3" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. I hereby declare that the information provided is true and correct, and I am not subject to any sanctions imposed by a regulatory body.
+            </p>
+          </div>
+          <span class="error-notice">{{ acceptTermsField.errors[0] }}</span>
+          <button
+              class="cursor-pointer button primary flex-shrink-0 mt-2"
+              @click="registerToBid"
+          >
+            <i class="fas fa-id-badge mr-2 transform"></i> Register to bid
+          </button>
+        </template>
         <button
             v-if="!account"
             class="cursor-pointer button primary flex-shrink-0"
@@ -189,11 +239,12 @@
 
 
 <script>
-import {ref, computed, watchEffect, reactive} from "vue";
+import {ref, computed, watchEffect, reactive, watch} from "vue";
 import {useStore} from "vuex";
 import emitter from "@/services/utils/emitter";
 import useWeb3 from "@/connectors/hooks";
 
+import { BidRegistrationService } from "@/services/apiService"
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
@@ -231,6 +282,7 @@ export default {
     collectable: Object,
     nextBidPrice: Number,
     claim: [Number, Boolean],
+    requiresRegistration: Boolean,
   },
   setup(props, ctx) {
     const price = ref(props.price);
@@ -239,6 +291,7 @@ export default {
     const isAuction = ref(props.isAuction);
     const {account} = useWeb3();
     const hasError = ref(null);
+    const isRegisteredBidder = ref(false);
     const isSubmitting = ref(false);
     const collectableData = ref(props.collectable);
     const winner = computed(() => collectableData.value.winner_address);
@@ -253,9 +306,35 @@ export default {
 
     const auctionField = reactive(useField("bid", (val) => fieldValidatorAuction(val)));
     const saleField = reactive(useField("amount", (val) => fieldValidatorSale(val)));
+    
+    const firstNameField = reactive(useField("first name", "required|min:3"));
+    const lastNameField = reactive(useField("last name", "required|min:3"));
+    const emailField = reactive(useField("email", "email"));
+    const acceptTermsField = reactive(useField("terms and conditions", (val) => fieldValidatorAcceptTerms(val)));
 
     const isFieldInvalid = computed(() => {
       return isAuction.value ? auctionField.errors.length : saleField.errors.length
+    });
+
+    function checkRegistrationStatusIfRequired() {
+      let walletAddress = account.value;
+      let collectableId = collectableData.value.id;
+      if(props.requiresRegistration) {
+        BidRegistrationService.isRegistered(walletAddress, collectableId).then(res => {
+          isRegisteredBidder.value = res.data.is_registered;
+        }).catch(e => {
+          isRegisteredBidder.value = false;
+          console.error(e);
+        });
+      }else{
+        isRegisteredBidder.value = false;
+      }
+    }
+
+    checkRegistrationStatusIfRequired()
+
+    watch(account, () => {
+      checkRegistrationStatusIfRequired()
     });
 
     const fieldValidatorAuction = (value) => {
@@ -274,6 +353,14 @@ export default {
         return hasEnoughFunds(value) ? true : 'You do not have enough funds';
       } else {
         return true;
+      }
+    }
+
+    const fieldValidatorAcceptTerms = (value) => {
+      if (value) {
+        return true;
+      } else {
+        return 'Please accept the Terms and Conditions as well as the Privacy Policy to continue';
       }
     }
 
@@ -339,6 +426,56 @@ export default {
           summary: 'Error',
           detail: `Error placing ${isAuction.value ? 'a bid' : 'a buy order'}.`,
           life: 3000
+        });
+      }
+    };
+
+    const registerToBid = async () => {
+      let firstName = "";
+      let lastName = "";
+      let email = "";
+      let collectableId = "";
+      let acceptTerms = false;
+      try {
+        firstName = firstNameField.value;
+        lastName = lastNameField.value;
+        email = emailField.value;
+        acceptTerms = acceptTermsField.value;
+        collectableId = collectableData.value.id;
+
+        if (!firstName || firstName.length < 3) throw new Error("first name required");
+        if (!lastName || lastName.length < 3) throw new Error("last name required");
+        if (!email || email.length < 3) throw new Error("email required");
+        if (!acceptTerms) throw new Error("Please accept the Terms and Conditions to continue")
+        if (!collectableId) throw new Error("collectable ID required");
+
+        const msg = `First name: ${firstName}\nLast name: ${lastName}\nEmail: ${email}\nCollectable ID: ${collectableId}\nI accept Propy's terms and conditions and privacy policy.`;
+        const signer = useSigner();
+
+        if (signer) {
+          const sig = await signer
+            .signMessage(msg)
+            .catch((e) => {
+              throw new Error("Message signing failed");
+          });
+          BidRegistrationService.register({ collectable_id: collectableId, first_name: firstName, last_name: lastName, email: email, sig, wallet_address: account.value})
+            .then(() => {
+              toast.add({severity:'success', summary:'Success', detail:'Successfully registered as bidder for this auction.', life: 3000});
+              checkRegistrationStatusIfRequired();
+            })
+            .catch(() => toast.add({severity:'error', summary:'Error', detail:'Could not submit your details. Please try to enter them later.', life: 3000}));
+        }else{
+          throw new Error("signer not imported");
+        }
+        hasError.value = null;
+      } catch (e) {
+        hasError.value = true;
+        console.error("Error when trying to register", e);
+        toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: `${e}`,
+          life: 5000
         });
       }
     };
@@ -460,11 +597,17 @@ export default {
       hasEnoughFunds,
       auctionField,
       saleField,
+      firstNameField,
+      lastNameField,
+      emailField,
+      acceptTermsField,
       isFieldInvalid,
       viewOnOpenSea,
       isNumber,
       isInteger,
       claimId: props.claim?.id ? props.claim.id : null,
+      isRegisteredBidder,
+      registerToBid,
     };
   },
 };

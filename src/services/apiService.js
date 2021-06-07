@@ -77,6 +77,15 @@ export const CollectablesService = {
     },
 };
 
+export const BidRegistrationService = {
+    isRegistered(walletAddress, collectableId) {
+        return ApiService.get(`bid-registration-status/${walletAddress}/${collectableId}`);
+    },
+    register(payload) {
+        return ApiService.post(`bid-registration`, payload);
+    }
+};
+
 export const ClaimsService = {
     show(contractAddress) {
         return ApiService.get(`claims/${contractAddress}`);
