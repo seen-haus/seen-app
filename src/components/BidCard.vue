@@ -74,6 +74,14 @@
         Opensea
       </button>
       <template v-else>
+        <div v-if="bidDisclaimers && bidDisclaimers.length > 0 && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" class="text-gray-400 text-sm py-2">
+            <p style="width: calc(100%)">
+              Please note:<br/>
+              <ul>
+                <li v-for="item in bidDisclaimers" :key="item">• {{item}}</li>
+              </ul>
+            </p>
+        </div>
         <button class="button primary"
                 :class="{'cursor-wait disabled opacity-50': isSubmitting}"
                 :disabled="isSubmitting" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
@@ -283,6 +291,7 @@ export default {
     nextBidPrice: Number,
     claim: [Number, Boolean],
     requiresRegistration: Boolean,
+    bidDisclaimers: [Array]
   },
   setup(props, ctx) {
     const price = ref(props.price);

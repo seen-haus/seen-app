@@ -95,6 +95,7 @@
               :nextBidPrice="nextBidPrice"
               :claim="claim"
               :requiresRegistration="requiresRegistration"
+              :bidDisclaimers="bidDisclaimers"
               @update-state="updateCollectableState"
           />
 
@@ -254,6 +255,7 @@ export default {
     });
     const faq = [
             {question: "Why is this NFT sale so important?", answer: "This first NFT sale is important as the first transaction because it’s based on US legislation and will unlock future NFT sales representing properties in the US."},
+            {question: "Does the apartment come furnished?", answer: "The apartment will not be furnished. Furniture is available for purchase via Propy upon an additional payment of $30k."},
             {question: "Is the property registered in the Ukrainian Property Registry?", answer: "Yes, it is. The registry has a record of the owner, which is an LLC, owned by Michael Arrington since 2017. It is also recorded in the blockchain. When NFT is sold the Ukranian Registry will still have the same LLC as the owner. But the owner of the LLC will be different. The new owner will have to declare the LLC change, which Propy will assist."},
             {question: "How will the new owner pay taxes, utility bills, and any other expenses?", answer: "There are no property taxes for this size of the property in Ukraine. Propy will collect utility bills and LLC maintenance payments annually (total ~ $500) and pay the bills on behalf of the owner in case the owner will purely hold the property. In case the owner will rent the property out, Propy will connect the owner to a prominent local property management company. In case the owner will occupy the dwelling, the owner will pay utility bills on their own and will only pay LLC maintenance fees to Propy annually."},
             {question: "Is an NFT equivalent to a title?", answer: "In the current legal environment, title deeds cannot be directly represented by a token, but legal entities can. The apartment is owned by a Delaware Limited Liability Company (LLC). The LLC is “tokenized into” a specific NFT and made available for purchase."},
@@ -269,15 +271,19 @@ export default {
             {question: "Do I need to use Propy to sell the apartment in the future?", answer: "No, but you will need to find a platform that can support NFT/Blockchain transactions."},
             {question: "Why is Propy doing this?", answer: "Propy is committed to supporting innovative self-driving transactions that utilize the security and speed of blockchain. Selling a property as an NFT is an exciting new property-sale use-case that will initiate a wave of RE NFT sales and will make them available as collateral for crypto borrowers and investors.\n"},
             {question: "I want to sell a property via NFT? Are there any requirements to do so?", answer: "Since an NFT is technically a “collectible,” an NFT property should be in high demand or unique in some way - structure, location, artwork, historical relevance, price - similar to the property that we are currently auctioning.\n"},
-            {question: "How quickly can I move into the apartment after purchasing it?", answer: "You may move into the property immediately after the transaction is completed."},
+            {question: "How quickly can I move into the apartment after purchasing it?", answer: "The finishing work will be completed by July 1st, and then the owner can move into the apartment."},
             {question: "Can I view the property in person before bidding on it?", answer: "You can view a live virtual tour that will be conducted on June 7th."},
             {question: "Does Ukraine property require title insurance?", answer: "No, Ukraine does not have this practice. Proof of ownership will be provided to whitelisted auction candidates on June 7th."},
             {question: "Can I view any inspections or disclosures for the property?", answer: "Inspections and disclosures will be provided to whitelisted auction candidates on June 7th. This is not a common practice in Eastern European countries."},
             {question: "What is the property currently appraised at?", answer: "The appraising process works differently in Ukraine. We estimate the property price to be between $43,000 to $57,000 USD. Access to comparables will be provided to whitelisted auction candidates on June 7th."},
             {question: "How do I get keys to the property?", answer: "Once the transaction is completed, our Property Management Firm of the Developer of the building will work with you to provide the keys and help you move in.\n"},
             {question: "What happens if Ethereum fluctuations occur during bidding? Is the minimum price based on dollars or Ethereum?", answer: "The price is based on the dollar value."},
-
             ];
+    const bidDisclaimers = [
+      "Apartment images are rendered designs",
+      "Apartment comes unfurnished",
+      "Apartment renovations to be completed by July 1st",
+    ]
     const highlights = [
             {icon: "fas fa-circle", text: "505.9 sq/foot (47 Sq/Meters)"},
             {icon: "fas fa-circle", text: "Decorative Herrington Paneling "},
@@ -485,6 +491,7 @@ export default {
       video,
       contactAgent,
       partnersPress,
+      bidDisclaimers,
       requiresRegistration,
     };
   },
