@@ -69,7 +69,7 @@
           <faq v-if="faq" :faq="faq"/>
 
           <div class="text-4xl font-title font-bold mt-14 mb-6">
-            Agent statement
+            The NFT Creator Statement
           </div>
           <artist-card class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
         </div>
