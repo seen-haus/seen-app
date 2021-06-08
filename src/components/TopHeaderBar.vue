@@ -93,13 +93,11 @@ export default {
   &:last-child {
     @apply mr-0;
   }
-}
-.fab {
   color: #fff;
   opacity: 60%;
   transition-duration: 0.2s;
 }
-.fab:hover {
+.btn-social:hover {
   color: #34ca98;
   opacity: 100%;
 }
