@@ -290,7 +290,7 @@ export default {
             {icon: "fas fa-circle", text: "Tiled Entryway "},
             {icon: "fas fa-circle", text: "Laminate Floors Throughout"},
             {icon: "fas fa-circle", text: "Decorative Light Fixtures"},
-            {icon: "fas fa-circle", text: "Physical + Digital Artwork by Chizz"},
+            {icon: "fas fa-circle", text: `Physical + Digital Artwork by <a href="https://www.instagram.com/chizz.xr/" rel="noopener noreferrer" target="_blank" style="color: rgb(33, 150, 243);">Chizz</a>`},
             {icon: "fas fa-circle", text: "Ample Closet Space"},
             {icon: "fas fa-circle", text: "Wood Vanity"},
             {icon: "fas fa-circle", text: "Full Sized Bathtub & Shower"},
