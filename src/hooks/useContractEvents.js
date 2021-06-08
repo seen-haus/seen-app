@@ -18,6 +18,7 @@ export default function useContractEvents() {
     const mergedEvents = ref([]);
     const supply = ref(0);
     const endsAt = ref(0);
+    const incomingBidSound = require("@/assets/sounds/bid_notification.mp3");
     let contract = null;
 
     const isAuction = computed(() => collectable.value.purchase_type === PURCHASE_TYPE.AUCTION);
@@ -101,6 +102,10 @@ export default function useContractEvents() {
                     console.log(endTime)
                     collectable.value.ends_at = parseInt(endTime) * 1000
                     endsAt.value = new Date(parseInt(endTime) * 1000)
+                    let notification = new Audio(incomingBidSound)
+                    notification.addEventListener("canplaythrough", () => {
+                        notification.play();
+                    });
                 }
                 mergeEvents(event);
             });
