@@ -1,7 +1,7 @@
 <template>
     <span class="title-text font-title text-4xl font-bold">Highlights</span>
     <ul>
-      <li v-for="item in highlights" :key="item"><i :class="item.icon ? item.icon : 'fas fa-circle'"></i>{{item.text}}</li>
+      <li v-for="item in highlights" :key="item"><i :class="item.icon ? item.icon : 'fas fa-circle'"></i><span v-html="item.text"></span></li>
     </ul>
 </template>
 
