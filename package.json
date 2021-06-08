@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@0x/subproviders": "^6.4.1",
+    "@fawmi/vue-google-maps": "^0.8.6",
     "@portis/web3": "^3.0.8",
     "@vee-validate/rules": "^4.1.20",
     "@vue/server-renderer": "3.0.11",

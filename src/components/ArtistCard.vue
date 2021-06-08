@@ -3,11 +3,15 @@
     class="artist-card overflow-hidden rounded-lg custom-shadow cursor-pointer"
     @click="navigateToArtist"
   >
+    <div class="top-bar">
+    <img v-if="artist.header_image" :src="artist.header_image" class="mr-4 header" alt="">
+    <img v-else :src="artist.avatar" class="mr-4 blur" alt="">
+    </div>
     <div class="description flex flex-col p-6">
       <img
         :src="artist.avatar"
         alt=""
-        class="rounded-full border-white border-3 left-6 -top-12.5 w-25 h-25"
+        class="rounded-full border-white border-3 left-6 -top-12.5 w-25 h-25 avatar"
       />
 
       <div class="flex items-center mt-6">
@@ -89,7 +93,36 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .custom-shadow {
+.custom-shadow {
     box-shadow: 0px 3px 15px rgba(0,0,0,.1);
-  }
+}
+
+.avatar {
+  z-index: 2;
+}
+.description {
+  margin-top: -70px;
+  z-index: 4;
+  background-color: white;
+}
+.top-bar {
+    height: 187px;
+    width: 100%;
+    position: relative;
+    overflow:hidden;
+}
+.top-bar img.header {
+
+  position: absolute;
+  top:-100%; left:0; right: 0; bottom:-100%;
+  margin: auto;
+}
+.top-bar img.blur {
+  transform: translate(-10%,-10%);
+  width: 100%;
+  filter: blur(70px);
+  opacity: .7;
+}
+
 </style>
+A

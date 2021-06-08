@@ -121,7 +121,7 @@
         color="fence-gray"
         textAlign="center"
         :closed="true"
-        >Artists
+        >Creators
       </fenced-title>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
@@ -135,9 +135,9 @@
         </template>
       </div>
 
-      <router-link to="artists">
+      <router-link to="creators">
         <button class="button dark mt-20 mx-auto w-full md:w-96">
-          View All Artists
+          View All Creators
         </button>
       </router-link>
     </container>
