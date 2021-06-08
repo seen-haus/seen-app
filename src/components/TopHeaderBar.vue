@@ -59,7 +59,7 @@
               <i class="fab fa-medium mr-2 text-lg"></i>
           </a>
           <a href="https://twitter.com/seen_haus" target="_blank" class="btn-social">
-              <i class="fab fa-twitter mr-0.5 text-lg"></i>
+              <i class="fab fa-twitter mr-1.5 text-lg"></i>
           </a>
         </div>
       </div>
@@ -94,11 +94,11 @@ export default {
     @apply mr-0;
   }
   color: #fff;
-  opacity: 60%;
+  opacity: 0.6;
   transition-duration: 0.2s;
 }
 .btn-social:hover {
   color: #34ca98;
-  opacity: 100%;
+  opacity: 1;
 }
 </style>
