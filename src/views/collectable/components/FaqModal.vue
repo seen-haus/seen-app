@@ -2,7 +2,7 @@
     <Dialog v-model:visible="displayModal" :style="{width: '48rem'}" :modal="true" :closable="true">
 
         <fenced-title
-          class="flex-grow mr-0 mb-2 self-stretch"
+          class="flex-grow mr-0 mb-4 self-stretch"
           color="fence-gray"
           textAlign="center"
           :closed="true"
