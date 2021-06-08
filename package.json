@@ -35,6 +35,7 @@
     "vee-validate": "^4.2.4",
     "vue": "^3.0.0",
     "vue-meta": "3.0.0-alpha.3",
+    "vue-plausible": "^1.1.4",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0",
     "walletlink": "^2.0.3",

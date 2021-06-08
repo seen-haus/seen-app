@@ -11,6 +11,7 @@ import PrimeVue from 'primevue/config';
 import Dialog from "primevue/dialog";
 import {createMetaManager, defaultConfig, useMeta, deepestResolver} from 'vue-meta';
 import VueGoogleMaps from '@fawmi/vue-google-maps'
+import { VuePlausible } from 'vue-plausible'
 
 import directives from "@/directives"
 import "primevue/resources/themes/saga-blue/theme.css"; //theme
@@ -35,6 +36,10 @@ app.use(VueGoogleMaps, {
         key: process.env.VUE_APP_GOOGLE_MAPS_KEY
     },
 })
+app.use(VuePlausible, {
+    domain: "seen.haus",
+})
+app.$plausible.enableAutoPageviews()
 app.component("Toast", Toast)
 app.component("Dialog", Dialog)
 app.mount('#app');
