@@ -79,7 +79,7 @@ export default function useTimer(callback) {
             progressLeft = progress;
         }
 
-        if(Math.floor(progressLeft / 1000) <= 900) {
+        if((Math.floor(progressLeft / 1000) <= 900) && (now > state.startDate)) {
             duration = 900 * 1000
             progressLeft = state.endDate - now;
             progress = duration - progressLeft;
