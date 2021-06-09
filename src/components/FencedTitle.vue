@@ -65,7 +65,9 @@ export default {
 .title-text {
   max-width: 80%;
   font-size: 36px;
-  margin-top: -6px;
+  line-height: 1.2;
+  margin: -10px 0 10px;
+
   @screen md {
     font-size: 46px;
   }
