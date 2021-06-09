@@ -268,8 +268,8 @@ const communityContributors = [
   },
   {
     avatar: require("@/assets/images/team/Desulator.jpg"),
-    name: "Desulator",
-    title: "Front End Consultant",
+    name: "desultor",
+    title: "UI/UX Consultant",
     socials: [
       {
         url: "https://twitter.com/_desultor_",
