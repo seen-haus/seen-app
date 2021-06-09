@@ -96,6 +96,7 @@
               :claim="claim"
               :requiresRegistration="requiresRegistration"
               :bidDisclaimers="bidDisclaimers"
+              overrideClaimLink="https://propy.com/nft"
               @update-state="updateCollectableState"
           />
 

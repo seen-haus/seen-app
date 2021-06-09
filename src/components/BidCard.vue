@@ -66,8 +66,10 @@
           </p>
         </div>
       </template>
-
-      <button class="button primary mt-6" v-if="claimId !== null" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
+      <button class="button primary mt-6" v-if="hasOverrideClaimLink" @click="viewOverrideClaimLink">
+        Claim Physical
+      </button>
+      <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
         Claim Physical
       </button>
       <button class="button opensea mt-6" v-if="!isCollectableActive" @click="viewOnOpenSea">
@@ -291,7 +293,8 @@ export default {
     nextBidPrice: Number,
     claim: [Number, Boolean],
     requiresRegistration: Boolean,
-    bidDisclaimers: [Array]
+    bidDisclaimers: [Array],
+    overrideClaimLink: String,
   },
   setup(props, ctx) {
     const price = ref(props.price);
@@ -578,6 +581,10 @@ export default {
       window.open(`https://opensea.io/assets/${nftAddress}/${nftTokenId}`, '_blank').focus()
     }
 
+    const viewOverrideClaimLink = () => {
+      window.open(props.overrideClaimLink, '_blank').focus()
+    }
+
     const isNumber = (value) => {
       return numberHelper.isNumber(value)
     }
@@ -612,6 +619,8 @@ export default {
       acceptTermsField,
       isFieldInvalid,
       viewOnOpenSea,
+      viewOverrideClaimLink,
+      hasOverrideClaimLink: props.overrideClaimLink ? true : false,
       isNumber,
       isInteger,
       claimId: props.claim?.id ? props.claim.id : null,
