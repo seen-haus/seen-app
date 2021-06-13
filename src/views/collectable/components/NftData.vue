@@ -15,6 +15,15 @@
 
           <span v-if="ipfsData?.value?.description">
               <p class="text-sm text-gray-500">{{ ipfsData.value.description }}</p>
+
+              <p v-if="ipfsData?.value?.attributes" class="text-md font-title font-bold mt-4 mb-2">Properties</p>
+              <div v-if="ipfsData?.value?.attributes" class="grid grid-cols-3 gap-2 text-center">
+                <span class="border rounded-md overflow-hidden bg-background-gray"
+                      v-for="attribute in ipfsData.value.attributes" :key="attribute">
+                  <p class="text-sm text-gray-800">{{ attribute.trait_type }}</p>
+                  <p class="text-xs text-gray-500">{{ attribute.value }}</p>
+              </span>
+              </div>
               <img src="@/assets/images/signature.png"/>
               <div class="rounded-container border rounded-3xl p-4 grid grid-flow-col gap-4">
             <div>
