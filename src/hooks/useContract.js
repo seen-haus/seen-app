@@ -7,6 +7,7 @@ import ENGLISH_AUCTION_V2_ABI from "@/constants/abis/englishAuctionV2ABI.json"
 import NFT_SALE_V1_ABI from "@/constants/abis/NFTSaleABI.json"
 import XSEEN_ABI from "@/constants/abis/xseenABI.json"
 import CLAIM_ABI from "@/constants/abis/claimABI.json"
+import SEEN_NFT_ABI from "@/constants/abis/SeenNFT.json"
 import {Web3Provider, WebSocketProvider} from "@ethersproject/providers"
 
 function useContract(address, ABI, withSignerIfPossible = true) {
@@ -49,10 +50,15 @@ export function useStakingContract(withSignerIfPossible) {
 }
 
 export function useSEENContract(withSignerIfPossible) {
-    const contractAddress = "0xca3fe04c7ee111f0bbb02c328c699226acf9fd33"
+    const contractAddress = "0xca3fe04c7ee111f0bbb02c328c699226acf9fd33";
     return useContract(contractAddress, ERC20_ABI, withSignerIfPossible)
+}
+
+export function useSeenNFTContract(contract, withSignerIfPossible) {
+    return useContract(contract, SEEN_NFT_ABI, withSignerIfPossible)
 }
 
 export function useClaimContract(contractAddress, withSignerIfPossible) {
     return useContract(contractAddress, CLAIM_ABI, withSignerIfPossible);
 }
+

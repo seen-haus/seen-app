@@ -59,7 +59,7 @@
     <template v-if="mediaType === 'image'">
       <img
         ref="imageRef"
-        class="image absolute w-full h-full"
+        class="image absolute mx-auto h-full"
         :src="src"
         alt=""
       />
@@ -115,6 +115,7 @@ export default {
     const { autoplay } = toRefs(props);
     const videoRef = ref(null);
     const imageRef = ref(null);
+    const overrideMediaType = ref(null);
     const calculatedAspecRatio = ref(props.aspectRatio);
 
     const state = reactive({
@@ -124,6 +125,13 @@ export default {
 
     const isPaused = computed(() => state.paused);
     const mediaType = computed(() => {
+      if (overrideMediaType.value) {
+        return overrideMediaType.value;
+      }
+      if (props.src.includes("ipfs")) {
+        setOverrideMediaType()
+        return "video"
+      }
       if (props.src.includes("youtube.com")) return "youtube";
       if (props.src.includes(".mp4")) return "video";
       return "image";
@@ -139,6 +147,27 @@ export default {
         pauseVideo();
       }
       // state.paused = !state.paused;
+    }
+
+    async function setOverrideMediaType() {
+      const axios = require('axios');
+        axios.get(props.src)
+          .then(function (response) {
+            if (response.headers['content-type'].includes('video')){
+              overrideMediaType.value = "video"
+            }
+            else if (response.headers['content-type'].includes('image')) {
+              overrideMediaType.value = "image"
+            }
+            else {
+              console.log('Unknown Media Type');
+              overrideMediaType.value = null;
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+            overrideMediaType.value = null
+          })
     }
 
     async function playVideo()  {
@@ -302,5 +331,13 @@ export default {
       transform: scale(1.2);
     }
   }
+}
+
+.image {
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+  text-align: center;
 }
 </style>
