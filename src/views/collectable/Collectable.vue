@@ -141,6 +141,9 @@
           </div>
 
           <div class="rounded-container">
+
+            <nft-data v-if="collectable" :collectable="collectable"></nft-data>
+
             <button class="button outline w-full" @click="viewOnEtherscan">
               View on Etherscan
               <i
@@ -189,6 +192,7 @@ import useContractEvents from "@/hooks/useContractEvents";
 import {getEtherscanLink} from "@/services/utils";
 import GLightbox from 'glightbox';
 import 'glightbox/dist/css/glightbox.css';
+import NftData from "@/views/collectable/components/NftData.vue";
 
 export default {
   name: "Collectable",
@@ -202,6 +206,7 @@ export default {
     BidCard,
     ListOfBuyers,
     HeroGallery,
+    NftData,
   },
   setup() {
     const toast = useToast();

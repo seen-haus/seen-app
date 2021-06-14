@@ -125,6 +125,14 @@ export const ExchangeRateService = {
     }
 };
 
+export const IPFSService = {
+    get(hash) {
+        return $axios.get(`https://cloudflare-ipfs.com/ipfs/${hash}`).catch(error => {
+            throw new Error(`[RWV] ApiService ${error}`);
+        });
+    },
+};
+
 export const OpenSeaAPIService = {
     async getProfileEntries(owner, limit = 6, offset = 0) {
         const url = `https://api.opensea.io/api/v1/assets?owner=${owner}&collection=seen-haus&limit=${limit}&offset=${offset}`;
