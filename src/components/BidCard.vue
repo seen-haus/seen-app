@@ -1,213 +1,216 @@
 <template>
-  <div class="bid-card shadow-lifted rounded-xl flex flex-col overflow-hidden">
-    <div class="top-part flex flex-col p-8">
+  <div>
+    <transition
+        :css="false"
+        @leave="(el, done) => motions && motions.transition.leave(done)"
+    >
       <div
-          v-if="!isCollectableActive"
-          class="flex justify-start items-center text-gray-400 text-xs font-bold"
+        class="bid-paddle-container"
+        v-motion="'transition'"
+        v-if="showPaddle"
+        :initial="{
+          rotate: 45,
+          opacity: 0,
+          y: 100,
+        }"
+        :enter="{
+          rotate: 0,
+          opacity: 1,
+          y: 0,
+        }"
+        :leave="{
+          rotate: 45,
+          opacity: 0,
+          y: 100,
+        }"
       >
-        {{ is_closed ? (isAuction ? 'AUCTION CLOSED' : 'SALE CLOSED') : 'ITEM HAS BEEN SOLD'}}
+        <img 
+          src="@/assets/images/bid-animation.gif"
+          class="bid-paddle"
+          alt="SEEN"
+        />
       </div>
-      <div
-          v-else-if="!isAuction"
-          class="flex justify-start items-center text-gray-400 text-xs font-bold"
-      >
-        <span class="tracking-widest mr-4">ITEMS LEFT </span>
-        <tag class="bg-fence-light self-end text-gray-400 font-semibold"
-        >{{ items }}/{{ items_of }}
-        </tag
+    </transition>
+    <div class="bid-card bg-white shadow-lifted rounded-xl flex flex-col">  
+      <div class="top-part flex flex-col p-8">
+        <div
+            v-if="!isCollectableActive"
+            class="flex justify-start items-center text-gray-400 text-xs font-bold"
         >
-      </div>
+          {{ is_closed ? (isAuction ? 'AUCTION CLOSED' : 'SALE CLOSED') : 'ITEM HAS BEEN SOLD'}}
+        </div>
+        <div
+            v-else-if="!isAuction"
+            class="flex justify-start items-center text-gray-400 text-xs font-bold"
+        >
+          <span class="tracking-widest mr-4">ITEMS LEFT </span>
+          <tag class="bg-fence-light self-end text-gray-400 font-semibold"
+          >{{ items }}/{{ items_of }}
+          </tag
+          >
+        </div>
 
-      <price-display
-          size="lg"
-          class="text-black self-start mt-5"
-          type="ETH"
-          :price="price"
-          :priceUSD="priceUSD"
-          :number-of-bids="isAuction ? numberOfBids : undefined"
-      />
+        <price-display
+            size="lg"
+            class="text-black self-start mt-5"
+            type="ETH"
+            :price="price"
+            :priceUSD="priceUSD"
+            :number-of-bids="isAuction ? numberOfBids : undefined"
+        />
 
-      <template v-if="isCollectableActive && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
-        <div class="outlined-input mt-5" :class="{ invalid: hasError || isFieldInvalid }">
-          <input
-              v-model="auctionField.value"
-              v-if="isAuction"
-              type="number"
-              @keypress="isNumber"
-              :placeholder="'Min bid price is ' + nextBidPrice + ' ETH'"
-          />
-          <input
-              v-model="saleField.value"
-              v-if="!isAuction"
-              step="1"
-              min="1"
-              @keypress="isInteger"
-              type="number"
-              placeholder="Enter quantity"
-          />
-          <template v-if="isAuction">
-            <div class="icon w-5 mr-1">
-              <img
-                  src="@/assets/icons/icon--ethereum.svg"
-                  class="cursor-pointer mr-2 opacity-50"
-                  alt="SEEN"
+        <template v-if="isCollectableActive && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
+          <div class="outlined-input mt-5" :class="{ invalid: hasError || isFieldInvalid }">
+            <input
+                v-model="auctionField.value"
+                v-if="isAuction"
+                type="number"
+                @keypress="isNumber"
+                :placeholder="'Min bid price is ' + nextBidPrice + ' ETH'"
+            />
+            <input
+                v-model="saleField.value"
+                v-if="!isAuction"
+                step="1"
+                min="1"
+                @keypress="isInteger"
+                type="number"
+                placeholder="Enter quantity"
+            />
+            <template v-if="isAuction">
+              <div class="icon w-5 mr-1">
+                <img
+                    src="@/assets/icons/icon--ethereum.svg"
+                    class="cursor-pointer mr-2 opacity-50"
+                    alt="SEEN"
+                />
+              </div>
+              <div class="type font-bold">ETH</div>
+            </template>
+          </div>
+          <span class="error-notice" v-if="isAuction">{{ auctionField.errors[0] }}</span>
+          <span class="error-notice" v-if="!isAuction">{{ saleField.errors[0] }}</span>
+
+          <div class="text-center text-gray-400 text-sm py-2">
+            <p v-if="!ethereum"><i class="fas fa-spinner fa-spin"></i></p>
+            <p v-else>
+              Approx. {{ convertEthToUSDAndFormat(currentBidValue || "0") }}
+            </p>
+          </div>
+        </template>
+        <button class="button primary mt-6" v-if="hasOverrideClaimLink" @click="viewOverrideClaimLink">
+          Claim Physical
+        </button>
+        <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
+          Claim Physical
+        </button>
+        <button class="button opensea mt-6" v-if="!isCollectableActive" @click="viewOnOpenSea">
+          Opensea
+        </button>
+        <button class="button secondary mt-6" v-if="hasOverrideClaimLink" @click="togglePaddle">
+          Toggle Paddle
+        </button>
+        <template v-else>
+          <div v-if="bidDisclaimers && bidDisclaimers.length > 0 && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" class="text-gray-400 text-sm py-2">
+              <p style="width: calc(100%)">
+                Please note:<br/>
+                <ul>
+                  <li v-for="item in bidDisclaimers" :key="item">• {{item}}</li>
+                </ul>
+              </p>
+          </div>
+          <button class="button primary"
+                  :class="{'cursor-wait disabled opacity-50': isSubmitting}"
+                  :disabled="isSubmitting" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
+            <span v-if="!isSubmitting">{{ isAuction ? "Place a bid" : "Buy now" }}</span>
+            <span v-else>Submitting...</span>
+          </button>
+          <button class="button dark disabled opacity-50" v-if="account && !hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
+            Insufficient funds
+          </button>
+          <template v-if="account && requiresRegistration && !isRegisteredBidder">
+            <div class="text-gray-400 text-sm py-2">
+              <p>
+                Your real information is required for identity verification only. You can become an owner <b>only</b> if you’re older than 18 years old, and provide your name as per your ID.
+              </p>
+            </div>
+            <div class="outlined-input mt-2" :class="{ invalid: hasError || isFieldInvalid }">
+              <input
+                  v-model="firstNameField.value"
+                  autocomplete="given-name"
+                  :placeholder="'First Name as per ID'"
               />
             </div>
-            <div class="type font-bold">ETH</div>
-          </template>
-        </div>
-        <span class="error-notice" v-if="isAuction">{{ auctionField.errors[0] }}</span>
-        <span class="error-notice" v-if="!isAuction">{{ saleField.errors[0] }}</span>
-
-        <div class="text-center text-gray-400 text-sm py-2">
-          <p v-if="!ethereum"><i class="fas fa-spinner fa-spin"></i></p>
-          <p v-else>
-            Approx. {{ convertEthToUSDAndFormat(currentBidValue || "0") }}
-          </p>
-        </div>
-      </template>
-      <button class="button primary mt-6" v-if="hasOverrideClaimLink" @click="viewOverrideClaimLink">
-        Claim Physical
-      </button>
-      <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
-        Claim Physical
-      </button>
-      <button class="button opensea mt-6" v-if="!isCollectableActive" @click="viewOnOpenSea">
-        Opensea
-      </button>
-      <template v-else>
-        <div v-if="bidDisclaimers && bidDisclaimers.length > 0 && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" class="text-gray-400 text-sm py-2">
-            <p style="width: calc(100%)">
-              Please note:<br/>
-              <ul>
-                <li v-for="item in bidDisclaimers" :key="item">• {{item}}</li>
-              </ul>
-            </p>
-        </div>
-        <button class="button primary"
-                :class="{'cursor-wait disabled opacity-50': isSubmitting}"
-                :disabled="isSubmitting" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
-          <span v-if="!isSubmitting">{{ isAuction ? "Place a bid" : "Buy now" }}</span>
-          <span v-else>Submitting...</span>
-        </button>
-        <button class="button dark disabled opacity-50" v-if="account && !hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
-          Insufficient funds
-        </button>
-        <template v-if="account && requiresRegistration && !isRegisteredBidder">
-          <div class="text-gray-400 text-sm py-2">
-            <p>
-              Your real information is required for identity verification only. You can become an owner <b>only</b> if you’re older than 18 years old, and provide your name as per your ID.
-            </p>
-          </div>
-          <div class="outlined-input mt-2" :class="{ invalid: hasError || isFieldInvalid }">
-            <input
-                v-model="firstNameField.value"
-                autocomplete="given-name"
-                :placeholder="'First Name as per ID'"
-            />
-          </div>
-          <span class="error-notice">{{ firstNameField.errors[0] }}</span>
-          <div class="outlined-input mt-2" :class="{ invalid: hasError || isFieldInvalid }">
-            <input
-                v-model="lastNameField.value"
-                autocomplete="family-name"
-                :placeholder="'Last Name as per ID'"
-            />
-          </div>
-          <span class="error-notice">{{ lastNameField.errors[0] }}</span>
-          <div class="outlined-input mt-2" :class="{ invalid: hasError || isFieldInvalid }">
-            <input
-                v-model="emailField.value"
-                autocomplete="email"
-                type="email"
+            <span class="error-notice">{{ firstNameField.errors[0] }}</span>
+            <div class="outlined-input mt-2" :class="{ invalid: hasError || isFieldInvalid }">
+              <input
+                  v-model="lastNameField.value"
+                  autocomplete="family-name"
+                  :placeholder="'Last Name as per ID'"
+              />
+            </div>
+            <span class="error-notice">{{ lastNameField.errors[0] }}</span>
+            <div class="outlined-input mt-2" :class="{ invalid: hasError || isFieldInvalid }">
+              <input
+                  v-model="emailField.value"
+                  autocomplete="email"
+                  type="email"
+                  :placeholder="'Email Address'"
+              />
+            </div>
+            <span class="error-notice">{{ emailField.errors[0] }}</span>
+            <div class="text-gray-400 flex text-sm py-2">
+              <input
+                class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
+                v-model="acceptTermsField.value"
+                type="checkbox"
                 :placeholder="'Email Address'"
-            />
-          </div>
-          <span class="error-notice">{{ emailField.errors[0] }}</span>
-          <div class="text-gray-400 flex text-sm py-2">
-            <input
-              class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
-              v-model="acceptTermsField.value"
-              type="checkbox"
-              :placeholder="'Email Address'"
-            />
-            <p style="width: calc(100% - 30px)">
-              I agree with Propy's <a href="https://propy.com/browse/terms-and-conditions/" style="color: #2196F3;" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> and <a href="https://propy.com/browse/privacy-policy/" style="color: #2196F3" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. I hereby declare that the information provided is true and correct, and I am not subject to any sanctions imposed by a regulatory body.
-            </p>
-          </div>
-          <span class="error-notice">{{ acceptTermsField.errors[0] }}</span>
+              />
+              <p style="width: calc(100% - 30px)">
+                I agree with Propy's <a href="https://propy.com/browse/terms-and-conditions/" style="color: #2196F3;" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> and <a href="https://propy.com/browse/privacy-policy/" style="color: #2196F3" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. I hereby declare that the information provided is true and correct, and I am not subject to any sanctions imposed by a regulatory body.
+              </p>
+            </div>
+            <span class="error-notice">{{ acceptTermsField.errors[0] }}</span>
+            <button
+                class="cursor-pointer button primary flex-shrink-0 mt-2"
+                @click="registerToBid"
+            >
+              <i class="fas fa-id-badge mr-2 transform"></i> Register to bid
+            </button>
+          </template>
           <button
-              class="cursor-pointer button primary flex-shrink-0 mt-2"
-              @click="registerToBid"
+              v-if="!account"
+              class="cursor-pointer button primary flex-shrink-0"
+              @click="openWalletModal"
           >
-            <i class="fas fa-id-badge mr-2 transform"></i> Register to bid
+            <i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
           </button>
         </template>
-        <button
-            v-if="!account"
-            class="cursor-pointer button primary flex-shrink-0"
-            @click="openWalletModal"
-        >
-          <i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
-        </button>
-      </template>
-    </div>
+      </div>
 
-    <div class="bottom-part bg-background-gray border-t p-8">
-      <template v-if="!isCollectableActive">
-        <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold" v-if="isAuction">
-          AUCTION ENDED
-        </div>
-        <div v-else>
-          <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            {{ is_closed ? 'CLOSED' : 'SOLD OUT (' + items_of + ' items)'}}
+      <div class="bottom-part bg-background-gray border-t p-8">
+        <template v-if="!isCollectableActive">
+          <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold" v-if="isAuction">
+            AUCTION ENDED
           </div>
-        </div>
-        <!-- <button
-            class="button dark mt-4 w-full"
-            @click="openWinnerModal"
-            v-if="isWinnerButtonShown"
-        >
-          <i class="fas fa-play-circle mr-2 text-xl icon-left text-white"></i>
-          Claim your winnings
-        </button> -->
-      </template>
+          <div v-else>
+            <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+              {{ is_closed ? 'CLOSED' : 'SOLD OUT (' + items_of + ' items)'}}
+            </div>
+          </div>
+          <!-- <button
+              class="button dark mt-4 w-full"
+              @click="openWinnerModal"
+              v-if="isWinnerButtonShown"
+          >
+            <i class="fas fa-play-circle mr-2 text-xl icon-left text-white"></i>
+            Claim your winnings
+          </button> -->
+        </template>
 
-      <template v-else-if="isAuction">
-        <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-          {{ isUpcomming ? "AUCTION STARTS IN" : "AUCTION ENDS IN" }}
-        </div>
-        <progress-timer
-            ref="timerRef"
-            class="text-black text-3xl mt-2"
-            :isAuction="isAuction"
-            :label="null"
-            :startDate="startsAt"
-            :endDate="endsAt"
-            @onProgress="updateProgress"
-            @onTimerStateChange="updateState"
-        />
-        <progress-bar
-            :inversed="isAuction"
-            :progress="currentProgress"
-            :endDate="endsAt"
-            class="h-3 mt-3"
-            progressBackgroundColor="bg-gray-300"
-            :colorClass="
-            isCollectableActive
-              ? isUpcomming
-                ? 'bg-opensea'
-                : 'bg-primary'
-              : 'bg-gray-300'
-          "
-        />
-        <p class="mt-6 text-gray-400 text-sm">Bids placed in the last 15 minutes will reset the auction to 15 minutes.</p>
-      </template>
-
-      <template v-else>
-        <template v-if="isUpcomming">
+        <template v-else-if="isAuction">
           <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            {{ isAuction ? "AUCTION STARTS IN" : "DROP OPENS IN" }}
+            {{ isUpcomming ? "AUCTION STARTS IN" : "AUCTION ENDS IN" }}
           </div>
           <progress-timer
               ref="timerRef"
@@ -220,29 +223,62 @@
               @onTimerStateChange="updateState"
           />
           <progress-bar
+              :inversed="isAuction"
               :progress="currentProgress"
+              :endDate="endsAt"
               class="h-3 mt-3"
               progressBackgroundColor="bg-gray-300"
               :colorClass="
-              isCollectableActive
-                ? isUpcomming
-                  ? 'bg-opensea'
-                  : 'bg-primary'
-                : 'bg-gray-300'
-            "
+                isCollectableActive
+                  ? isUpcomming
+                    ? 'bg-opensea'
+                    : 'bg-primary'
+                  : 'bg-gray-300'
+              "
           />
+          <p class="mt-6 text-gray-400 text-sm">Bids placed in the last 15 minutes will reset the auction to 15 minutes.</p>
         </template>
 
         <template v-else>
-          <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            ITEMS LEFT
-          </div>
-          <div class="text-2.5xl font-bold py-2">
-            {{ items }} out of {{ items_of }}
-          </div>
-          <progress-bar :progress="progress" progressBackgroundColor="bg-gray-300" class="h-3 mt-3"/>
+          <template v-if="isUpcomming">
+            <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+              {{ isAuction ? "AUCTION STARTS IN" : "DROP OPENS IN" }}
+            </div>
+            <progress-timer
+                ref="timerRef"
+                class="text-black text-3xl mt-2"
+                :isAuction="isAuction"
+                :label="null"
+                :startDate="startsAt"
+                :endDate="endsAt"
+                @onProgress="updateProgress"
+                @onTimerStateChange="updateState"
+            />
+            <progress-bar
+                :progress="currentProgress"
+                class="h-3 mt-3"
+                progressBackgroundColor="bg-gray-300"
+                :colorClass="
+                isCollectableActive
+                  ? isUpcomming
+                    ? 'bg-opensea'
+                    : 'bg-primary'
+                  : 'bg-gray-300'
+              "
+            />
+          </template>
+
+          <template v-else>
+            <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+              ITEMS LEFT
+            </div>
+            <div class="text-2.5xl font-bold py-2">
+              {{ items }} out of {{ items_of }}
+            </div>
+            <progress-bar :progress="progress" progressBackgroundColor="bg-gray-300" class="h-3 mt-3"/>
+          </template>
         </template>
-      </template>
+      </div>
     </div>
   </div>
 </template>
@@ -266,6 +302,7 @@ import useContractEvents from "@/hooks/useContractEvents";
 import {useToast} from "primevue/usetoast";
 import {useField, useForm} from "vee-validate";
 import numberHelper from "@/services/utils/numbers"
+import { useMotions } from '@vueuse/motion'
 
 export default {
   name: "BidCard",
@@ -295,6 +332,16 @@ export default {
     requiresRegistration: Boolean,
     bidDisclaimers: [Array],
     overrideClaimLink: String,
+  },
+  data() {
+    return {
+      showPaddle: false,
+    }
+  },
+  methods: {
+    togglePaddle() {
+      this.showPaddle = !this.showPaddle; 
+    }
   },
   setup(props, ctx) {
     const price = ref(props.price);
@@ -327,6 +374,8 @@ export default {
     const isFieldInvalid = computed(() => {
       return isAuction.value ? auctionField.errors.length : saleField.errors.length
     });
+
+    const motions = useMotions()
 
     function checkRegistrationStatusIfRequired() {
       let walletAddress = account.value;
@@ -626,6 +675,7 @@ export default {
       claimId: props.claim?.id ? props.claim.id : null,
       isRegisteredBidder,
       registerToBid,
+      motions,
     };
   },
 };
@@ -633,6 +683,22 @@ export default {
 
 
 <style lang="scss" scoped>
+.bid-card {
+  position: relative;
+}
+
+.bid-paddle-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bid-paddle {
+  position: absolute;
+  width: 60%;
+  transform: translateY(-85%)
+}
+
 .outlined-input {
   @apply flex items-center border rounded-md border-black px-5;
 

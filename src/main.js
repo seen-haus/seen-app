@@ -11,6 +11,7 @@ import PrimeVue from 'primevue/config';
 import Dialog from "primevue/dialog";
 import {createMetaManager, defaultConfig, useMeta, deepestResolver} from 'vue-meta';
 import VueGoogleMaps from '@fawmi/vue-google-maps'
+import { MotionPlugin } from '@vueuse/motion'
 
 import directives from "@/directives"
 import "primevue/resources/themes/saga-blue/theme.css"; //theme
@@ -37,4 +38,5 @@ app.use(VueGoogleMaps, {
 })
 app.component("Toast", Toast)
 app.component("Dialog", Dialog)
+app.use(MotionPlugin)
 app.mount('#app');
