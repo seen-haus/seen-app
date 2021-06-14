@@ -12,6 +12,18 @@
 
 .rounded-container {
   @apply rounded-xl overflow-hidden bg-background-gray border p-6;
+  align-items: center;
+}
+
+.rounded-container-reduced-vertical-padding {
+  @apply rounded-xl overflow-hidden bg-background-gray border px-6 py-3;
+  align-items: center;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .text-shadow {

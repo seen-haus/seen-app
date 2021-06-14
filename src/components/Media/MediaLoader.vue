@@ -280,7 +280,9 @@ export default {
 
     onBeforeUnmount(() => {
       if (observer != null) {
-        observer.unobserve(videoRef.value);
+        if(videoRef.value) {
+          observer.unobserve(videoRef.value);
+        }
         observer = null;
       }
     });
