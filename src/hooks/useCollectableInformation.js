@@ -21,6 +21,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         initializeContractEvents,
         supply,
         endsAt: updatedEndsAt,
+        startsAt: updatedStartsAt,
     } = useContractEvents();
 
     const collectable = ref(initialCollectable);
@@ -67,7 +68,8 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const isCollectableActive = computed(() => {
         return (
             collectableState.value === COLLECTABLE_STATE.WAITING ||
-            collectableState.value === COLLECTABLE_STATE.IN_PROGRESS
+            collectableState.value === COLLECTABLE_STATE.IN_PROGRESS ||
+            collectableState.value === COLLECTABLE_STATE.AWAITING_RESERVE
         );
     });
     const edition = computed(() => collectable.value.edition || 0);
@@ -85,6 +87,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const liveStatus = computed(() => {
         if (collectableState.value === COLLECTABLE_STATE.CLOSED) return "closed";
         if (collectableState.value === COLLECTABLE_STATE.DONE) return "ended";
+        if (collectableState.value === COLLECTABLE_STATE.AWAITING_RESERVE) return "awaiting-reserve-bid";
         if (collectableState.value === COLLECTABLE_STATE.WAITING)
             return "coming soon";
         if (collectableState.value === COLLECTABLE_STATE.OUT_OF_STOCK) {
@@ -126,7 +129,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         if (isAuction.value) {
             if (events.value.length === 0) {
                 price.value = +(data.start_bid || 0);
-                nextBidPrice.value = (price.value * 1.10); // TODO, make DB prop
+                nextBidPrice.value = data.start_bid === price.value ? price.value : (price.value * 1.10); // TODO, make DB prop
                 priceUSD.value = +(data.value_in_usd || converEthToUSD(price.value)).toFixed(2);
             } else {
                 price.value = +(latestEvent.value || 0);
@@ -185,6 +188,11 @@ export default function useCollectableInformation(initialCollectable = {}) {
         const start = new Date(startsAt.value);
         const end = new Date(endsAt.value);
 
+        if(end.getTime() === 0 && collectable.value.is_reserve_price_auction) {
+            collectableState.value = COLLECTABLE_STATE.AWAITING_RESERVE;
+            return;
+        }
+
         if (is_closed.value) {
             collectableState.value = COLLECTABLE_STATE.CLOSED;
             return;
@@ -195,7 +203,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
             return;
         }
 
-        if (now > end) {
+        if (now > end && (end.getTime() !== 0)) {
             collectableState.value = COLLECTABLE_STATE.DONE;
             return;
         }
@@ -224,7 +232,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         let endDate = new Date(endsAt.value);
         endDate.setHours(endDate.getHours() + 6);
         const end = endDate.getTime();
-        if (now >= start && now < end && !is_sold_out.value) {
+        if (((now >= start) && (now < end) && !is_sold_out.value) || (new Date(endsAt.value).getTime() === 0 && collectable.value.is_reserve_price_auction)) {
             console.log('contract initialized');
             initializeContractEvents(collectable.value);
         } else if (now < end && !is_sold_out.value) {
@@ -250,10 +258,14 @@ export default function useCollectableInformation(initialCollectable = {}) {
         // console.log('updateFromBlockchain', newEvents);
         events.value = newEvents;
         let endsAtNew = endsAt.value;
+        let startsAtNew = startsAt.value;
         // Update price and item count
         if (isAuction.value) {
             if (updatedEndsAt.value != null) {
                 endsAtNew = new Date(updatedEndsAt.value).toString();
+            }
+            if(updatedStartsAt.value != null) {
+                startsAtNew = new Date(updatedStartsAt.value).toString();
             }
         }
 
@@ -261,6 +273,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
             ...collectable.value,
             events: [...events.value],
             ends_at: endsAtNew,
+            starts_at: startsAtNew,
         });
         updateCollectableState();
     };

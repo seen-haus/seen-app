@@ -45,15 +45,15 @@ export default {
 
     watch(percentage, () => ctx.emit('onProgress', percentage.value));
     watch(timerState, () => ctx.emit('onTimerStateChange', timerState.value));
-    watch(toRefs(props).endDate, (v, p) => {
-      if (v !== p) {
-        let diff = new Date(v).getTime() - new Date(p).getTime();
-        addSeconds((diff) / 1000);
+    watch([toRefs(props).endDate, toRefs(props).startDate], (v, p) => {
+      if (v[0] !== p[0] || v[1] !== p[1]) {
+        let diffEnd = new Date(v[0]).getTime() - new Date(p[0]).getTime();
+        let diffStart = new Date(v[1]).getTime() - new Date(p[1]).getTime();
+        addSeconds((diffEnd) / 1000, diffStart / 1000);
         // Hack if server timestamp isn't up to date
-        if (ended.value && new Date() < new Date(p)) {
+        if (ended.value && new Date() < new Date(p[0])) {
           setTimeout(() => {
-            console.log(new Date() < new Date(p), ended.value, new Date(p))
-            if (ended.value && new Date() < new Date(p)) {
+            if (ended.value && new Date() < new Date(p[0])) {
               startTimer({
                 startDate: props.startDate,
                 endDate: props.endDate,

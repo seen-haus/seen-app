@@ -18,4 +18,5 @@ export const COLLECTABLE_STATE = Object.freeze({
     IN_PROGRESS: 'IN_PROGRESS',
     OUT_OF_STOCK: 'OUT_OF_STOCK',
     DONE: 'DONE',
+    AWAITING_RESERVE: 'AWAITING_RESERVE',
 });

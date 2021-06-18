@@ -63,18 +63,19 @@
           :progress="progress"
           :endDate="endsAt"
           :colorClass="
-          isCollectableActive
-            ? isUpcomming
-              ? 'bg-gray-300'
-              : 'bg-primary'
-            : 'bg-gray-300'
-        "
+            isCollectableActive && !isAwaitingReserve
+              ? isUpcomming
+                ? 'bg-gray-300'
+                : 'bg-primary'
+              : 'bg-gray-300'
+          "
           progressBackgroundColor="bg-fence-light"
           class="h-2 mt-10"
       />
 
       <template v-if="isAuction">
         <progress-timer
+            v-if="!isAwaitingReserve"
             ref="timerRef"
             class="text-black text-sm mt-2"
             :isAuction="isAuction"
@@ -84,6 +85,9 @@
             @onProgress="updateProgress"
             @onTimerStateChange="updateCollectableState"
         />
+        <span v-if="isAwaitingReserve" class="text-gray-400 text-sm mt-2">
+          Awaiting Reserve Bid
+        </span>
       </template>
 
       <template v-else>
@@ -188,7 +192,15 @@ export default {
         return true;
       }
       return false;
-    }
+    },
+    isAwaitingReserve: function () {
+      switch (this.liveStatus) {
+        case "awaiting-reserve-bid":
+          return true;
+        default:
+          return false;
+      }
+    },
   },
   setup(props) {
     const autoplay = true;
