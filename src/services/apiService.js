@@ -152,10 +152,14 @@ export const OpenSeaAPIService = {
 
         assets.forEach(a => {
             const match = collectables.data.find(c => c.nft_token_id === a.token_id);
-            if (match)
+            if (match) {
                 mapped.push({asGift: false, data: match});
-            else
-                mapped.push({asGift: true, data: a});
+            } else {
+                // First token was not minted properly,  so exclude it
+                if(a.token_id !== "1" && a.asset_contract.address !== '0x13bab10a88fc5f6c77b87878d71c9f1707d2688a') {
+                    mapped.push({asGift: true, data: a});
+                }
+            }
         });
 
         return mapped;
