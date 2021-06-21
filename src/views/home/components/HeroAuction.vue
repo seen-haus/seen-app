@@ -74,7 +74,7 @@
               :endDate="currentEndsAt"
               :progress="progress"
               :colorClass="
-              isCollectableActive
+              isCollectableActive && !isAwaitingReserve
                 ? isUpcomming
                   ? 'bg-white'
                   : 'bg-primary'
@@ -85,12 +85,12 @@
           <template v-if="isAuction">
             <div
                 class="text-sm mt-2 text-gray-400 font-semibold"
-                v-if="is_sold_out"
+                v-if="is_sold_out && !isAwaitingReserve"
             >
               Sold Out
             </div>
             <progress-timer
-                v-else
+                v-if="!is_sold_out && !isAwaitingReserve"
                 ref="timerRef"
                 class="text-black text-sm mt-2"
                 :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
@@ -100,6 +100,12 @@
                 @onProgress="updateState"
                 @onTimerStateChange="updateState"
             />
+            <div
+                class="text-sm mt-2 text-gray-400 font-semibold"
+                v-if="isAwaitingReserve"
+            >
+              Awaiting Reserve Bid
+            </div>
           </template>
 
           <template v-else>
@@ -168,6 +174,16 @@ export default {
   },
   props: {
     collectable: Object,
+  },
+  computed: {
+    isAwaitingReserve: function () {
+      switch (this.liveStatus) {
+        case "awaiting-reserve-bid":
+          return true;
+        default:
+          return false;
+      }
+    },
   },
   setup(props) {
     // console.log("ProductCard", props.collectable);

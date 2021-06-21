@@ -10,7 +10,7 @@
           indicatorStatus === 'ENDED' ||
           indicatorStatus === 'CLOSED' ||
           indicatorStatus === 'SOLD OUT',
-        'bg-dark-blue': indicatorStatus === 'NEXT PHASE',
+        'bg-dark-blue': indicatorStatus === 'NEXT PHASE' || indicatorStatus === 'AWAITING RESERVE BID',
         'bg-accent': indicatorStatus === 'COMING SOON',
       }"
     ></div>
@@ -45,6 +45,8 @@ export default {
           return "NEXT PHASE";
         case "reserved":
           return "RESERVED";
+        case "awaiting-reserve-bid":
+          return "AWAITING RESERVE BID";
         default:
           return "CUSTOM";
       }

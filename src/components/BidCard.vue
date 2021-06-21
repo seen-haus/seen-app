@@ -87,7 +87,7 @@
         <button class="button primary"
                 :class="{'cursor-wait disabled opacity-50': isSubmitting}"
                 :disabled="isSubmitting" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
-          <span v-if="!isSubmitting">{{ isAuction ? "Place a bid" : "Buy now" }}</span>
+          <span v-if="!isSubmitting">{{ isAuction ? (`Place ${isAwaitingReserve ? 'reserve' : 'a'} bid`) : "Buy now" }}</span>
           <span v-else>Submitting...</span>
         </button>
         <button class="button dark disabled opacity-50" v-if="account && !hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
@@ -174,10 +174,14 @@
       </template>
 
       <template v-else-if="isAuction">
-        <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+        <div v-if="!isAwaitingReserve" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
           {{ isUpcomming ? "AUCTION STARTS IN" : "AUCTION ENDS IN" }}
         </div>
+        <div v-if="isAwaitingReserve" class="tracking-widest mb-6 text-gray-400 text-xs font-bold">
+          24 HR COUNTDOWN BEGINS ONCE RESERVE IS MET
+        </div>
         <progress-timer
+            v-if="!isAwaitingReserve"
             ref="timerRef"
             class="text-black text-3xl mt-2"
             :isAuction="isAuction"
@@ -194,7 +198,7 @@
             class="h-3 mt-3"
             progressBackgroundColor="bg-gray-300"
             :colorClass="
-            isCollectableActive
+            isCollectableActive && !isAwaitingReserve
               ? isUpcomming
                 ? 'bg-opensea'
                 : 'bg-primary'
@@ -271,6 +275,7 @@ export default {
   name: "BidCard",
   components: {Tag, PriceDisplay, ProgressBar, ProgressTimer},
   props: {
+    status: { type: String, default: "live" },
     startsAt: String,
     endsAt: String,
 
@@ -295,6 +300,16 @@ export default {
     requiresRegistration: Boolean,
     bidDisclaimers: [Array],
     overrideClaimLink: String,
+  },
+  computed: {
+    isAwaitingReserve: function () {
+      switch (this.status) {
+        case "awaiting-reserve-bid":
+          return true;
+        default:
+          return false;
+      }
+    },
   },
   setup(props, ctx) {
     const price = ref(props.price);

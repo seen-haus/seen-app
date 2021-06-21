@@ -97,8 +97,9 @@
 
         <div class="right-side col-span-5">
           <bid-card
+              :status="liveStatus"
               :collectable="collectable"
-              :startsAt="startsAt"
+              :startsAt="currentStartsAt"
               :endsAt="currentEndsAt"
               :isAuction="isAuction"
               :numberOfBids="events.length"
@@ -262,6 +263,10 @@ export default {
       return endsAt.value;
     });
 
+    const currentStartsAt = computed(() => {
+      return startsAt.value;
+    });
+
     const keywords = computed(() => {
       let words = ["collectable", "drop", "seen", "seen.haus"];
       if (isTangible) words.push("tangible");
@@ -369,7 +374,7 @@ export default {
       title,
       description,
       events,
-      startsAt,
+      currentStartsAt,
       currentEndsAt,
       liveStatus,
       is_sold_out,

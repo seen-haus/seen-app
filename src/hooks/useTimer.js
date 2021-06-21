@@ -135,15 +135,17 @@ export default function useTimer(callback) {
         subscribe();
     }
 
-    function addSeconds(seconds) {
+    function addSeconds(endSeconds, startSeconds = 0) {
         let old = state.endDate;
         console.log("OLD", old)
         if(!old) {
             console.log(state)
         }
-        state.endDate = state.endDate + (seconds * 1000);
-        console.log("NEW DATE: ", new Date(state.endDate), seconds * 1000)
-        startTimer({startDate: state.startDate, endDate: state.endDate});
+        let newEndDate = state.endDate + (endSeconds * 1000);
+        let newStartDate = state.startDate + (startSeconds * 1000);
+        if(state.endDate !== newEndDate || state.startDate !== newStartDate) {
+            startTimer({startDate: newStartDate, endDate: newEndDate});
+        }
     }
 
     function endTimer() {

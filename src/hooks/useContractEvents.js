@@ -18,6 +18,7 @@ export default function useContractEvents() {
     const mergedEvents = ref([]);
     const supply = ref(0);
     const endsAt = ref(0);
+    const startsAt = ref(0);
     const incomingBidSound = require("@/assets/sounds/bid_notification.mp3");
     let contract = null;
 
@@ -72,8 +73,8 @@ export default function useContractEvents() {
         collectable.value = collectableData;
         contractAddress.value = collectableData.contract_address;
         endsAt.value = new Date(collectable.value.ends_at).getTime();
+        startsAt.value = new Date(collectable.value.starts_at).getTime();
 
-        console.log('initials ends at', endsAt.value);
         if (onlySaveContractAddress) {
             return;
         }
@@ -90,18 +91,28 @@ export default function useContractEvents() {
                 : useV2AuctionContract(contractAddress.value);
             if (version.value === 2) {
                 let endTime = await contract.endTime()
+                let startTime = await contract.startTime()
                 collectable.value.ends_at = new Date(parseInt(endTime) * 1000)
                 endsAt.value = new Date(parseInt(endTime) * 1000)
-                console.log("UPDATED ===>>",  endsAt.value)
+                if(collectable.value.is_reserve_price_auction) {
+                    collectable.value.starts_at = new Date(parseInt(startTime) * 1000)
+                    startsAt.value = new Date(parseInt(startTime) * 1000)
+                }
+                console.log("UPDATED ===>>",  {endsAt: endsAt.value, startsAt: startsAt.value})
             }
             await contract.on("Bid", async (fromAddress, amount, evt) => {
                 console.log(fromAddress, amount, evt)
                 const event = await createNormalizedEvent(evt, 'bid');
                 if (version.value === 2) {
                     let endTime = await contract.endTime()
+                    let startTime = await contract.startTime()
                     console.log(endTime)
                     collectable.value.ends_at = parseInt(endTime) * 1000
                     endsAt.value = new Date(parseInt(endTime) * 1000)
+                    if(startTime > 0) {
+                        collectable.value.starts_at = new Date(parseInt(startTime) * 1000)
+                        startsAt.value = new Date(parseInt(startTime) * 1000)
+                    }
                     let notification = new Audio(incomingBidSound)
                     notification.addEventListener("canplaythrough", () => {
                         notification.play();
@@ -238,6 +249,7 @@ export default function useContractEvents() {
         mergedEvents,
         supply,
         endsAt,
+        startsAt,
         initializeContractEvents,
         bid,
         buy,
