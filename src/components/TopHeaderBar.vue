@@ -1,5 +1,5 @@
 <template>
-  <div class="py-2.5 bg-black text-white">
+  <div class="py-2.5 bg-light-grey text-white">
     <container>
       <div class="flex justify-center md:justify-between flex-wrap">
         <div class="flex align-center py-1">
@@ -87,18 +87,18 @@ export default {
   &:last-child {
     @apply mr-0;
   }
+  color: #8E98A0;
 }
 .btn-social {
   @apply mr-5 text-sm inline-flex text-topbar items-center;
   &:last-child {
     @apply mr-0;
   }
-  color: #fff;
-  opacity: 0.6;
+  color: #8E98A0;
+  opacity: 1;
   transition-duration: 0.2s;
 }
 .btn-social:hover {
-  color: #34ca98;
-  opacity: 1;
+  opacity: 0.6;
 }
 </style>

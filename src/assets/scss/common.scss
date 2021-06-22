@@ -86,3 +86,25 @@
   width: 100%;
   background-size: cover;
 }
+
+.hero-media-shadow {
+  filter: drop-shadow(0px 30px 40px rgba(142, 152, 160, 0.15));
+}
+
+.rounded-20px {
+  border-radius: 20px;
+}
+
+.rounded-t-20px {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.rounded-b-20px {
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.bg-light-grey {
+  background-color: #ebeef266;
+}

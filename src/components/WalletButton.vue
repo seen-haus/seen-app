@@ -1,24 +1,28 @@
 <template>
   <div class="py-3 relative pl-8 pl-md-0">
-    <button v-if="!account" class="cursor-pointer button primary flex-shrink-0" @click="openWalletModal"><i
-        class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
-    </button>
+    <div v-if="!account" class="wallet-button-container">
+      <button class="cursor-pointer button primary flex-shrink-0 wallet" @click="openWalletModal"><i
+          class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
+      </button>
+    </div>
 
     <div @click="toggle" class="pr-4 md:pr-0">
-      <button v-if="account" class="cursor-pointer button primary flex items-center wallet">
-        <div class="profile-avatar wallet-button-avatar" :style="{ backgroundImage: `url(${userLocal?.image})` }">
-          <identicon :size="36" :address="account" v-if="!userLocal?.image"/>
-        </div>
-        <div class="ml-2 flex flex-col items-start">
-          <span class="block">{{ balanceFormatted ? balanceFormatted.substring(0, 8) : 'Fetching balance' }} ETH</span>
-          <span class="addressText" v-if="!userLocal?.username">{{ shortenAddress(account) }}</span>
-          <span class="usernameText" v-if="userLocal?.username">{{ userLocal.username }}</span>
-        </div>
-        <div class="mr-4 ml-4 ml-md-12">
-          <i class="fas fa-caret-down" v-if="!isOpen"></i>
-          <i class="fas fa-caret-up" v-if="isOpen"></i>
-        </div>
-      </button>
+      <div v-if="account" class="wallet-button-container">
+        <button class="cursor-pointer button primary flex items-center wallet">
+          <div class="profile-avatar wallet-button-avatar" :style="{ backgroundImage: `url(${userLocal?.image})` }">
+            <identicon :size="32" :address="account" v-if="!userLocal?.image"/>
+          </div>
+          <div class="ml-2 flex flex-col items-start">
+            <span class="addressText" v-if="!userLocal?.username">{{ shortenAddress(account) }}</span>
+            <span class="usernameText" v-if="userLocal?.username">{{ userLocal.username }}</span>
+            <span class="block balanceText">{{ balanceFormatted ? balanceFormatted.substring(0, 8) : 'Fetching balance' }} ETH</span>
+          </div>
+          <div class="mr-4 ml-4 ml-md-12">
+            <i class="fas fa-caret-down" v-if="!isOpen"></i>
+            <i class="fas fa-caret-up" v-if="isOpen"></i>
+          </div>
+        </button>
+      </div>
     </div>
     <OverlayPanel ref="op" appendTo="body" @hide="close" :showCloseIcon="false" id="overlay_panel" style="width: 280px"
                   :breakpoints="{'960px': '75vw'}">
@@ -188,23 +192,34 @@ export default {
 .wallet {
   padding: 0 .75rem !important;
 }
-
+.balanceText {
+  margin-top: -.25rem;
+}
 .addressText {
   color: #b8ffe8;
   font-size: 13px;
   font-weight: 400;
-  margin-top: -.25rem;
-}
-.wallet-button-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 2rem;
+  // margin-top: .25rem;
 }
 .usernameText {
+  color: #b8ffe8;
+  font-size: 13px;
+  font-weight: 400;
   width: 100px;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.wallet-button-avatar {
+  width: 34px;
+  height: 34px;
+  border: 1px solid white;
+  border-radius: 2rem;
+}
+.wallet-button-container {
+  @apply rounded-5sm;
+  padding: 1px;
+  background: linear-gradient(94.05deg, #11998e80 1.74%, #38ef7d80 100%);
 }
 </style>

@@ -4,7 +4,7 @@
   </button>
   <Dialog header="On-Chain Data Viewer" v-model:visible="displayModal" :style="{maxWidth: '48rem', width: '100%'}" :modal="true" :closable="true">
     <div class="mb-3">
-      <div class="rounded-container-reduced-vertical-padding border rounded-3xl p-4 grid grid-flow-col gap-4">
+      <div class="rounded-container-reduced-vertical-padding border rounded-20px p-4 grid grid-flow-col gap-4">
         <div>
           <i class="text-gray-500 fas fa-info-circle mx-auto my-auto fa-2x py-2"></i>
         </div>
@@ -57,7 +57,7 @@
           <media-loader
               :src="ipfsData.value.image"
               aspectRatio="100%"
-              class="overflow-hidden rounded-3xl flex-1"
+              class="overflow-hidden rounded-20px flex-1"
               muted
               loop
               autoplay
