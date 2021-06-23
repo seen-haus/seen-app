@@ -43,15 +43,17 @@
               <div class="text-grey-9 font-normal">{{ seenBalanceUSD }}</div>
             </div>
           </a>
-          <a class="button dropdown-btn" :href="etherscanLink" target="_blank">
-            <div class="flex justify-between flex-grow">
-              <div class="flex flex-grow normal-text">
-                <img src="@/assets/icons/icon--seen-green.svg" class="cursor-pointer mr-2" alt="xSEEN">
-                <i class="fas fa-spinner fa-spin" v-if="!xSeenBalance"></i>
-                {{ xSeenBalance ? `${formatCrypto(xSeenBalance, true)} $xSEEN` : '' }}</div>
-              <div class="text-grey-9 font-normal">{{ xSeenBalanceUSD }}</div>
-            </div>
-          </a>
+          <router-link :to="{ name: 'stake'}">
+            <button class="button dropdown-btn" @click="close">
+              <div class="flex justify-between flex-grow">
+                <div class="flex flex-grow normal-text">
+                  <img src="@/assets/icons/icon--seen-green.svg" class="cursor-pointer mr-2" alt="xSEEN">
+                  <i class="fas fa-spinner fa-spin" v-if="!xSeenBalance"></i>
+                  {{ xSeenBalance ? `${formatCrypto(xSeenBalance, true)} $xSEEN` : '' }}</div>
+                <div class="text-grey-9 font-normal">{{ xSeenBalanceUSD }}</div>
+              </div>
+            </button>
+          </router-link>
           <div class="mx-8 h-0.5 bg-background-gray"></div>
           <router-link :to="{ name: 'profile'}">
             <button class="button dropdown-btn" @click="close">
@@ -97,10 +99,14 @@ export default {
     const seenBalanceUSD = computed(() => seenBalance.value ? convertSeenToUSDAndFormat(seenBalance.value) : '');
 
     const xSeenBalance = computed(() => {
-      const xSeenBalance = store.getters['application/balance'].xseen
+      const xSeenBalance = store.getters['application/balance'].xSeen
       return xSeenBalance
     });
-    const xSeenBalanceUSD = computed(() => xSeenBalance.value ? convertSeenToUSDAndFormat(xSeenBalance.value) : '');
+    const xSeenToSeenRatio = computed(() => {
+      const xSeenToSeenRatio = store.getters['application/balance'].xSeenToSeenRatio
+      return xSeenToSeenRatio
+    });
+    const xSeenBalanceUSD = computed(() => xSeenBalance.value && xSeenToSeenRatio.value ? convertSeenToUSDAndFormat(xSeenBalance.value * xSeenToSeenRatio.value) : '');
     const etherscanLink = computed(() => account.value ? `https://etherscan.io/address/${account.value}` : 'https://etherscan.io/token/0xCa3FE04C7Ee111F0bbb02C328c699226aCf9Fd33');
     let isInitialOpen = true;
 
@@ -178,6 +184,7 @@ export default {
       seenBalanceUSD,
       xSeenBalance,
       xSeenBalanceUSD,
+      xSeenToSeenRatio,
       etherscanLink,
       toggle,
       close,

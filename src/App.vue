@@ -72,10 +72,15 @@ export default {
           const ethBalance = await signer.getBalance();
           const stakeContract = useStakingContract();
           const xSeenBalance = await stakeContract.balanceOf(account.value);
+          const xSeenTotalSupply = await stakeContract.totalSupply();
+          const xSeenTotalSeenBalance = await tokenContract.balanceOf(process.env.VUE_APP_XSEEN_CONTRACT_ADDRESS)
           store.dispatch('application/setBalance', {
             eth: formatEther(ethBalance),
             seen: formatEther(seenBalance),
-            xseen: formatEther(xSeenBalance)});
+            xSeen: formatEther(xSeenBalance),
+            xSeenTotalSupply: formatEther(xSeenTotalSupply),
+            xSeenTotalSeenBalance: formatEther(xSeenTotalSeenBalance),
+            xSeenToSeenRatio: xSeenTotalSeenBalance/(xSeenTotalSupply)});
         }
       }
     });
