@@ -7,6 +7,10 @@ const state = {
     balance: {
         eth: null,
         seen: null,
+        xSeen: null,
+        xSeenTotalSupply: null,
+        xSeenTotalSeenBalance: null,
+        xSeenToSeenRatio: null,
     },
 };
 

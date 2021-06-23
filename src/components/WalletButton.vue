@@ -28,7 +28,7 @@
           <p class="text-xs font-bold text-grey-9">YOUR WALLET BALANCE</p>
           <p class="text-3xl font-bold text-black"><span v-if="balance">{{ balanceFormatted }}</span><i v-if="!balance"
                                                                                                         class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i>
-            <span class="text-lg font-normal">ETH</span></p>
+            <span class="text-lg font-normal"> ETH</span></p>
           <p class="text-sm text-grey-9"><span v-if="dollarValue">{{ dollarValue }}</span><i v-if="!dollarValue"
                                                                                              class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i>
           </p>
@@ -36,14 +36,24 @@
         <div class="lg:bg-white lg:rounded-b-lg">
           <a class="button dropdown-btn" :href="etherscanLink" target="_blank">
             <div class="flex justify-between flex-grow">
-              <div class="flex flex-grow lowercase">
+              <div class="flex flex-grow normal-text">
                 <img src="@/assets/icons/icon--seen.svg" class="cursor-pointer mr-2" alt="SEEN">
                 <i class="fas fa-spinner fa-spin" v-if="!seenBalance"></i>
-                {{ seenBalance ? `${formatCrypto(seenBalance, true)} $seen` : '' }}
-              </div>
+                {{ seenBalance ? `${formatCrypto(seenBalance, true)} SEEN` : '' }}</div>
               <div class="text-grey-9 font-normal">{{ seenBalanceUSD }}</div>
             </div>
           </a>
+          <router-link :to="{ name: 'stake'}">
+            <button class="button dropdown-btn" @click="close">
+              <div class="flex justify-between flex-grow">
+                <div class="flex flex-grow normal-text">
+                  <img src="@/assets/icons/icon--seen-green.svg" class="cursor-pointer mr-2" alt="xSEEN">
+                  <i class="fas fa-spinner fa-spin" v-if="!xSeenBalance"></i>
+                  {{ xSeenBalance ? `${formatCrypto(xSeenBalance, true)} xSEEN` : '' }}</div>
+                <div class="text-grey-9 font-normal">{{ xSeenBalanceUSD }}</div>
+              </div>
+            </button>
+          </router-link>
           <div class="mx-8 h-0.5 bg-background-gray"></div>
           <router-link :to="{ name: 'profile'}">
             <button class="button dropdown-btn" @click="close">
@@ -87,6 +97,16 @@ export default {
       return seenBalance
     });
     const seenBalanceUSD = computed(() => seenBalance.value ? convertSeenToUSDAndFormat(seenBalance.value) : '');
+
+    const xSeenBalance = computed(() => {
+      const xSeenBalance = store.getters['application/balance'].xSeen
+      return xSeenBalance
+    });
+    const xSeenToSeenRatio = computed(() => {
+      const xSeenToSeenRatio = store.getters['application/balance'].xSeenToSeenRatio
+      return xSeenToSeenRatio
+    });
+    const xSeenBalanceUSD = computed(() => xSeenBalance.value && xSeenToSeenRatio.value ? convertSeenToUSDAndFormat(xSeenBalance.value * xSeenToSeenRatio.value) : '');
     const etherscanLink = computed(() => account.value ? `https://etherscan.io/address/${account.value}` : 'https://etherscan.io/token/0xCa3FE04C7Ee111F0bbb02C328c699226aCf9Fd33');
     let isInitialOpen = true;
 
@@ -162,6 +182,9 @@ export default {
       dollarValue,
       seenBalance,
       seenBalanceUSD,
+      xSeenBalance,
+      xSeenBalanceUSD,
+      xSeenToSeenRatio,
       etherscanLink,
       toggle,
       close,
@@ -206,5 +229,9 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.normal-text {
+  text-transform: none !important;
 }
 </style>
