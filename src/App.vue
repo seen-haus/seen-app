@@ -34,7 +34,7 @@ import { useStore } from "vuex";
 import { useMeta, useActiveMeta } from "vue-meta";
 import useWeb3 from "@/connectors/hooks"
 import {watchEffect, ref} from 'vue';
-import { useTokenContract } from "@/hooks/useContract";
+import {useStakingContract, useTokenContract} from "@/hooks/useContract";
 
 import Web3Provider from "@/connector/Web3Provider";
 import WalletModal from "@/components/WalletModal/WalletModal";
@@ -70,7 +70,12 @@ export default {
           const seenBalance = await tokenContract.balanceOf(account.value);
           accountCurrent = account.value;
           const ethBalance = await signer.getBalance();
-          store.dispatch('application/setBalance', {eth: formatEther(ethBalance), seen: formatEther(seenBalance)});
+          const stakeContract = useStakingContract();
+          const xSeenBalance = await stakeContract.balanceOf(account.value);
+          store.dispatch('application/setBalance', {
+            eth: formatEther(ethBalance),
+            seen: formatEther(seenBalance),
+            xseen: formatEther(xSeenBalance)});
         }
       }
     });
