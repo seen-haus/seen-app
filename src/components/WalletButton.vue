@@ -39,7 +39,7 @@
               <div class="flex flex-grow normal-text">
                 <img src="@/assets/icons/icon--seen.svg" class="cursor-pointer mr-2" alt="SEEN">
                 <i class="fas fa-spinner fa-spin" v-if="!seenBalance"></i>
-                {{ seenBalance ? `${formatCrypto(seenBalance, true)} $SEEN` : '' }}</div>
+                {{ seenBalance ? `${formatCrypto(seenBalance, true)} SEEN` : '' }}</div>
               <div class="text-grey-9 font-normal">{{ seenBalanceUSD }}</div>
             </div>
           </a>
@@ -49,7 +49,7 @@
                 <div class="flex flex-grow normal-text">
                   <img src="@/assets/icons/icon--seen-green.svg" class="cursor-pointer mr-2" alt="xSEEN">
                   <i class="fas fa-spinner fa-spin" v-if="!xSeenBalance"></i>
-                  {{ xSeenBalance ? `${formatCrypto(xSeenBalance, true)} $xSEEN` : '' }}</div>
+                  {{ xSeenBalance ? `${formatCrypto(xSeenBalance, true)} xSEEN` : '' }}</div>
                 <div class="text-grey-9 font-normal">{{ xSeenBalanceUSD }}</div>
               </div>
             </button>
