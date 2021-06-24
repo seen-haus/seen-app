@@ -70,99 +70,103 @@ export default function useContractEvents() {
     };
 
     const initializeContractEvents = async (collectableData, onlySaveContractAddress = false) => {
-        collectable.value = collectableData;
-        contractAddress.value = collectableData.contract_address;
-        endsAt.value = new Date(collectable.value.ends_at).getTime();
-        startsAt.value = new Date(collectable.value.starts_at).getTime();
+        try {
+            collectable.value = collectableData;
+            contractAddress.value = collectableData.contract_address;
+            endsAt.value = new Date(collectable.value.ends_at).getTime();
+            startsAt.value = new Date(collectable.value.starts_at).getTime();
 
-        if (onlySaveContractAddress) {
-            return;
-        }
-        mergedEvents.value = collectableData.events;
-
-        // !! IMPORTANT !! remove listeners on beforeDestroy
-        // ============= IF is AUCTION =============
-        if (isAuction.value) {
-            if (!contractAddress.value) {
-               return;
+            if (onlySaveContractAddress) {
+                return;
             }
-            contract = version.value === 1
-                ? useV1AuctionContract(contractAddress.value)
-                : useV2AuctionContract(contractAddress.value);
-            if (version.value === 2) {
-                let endTime = await contract.endTime()
-                let startTime = await contract.startTime()
-                collectable.value.ends_at = new Date(parseInt(endTime) * 1000)
-                endsAt.value = new Date(parseInt(endTime) * 1000)
-                if(collectable.value.is_reserve_price_auction) {
-                    collectable.value.starts_at = new Date(parseInt(startTime) * 1000)
-                    startsAt.value = new Date(parseInt(startTime) * 1000)
+            mergedEvents.value = collectableData.events;
+
+            // !! IMPORTANT !! remove listeners on beforeDestroy
+            // ============= IF is AUCTION =============
+            if (isAuction.value) {
+                if (!contractAddress.value) {
+                return;
                 }
-                console.log("UPDATED ===>>",  {endsAt: endsAt.value, startsAt: startsAt.value})
-            }
-            await contract.on("Bid", async (fromAddress, amount, evt) => {
-                console.log(fromAddress, amount, evt)
-                const event = await createNormalizedEvent(evt, 'bid');
+                contract = version.value === 1
+                    ? useV1AuctionContract(contractAddress.value)
+                    : useV2AuctionContract(contractAddress.value);
                 if (version.value === 2) {
                     let endTime = await contract.endTime()
                     let startTime = await contract.startTime()
-                    console.log(endTime)
-                    collectable.value.ends_at = parseInt(endTime) * 1000
+                    collectable.value.ends_at = new Date(parseInt(endTime) * 1000)
                     endsAt.value = new Date(parseInt(endTime) * 1000)
-                    if(startTime > 0) {
+                    if(collectable.value.is_reserve_price_auction) {
                         collectable.value.starts_at = new Date(parseInt(startTime) * 1000)
                         startsAt.value = new Date(parseInt(startTime) * 1000)
                     }
-                    let notification = new Audio(incomingBidSound)
-                    notification.addEventListener("canplaythrough", () => {
-                        notification.play();
-                    });
+                    console.log("UPDATED ===>>",  {endsAt: endsAt.value, startsAt: startsAt.value})
                 }
-                mergeEvents(event);
-            });
+                await contract.on("Bid", async (fromAddress, amount, evt) => {
+                    console.log(fromAddress, amount, evt)
+                    const event = await createNormalizedEvent(evt, 'bid');
+                    if (version.value === 2) {
+                        let endTime = await contract.endTime()
+                        let startTime = await contract.startTime()
+                        console.log(endTime)
+                        collectable.value.ends_at = parseInt(endTime) * 1000
+                        endsAt.value = new Date(parseInt(endTime) * 1000)
+                        if(startTime > 0) {
+                            collectable.value.starts_at = new Date(parseInt(startTime) * 1000)
+                            startsAt.value = new Date(parseInt(startTime) * 1000)
+                        }
+                        let notification = new Audio(incomingBidSound)
+                        notification.addEventListener("canplaythrough", () => {
+                            notification.play();
+                        });
+                    }
+                    mergeEvents(event);
+                });
 
-            const bids = await contract.queryFilter("Bid");
-            bids.forEach(async (bid) => {
-                const event = await createNormalizedEvent(bid, 'bid');
-                mergeEvents(event);
-            });
+                const bids = await contract.queryFilter("Bid");
+                bids.forEach(async (bid) => {
+                    const event = await createNormalizedEvent(bid, 'bid');
+                    mergeEvents(event);
+                });
 
-        } else { // ============= IF is SALE =============
-            if (!contractAddress.value) {
-               return;
-            }
-            contract = version.value === 1
-                ? useV1NftContract(contractAddress.value)
-                : useV1NftContract(contractAddress.value);
+            } else { // ============= IF is SALE =============
+                if (!contractAddress.value) {
+                return;
+                }
+                contract = version.value === 1
+                    ? useV1NftContract(contractAddress.value)
+                    : useV1NftContract(contractAddress.value);
 
-            let start = await contract.start();
-            let price = await contract.price();
+                let start = await contract.start();
+                let price = await contract.price();
 
-            supply.value = +(await contract.supply()).toString();
-            //
-            console.log("START TIME ", start);
-            console.log("PRICE ", price);
-            console.log("SUPPLY LEFT ", supply.value);
-
-            await contract.on("Buy", async (fromAddress, amount, evt) => {
-                // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
-                // console.log(fromAddress, amount.toString(), evt)
-                const event = await createNormalizedEvent(evt, 'buy');
-                mergeEvents(event);
                 supply.value = +(await contract.supply()).toString();
-            });
+                //
+                console.log("START TIME ", start);
+                console.log("PRICE ", price);
+                console.log("SUPPLY LEFT ", supply.value);
 
-            const buys = await contract.queryFilter("Buy");
-            console.group('Past Events - Sale');
-            buys.forEach(async (buy) => {
-                const event = await createNormalizedEvent(buy, 'buy');
-                mergeEvents(event);
-            });
-            console.groupEnd('Past Events - Sale');
+                await contract.on("Buy", async (fromAddress, amount, evt) => {
+                    // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
+                    // console.log(fromAddress, amount.toString(), evt)
+                    const event = await createNormalizedEvent(evt, 'buy');
+                    mergeEvents(event);
+                    supply.value = +(await contract.supply()).toString();
+                });
 
+                const buys = await contract.queryFilter("Buy");
+                console.group('Past Events - Sale');
+                buys.forEach(async (buy) => {
+                    const event = await createNormalizedEvent(buy, 'buy');
+                    mergeEvents(event);
+                });
+                console.groupEnd('Past Events - Sale');
+
+            }
+
+            return true;
+        }catch(e){
+            console.log({'initializeContractEvents error': e})
         }
-
-        return true;
     };
 
 
