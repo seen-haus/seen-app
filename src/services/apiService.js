@@ -156,7 +156,7 @@ export const OpenSeaAPIService = {
                 mapped.push({asGift: false, data: match});
             } else {
                 // First token was not minted properly,  so exclude it
-                if(a.token_id !== "1" && a.asset_contract.address !== '0x13bab10a88fc5f6c77b87878d71c9f1707d2688a') {
+                if(!(a.token_id !== "1" && a.asset_contract.address !== '0x13bab10a88fc5f6c77b87878d71c9f1707d2688a')) {
                     mapped.push({asGift: true, data: a});
                 }
             }
