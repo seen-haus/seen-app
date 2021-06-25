@@ -66,10 +66,10 @@
           </p>
         </div>
       </template>
-      <button class="button primary mt-6" v-if="hasOverrideClaimLink" @click="viewOverrideClaimLink">
+      <button class="button primary mt-6" v-if="hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="viewOverrideClaimLink">
         Claim Physical
       </button>
-      <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
+      <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
         Claim Physical
       </button>
       <button class="button opensea mt-6" v-if="!isCollectableActive" @click="viewOnOpenSea">
@@ -267,6 +267,7 @@ import useExchangeRate from "@/hooks/useExchangeRate.js";
 import {formatEther} from "@ethersproject/units";
 import useSigner from "@/hooks/useSigner";
 import useContractEvents from "@/hooks/useContractEvents";
+import {useSeenNFTContract} from "@/hooks/useContract";
 import {useToast} from "primevue/usetoast";
 import {useField, useForm} from "vee-validate";
 import numberHelper from "@/services/utils/numbers"
@@ -320,6 +321,7 @@ export default {
     const hasError = ref(null);
     const isRegisteredBidder = ref(false);
     const isSubmitting = ref(false);
+    const isCurrentAccountEntitledToPhysical = ref(false);
     const collectableData = ref(props.collectable);
     const winner = computed(() => collectableData.value.winner_address);
     const balance = computed(() => store.getters['application/balance'].eth);
@@ -363,6 +365,29 @@ export default {
     watch(account, () => {
       checkRegistrationStatusIfRequired()
     });
+
+    watchEffect(async () => {
+      if (account?.value && isAuction?.value && !props?.isCollectableActive && collectableData?.value?.contract_address) {
+        let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
+        let balanceOfAuctionContract = await nftContract.balanceOf(collectableData.value.contract_address, collectableData.value.nft_token_id)
+        if(parseInt(balanceOfAuctionContract) > 0) {
+          // NFT is still in auction contract, set auction winner as holder by proxy of auction contract
+          if(collectableData.value?.winner_address?.toLowerCase() === account.value.toLowerCase()) {
+            isCurrentAccountEntitledToPhysical.value = true;
+          }else{
+            isCurrentAccountEntitledToPhysical.value = false;
+          }
+        } else {
+          // NFT is no longer in auction contract, check if current account is holding NFT
+          let balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
+          if(parseInt(balanceOfCurrentAccount) > 0) {
+            isCurrentAccountEntitledToPhysical.value = true;
+          } else {
+            isCurrentAccountEntitledToPhysical.value = false;
+          }
+        }
+      }
+    })
 
     const fieldValidatorAuction = (value) => {
       if (value) {
@@ -536,11 +561,16 @@ export default {
         isSubmitting.value = true
         await bid(amount)
             .then((response) => {
-              if (response) {
-                auctionField.resetField(null)
+              try {
+                if(response) {
+                  auctionField.resetField(null)
+                }
+                isSubmitting.value = false
+              } catch(e) {
+                console.log({'Error, likely just caused by unmounted component:': e})
               }
-              isSubmitting.value = false
             }).catch(e => {
+              console.log({e})
               toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a buy order.', life: 3000});
               isSubmitting.value = false
             });
@@ -641,6 +671,7 @@ export default {
       claimId: props.claim?.id ? props.claim.id : null,
       isRegisteredBidder,
       registerToBid,
+      isCurrentAccountEntitledToPhysical,
     };
   },
 };
