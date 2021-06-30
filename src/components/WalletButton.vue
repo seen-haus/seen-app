@@ -55,9 +55,15 @@
             </button>
           </router-link>
           <div class="mx-8 h-0.5 bg-background-gray"></div>
+          <span>
+            <button class="button dropdown-btn" @click="openWalletModal">
+            <img src="@/assets/icons/icon--person.svg" class="cursor-pointer mr-2" alt="SEEN"> Edit Profile
+            </button>
+          </span>
+          <div class="mx-8 h-0.5 bg-background-gray"></div>
           <router-link :to="{ name: 'profile'}">
             <button class="button dropdown-btn" @click="close">
-            <img src="@/assets/icons/icon--person.svg" class="cursor-pointer mr-2" alt="SEEN"> Collections & Profile
+            <img src="@/assets/icons/icon--paint.svg" class="cursor-pointer mr-2" alt="SEEN"> Collection
             </button>
           </router-link>
           <div class="mx-8 h-0.5 bg-background-gray"></div>
@@ -122,6 +128,7 @@ export default {
 
     let isOpen = ref(false);
     const openWalletModal = () => {
+      op.value.hide();
       isOpen.value = false;
       store.dispatch('application/openModal', 'WalletModal')
     };
