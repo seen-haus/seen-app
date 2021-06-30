@@ -143,7 +143,7 @@ export default {
       }).catch((e) => {
         state.approving = false;
         let message = parseError(e.message)
-        toast.add({severity: 'error', summary: 'Error', detail: message ? message : e.message, life: 3000});
+        toast.add({severity: 'error', summary: 'Error', detail: message ? message : e.message, life: 6000});
         return false;
       });
 
@@ -162,7 +162,7 @@ export default {
             });
           }).catch((e) => {
             let message = parseError(e.message)
-            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 6000});
             console.error(e);
             state.approving = false;
           })
@@ -174,7 +174,7 @@ export default {
       }
       const temporaryProvider = new Web3Provider(provider.value);
       const gasPrice = await temporaryProvider.getGasPrice().catch((e) => {
-        toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 3000});
+        toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 6000});
       });
 
       const contract = useStakingContract(true)
@@ -186,7 +186,7 @@ export default {
             console.error(e);
             let message = parseError(e.message)
             state.depositing = false;
-            toast.add({severity: 'error', summary: 'Error', detail: message ? message : e.message, life: 3000});
+            toast.add({severity: 'error', summary: 'Error', detail: message ? message : e.message, life: 6000});
           });
       if (!tx) {
         state.depositing = false;
@@ -208,7 +208,7 @@ export default {
           }).catch((e) => {
             state.depositing = false;
             let message = parseError(e.message)
-            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 6000});
           })
     }
 
@@ -222,7 +222,7 @@ export default {
 
       const temporaryProvider = new Web3Provider(provider.value);
       const gasPrice = await temporaryProvider.getGasPrice().catch((e) => {
-        toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH.`, life: 3000});
+        toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH.`, life: 6000});
       });
 
       const contract = useStakingContract(true)
@@ -236,7 +236,7 @@ export default {
             console.error(e);
             state.withdrawing = false;
             let message = parseError(e.message)
-            toast.add({severity: 'error', summary: 'Error', detail: message ? message : e.message, life: 3000});
+            toast.add({severity: 'error', summary: 'Error', detail: message ? message : e.message, life: 6000});
           });
 
       if (!tx) {
