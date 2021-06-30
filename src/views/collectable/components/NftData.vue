@@ -64,7 +64,7 @@
           />
         </div>
         <div class="w-full">
-          <img class="nft-data-signature mt-4 mb-8" src="@/assets/images/signature.png"/>
+          <img class="nft-data-signature mt-5 mb-6" src="@/assets/images/signature.png"/>
         </div>
       </div>
     </div>
@@ -148,16 +148,14 @@ export default {
   background-color: #d8d8d8;
 }
 
-.wrapper {
-  max-height: 450px;
-}
-
 .filler {
   height: 310px;
 }
 
 .p-dialog-content {
   overflow: auto;
+  padding-bottom: 1rem!important;
+  max-height: 575px;
 }
 
 .nft-data-signature {
