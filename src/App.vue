@@ -117,7 +117,7 @@ export default {
         },
         {
           name: "og:image",
-          content: "https://seen.haus/img/seen.65f2f023.jpg"
+          content: "https://cloudflare-ipfs.com/ipfs/QmPjSauCtPtphcDvfFbyv32CUaBiDiXvtELcawN3x7SDkK"
         },
         {
           name: "og:url",
@@ -141,7 +141,7 @@ export default {
         },
         {
           name: "twitter:image",
-          content: "https://seen.haus/img/seen.65f2f023.jpg"
+          content: "https://cloudflare-ipfs.com/ipfs/QmPjSauCtPtphcDvfFbyv32CUaBiDiXvtELcawN3x7SDkK"
         },
         {
           name: "twitter:title",

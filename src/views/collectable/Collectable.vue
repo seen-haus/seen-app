@@ -350,7 +350,7 @@ export default {
       ).replace(/&nbsp;/g, ' ');
       meta.meta[2].content = meta.title;
       meta.meta[3].content = meta.meta[1].content;
-      meta.meta[4].content = firstImage.url || "https://seen.haus/img/seen.65f2f023.jpg";
+      meta.meta[4].content = firstImage.url || "https://cloudflare-ipfs.com/ipfs/QmPjSauCtPtphcDvfFbyv32CUaBiDiXvtELcawN3x7SDkK";
       meta.meta[5].content = previewMedia.type.includes('video') ? previewMedia.url : ''; //video
       meta.meta[6].content = previewMedia.type.includes('video') ? previewMedia.url : ''; //video
       if (meta.meta[5].content === '') {
@@ -359,7 +359,7 @@ export default {
       }
       meta.meta[7].content = window.location.href;
       meta.meta[8].content = '@' + String(artist?.value?.socials?.filter(channel => channel.type === 'twitter')[0]?.handle || 'seen_haus')
-      meta.meta[9].content = firstImage.url || "https://seen.haus/img/seen.65f2f023.jpg";
+      meta.meta[9].content = firstImage.url || "https://cloudflare-ipfs.com/ipfs/QmPjSauCtPtphcDvfFbyv32CUaBiDiXvtELcawN3x7SDkK";
       meta.meta[10].content = meta.title;
       meta.meta[11].content = meta.meta[1].content;
     };
