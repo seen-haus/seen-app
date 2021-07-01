@@ -289,46 +289,6 @@ export default {
         {
           name: "description",
           content: "",
-        },
-        {
-          name: "og:title",
-          content: title.value || "Loading..."
-        },
-        {
-          name: "og:description",
-          content: ""
-        },
-        {
-          name: "og:image",
-          content: ""
-        },
-        {
-          name: "og:video",
-          content: ""
-        },
-        {
-          name: "og:video:secure_url",
-          content: ""
-        },
-        {
-          name: "og:url",
-          content: ""
-        },
-        {
-          name: "twitter:creator",
-          content: ""
-        },
-        {
-          name: "twitter:image",
-          content: ""
-        },
-        {
-          name: "twitter:title",
-          content: title.value || "Loading..."
-        },
-        {
-          name: "twitter:description",
-          content: ""
         }
       ],
     });
@@ -340,28 +300,12 @@ export default {
     );
 
     const updateMeta = () => {
-      const previewMedia = media?.value?.filter(media => media.is_preview === true)[0] || media?.value[0]
-      const firstImage = media?.value?.filter(media => media.type.includes('image'))[0]
       meta.title = title.value || "Collectable";
       meta.meta[0].content = keywords.value;
       meta.meta[1].content = description.value.replace(
           /<\/?("[^"]*"|'[^']*'|[^>])*(>|$)/g,
           ""
       ).replace(/&nbsp;/g, ' ');
-      meta.meta[2].content = meta.title;
-      meta.meta[3].content = meta.meta[1].content;
-      meta.meta[4].content = firstImage.url || "https://cloudflare-ipfs.com/ipfs/QmPjSauCtPtphcDvfFbyv32CUaBiDiXvtELcawN3x7SDkK";
-      meta.meta[5].content = previewMedia.type.includes('video') ? previewMedia.url : ''; //video
-      meta.meta[6].content = previewMedia.type.includes('video') ? previewMedia.url : ''; //video
-      if (meta.meta[5].content === '') {
-        meta.meta[5].name = '';
-        meta.meta[6].name = '';
-      }
-      meta.meta[7].content = window.location.href;
-      meta.meta[8].content = '@' + String(artist?.value?.socials?.filter(channel => channel.type === 'twitter')[0]?.handle || 'seen_haus')
-      meta.meta[9].content = firstImage.url || "https://cloudflare-ipfs.com/ipfs/QmPjSauCtPtphcDvfFbyv32CUaBiDiXvtELcawN3x7SDkK";
-      meta.meta[10].content = meta.title;
-      meta.meta[11].content = meta.meta[1].content;
     };
 
     const viewOnEtherscan = () => {
