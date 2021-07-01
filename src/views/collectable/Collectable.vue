@@ -340,7 +340,7 @@ export default {
     );
 
     const updateMeta = () => {
-      const preview = media?.value?.filter(media => media.is_preview === true)[0]
+      const previewMedia = media?.value?.filter(media => media.is_preview === true)[0] || media?.value[0]
       const firstImage = media?.value?.filter(media => media.type.includes('image'))[0]
       meta.title = title.value || "Collectable";
       meta.meta[0].content = keywords.value;
@@ -351,8 +351,8 @@ export default {
       meta.meta[2].content = meta.title;
       meta.meta[3].content = meta.meta[1].content;
       meta.meta[4].content = firstImage.url || "https://seen.haus/img/seen.65f2f023.jpg";
-      meta.meta[5].content = preview.type.includes('video') ? preview.url : ''; //video
-      meta.meta[6].content = preview.type.includes('video') ? preview.url : ''; //video
+      meta.meta[5].content = previewMedia.type.includes('video') ? previewMedia.url : ''; //video
+      meta.meta[6].content = previewMedia.type.includes('video') ? previewMedia.url : ''; //video
       if (meta.meta[5].content === '') {
         meta.meta[5].name = '';
         meta.meta[6].name = '';
