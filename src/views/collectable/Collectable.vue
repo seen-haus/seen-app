@@ -446,9 +446,6 @@ export default {
       isNft,
       isAuction,
       nextBidPrice,
-      currentPage,
-      currentTitle,
-      currentDescription,
       // Methods
       updateProgress,
       viewOnEtherscan,
