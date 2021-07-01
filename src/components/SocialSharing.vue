@@ -18,7 +18,6 @@
 </template>
 
 <script>
-import {useToast} from "primevue/usetoast";
 
 export default {
   name: "SocialSharing",
@@ -28,6 +27,8 @@ export default {
     }
   },
   props: {
+    media: String,
+    description: String,
   },
   methods: {
     shareUrl() {
@@ -49,7 +50,8 @@ export default {
       return "https://www.facebook.com/sharer/sharer.php?u=" + window.location.href;
     },
     pinterestUrl() {
-      return "https://pinterest.com/pin/create/button/?url=" + window.location.href;
+      return "https://pinterest.com/pin/create/link/?url=" + window.location.href + '&media=' +
+          this.media + '&description=' + this.description;
     },
   },
 };
@@ -71,6 +73,7 @@ export default {
 .wrapme {
   position: relative;
   float: right;
-  margin-top: -100px;
+  margin-top: -92px;
+  z-index: 90;
 }
 </style>

@@ -96,7 +96,11 @@
         </div>
 
         <div class="right-side col-span-5">
-          <social-sharing></social-sharing>
+          <social-sharing
+              :media="media.filter(x => x.type.includes('image'))[0].url ||
+              'https://cloudflare-ipfs.com/ipfs/QmPjSauCtPtphcDvfFbyv32CUaBiDiXvtELcawN3x7SDkK'"
+              :description="description">
+          </social-sharing>
           <bid-card
               :status="liveStatus"
               :collectable="collectable"
