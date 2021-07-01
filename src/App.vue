@@ -97,9 +97,60 @@ export default {
         },
         {
           name: "description",
-          content:
-            "seen.haus is merging the digital and physical worlds through non-fungible token (NFT) and tangible product auctions",
+          content: "seen.haus is merging the digital and physical worlds through non-fungible token (NFT) and tangible product auctions",
         },
+        {
+          name: "og:locale",
+          content: "en_US"
+        },
+        {
+          name: "og:type",
+          content: "website"
+        },
+        {
+          name: "og:title",
+          content: "SEEN.HAUS"
+        },
+        {
+          name: "og:description",
+          content: "seen.haus is merging the digital and physical worlds through non-fungible token (NFT) and tangible product auctions"
+        },
+        {
+          name: "og:image",
+          content: "https://seen.haus/img/seen.65f2f023.jpg"
+        },
+        {
+          name: "og:url",
+          content: document.location.href
+        },
+        {
+          name: "og:site_name",
+          content: "seen.haus"
+        },
+        {
+          name: "twitter:site",
+          content: "@seen_haus"
+        },
+        {
+          name: "twitter:creator",
+          content: "@seen_haus"
+        },
+        {
+          name: "twitter:card",
+          content: "summary_large_image"
+        },
+        {
+          name: "twitter:image",
+          content: "https://seen.haus/img/seen.65f2f023.jpg"
+        },
+        {
+          name: "twitter:title",
+          content: "SEEN.HAUS"
+        },
+        {
+          name: "twitter:description",
+          content: "seen.haus is merging the digital and physical worlds through non-fungible token (NFT) and tangible product auctions"
+        }
       ],
     });
     const metadata = useActiveMeta();

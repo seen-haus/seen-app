@@ -96,6 +96,7 @@
         </div>
 
         <div class="right-side col-span-5">
+          <social-sharing></social-sharing>
           <bid-card
               :status="liveStatus"
               :collectable="collectable"
@@ -194,10 +195,12 @@ import {getEtherscanLink} from "@/services/utils";
 import GLightbox from 'glightbox';
 import 'glightbox/dist/css/glightbox.css';
 import NftData from "@/views/collectable/components/NftData.vue";
+import SocialSharing from "@/components/SocialSharing";
 
 export default {
   name: "Collectable",
   components: {
+    SocialSharing,
     FencedTitle,
     Container,
     UserBadge,
@@ -287,6 +290,46 @@ export default {
           name: "description",
           content: "",
         },
+        {
+          name: "og:title",
+          content: title.value || "Loading..."
+        },
+        {
+          name: "og:description",
+          content: ""
+        },
+        {
+          name: "og:image",
+          content: ""
+        },
+        {
+          name: "og:video",
+          content: ""
+        },
+        {
+          name: "og:video:secure_url",
+          content: ""
+        },
+        {
+          name: "og:url",
+          content: ""
+        },
+        {
+          name: "twitter:creator",
+          content: ""
+        },
+        {
+          name: "twitter:image",
+          content: ""
+        },
+        {
+          name: "twitter:title",
+          content: title.value || "Loading..."
+        },
+        {
+          name: "twitter:description",
+          content: ""
+        }
       ],
     });
 
@@ -297,12 +340,28 @@ export default {
     );
 
     const updateMeta = () => {
+      const preview = media?.value?.filter(media => media.is_preview === true)[0]
+      const firstImage = media?.value?.filter(media => media.type.includes('image'))[0]
       meta.title = title.value || "Collectable";
       meta.meta[0].content = keywords.value;
       meta.meta[1].content = description.value.replace(
           /<\/?("[^"]*"|'[^']*'|[^>])*(>|$)/g,
           ""
-      );
+      ).replace(/&nbsp;/g, ' ');
+      meta.meta[2].content = meta.title;
+      meta.meta[3].content = meta.meta[1].content;
+      meta.meta[4].content = firstImage.url || "https://seen.haus/img/seen.65f2f023.jpg";
+      meta.meta[5].content = preview.type.includes('video') ? preview.url : ''; //video
+      meta.meta[6].content = preview.type.includes('video') ? preview.url : ''; //video
+      if (meta.meta[5].content === '') {
+        meta.meta[5].name = '';
+        meta.meta[6].name = '';
+      }
+      meta.meta[7].content = window.location.href;
+      meta.meta[8].content = '@' + String(artist?.value?.socials?.filter(channel => channel.type === 'twitter')[0]?.handle || 'seen_haus')
+      meta.meta[9].content = firstImage.url || "https://seen.haus/img/seen.65f2f023.jpg";
+      meta.meta[10].content = meta.title;
+      meta.meta[11].content = meta.meta[1].content;
     };
 
     const viewOnEtherscan = () => {
@@ -353,6 +412,8 @@ export default {
       lightbox.open();
     };
 
+
+
     return {
       isLoading,
       collectable,
@@ -385,6 +446,9 @@ export default {
       isNft,
       isAuction,
       nextBidPrice,
+      currentPage,
+      currentTitle,
+      currentDescription,
       // Methods
       updateProgress,
       viewOnEtherscan,
