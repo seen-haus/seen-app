@@ -132,6 +132,10 @@ export default {
         setOverrideMediaType()
         return "video"
       }
+      if (props.src.includes("blob:http://")) {
+        setOverrideMediaType()
+        return "video"
+      }
       if (props.src.includes("youtube.com")) return "youtube";
       if (props.src.includes(".mp4")) return "video";
       return "image";

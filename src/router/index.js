@@ -94,6 +94,11 @@ const routes = [
         name: 'space-nft',
         component: () => import(/* webpackChunkName: "spaceNFT" */ '../views/massDrops/SpaceNFT.vue')
     },
+    {
+        path: '/mint',
+        name: 'mint',
+        component: () => import(/* webpackChunkName: "Mint" */ '../views/mint/Mint.vue')
+    },
 ]
 
 const router = createRouter({
