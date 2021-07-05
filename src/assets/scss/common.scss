@@ -86,3 +86,16 @@
   width: 100%;
   background-size: cover;
 }
+
+.bg-white {
+  transition: background-color 0.1s linear;
+}
+
+.dark-mode-background {
+  transition: background-color 0.1s linear;
+  background-color: #000000;
+}
+
+.dark-mode-text {
+  color: white;
+}

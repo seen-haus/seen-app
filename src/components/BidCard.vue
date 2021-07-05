@@ -90,7 +90,7 @@
           <span v-if="!isSubmitting">{{ isAuction ? (`Place ${isAwaitingReserve ? 'reserve' : 'a'} bid`) : "Buy now" }}</span>
           <span v-else>Submitting...</span>
         </button>
-        <button class="button dark disabled opacity-50" v-if="account && !hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
+        <button :class="darkMode ? 'light' : 'dark'" class="button disabled opacity-50" v-if="account && !hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
           Insufficient funds
         </button>
         <template v-if="account && requiresRegistration && !isRegisteredBidder">
@@ -325,6 +325,7 @@ export default {
     const collectableData = ref(props.collectable);
     const winner = computed(() => collectableData.value.winner_address);
     const balance = computed(() => store.getters['application/balance'].eth);
+    const darkMode = computed(() => store.getters['application/darkMode']);
 
     const form = useForm({
       initialValues: {
@@ -672,6 +673,7 @@ export default {
       isRegisteredBidder,
       registerToBid,
       isCurrentAccountEntitledToPhysical,
+      darkMode,
     };
   },
 };

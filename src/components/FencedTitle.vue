@@ -1,5 +1,5 @@
 <template>
-  <div class="title flex items-center fence-wrap" >
+  <div class="title flex items-center fence-wrap" :class="darkMode && 'dark-mode-text'">
     <div
         v-if="showLeft"
         class="fence flex-shrink mr-6"
@@ -23,6 +23,9 @@
 </template>
 
 <script>
+import {computed} from "vue";
+import {useStore} from "vuex"
+
 export default {
   name: "FencedTitle",
   props: {
@@ -49,6 +52,17 @@ export default {
       return {[this.color]: true};
     },
   },
+  setup() {
+    const store = useStore();
+
+    const darkMode = computed(() => {
+      return store.getters['application/darkMode']
+    });
+
+    return {
+      darkMode,
+    }
+  }
 };
 </script>
 

@@ -1,13 +1,14 @@
 <template>
   <div>
     <top-header-bar/>
-    <div :class="headerClasses">
+    <div :class="darkMode ? [headerClasses, 'text-white'].join(' ') : headerClasses">
       <container>
         <header>
           <div class="flex items-center flex-wrap justify-between">
             <router-link to="/">
               <div id="logo" class="flex items-center" style="width:100%; max-width: 208px">
-                <img src="@/assets/images/seen-web.png" class="mr-4" alt="">
+                <img v-if="darkMode" src="@/assets/images/seen-white.svg" class="mr-4" alt="">
+                <img v-if="!darkMode" src="@/assets/images/seen-black.svg" class="mr-4" alt="">
               </div>
             </router-link>
             <div class="items-center hidden lg:flex lg:flex-grow justify-between">
@@ -30,18 +31,26 @@
 </template>
 
 <script>
+import { computed } from "vue";
+import {useStore} from "vuex";
+
 import DesktopMenu from "@/components/Menu/DesktopMenu";
 import WalletButton from "@/components/WalletButton";
 import Container from "@/components/Container";
 import TopHeaderBar from "@/components/TopHeaderBar";
-import {useStore} from "vuex"
 
 export default {
   name: 'AppHeader',
   components: {TopHeaderBar, Container, WalletButton, DesktopMenu},
   setup() {
     const store = useStore();
-    return {openMobileMenu: () => store.commit('application/OPEN_MOBILE_MENU')};
+    const darkMode = computed(() => {
+      return store.getters['application/darkMode']
+    });
+    return {
+      openMobileMenu: () => store.commit('application/OPEN_MOBILE_MENU'),
+      darkMode
+    };
   },
   computed: {
     headerClasses() {
@@ -55,14 +64,14 @@ export default {
 #logo img {
   width: auto;
   max-width: 180px;
-  height: 34px;
+  height: 39px;
 }
 
 @screen lg {
   #logo img {
     width: auto;
     max-width: 208px;
-    height: 34px;
+    height: 39px;
   }
 }
 

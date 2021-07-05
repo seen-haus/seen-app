@@ -32,7 +32,7 @@
                     >{{ item.title }}&nbsp;<i v-if="true" class="fas fa-caret-down"></i></span>
                 </a>
                 <div class="dropdown-menu top-1 absolute hidden h-auto t-8 pt-1">
-                  <ul class="block w-45 bg-white border py-3">
+                  <ul class="block w-45 border py-3" :class="darkMode ? 'dark-mode-background' : 'bg-white'">
                       <template v-for="(value, name) in item.url" :key="value && name">
                         <li>
 
@@ -67,10 +67,22 @@
 
 <script>
 
+import { computed } from "vue";
+import {useStore} from "vuex";
+
 import Menu from "@/components/Menu/Menu.js";
 
 export default {
     name: "DesktopMenu",
+    setup() {
+      const store = useStore();
+      const darkMode = computed(() => {
+        return store.getters['application/darkMode']
+      });
+      return {
+        darkMode
+      };
+    },
     mixins: [Menu]
 };
 </script>

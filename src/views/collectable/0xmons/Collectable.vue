@@ -175,7 +175,6 @@
 import {computed, onBeforeUnmount, reactive, ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import {useMeta} from "vue-meta";
-import {useStore} from "vuex";
 
 import FencedTitle from "@/components/FencedTitle.vue";
 import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
@@ -219,7 +218,6 @@ export default {
       collectable: {},
       buyersVisible: 3,
     });
-    const store = useStore();
 
     const {
       collectable,
@@ -260,10 +258,6 @@ export default {
       claim,
       pillOverride,
     } = useCollectableInformation();
-
-    if(['splatter'].indexOf(route.params["slug"]) > -1) {
-      store.dispatch("application/setDarkMode", true);
-    }
 
     const currentEndsAt = computed(() => {
       return endsAt.value;
@@ -325,7 +319,7 @@ export default {
 
     (async function loadCollectable() {
       state.loading = true;
-      const slug = route.params["slug"];
+      const slug = "splatter";
       const {data} = await CollectablesService.show(slug);
 
       // data.events.reverse(); // Right order

@@ -1,5 +1,5 @@
 <template>
-  <div class="profile">
+  <div class="profile" :class="darkMode && 'dark-mode-background'">
     <container class="relative pb-20">
       <div class="content-center">
         <div class="top-bar">
@@ -15,14 +15,14 @@
           />
           <div class="mt-4 flex justify-between flex-wrap items-center mx-auto">
             <div class="flex justify-start flex-wrap">
-            <p class="font-bold text-3xl mr-4">{{artist.name}}</p>
+            <p class="font-bold text-3xl" :class="darkMode && 'dark-mode-text'">{{artist.name}}</p>
             <!-- <div class="wallet-address-badge flex justify-between items-center">
               <i class="fas fa-volleyball-ball text-lg"></i>
               <copy-helper :toCopy="user.wallet" :isIconSuffix="true" :text="cropWithExtension(user.wallet, 20)"/>
             </div> -->
           </div>
           </div>
-          <div class="mt-4 flex justify-between flex-wrap items-center mx-auto">
+          <div class="mt-4 flex justify-between flex-wrap items-center mx-auto" :class="darkMode && 'dark-mode-text'">
             <div v-html="artist?.bio ? artist.bio : 'No biography available.'"></div>
           </div>
           <div class="mt-4 flex justify-between flex-wrap items-center mx-auto">
@@ -71,6 +71,7 @@
 import {ref, computed} from "vue";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
+import {useStore} from "vuex"
 
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
@@ -90,11 +91,23 @@ export default {
     },
   },
   async setup() {
+    const store = useStore();
     const { meta } = useMeta({
       title: "Loading...",
     });
     const router = useRouter();
     const {data} = await ArtistService.show(router.currentRoute.value.params.artistSlug);
+
+    if(['0xmons', 'frank-ape'].indexOf(router?.currentRoute?.value?.params?.artistSlug) > -1) {
+      store.dispatch("application/setDarkMode", true);
+    }
+
+    const darkMode = computed(() => {
+      return store.getters['application/darkMode']
+    });
+
+    console.log({darkMode: darkMode.value})
+
     const artist = ref(data);
     meta.title = artist.value.name;
 
@@ -126,7 +139,7 @@ export default {
       listOfCollectables,
       handleLoadMore,
       hasMore,
-
+      darkMode,
     };
   }
 }
@@ -149,7 +162,6 @@ export default {
 
 .description {
   z-index: 4;
-  background-color: white;
 }
 
 .top-bar {
