@@ -196,7 +196,6 @@ export default {
         }
         return endsAt;
       }
-      console.log('this.endsAt', this.endsAt)
       return this.endsAt;
     },
     shouldHidePrice() {
