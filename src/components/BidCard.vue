@@ -5,14 +5,15 @@
           v-if="!isCollectableActive"
           class="flex justify-start items-center text-gray-400 text-xs font-bold"
       >
-        {{ is_closed ? (isAuction ? 'AUCTION CLOSED' : 'SALE CLOSED') : 'ITEM HAS BEEN SOLD'}}
+        {{ is_closed ? (isAuction ? 'AUCTION CLOSED' : 'SALE CLOSED') : 'EDITION HAS BEEN SOLD'}}
       </div>
       <div
           v-else-if="!isAuction"
           class="flex justify-start items-center text-gray-400 text-xs font-bold"
       >
-        <span class="tracking-widest mr-4">ITEMS LEFT </span>
-        <tag class="bg-fence-light self-end text-gray-400 font-semibold"
+        <span v-if="isOpenEdition" class="tracking-widest mr-4">OPEN EDITION</span>
+        <span v-if="!isOpenEdition" class="tracking-widest mr-4">EDITIONS LEFT </span>
+        <tag v-if="!isOpenEdition" class="bg-fence-light self-end text-gray-400 font-semibold"
         >{{ items }}/{{ items_of }}
         </tag
         >
@@ -72,10 +73,10 @@
       <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
         Claim Physical
       </button>
-      <button class="button opensea mt-6" v-if="!isCollectableActive" @click="viewOnOpenSea">
+      <button class="button opensea mt-6" v-if="!isCollectableActive && nftTokenId" @click="viewOnOpenSea">
         Opensea
       </button>
-      <template v-else>
+      <template v-else-if="isCollectableActive">
         <div v-if="bidDisclaimers && bidDisclaimers.length > 0 && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" class="text-gray-400 text-sm py-2">
             <p style="width: calc(100%)">
               Please note:<br/>
@@ -159,8 +160,11 @@
           AUCTION ENDED
         </div>
         <div v-else>
-          <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            {{ is_closed ? 'CLOSED' : 'SOLD OUT (' + items_of + ' items)'}}
+          <div v-if="!isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+            {{ is_closed ? 'CLOSED' : 'SOLD OUT (' + items_of + ' EDITIONS)'}}
+          </div>
+          <div v-if="isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+            {{ 'SOLD OUT (' + itemsBought + ' EDITIONS)' }}
           </div>
         </div>
         <!-- <button
@@ -238,13 +242,47 @@
         </template>
 
         <template v-else>
-          <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            ITEMS LEFT
+          <div v-if="!isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+            EDITIONS LEFT
           </div>
-          <div class="text-2.5xl font-bold py-2">
+          <div v-if="!isOpenEdition" class="text-2.5xl font-bold py-2">
             {{ items }} out of {{ items_of }}
           </div>
-          <progress-bar :progress="progress" progressBackgroundColor="bg-gray-300" class="h-3 mt-3"/>
+          <div v-if="isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+            EDITIONS PURCHASED
+          </div>
+          <div v-if="isOpenEdition" class="text-2.5xl font-bold pt-2">
+            {{ itemsBought }}
+          </div>
+          <div v-if="isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold pt-4">
+            OPEN EDITION ENDS IN
+          </div>
+          <progress-bar v-if="!isOpenEdition" :progress="progress" progressBackgroundColor="bg-gray-300" class="h-3 mt-3"/>
+          <progress-timer
+              v-if="isOpenEdition"
+              ref="timerRef"
+              class="text-black text-3xl mt-2"
+              :isAuction="isAuction"
+              :label="null"
+              :startDate="startsAt"
+              :endDate="endsAt"
+              @onProgress="updateProgress"
+              @onTimerStateChange="updateState"
+          />
+          <progress-bar
+              v-if="isOpenEdition"
+              :inversed="true"
+              :progress="currentProgress"
+              class="h-3 mt-3"
+              progressBackgroundColor="bg-gray-300"
+              :colorClass="
+              isCollectableActive
+                ? isUpcomming
+                  ? 'bg-opensea'
+                  : 'bg-primary'
+                : 'bg-gray-300'
+            "
+          />
         </template>
       </template>
     </div>
@@ -282,6 +320,9 @@ export default {
 
     isAuction: Boolean,
     numberOfBids: Number,
+
+    isOpenEdition: Boolean,
+    itemsBought: Number,
 
     edition: Number,
     edition_of: Number,
@@ -672,6 +713,7 @@ export default {
       isRegisteredBidder,
       registerToBid,
       isCurrentAccountEntitledToPhysical,
+      nftTokenId: collectableData.value.nft_token_id,
     };
   },
 };
