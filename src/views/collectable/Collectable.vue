@@ -104,6 +104,8 @@
               :endsAt="currentEndsAt"
               :isAuction="isAuction"
               :numberOfBids="events.length"
+              :isOpenEdition="isOpenEdition"
+              :itemsBought="itemsBought"
               :edition="edition"
               :edition_of="edition_of"
               :items="items"
@@ -232,6 +234,8 @@ export default {
       progress,
       isCollectableActive,
       isUpcomming,
+      isOpenEdition,
+      itemsBought,
       // Static
       type,
       media,
@@ -390,6 +394,8 @@ export default {
       isNft,
       isAuction,
       nextBidPrice,
+      isOpenEdition,
+      itemsBought,
       // Methods
       updateProgress,
       viewOnEtherscan,
