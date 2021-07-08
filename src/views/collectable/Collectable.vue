@@ -96,6 +96,7 @@
         </div>
 
         <div class="right-side col-span-5">
+          <social-sharing></social-sharing>
           <bid-card
               :status="liveStatus"
               :collectable="collectable"
@@ -103,6 +104,8 @@
               :endsAt="currentEndsAt"
               :isAuction="isAuction"
               :numberOfBids="events.length"
+              :isOpenEdition="isOpenEdition"
+              :itemsBought="itemsBought"
               :edition="edition"
               :edition_of="edition_of"
               :items="items"
@@ -195,10 +198,12 @@ import {getEtherscanLink} from "@/services/utils";
 import GLightbox from 'glightbox';
 import 'glightbox/dist/css/glightbox.css';
 import NftData from "@/views/collectable/components/NftData.vue";
+import SocialSharing from "@/components/SocialSharing";
 
 export default {
   name: "Collectable",
   components: {
+    SocialSharing,
     FencedTitle,
     Container,
     UserBadge,
@@ -231,6 +236,8 @@ export default {
       progress,
       isCollectableActive,
       isUpcomming,
+      isOpenEdition,
+      itemsBought,
       // Static
       type,
       media,
@@ -292,7 +299,7 @@ export default {
         {
           name: "description",
           content: "",
-        },
+        }
       ],
     });
 
@@ -308,7 +315,7 @@ export default {
       meta.meta[1].content = description.value.replace(
           /<\/?("[^"]*"|'[^']*'|[^>])*(>|$)/g,
           ""
-      );
+      ).replace(/&nbsp;/g, ' ');
     };
 
     const viewOnEtherscan = () => {
@@ -359,6 +366,8 @@ export default {
       lightbox.open();
     };
 
+
+
     return {
       isLoading,
       collectable,
@@ -391,6 +400,8 @@ export default {
       isNft,
       isAuction,
       nextBidPrice,
+      isOpenEdition,
+      itemsBought,
       // Methods
       updateProgress,
       viewOnEtherscan,

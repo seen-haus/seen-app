@@ -102,9 +102,8 @@ export default {
         },
         {
           name: "description",
-          content:
-            "seen.haus is merging the digital and physical worlds through non-fungible token (NFT) and tangible product auctions",
-        },
+          content: "seen.haus is merging the digital and physical worlds through non-fungible token (NFT) and tangible product auctions",
+        }
       ],
     });
     const metadata = useActiveMeta();

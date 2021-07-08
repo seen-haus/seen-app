@@ -80,6 +80,8 @@
               :startsAt="startsAt"
               :endsAt="currentEndsAt"
               :isAuction="isAuction"
+              :isOpenEdition="isOpenEdition"
+              :itemsBought="itemsBought"
               :numberOfBids="events.length"
               :edition="edition"
               :edition_of="edition_of"
@@ -343,6 +345,8 @@ export default {
       isAuction,
       version,
       nextBidPrice,
+      isOpenEdition,
+      itemsBought,
       // Methods
       updateProgress,
       setCollectable,
@@ -477,6 +481,8 @@ export default {
       isTangible,
       isNft,
       isAuction,
+      isOpenEdition,
+      itemsBought,
       nextBidPrice,
       // Methods
       updateProgress,
