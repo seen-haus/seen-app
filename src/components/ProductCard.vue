@@ -1,7 +1,7 @@
 <template>
   <div
       class="product-card flex flex-col overflow-hidden rounded-2xl rounded-t-3xl shadow-lg cursor-pointer"
-      :class="darkMode && 'dark-mode-border'"
+      :class="darkMode ? 'dark-mode-border dark-mode-background' : 'light-mode-background'"
       @mouseenter="handleHover(true)"
       @mouseleave="handleHover(false)"
   >

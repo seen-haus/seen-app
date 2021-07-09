@@ -6,8 +6,14 @@
     }"
   >
     <div
-      class="absolute w-full h-full flex items-center justify-center bg-gray-100"
-      :class="'loading-indicator ' + (isLoading ? 'is-loading' : '')"
+      class="absolute w-full h-full flex items-center justify-center"
+      :class="
+        [ 
+          'loading-indicator',
+          (isLoading ? 'is-loading' : ''),
+          (darkMode ? 'dark-mode-surface' : 'bg-gray-100') 
+        ].join(' ')
+      "
     >
       <i class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i>
     </div>
@@ -78,6 +84,7 @@ import {
   toRefs,
   watchEffect,
 } from "vue";
+import {useStore} from "vuex";
 
 import PlayButton from "./components/PlayButton.vue";
 
@@ -111,6 +118,10 @@ export default {
   },
   components: { PlayButton },
   setup(props) {
+
+    const store = useStore();
+    const darkMode = computed(() => store.getters['application/darkMode']);
+
     let observer = null;
     const { autoplay } = toRefs(props);
     const videoRef = ref(null);
@@ -297,6 +308,7 @@ export default {
       togglePlay,
       playVideo,
       pauseVideo,
+      darkMode,
     };
   },
 };

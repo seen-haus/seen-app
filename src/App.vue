@@ -15,7 +15,7 @@
     <main
       id="main"
       class="flex flex-col justify-between min-h-screen z-10 text-black font-body"
-      :class="darkMode ? 'dark-mode-background' : 'bg-white'"
+      :class="darkMode ? 'dark-mode-background' : 'light-mode-background'"
     >
       <div class="flex flex-col">
         <app-header />

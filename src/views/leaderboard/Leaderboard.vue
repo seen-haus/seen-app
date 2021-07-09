@@ -67,6 +67,8 @@
 <script>
 import { computed, reactive, watch, ref } from "vue";
 import { useMeta } from "vue-meta";
+import { useStore } from "vuex";
+
 import { LeaderboardService } from "@/services/apiService";
 import { UserService } from "@/services/apiService"
 
@@ -89,6 +91,12 @@ export default {
       isLoading: true,
       users: [],
     });
+
+    const store = useStore();
+
+    // Disable dark mode until dark mode is supported across website
+    store.dispatch("application/setDarkMode", false);
+
     const extendedUserData = ref({});
 
     const isLoading = computed(() => state.isLoading);

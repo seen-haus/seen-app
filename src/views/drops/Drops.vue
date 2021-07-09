@@ -96,6 +96,9 @@ export default {
 
     const store = useStore();
 
+    // Disable dark mode until dark mode is supported across website
+    store.dispatch("application/setDarkMode", false);
+
     const darkMode = computed(() => store.getters['application/darkMode']);
 
     const { meta } = useMeta({

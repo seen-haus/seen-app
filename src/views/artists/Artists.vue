@@ -50,6 +50,10 @@ export default {
   },
   setup() {
     const store = useStore();
+    
+    // Disable dark mode until dark mode is supported across website
+    store.dispatch("application/setDarkMode", false);
+
     const { meta } = useMeta({
       title: "Creators",
     });

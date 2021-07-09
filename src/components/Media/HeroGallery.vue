@@ -19,13 +19,14 @@
               :autoplay="isActive"
               :muted="true"
               :loop="true"
+              :class="darkMode ? 'dark-mode-background dark-mode-slide' : 'light-mode-background light-mode-slide'"
               class="overflow-hidden rounded-lg flex-1 media-loader-active"
             />
             <p class="w-full text-grey-9 text-center mt-4 text-sm">{{mediaResource.type === 'video' || mediaResource.type.includes("mp4") || mediaResource.type.includes("video") ? 'Click to Expand' : '&nbsp;'}}</p>
           </div>
         </swiper-slide>
       </swiper>
-      <div class="swiper-pagination"></div>
+      <div class="swiper-pagination" :class="darkMode && 'swiper-pagination-dark-mode-active'"></div>
       <div class="swiper-button-prev">
         <img src="@/assets/icons/arrow-right.svg" class="cursor-pointer" alt="SEEN">
       </div>
@@ -36,7 +37,8 @@
 </template>
 
 <script>
-  import {ref} from 'vue';
+  import {ref, computed} from 'vue';
+  import {useStore} from "vuex";
   import MediaLoader from "@/components/Media/MediaLoader.vue"
 
  // import Swiper core and required modules
@@ -64,6 +66,11 @@ export default {
     mediaResources: Object,
   },
   setup(props) {
+    const store = useStore();
+
+    const darkMode = computed(() => {
+      return store.getters['application/darkMode']
+    });
     const media = ref(props.mediaResources);
     const breakpoints = {
       300: {
@@ -113,7 +120,11 @@ export default {
 
       lightbox.open();
     };
-    return { breakpoints, openModal }
+    return {
+      darkMode,
+      breakpoints,
+      openModal,
+    }
   }
 };
 </script>

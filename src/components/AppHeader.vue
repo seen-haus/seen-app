@@ -1,14 +1,14 @@
 <template>
   <div>
     <top-header-bar/>
-    <div :class="darkMode ? [headerClasses, 'text-white'].join(' ') : headerClasses">
+    <div :class="darkMode ? [headerClasses, 'text-white', 'dark-mode-section'].join(' ') : [headerClasses, 'transparent-border-section'].join(' ')">
       <container>
         <header>
           <div class="flex items-center flex-wrap justify-between">
             <router-link to="/">
               <div id="logo" class="flex items-center" style="width:100%; max-width: 208px">
-                <img v-if="darkMode" src="@/assets/images/seen-white.svg" class="mr-4" alt="">
-                <img v-if="!darkMode" src="@/assets/images/seen-black.svg" class="mr-4" alt="">
+                <img :class="!darkMode && 'hidden'" src="@/assets/images/seen-white.svg" class="mr-4" alt="">
+                <img :class="darkMode && 'hidden'" src="@/assets/images/seen-black.svg" class="mr-4" alt="">
               </div>
             </router-link>
             <div class="items-center hidden lg:flex lg:flex-grow justify-between">

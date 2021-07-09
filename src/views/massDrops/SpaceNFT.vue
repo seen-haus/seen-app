@@ -4,6 +4,8 @@
 
 <script>
 import { useMeta } from "vue-meta";
+import { useStore } from "vuex";
+
 import MassDrop from "@/views/massDrops/MassDrop.vue";
 
 export default {
@@ -12,6 +14,11 @@ export default {
     MassDrop
   },
   setup() {
+    const store = useStore();
+
+    // Disable dark mode until dark mode is supported across website
+    store.dispatch("application/setDarkMode", false);
+
     const { meta } = useMeta({
       title: "Space NFT",
     });

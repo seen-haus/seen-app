@@ -1,19 +1,24 @@
 <template>
-  <div class="bid-card shadow-lifted rounded-xl flex flex-col overflow-hidden">
+  <div class="bid-card shadow-lifted rounded-xl flex flex-col overflow-hidden" :class="darkMode ? 'dark-mode-surface' : 'light-mode-surface'">
     <div class="top-part flex flex-col p-8">
       <div
           v-if="!isCollectableActive"
-          class="flex justify-start items-center text-gray-400 text-xs font-bold"
+          class="flex justify-start items-center text-xs font-bold"
+          :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
       >
         {{ is_closed ? (isAuction ? 'AUCTION CLOSED' : 'SALE CLOSED') : 'EDITION HAS BEEN SOLD'}}
       </div>
       <div
           v-else-if="!isAuction"
-          class="flex justify-start items-center text-gray-400 text-xs font-bold"
+          class="flex justify-start items-center text-xs font-bold"
+          :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
       >
         <span v-if="isOpenEdition" class="tracking-widest mr-4">OPEN EDITION</span>
         <span v-if="!isOpenEdition" class="tracking-widest mr-4">EDITIONS LEFT </span>
-        <tag v-if="!isOpenEdition" class="bg-fence-light self-end text-gray-400 font-semibold"
+        <tag 
+          v-if="!isOpenEdition"
+          class="bg-fence-light self-end font-semibold"
+          :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
         >{{ items }}/{{ items_of }}
         </tag
         >
@@ -21,7 +26,8 @@
 
       <price-display
           size="lg"
-          class="text-black self-start mt-5"
+          class="self-start mt-5"
+          :class="darkMode ? 'dark-mode-text' : 'light-mode-text'"
           type="ETH"
           :price="price"
           :priceUSD="priceUSD"
@@ -29,7 +35,10 @@
       />
 
       <template v-if="isCollectableActive && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
-        <div class="outlined-input mt-5" :class="{ invalid: hasError || isFieldInvalid }">
+        <div class="outlined-input mt-5" :class="{ 
+          invalid: hasError || isFieldInvalid,
+          'light-mode-background': darkMode,
+        }">
           <input
               v-model="auctionField.value"
               v-if="isAuction"
@@ -154,7 +163,7 @@
       </template>
     </div>
 
-    <div class="bottom-part bg-background-gray border-t p-8">
+    <div class="bottom-part border-t p-8" :class="darkMode && 'dark-mode-surface-darkened black-border'">
       <template v-if="!isCollectableActive">
         <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold" v-if="isAuction">
           AUCTION ENDED
@@ -245,7 +254,7 @@
           <div v-if="!isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
             EDITIONS LEFT
           </div>
-          <div v-if="!isOpenEdition" class="text-2.5xl font-bold py-2">
+          <div v-if="!isOpenEdition" class="text-2.5xl font-bold py-2" :class="darkMode && 'dark-mode-text'">
             {{ items }} out of {{ items_of }}
           </div>
           <div v-if="isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">

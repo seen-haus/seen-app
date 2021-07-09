@@ -14,16 +14,27 @@
 .swiper-wrapper {
   align-items: center;
 }
-.swiper-pagination-bullet {
-  width: 12px !important;
-  height: 12px !important;
-  margin: 0 8px 0 0 !important;
-  background-color: #d8d8d8 !important;
-  border-radius: 50%;
-  outline: none !important;
-  opacity: 1;
-  &.swiper-pagination-bullet-active {
-    background-color: #000000 !important;
+.swiper-pagination {
+  .swiper-pagination-bullet {
+    width: 12px !important;
+    height: 12px !important;
+    margin: 0 8px 0 0 !important;
+    background-color: #d8d8d8 !important;
+    border-radius: 50%;
+    outline: none !important;
+    opacity: 1;
+    &.swiper-pagination-bullet-active {
+      background-color: #000000 !important;
+    }
+  }
+}
+
+.swiper-pagination-dark-mode-active {
+  .swiper-pagination-bullet {
+    background-color: #797979 !important;
+    &.swiper-pagination-bullet-active {
+      background-color: #FFFFFF !important;
+    }
   }
 }
 
@@ -57,17 +68,32 @@
 
   .swiper-slide {
     max-width: 450px;
-    opacity: .2;
     transition: all .5s;
+  }
+  .dark-mode-slide {
+    img, video {
+      opacity: 0.2
+    }
+  }
+  .light-mode-slide {
+    img, video {
+      opacity: 0.2
+    }
+  }
+  .swiper-slide-active {
+    img, video {
+      opacity: 1;
+    }
   }
   .swiper-slide-active {
     max-width: 600px;
     opacity: 1;
     transition: all .2s;
     cursor: pointer;
-
-    &:hover {
-      opacity: 0.8;
+    img, video {
+      &:hover {
+        opacity: 0.8;
+      }
     }
   }
   

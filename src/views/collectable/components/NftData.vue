@@ -1,15 +1,15 @@
 <template>
-  <button class="button outline w-full mb-6" @click="loadIPFSData()">
-    View On-Chain Data<i class="fas fa-link mr-2 text-sm icon-right text-gray-500"></i>
+  <button class="button w-full mb-6" :class="darkMode ? 'dark dark-mode-outline' : 'outline'" @click="loadIPFSData()">
+    View On-Chain Data<i class="fas fa-link mr-2 text-sm icon-right"></i>
   </button>
-  <Dialog header="On-Chain Data Viewer" v-model:visible="displayModal" :style="{maxWidth: '48rem', width: '100%'}" :modal="true" :closable="true">
+  <Dialog header="On-Chain Data Viewer" :class="darkMode && 'dark-mode-surface-darkened'" v-model:visible="displayModal" :style="{maxWidth: '48rem', width: '100%'}" :modal="true" :closable="true">
     <div class="mb-3">
-      <div class="rounded-container-reduced-vertical-padding border rounded-3xl p-4 grid grid-flow-col gap-4">
+      <div :class="darkMode && 'dark-mode-surface'" class="rounded-container-reduced-vertical-padding border rounded-3xl p-4 grid grid-flow-col gap-4">
         <div>
-          <i class="text-gray-500 fas fa-info-circle mx-auto my-auto fa-2x py-2"></i>
+          <i class="fas fa-info-circle mx-auto my-auto fa-2x py-2" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'"></i>
         </div>
         <div class="col-span-3">
-          <p class="text-xs text-gray-500">
+          <p class="text-xs" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'">
             This window shows the NFT's data as it is stored on the Ethereum Blockchain and IPFS.<br/>Media may load slowly due to being retreived from IPFS.
           </p>
         </div>
@@ -25,17 +25,18 @@
           <p v-else class="text-xl font-title font-bold mb-4">NFT Data not available</p>
 
           <span v-if="ipfsData?.value?.description">
-            <p class="text-sm text-gray-500">{{ ipfsData.value.description }}</p>
+            <p class="text-sm" :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-500'">{{ ipfsData.value.description }}</p>
             <p v-if="ipfsData?.value?.attributes" class="text-md font-title font-bold mt-4 mb-2">Properties</p>
             <div v-if="ipfsData?.value?.attributes" class="grid grid-cols-2 gap-2 text-center">
               <span
                 class="flex-center border rounded-md overflow-hidden bg-background-gray p-1"
+                :class="darkMode && 'dark-mode-surface'"
                 v-for="attribute in ipfsData.value.attributes"
                 :key="attribute"
               >
                 <div>
-                  <p class="text-sm text-gray-800">{{ attribute.trait_type }}</p>
-                  <p class="text-xs text-gray-500">{{ attribute.value }}</p>
+                  <p class="text-sm" :class="darkMode ? 'dark-mode-text' : 'text-gray-800'">{{ attribute.trait_type }}</p>
+                  <p class="text-xs" :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-500'">{{ attribute.value }}</p>
                 </div>
               </span>
             </div>
@@ -64,7 +65,7 @@
           />
         </div>
         <div class="w-full">
-          <img class="nft-data-signature mt-5 mb-6" src="@/assets/images/signature.png"/>
+          <img class="nft-data-signature mt-5 mb-6" :class="darkMode && 'image-filter-black-to-white'" src="@/assets/images/signature.png"/>
         </div>
       </div>
     </div>
@@ -72,14 +73,15 @@
 </template>
 
 <script>
+import {ref, computed} from "vue";
+import {useStore} from "vuex";
+
 import Dialog from 'primevue/dialog';
+
 import emitter from "@/services/utils/emitter";
-import {ref, computed, watchEffect, reactive, watch} from "vue";
 import {useSeenNFTContract} from "@/hooks/useContract";
 import useIPFS from "@/hooks/useIPFS";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
-import useSigner from "@/hooks/useSigner";
-
 
 export default {
   name: "NftData",
@@ -91,6 +93,10 @@ export default {
     collectable: Object
   },
   setup(props) {
+
+    const store = useStore();
+    const darkMode = computed(() => store.getters['application/darkMode']);
+
     const displayModal = ref(false);
     emitter.on('openNftDataModal', payload => {
       displayModal.value = true;
@@ -131,6 +137,7 @@ export default {
       openModal,
       displayModal,
       isLoading,
+      darkMode,
     }
 
 

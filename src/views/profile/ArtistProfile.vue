@@ -1,8 +1,8 @@
 <template>
-  <div class="profile" :class="darkMode && 'dark-mode-background'">
+  <div class="profile" :class="darkMode ? 'dark-mode-background pt-13' : 'light-mode-background'" v-bind:style="{ backgroundImage: 'url(' + getBackgroundImage(backgroundImage) + ')' }">
     <container class="relative pb-20">
       <div class="content-center">
-        <div class="top-bar">
+        <div class="top-bar" :class="darkMode ? 'dark-mode-background' : 'light-mode-background'">
           <img v-if="artist.header_image" :src="artist.header_image" class="mr-4 header" alt="">
           <img v-else :src="artist.avatar" class="mr-4 blur" alt="">
         </div>
@@ -71,7 +71,7 @@
 import {ref, computed} from "vue";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
-import {useStore} from "vuex"
+import {useStore} from "vuex";
 
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
@@ -89,6 +89,12 @@ export default {
       const txtLengthHalf = maxCharacters ? Math.round(maxCharacters / 2) : Math.round(txtLength / 2); // set max txtHalfLength
       return text.substring(0, (txtLengthHalf -1)).trim() + '...' + text.substring((txtLength - txtLengthHalf) + 2, txtLength).trim(); //Return the string
     },
+    getBackgroundImage(backgroundImage) {
+      console.log({backgroundImage})
+      if(backgroundImage) {
+        return require('../../assets/images/' + backgroundImage)
+      }
+    }
   },
   async setup() {
     const store = useStore();
@@ -97,16 +103,26 @@ export default {
     });
     const router = useRouter();
     const {data} = await ArtistService.show(router.currentRoute.value.params.artistSlug);
+    const backgroundImage = ref(false);
 
-    if(['0xmons', 'frank-ape'].indexOf(router?.currentRoute?.value?.params?.artistSlug) > -1) {
+    if(['0xmons', '1penemy'].indexOf(router?.currentRoute?.value?.params?.artistSlug) > -1) {
       store.dispatch("application/setDarkMode", true);
+      switch(router?.currentRoute?.value?.params?.artistSlug) {
+        case '0xmons':
+          backgroundImage.value = '0xmons-tile.png';
+          break;
+        case '1penemy':
+          backgroundImage.value = '0xmons-tile-padded-offset.png';
+          break;
+      }
+    } else {
+      // Disable dark mode until dark mode is supported across website
+      store.dispatch("application/setDarkMode", false);
     }
 
     const darkMode = computed(() => {
       return store.getters['application/darkMode']
     });
-
-    console.log({darkMode: darkMode.value})
 
     const artist = ref(data);
     meta.title = artist.value.name;
@@ -140,6 +156,7 @@ export default {
       handleLoadMore,
       hasMore,
       darkMode,
+      backgroundImage,
     };
   }
 }
