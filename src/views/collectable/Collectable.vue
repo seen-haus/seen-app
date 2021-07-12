@@ -19,6 +19,7 @@
         <fenced-title
             class="flex-grow mr-0 mb-2 self-stretch"
             color="fence-gray"
+            :titleMonospace="titleMonospace"
             textAlign="center"
             :closed="true"
         >{{ title }}
@@ -79,7 +80,7 @@
               </div>
             </div>
 
-            <div class="rounded-container flex items-center mt-6" :class="darkMode ? 'dark-mode-surface' : 'light-mode-surface'" v-if="!isAuction">
+            <div class="rounded-container flex items-center mt-6" :class="darkMode && 'dark-mode-surface no-border'" v-if="!isAuction">
               <i
                   class="fas fa-trash-alt text-3xl icon-right mr-6"
                   :class="darkMode ? 'dark-mode-text' : 'text-gray-500'"
@@ -285,12 +286,15 @@ export default {
     } = useCollectableInformation();
 
     const backgroundImage = ref(false);
+    const titleMonospace = ref(false);
 
-    if(['soho-series-marilyn-monroe'].indexOf(route.params["slug"]) > -1) {
+    // TODO: Make this into a DB datasource unless V3 no longer uses this
+    if(['0xmons-mork'].indexOf(route.params["slug"]) > -1) {
       store.dispatch("application/setDarkMode", true);
       switch(route.params["slug"]) {
-        case 'soho-series-marilyn-monroe':
-          backgroundImage.value = '0xmons-tile-padded-offset.png';
+        case '0xmons-mork':
+          backgroundImage.value = '0xmons-tile.png';
+          titleMonospace.value = true;
           break;
       }
     } else {
@@ -430,6 +434,7 @@ export default {
       itemsBought,
       backgroundImage,
       darkMode,
+      titleMonospace,
       // Methods
       updateProgress,
       viewOnEtherscan,

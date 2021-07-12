@@ -9,7 +9,11 @@
     <div
         class="title-text text-center font-title lg:flex-shrink-0 font-bold"
         :class="unshrinkable ? 'flex-shrink-0' : 'flex-shrink'"
-        :style="{ 'max-width': hideBars ? '100%' : '80%', 'width': hideBars ? '100%' : 'auto' }"
+        :style="{ 
+          'max-width': hideBars ? '100%' : '80%',
+          'width': hideBars ? '100%' : 'auto',
+          ...(titleMonospace && {'font-family': 'monospace'})
+        }"
     >
       <slot> Title</slot>
     </div>
@@ -34,6 +38,7 @@ export default {
     closed: Boolean, // Are fences closed at the ends
     color: String, //
     unshrinkable: Boolean,
+    titleMonospace: Boolean,
   },
   computed: {
     alignment: function () {

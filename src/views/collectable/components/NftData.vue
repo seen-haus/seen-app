@@ -42,10 +42,10 @@
             </div>
           </span>
           <span v-else-if="isLoading.value">
-              <p class="text-md text-gray-500">Loading...</p>
+              <p class="text-md" :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-500'">Loading...</p>
           </span>
           <span v-else>
-            <p class="text-md text-gray-500">
+            <p class="text-md" :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-500'">
               The data for this NFT is currently not available.<br>
               This could be due to the following reasons:<br><br>
               - The NFT hasn't been minted yet. If the NFT will be launched in the future this is most likely the case.<br><br>

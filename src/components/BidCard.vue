@@ -196,7 +196,8 @@
         <progress-timer
             v-if="!isAwaitingReserve"
             ref="timerRef"
-            class="text-black text-3xl mt-2"
+            class="text-3xl mt-2"
+            :class="darkMode ? 'dark-mode-text' : 'text-black'"
             :isAuction="isAuction"
             :label="null"
             :startDate="startsAt"
@@ -228,7 +229,8 @@
           </div>
           <progress-timer
               ref="timerRef"
-              class="text-black text-3xl mt-2"
+              class="text-3xl mt-2"
+              :class="darkMode ? 'dark-mode-text' : 'text-black'"
               :isAuction="isAuction"
               :label="null"
               :startDate="startsAt"
@@ -270,7 +272,8 @@
           <progress-timer
               v-if="isOpenEdition"
               ref="timerRef"
-              class="text-black text-3xl mt-2"
+              class="text-3xl mt-2"
+              :class="darkMode ? 'dark-mode-text' : 'text-black'"
               :isAuction="isAuction"
               :label="null"
               :startDate="startsAt"

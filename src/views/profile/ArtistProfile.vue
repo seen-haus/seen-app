@@ -105,14 +105,12 @@ export default {
     const {data} = await ArtistService.show(router.currentRoute.value.params.artistSlug);
     const backgroundImage = ref(false);
 
-    if(['0xmons', '1penemy'].indexOf(router?.currentRoute?.value?.params?.artistSlug) > -1) {
+    // TODO: Make this into a DB datasource unless V3 no longer uses this
+    if(['0xmons'].indexOf(router?.currentRoute?.value?.params?.artistSlug) > -1) {
       store.dispatch("application/setDarkMode", true);
       switch(router?.currentRoute?.value?.params?.artistSlug) {
         case '0xmons':
           backgroundImage.value = '0xmons-tile.png';
-          break;
-        case '1penemy':
-          backgroundImage.value = '0xmons-tile-padded-offset.png';
           break;
       }
     } else {

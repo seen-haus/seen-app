@@ -4,7 +4,7 @@
     :class="darkMode && 'dark-mode-surface'"
     @click="navigateToArtist"
   >
-    <div class="top-bar">
+    <div class="top-bar" :class="darkMode ? 'dark-mode-background' : 'light-mode-background'">
     <img v-if="artist.header_image" :src="artist.header_image" class="mr-4 header" alt="">
     <img v-else :src="artist.avatar" class="mr-4 blur" alt="">
     </div>
