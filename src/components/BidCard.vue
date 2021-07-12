@@ -1,5 +1,5 @@
 <template>
-  <div class="bid-card shadow-lifted rounded-xl flex flex-col overflow-hidden" :class="darkMode ? 'dark-mode-surface' : 'light-mode-surface'">
+  <div class="bid-card shadow-lifted rounded-xl flex flex-col overflow-hidden" :class="darkMode ? 'dark-mode-surface' : 'light-mode-background'">
     <div class="top-part flex flex-col p-8">
       <div
           v-if="!isCollectableActive"
@@ -163,7 +163,7 @@
       </template>
     </div>
 
-    <div class="bottom-part border-t p-8" :class="darkMode && 'dark-mode-surface-darkened black-border'">
+    <div class="bottom-part border-t p-8" :class="darkMode ? 'dark-mode-surface-darkened black-border' : 'light-mode-surface'">
       <template v-if="!isCollectableActive">
         <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold" v-if="isAuction">
           AUCTION ENDED
