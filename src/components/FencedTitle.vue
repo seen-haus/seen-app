@@ -3,7 +3,10 @@
     <div
         v-if="showLeft"
         class="fence flex-shrink mr-6"
-        :class="{ 'fence-left': closed, ...colorClass }"
+        :class="{
+          'fence-left': closed, ...colorClass,
+          ...(titleMonospace && {'font-family': 'monospace'})
+        }"
     ></div>
 
     <div
@@ -21,7 +24,10 @@
     <div
         v-if="showRight"
         class="fence flex-shrink ml-6"
-        :class="{ 'fence-right': closed, ...colorClass }"
+        :class="{ 
+          'fence-right': closed, ...colorClass,
+          ...(titleMonospace && {'font-family': 'monospace'})
+        }"
     ></div>
   </div>
 </template>
