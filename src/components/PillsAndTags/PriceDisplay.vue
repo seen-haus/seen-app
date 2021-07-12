@@ -3,17 +3,23 @@
     <div :class="extensionSize">
       <span class="font-bold mr-1.5" :class="numberSize">{{ price }}</span
       >{{ type
-      }}<span v-if="numberOfBids != null" class="text-gray-400 ml-2"
-        >({{ numberOfBids }} bids)</span
-      >
+      }}<span 
+          v-if="numberOfBids != null"
+          class="ml-2"
+          :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
+        >
+          ({{ numberOfBids }} bids)
+        </span>
     </div>
-    <div class="text-gray-400" :class="fiatSize">{{ formattedPrice }}</div>
+    <div :class="fiatSize">{{ formattedPrice }}</div>
   </div>
 </template>
 
 <script>
+import {computed} from 'vue'
+import {useStore} from "vuex";
+
 import useExchangeRate from '@/hooks/useExchangeRate.js';
-import {computed, ref} from 'vue'
 
 export default {
   name: "PriceDisplay",
@@ -40,37 +46,49 @@ export default {
   },
   computed: {
     numberSize: function () {
-      if (this.size === "xs") return "text-xl";
-      if (this.size === "sm") return "text-2xl";
-      if (this.size === "md") return "text-3xl";
-      if (this.size === "lg") return "text-4xl";
+      let textColor = this.darkMode ? 'dark-mode-text' : 'light-mode-text';
 
-      return "text-3xl";
+      if (this.size === "xs") return ["text-xl", textColor].join(" ");
+      if (this.size === "sm") return ["text-2xl", textColor].join(" ");
+      if (this.size === "md") return ["text-3xl", textColor].join(" ");
+      if (this.size === "lg") return ["text-4xl", textColor].join(" ");
+
+      return ["text-3xl", textColor].join(" ");
     },
     extensionSize: function () {
-      if (this.size === "xs") return "text-sm";
-      if (this.size === "sm") return "text-sm";
-      if (this.size === "md") return "text-base";
-      if (this.size === "lg") return "text-base";
+      let textColor = this.darkMode ? 'dark-mode-text' : 'light-mode-text';
 
-      return "text-3xl";
+      if (this.size === "xs") return ["text-sm", textColor].join(" ");
+      if (this.size === "sm") return ["text-sm", textColor].join(" ");
+      if (this.size === "md") return ["text-base", textColor].join(" ");
+      if (this.size === "lg") return ["text-base", textColor].join(" ");
+
+      return ["text-3xl", textColor].join(" ");
     },
     fiatSize: function () {
-      if (this.size === "xs") return "text-xs";
-      if (this.size === "sm") return "text-xs";
-      if (this.size === "md") return "text-sm";
-      if (this.size === "lg") return "text-sm";
+      let textColor = this.darkMode ? 'dark-mode-text-washed' : 'text-gray-400';
 
-      return "text-xs";
+      if (this.size === "xs") return ["text-xs", textColor].join(" ");
+      if (this.size === "sm") return ["text-xs", textColor].join(" ");
+      if (this.size === "md") return ["text-sm", textColor].join(" ");
+      if (this.size === "lg") return ["text-sm", textColor].join(" ");
+
+      return ["text-xs", textColor].join(" ");
     },
   },
-  setup(props) {
+setup(props) {
+    const store = useStore();
+    const darkMode = computed(() => store.getters['application/darkMode']);
+
     const { formatCurrency, convertEthToUSDAndFormat } = useExchangeRate();
     const formattedPrice = computed(() => {
       return props.priceUSD ? formatCurrency(props.priceUSD) : convertEthToUSDAndFormat(props.price);
     })
 
-    return { formattedPrice };
+    return {
+      formattedPrice,
+      darkMode,
+    };
   }
 };
 </script>

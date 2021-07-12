@@ -22,14 +22,14 @@
           class="mr-8"
           @onChange="handleAuctionsToggle($event)"
         >
-          <span class="font-bold text-black">Auctions</span>
+          <span :class="darkMode ? 'dark-mode-text' : 'text-black'" class="font-bold">Auctions</span>
         </toggle>
 
         <toggle
           :value="filterEditions"
           @onChange="handleEditionsToggle($event)"
         >
-          <span class="font-bold text-black">Editions</span>
+          <span :class="darkMode ? 'dark-mode-text' : 'text-black'" class="font-bold">Editions</span>
         </toggle>
       </div>
 
@@ -54,7 +54,8 @@
       </div>
 
       <button
-        class="button dark mt-20 mx-auto w-full md:w-96"
+        class="button mt-20 mx-auto w-full md:w-96"
+        :class="darkMode ? 'light' : 'dark'"
         v-if="hasMore"
         @click="handleLoadMore"
       >
@@ -68,6 +69,7 @@
 import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
+import { useStore } from "vuex";
 
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
@@ -91,6 +93,14 @@ export default {
     ArtistCard,
   },
   setup() {
+
+    const store = useStore();
+
+    // Disable dark mode until dark mode is supported across website
+    store.dispatch("application/setDarkMode", false);
+
+    const darkMode = computed(() => store.getters['application/darkMode']);
+
     const { meta } = useMeta({
       title: "Drops",
     });
@@ -144,6 +154,8 @@ export default {
       hasMore,
       handleLoadMore,
       navigateToCollectable,
+
+      darkMode,
     };
   },
 };

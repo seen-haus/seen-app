@@ -32,8 +32,13 @@
   }
 
   &.outline {
-    @apply bg-transparent text-black border-gray-400;
+    @apply bg-transparent border-gray-400;
     border-width: 2px;
+  }
+
+  &.dark-mode-outline {
+    @apply border-white;
+    border-width: 1px;
   }
 
   &.dropdown-btn {

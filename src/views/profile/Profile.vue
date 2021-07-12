@@ -160,6 +160,9 @@ export default {
     const { account } = useWeb3();
     const assets = ref([]);
 
+    // Disable dark mode until dark mode is supported across website
+    store.dispatch("application/setDarkMode", false);
+
     const isOwnProfile = computed(() => (account.value === route.params.userAddress) || !route.params.userAddress);
     const address = route.params.userAddress
       ? route.params.userAddress

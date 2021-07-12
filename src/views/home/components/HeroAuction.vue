@@ -1,5 +1,5 @@
 <template>
-  <div class="hero-auction">
+  <div :class="darkMode ? 'hero-auction-dark-mode' : 'hero-auction-light-mode'" class="hero-auction">
     <container class="py-15 flex flex-col lg:flex-row">
       <div
           class="media relative flex items-center flex-1 cursor-pointer"
@@ -144,6 +144,7 @@
 <script>
 import {computed, ref, watch} from "vue";
 import {useRouter} from "vue-router";
+import { useStore } from "vuex";
 
 import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
@@ -189,6 +190,10 @@ export default {
     // console.log("ProductCard", props.collectable);
     const router = useRouter();
     const timerRef = ref(null);
+
+    const store = useStore();
+
+    const darkMode = computed(() => store.getters['application/darkMode']);
 
     const {
       collectableState,
@@ -319,6 +324,7 @@ export default {
       isNft,
       isAuction,
       isUpcomming,
+      darkMode,
       // Methods
       updateProgress,
       updateState,
@@ -337,12 +343,6 @@ export default {
 <style lang="scss" scoped>
 .hero-auction {
   @apply border-solid border-gray-300;
-  background-image: linear-gradient(180deg, #333333 2%, #000000 100%);
-
-  @screen lg {
-    // Change the direction of fade so it doesn't interfere with fence colors
-    background-image: linear-gradient(66deg, #333333 2%, #000000 100%);
-  }
 
   .media {
     .video-type-indicator {
@@ -360,6 +360,22 @@ export default {
       max-width: 80%;
       font-size: 46px;
     }
+  }
+}
+.hero-auction-light-mode {
+  background-image: linear-gradient(180deg, #333333 2%, #000000 100%);
+
+  @screen lg {
+    // Change the direction of fade so it doesn't interfere with fence colors
+    background-image: linear-gradient(66deg, #333333 2%, #000000 100%);
+  }
+}
+.hero-auction-dark-mode {
+  background-image: linear-gradient(180deg, #000000 2%, #000000 100%);
+
+  @screen lg {
+    // Change the direction of fade so it doesn't interfere with fence colors
+    background-image: linear-gradient(66deg, #000000 2%, #000000 100%);
   }
 }
 </style>

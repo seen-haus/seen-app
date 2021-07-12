@@ -14,7 +14,8 @@
     <winner-info></winner-info>
     <main
       id="main"
-      class="flex flex-col justify-between min-h-screen z-10 bg-white text-black font-body"
+      class="flex flex-col justify-between min-h-screen z-10 text-black font-body"
+      :class="darkMode ? 'dark-mode-background' : 'light-mode-background'"
     >
       <div class="flex flex-col">
         <app-header />
@@ -33,7 +34,7 @@
 import { useStore } from "vuex";
 import { useMeta, useActiveMeta } from "vue-meta";
 import useWeb3 from "@/connectors/hooks"
-import {watchEffect, ref} from 'vue';
+import {watchEffect, computed} from 'vue';
 import {useStakingContract, useTokenContract} from "@/hooks/useContract";
 
 import Web3Provider from "@/connector/Web3Provider";
@@ -60,6 +61,10 @@ export default {
     const { account, provider } = useWeb3();
     const store = useStore();
     let accountCurrent = null;
+
+    const darkMode = computed(() => {
+      return store.getters['application/darkMode']
+    });
 
     watchEffect(async () => {
       if (account.value && account.value !== accountCurrent) {
@@ -109,6 +114,7 @@ export default {
     useUser();
     return {
       metadata,
+      darkMode,
     };
   },
 };

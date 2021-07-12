@@ -23,7 +23,7 @@
           ></div>
         </template>
       </div>
-      <button class="button dark mt-20 mx-auto w-full md:w-96" @click="handleLoadMore" v-if="hasMore">
+      <button :class="darkMode ? 'light' : 'dark'" class="button mt-20 mx-auto w-full md:w-96" @click="handleLoadMore" v-if="hasMore">
         View All Creators
       </button>
     </container>
@@ -32,6 +32,7 @@
 
 <script>
 import { computed } from "vue";
+import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
 
@@ -48,6 +49,11 @@ export default {
     ArtistCard,
   },
   setup() {
+    const store = useStore();
+    
+    // Disable dark mode until dark mode is supported across website
+    store.dispatch("application/setDarkMode", false);
+
     const { meta } = useMeta({
       title: "Creators",
     });
@@ -55,6 +61,7 @@ export default {
     const paginatedArtists = useArtistsWithPagination(48);
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
     const hasMore = computed(() => paginatedArtists.hasMore.value);
+    const darkMode = computed(() => store.getters['application/darkMode']);
 
     paginatedArtists.load();
 
@@ -71,6 +78,7 @@ export default {
     return {
       listOfArtists,
       hasMore,
+      darkMode,
       // Methods
       handleLoadMore,
       navigateToArtist,

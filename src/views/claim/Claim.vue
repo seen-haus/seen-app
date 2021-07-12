@@ -169,6 +169,7 @@
 import { Web3Provider } from "@ethersproject/providers";
 import { computed, ref, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 import Container from "@/components/Container.vue";
 import { ClaimsService } from "@/services/apiService";
@@ -191,6 +192,11 @@ export default {
     // TODO:
     // 1. add Title column
     // 2. test wiring
+
+    const store = useStore();
+
+    // Disable dark mode until dark mode is supported across website
+    store.dispatch("application/setDarkMode", false);
 
     const toast = useToast();
     const route = useRoute();

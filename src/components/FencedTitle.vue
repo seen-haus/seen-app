@@ -1,5 +1,5 @@
 <template>
-  <div class="title flex items-center fence-wrap" >
+  <div class="title flex items-center fence-wrap" :class="darkMode && 'dark-mode-text'">
     <div
         v-if="showLeft"
         class="fence flex-shrink mr-6"
@@ -9,7 +9,11 @@
     <div
         class="title-text text-center font-title lg:flex-shrink-0 font-bold"
         :class="unshrinkable ? 'flex-shrink-0' : 'flex-shrink'"
-        :style="{ 'max-width': hideBars ? '100%' : '80%', 'width': hideBars ? '100%' : 'auto' }"
+        :style="{ 
+          'max-width': hideBars ? '100%' : '80%',
+          'width': hideBars ? '100%' : 'auto',
+          ...(titleMonospace && {'font-family': 'monospace'})
+        }"
     >
       <slot> Title</slot>
     </div>
@@ -23,6 +27,9 @@
 </template>
 
 <script>
+import {computed} from "vue";
+import {useStore} from "vuex"
+
 export default {
   name: "FencedTitle",
   props: {
@@ -31,6 +38,7 @@ export default {
     closed: Boolean, // Are fences closed at the ends
     color: String, //
     unshrinkable: Boolean,
+    titleMonospace: Boolean,
   },
   computed: {
     alignment: function () {
@@ -49,6 +57,17 @@ export default {
       return {[this.color]: true};
     },
   },
+  setup() {
+    const store = useStore();
+
+    const darkMode = computed(() => {
+      return store.getters['application/darkMode']
+    });
+
+    return {
+      darkMode,
+    }
+  }
 };
 </script>
 

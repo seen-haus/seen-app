@@ -1,5 +1,5 @@
 <template>
-  <div class="list-of-buyers rounded-container">
+  <div class="list-of-buyers rounded-container" :class="darkMode ? 'dark-mode-surface no-border' : 'light-mode-surface'">
     <template v-if="list.length === 0">
       <div class="text-center text-gray-400">
         No buyers yet! Be the first!
@@ -27,10 +27,10 @@
           <div v-if="buyer.image" class="profile-avatar buyer-profile-photo mr-6" :style="{ backgroundImage: `url(${buyer?.image})` }"></div>
 
           <div class="flex flex-col flex-grow">
-            <div class="address text-gray-500 tracking-widest">
+            <div class="address tracking-widest" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'">
               {{ buyer.username ? buyer.username : shortenAddress(buyer.wallet_address) }}
             </div>
-            <div class="time text-xs text-gray-400">
+            <div class="time text-xs" :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'">
               {{ format(buyer.created_at) }}
             </div>
           </div>
@@ -45,11 +45,12 @@
 
         <div
             v-if="(index != showCount - 1) && (index !== list.length - 1)"
-            class="divider h-0 border-t-2 border-gray-200"
+            class="divider h-0 border-t-2"
+            :class="darkMode ? 'border-gray-200 opacity-0-2' : 'border-gray-200'"
         ></div>
       </template>
 
-      <button class="button outline w-full mt-6" @click="onLoadMore" v-if="showButton">
+      <button class="button outline w-full mt-6" :class="darkMode && 'dark'" @click="onLoadMore" v-if="showButton">
         Load More
       </button>
     </template>
@@ -58,9 +59,11 @@
 
 <script>
 import {computed, ref, toRefs, watch} from "vue";
+import {useStore} from "vuex";
+import {format} from 'timeago.js';
+
 import { UserService } from "@/services/apiService"
 import {shortenAddress, getDaysAgo} from "@/services/utils/index";
-import {format} from 'timeago.js';
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
 import Icon from "@/components/Common/Icon.vue";
 
@@ -71,6 +74,9 @@ export default {
     list: Array,
   },
   setup(props) {
+    const store = useStore();
+    const darkMode = computed(() => store.getters['application/darkMode']);
+
     const {list: inputList} = toRefs(props);
     const extendedUserData = ref({});
     const reversedList = computed(() => [...props.list]
@@ -116,6 +122,7 @@ export default {
     getExtendedUserData(props.list);
 
     return {
+      darkMode,
       shortenAddress,
       daysAgo,
       onLoadMore,
