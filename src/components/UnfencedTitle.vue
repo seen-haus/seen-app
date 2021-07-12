@@ -4,7 +4,12 @@
     <div
         class="title-text font-title lg:flex-shrink-0 font-bold"
         :class="unshrinkable ? 'flex-shrink-0' : 'flex-shrink'"
-        :style="{ 'max-width': hideBars ? '100%' : '80%', 'width': hideBars ? '100%' : 'auto', 'text-align': alignment }"
+        :style="{
+          'max-width': hideBars ? '100%' : '80%',
+          'width': hideBars ? '100%' : 'auto',
+          'text-align': alignment,
+          ...(titleMonospace && {'font-family': 'monospace'})
+        }"
     >
       <slot> Title</slot>
     </div>
@@ -19,6 +24,7 @@ export default {
     textAlign: String, // left, center, right
     color: String, //
     unshrinkable: Boolean,
+    titleMonospace: Boolean,
   },
   computed: {
     alignment: function () {

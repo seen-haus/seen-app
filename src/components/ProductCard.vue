@@ -37,6 +37,9 @@
         <span
             class="text-xl md:text-2xl font-title font-bold flex-1"
             :class="isCollectableActive ? collectableActiveTextColor : 'text-gray-400'"
+            :style="{
+              ...(titleMonospace && {'font-family': 'monospace'})
+            }"
         >{{ title }}</span
         >
         <price-display
@@ -232,6 +235,13 @@ export default {
     const mediaRef = ref(null);
     const timerRef = ref(null);
 
+    const titleMonospace = ref(false);
+
+    // TODO: Make this into a DB datasource unless V3 no longer uses this
+    if(props.collectable && [115].indexOf(props.collectable.id) > -1) {
+      titleMonospace.value = true;
+    }
+
     const {
       collectableState,
       price,
@@ -337,6 +347,7 @@ export default {
       isNft,
       isAuction,
       isUpcomming,
+      titleMonospace,
       // Methods
       updateProgress,
       addTime,

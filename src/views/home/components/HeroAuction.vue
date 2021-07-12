@@ -30,6 +30,7 @@
             class="text-white flex lg:hidden mt-6"
             color="fence-dark"
             text-align="center"
+            :titleMonospace="true"
             :closed="true"
         ><span class="flex-shrink-0">{{ title }}</span></fenced-title
         >
@@ -38,6 +39,7 @@
             class="text-white hidden lg:flex"
             color="fence-dark"
             text-align="left"
+            :titleMonospace="true"
             :closed="true"
         ><span class="flex-shrink-0">{{ title }}</span></unfenced-title>
 
@@ -190,6 +192,12 @@ export default {
     // console.log("ProductCard", props.collectable);
     const router = useRouter();
     const timerRef = ref(null);
+    const titleMonospace = ref(false);
+
+    // TODO: Make this into a DB datasource unless V3 no longer uses this
+    if([115].indexOf(props?.collectable?.id) > -1) {
+      titleMonospace.value = true;
+    }
 
     const store = useStore();
 
@@ -325,6 +333,7 @@ export default {
       isAuction,
       isUpcomming,
       darkMode,
+      titleMonospace,
       // Methods
       updateProgress,
       updateState,
