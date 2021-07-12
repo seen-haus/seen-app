@@ -188,8 +188,8 @@ export default {
 
     watchEffect(async () => {
       if (account.value && state.totalxSeenSupply && state.totalStaked && state.xSeenToSeenRatio) {
-        // const stakeContract = useStakingContract()
-        let balanceOf = 0
+        const stakeContract = useStakingContract()
+        let balanceOf = await stakeContract.balanceOf(account.value)
         balanceOf = formatEther(balanceOf.toString())
         state.xSeenBalance = BigNumber(balanceOf)
         let share = BigNumber(balanceOf)
