@@ -27,7 +27,7 @@
             :src="drop.videoUrl"
             aspectRatio="56.25%"
             controls
-            class="overflow-hidden rounded-3xl flex-1"
+            class="overflow-hidden rounded-20px flex-1"
           />
         </div>
 

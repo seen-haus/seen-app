@@ -22,7 +22,7 @@
             src="https://www.youtube.com/embed/I6BcTbTDWHc"
             aspectRatio="56.25%"
             controls
-            class="overflow-hidden rounded-3xl"
+            class="overflow-hidden rounded-20px"
           />
         </div>
       </div>
@@ -35,7 +35,7 @@
           alt="thrustworthiness"
           width="500"
           height="500"
-          class="rounded-3xl mx-auto"
+          class="rounded-20px mx-auto"
         />
 
         <div class="flex flex-col items-strech justify-center">
@@ -59,7 +59,7 @@
           alt="authenticity"
           width="500"
           height="500"
-          class="rounded-3xl mx-auto lg:order-1"
+          class="rounded-20px mx-auto lg:order-1"
         />
 
         <div class="flex flex-col items-strech text-left justify-center">
@@ -82,7 +82,7 @@
           alt="seen"
           width="500"
           height="500"
-          class="rounded-3xl mx-auto"
+          class="rounded-20px mx-auto"
         />
 
         <div class="flex flex-col items-strech justify-center">

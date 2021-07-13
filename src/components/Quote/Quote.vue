@@ -1,6 +1,6 @@
 <template>
   <div
-    class="quote rounded-3xl p-5 md:px-36 flex flex-col items-center text-white"
+    class="quote rounded-20px p-5 md:px-36 flex flex-col items-center text-white"
   >
     <i
       class="fas fa-quote-left text-3xl text-white opacity-40 block mx-auto"

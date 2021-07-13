@@ -51,7 +51,7 @@
           />
           <div
             v-else
-            class="placeholder-card overflow-hidden rounded-3xl bg-gray-100"
+            class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
             :style="{ 'padding-bottom': '120%' }"
           ></div>
         </template>
@@ -166,7 +166,7 @@ export default {
   border: solid 1px #e6e6e6;
 }
 .wallet-address-badge {
-  @apply pr-3.5 py-1 pl-2 rounded-3xl w-66 font-address;
+  @apply pr-3.5 py-1 pl-2 w-66 font-address;
   box-shadow: 0 1px 15px 0 rgba(0, 0, 0, 0.15);
 }
 

@@ -7,8 +7,8 @@
           <div class="flex items-center flex-wrap justify-between">
             <router-link to="/">
               <div id="logo" class="flex items-center" style="width:100%; max-width: 208px">
-                <img :class="!darkMode && 'hidden'" src="@/assets/images/seen-white.svg" class="mr-4" alt="">
-                <img :class="darkMode && 'hidden'" src="@/assets/images/seen-black.svg" class="mr-4" alt="">
+                <img :class="!darkMode && 'hidden'" src="@/assets/images/seen-logo-white.svg" class="mr-4" alt="">
+                <img :class="darkMode && 'hidden'" src="@/assets/images/seen-logo-black.svg" class="mr-4" alt="">
               </div>
             </router-link>
             <div class="items-center hidden lg:flex lg:flex-grow justify-between">
@@ -54,7 +54,7 @@ export default {
   },
   computed: {
     headerClasses() {
-      return this.$route.fullPath.match('/profile') ? 'pt-10 pb-14 bg-background-gray' : 'py-10';
+      return this.$route.fullPath.match('/profile') ? 'py-0.5 header-borders' : 'py-0.5 header-borders';
     }
   }
 }
@@ -63,15 +63,18 @@ export default {
 <style lang="scss" scoped>
 #logo img {
   width: auto;
-  max-width: 180px;
-  height: 39px;
+  max-width: 133px;
+}
+
+.header-borders {
+  border-top: 1px solid #DFE4E9;
+  border-bottom: 1px solid #DFE4E9;
 }
 
 @screen lg {
   #logo img {
     width: auto;
-    max-width: 208px;
-    height: 39px;
+    max-width: 133px;
   }
 }
 

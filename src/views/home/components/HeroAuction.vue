@@ -8,7 +8,7 @@
         <media-loader
             :src="firstMedia"
             aspectRatio="100%"
-            class="overflow-hidden rounded-3xl flex-1"
+            class="overflow-hidden rounded-20px hero-media-shadow flex-1"
             muted
             loop
             autoplay
@@ -26,8 +26,9 @@
       <div class="w-12"></div>
 
       <div class="description flex flex-1 flex-col justify-center">
+
         <fenced-title
-            class="text-white flex lg:hidden mt-6"
+            class="text-black flex lg:hidden mt-6"
             color="fence-dark"
             text-align="center"
             :titleMonospace="true"
@@ -36,7 +37,7 @@
         >
 
         <unfenced-title
-            class="text-white hidden lg:flex"
+            class="text-black hidden lg:flex"
             color="fence-dark"
             text-align="left"
             :titleMonospace="true"
@@ -137,6 +138,11 @@
             </div>
           </template>
         </div>
+
+        <div class="abstract-circles-hero">
+          <img src="@/assets/images/abstract-circles.svg" alt="">
+        </div>
+
       </div>
     </container>
   </div>
@@ -352,6 +358,12 @@ export default {
 <style lang="scss" scoped>
 .hero-auction {
   @apply border-solid border-gray-300;
+  // background-image: linear-gradient(180deg, #333333 2%, #000000 100%);
+
+  @screen lg {
+    // Change the direction of fade so it doesn't interfere with fence colors
+    // background-image: linear-gradient(66deg, #333333 2%, #000000 100%);
+  }
 
   .media {
     .video-type-indicator {
@@ -365,10 +377,15 @@ export default {
 
   .description {
     .title-text {
-      @apply font-title mr-4 text-white flex-shrink-0 font-bold;
+      @apply font-title mr-4 text-black flex-shrink-0 font-bold;
       max-width: 80%;
       font-size: 46px;
     }
+  }
+
+  .abstract-circles-hero {
+    position: absolute;
+    z-index: -1;
   }
 }
 .hero-auction-light-mode {

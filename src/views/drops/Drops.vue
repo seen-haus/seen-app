@@ -47,7 +47,7 @@
           />
           <div
             v-else
-            class="placeholder-card overflow-hidden rounded-3xl bg-gray-100"
+            class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
             :style="{ 'padding-bottom': '120%' }"
           ></div>
         </template>
