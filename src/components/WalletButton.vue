@@ -55,14 +55,20 @@
             </button>
           </router-link>
           <div class="mx-8 h-0.5 bg-background-gray"></div>
+          <span>
+            <button class="button dropdown-btn" @click="openWalletModal">
+            <i class="gray fas fa-user cursor-pointer mr-2" alt="SEEN"></i> Edit Profile
+            </button>
+          </span>
+          <div class="mx-8 h-0.5 bg-background-gray"></div>
           <router-link :to="{ name: 'profile'}">
             <button class="button dropdown-btn" @click="close">
-            <img src="@/assets/icons/icon--person.svg" class="cursor-pointer mr-2" alt="SEEN"> Collections & Profile
+              <i class="gray far fa-clone cursor-pointer mr-2" alt="SEEN"></i> My Collection
             </button>
           </router-link>
           <div class="mx-8 h-0.5 bg-background-gray"></div>
           <button class="button dropdown-btn" @click="handleDisconnect">
-            <img src="@/assets/icons/icon--disconnect.svg" class="cursor-pointer mr-2" alt="SEEN"> Disconnect
+            <i class="gray fas fa-power-off cursor-pointer mr-2" alt="SEEN"></i> Disconnect
           </button>
         </div>
       </div>
@@ -122,6 +128,7 @@ export default {
 
     let isOpen = ref(false);
     const openWalletModal = () => {
+      op.value.hide();
       isOpen.value = false;
       store.dispatch('application/openModal', 'WalletModal')
     };
@@ -233,5 +240,9 @@ export default {
 
 .normal-text {
   text-transform: none !important;
+}
+
+.gray {
+  color: #999999;
 }
 </style>

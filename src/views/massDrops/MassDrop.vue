@@ -108,6 +108,7 @@
 <script>
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
@@ -236,6 +237,11 @@ export default {
     },
   },
   async setup(props) {
+
+    const store = useStore();
+
+    // Disable dark mode until dark mode is supported across website
+    store.dispatch("application/setDarkMode", false);
 
     const router = useRouter();
 

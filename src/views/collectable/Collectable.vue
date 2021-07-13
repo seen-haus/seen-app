@@ -1,5 +1,5 @@
 <template>
-  <div class="loading-mask" v-if="isLoading">
+  <div class="loading-mask" v-if="isLoading" v-bind:style="{ backgroundImage: 'url(' + getBackgroundImage(backgroundImage) + ')' }">
     <container>
       <div class="flex items-center py-6 flex-col">
         <fenced-title
@@ -13,12 +13,13 @@
     </container>
   </div>
 
-  <div class="single-edition" v-else>
+  <div class="single-edition" v-bind:style="{ backgroundImage: 'url(' + getBackgroundImage(backgroundImage) + ')' }" v-else>
     <container>
       <div class="flex items-center py-6 flex-col">
         <fenced-title
             class="flex-grow mr-0 mb-2 self-stretch"
             color="fence-gray"
+            :titleMonospace="titleMonospace"
             textAlign="center"
             :closed="true"
         >{{ title }}
@@ -37,6 +38,7 @@
             <tag
                 v-if="isAuction"
                 class="bg-fence-light self-end text-gray-500 font-semibold mr-1"
+                :class="darkMode ? 'dark-mode-text' : 'text-gray-500'"
             >EDITION {{ edition }}/{{ edition_of }}
             </tag>
             <tag v-if="isNft" class="bg-black mr-1 text-white">NFT</tag>
@@ -54,7 +56,7 @@
     <container>
       <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-12 md:mt-0">
         <div class="left-side col-span-7 pb-6">
-          <div class="text-lg text-gray-500 description" v-html="description"></div>
+          <div class="text-lg description" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'" v-html="description"></div>
           <template v-if="showAdditionalInformation">
             <!--            <div class="rounded-container flex items-center mt-12">-->
             <!--              <i-->
@@ -66,36 +68,39 @@
             <!--              </div>-->
             <!--            </div>-->
 
-            <div class="rounded-container flex items-center mt-6">
+            <div class="rounded-container flex items-center mt-6" :class="darkMode && 'dark-mode-surface no-border'">
               <i
-                  class="fas fa-id-card text-3xl icon-right text-gray-500 mr-6"
+                  class="fas fa-id-card text-3xl icon-right mr-6"
+                  :class="darkMode ? 'dark-mode-text' : 'text-gray-500'"
               ></i>
 
-              <div class="text-sm font-bold">
+              <div class="text-sm font-bold" :class="darkMode && 'dark-mode-text'">
                 All winners will be required to submit their contact information
                 for shipping purposes after the auction ends.
               </div>
             </div>
 
-            <div class="rounded-container flex items-center mt-6" v-if="!isAuction">
+            <div class="rounded-container flex items-center mt-6" :class="darkMode && 'dark-mode-surface no-border'" v-if="!isAuction">
               <i
-                  class="fas fa-trash-alt text-3xl icon-right text-gray-500 mr-6"
+                  class="fas fa-trash-alt text-3xl icon-right mr-6"
+                  :class="darkMode ? 'dark-mode-text' : 'text-gray-500'"
               ></i>
 
-              <div class="text-sm font-bold">
+              <div class="text-sm font-bold" :class="darkMode && 'dark-mode-text'">
                 Once your item is shipped your information will be deleted from
                 our registry.
               </div>
             </div>
           </template>
 
-          <div class="text-4xl font-title font-bold mt-14 mb-6">
+          <div class="text-4xl font-title font-bold mt-14 mb-6" :class="darkMode && 'dark-mode-text'">
             Artist statement
           </div>
           <artist-card class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
         </div>
 
         <div class="right-side col-span-5">
+          <social-sharing></social-sharing>
           <bid-card
               :status="liveStatus"
               :collectable="collectable"
@@ -103,6 +108,8 @@
               :endsAt="currentEndsAt"
               :isAuction="isAuction"
               :numberOfBids="events.length"
+              :isOpenEdition="isOpenEdition"
+              :itemsBought="itemsBought"
               :edition="edition"
               :edition_of="edition_of"
               :items="items"
@@ -119,13 +126,13 @@
               @update-state="updateCollectableState"
           />
 
-          <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
+          <div class="text-3xl font-title font-bold text-center mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
             {{ isAuction ? "Recent bids" : "Recent buys" }}
           </div>
           <list-of-buyers class="mb-12" :list="events"/>
 
           <template v-if="isAuction">
-            <button class="button dark w-full" @click="openModal('video', 'https://www.youtube.com/watch?v=1G5caDyf-kA')">
+            <button class="button dark w-full" :class="darkMode && 'dark-mode-outline'" @click="openModal('video', 'https://www.youtube.com/watch?v=1G5caDyf-kA')">
               <i
                   class="fas fa-play-circle mr-2 text-xl icon-left text-white"
               ></i>
@@ -137,18 +144,19 @@
             </div>
           </template>
 
-          <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
+          <div class="text-3xl font-title font-bold text-center mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
             Proof of Authenticity
           </div>
 
-          <div class="rounded-container">
+          <div class="rounded-container" :class="darkMode ? 'dark-mode-background' : 'light-mode-surface'">
 
             <nft-data v-if="collectable" :collectable="collectable"></nft-data>
 
-            <button class="button outline w-full" @click="viewOnEtherscan">
+            <button class="button w-full" :class="darkMode ? 'dark dark-mode-outline' : 'outline'" @click="viewOnEtherscan">
               View on Etherscan
               <i
-                  class="fas fa-external-link-alt mr-2 text-sm icon-right text-gray-500"
+                  class="fas fa-external-link-alt mr-2 text-sm icon-right"
+                  :class="darkMode ? 'dark-mode-text' : 'text-gray-500'"
               ></i>
             </button>
             <!--            <button class="button outline w-full mt-6">-->
@@ -157,10 +165,11 @@
             <!--                class="fas fa-external-link-alt mr-2 text-sm icon-right text-gray-500"-->
             <!--              ></i>-->
             <!--            </button>-->
-            <button class="button outline w-full mt-6" @click="viewOnOpenSea">
+            <button :class="darkMode ? 'dark dark-mode-outline' : 'outline'" class="button w-full mt-6" @click="viewOnOpenSea">
               View on OpenSea
               <i
-                  class="fas fa-external-link-alt mr-2 text-sm icon-right text-gray-500"
+                  class="fas fa-external-link-alt mr-2 text-sm icon-right"
+                  :class="darkMode ? 'dark-mode-text' : 'text-gray-500'"
               ></i>
             </button>
           </div>
@@ -175,6 +184,7 @@
 import {computed, onBeforeUnmount, reactive, ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import {useMeta} from "vue-meta";
+import {useStore} from "vuex";
 
 import FencedTitle from "@/components/FencedTitle.vue";
 import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
@@ -194,10 +204,12 @@ import {getEtherscanLink} from "@/services/utils";
 import GLightbox from 'glightbox';
 import 'glightbox/dist/css/glightbox.css';
 import NftData from "@/views/collectable/components/NftData.vue";
+import SocialSharing from "@/components/SocialSharing";
 
 export default {
   name: "Collectable",
   components: {
+    SocialSharing,
     FencedTitle,
     Container,
     UserBadge,
@@ -209,6 +221,13 @@ export default {
     HeroGallery,
     NftData,
   },
+  methods: {
+    getBackgroundImage(backgroundImage) {
+      if(backgroundImage) {
+        return require('../../assets/images/' + backgroundImage)
+      }
+    }
+  },
   setup() {
     const toast = useToast();
     const route = useRoute();
@@ -217,6 +236,11 @@ export default {
       contractAddress: null,
       collectable: {},
       buyersVisible: 3,
+    });
+    const store = useStore();
+
+    const darkMode = computed(() => {
+      return store.getters['application/darkMode']
     });
 
     const {
@@ -229,6 +253,8 @@ export default {
       progress,
       isCollectableActive,
       isUpcomming,
+      isOpenEdition,
+      itemsBought,
       // Static
       type,
       media,
@@ -259,6 +285,23 @@ export default {
       pillOverride,
     } = useCollectableInformation();
 
+    const backgroundImage = ref(false);
+    const titleMonospace = ref(false);
+
+    // TODO: Make this into a DB datasource unless V3 no longer uses this
+    if(['0xmons-mork'].indexOf(route.params["slug"]) > -1) {
+      store.dispatch("application/setDarkMode", true);
+      switch(route.params["slug"]) {
+        case '0xmons-mork':
+          backgroundImage.value = '0xmons-tile.png';
+          titleMonospace.value = true;
+          break;
+      }
+    } else {
+      // Disable dark mode until dark mode is supported across website
+      store.dispatch("application/setDarkMode", false);
+    }
+
     const currentEndsAt = computed(() => {
       return endsAt.value;
     });
@@ -286,7 +329,7 @@ export default {
         {
           name: "description",
           content: "",
-        },
+        }
       ],
     });
 
@@ -302,7 +345,7 @@ export default {
       meta.meta[1].content = description.value.replace(
           /<\/?("[^"]*"|'[^']*'|[^>])*(>|$)/g,
           ""
-      );
+      ).replace(/&nbsp;/g, ' ');
     };
 
     const viewOnEtherscan = () => {
@@ -353,6 +396,8 @@ export default {
       lightbox.open();
     };
 
+
+
     return {
       isLoading,
       collectable,
@@ -385,6 +430,11 @@ export default {
       isNft,
       isAuction,
       nextBidPrice,
+      isOpenEdition,
+      itemsBought,
+      backgroundImage,
+      darkMode,
+      titleMonospace,
       // Methods
       updateProgress,
       viewOnEtherscan,

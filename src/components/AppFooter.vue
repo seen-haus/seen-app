@@ -16,7 +16,7 @@
       <div class="grid-cols-1 lg:grid-cols-2 grid mt-12 mb-10">
         <div class="about sm:w-88">
           <div id="logo" class="flex items-center mb-6">
-            <img src="@/assets/images/logo--white.png"  class="mr-4 footer-logo" alt="seen logo">
+            <img src="@/assets/images/seen-white.svg"  class="mr-4 footer-logo" alt="seen logo">
           </div>
           <p class="opacity-70 text-md mb-3">SEEN HAUS is the innovative auction house of the future, merging the physical and digital worlds of art built upon blockchain technology. </p>
           <p class="opacity-70 text-md">Our platform offers a curated NFT marketplace, hosting creators and artists whilst showcasing exclusive and unique artworks to collectors.</p>
@@ -116,5 +116,8 @@ export default {
 <style lang="scss" scoped>
 .footer-border {
   border-top: 2px solid rgba(255,255,255,.2);
+}
+.footer-logo {
+  height: 39px;
 }
 </style>

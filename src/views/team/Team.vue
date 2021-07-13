@@ -389,6 +389,8 @@ const multisig = [
   },
 ];
 
+import { useStore } from "vuex";
+
 export default {
   name: "Team",
   components: {
@@ -397,6 +399,11 @@ export default {
     TeamMemberCard,
   },
   setup() {
+    const store = useStore();
+
+    // Disable dark mode until dark mode is supported across website
+    store.dispatch("application/setDarkMode", false);
+
     return {
       foundingMembers,
       coreContributors,

@@ -86,3 +86,71 @@
   width: 100%;
   background-size: cover;
 }
+
+.bg-white {
+  transition: background-color 0.1s linear;
+}
+
+.dark-mode-background {
+  transition: background-color 0.15s linear;
+  background-color: #000000;
+}
+
+.no-border {
+  border: none;
+}
+
+.black-border {
+  border-color: black;
+}
+
+.dark-mode-surface {
+  background-color: #333333;
+}
+
+.dark-mode-surface-darkened {
+  background-color: #222222;
+  .p-dialog-header, .p-dialog-content {
+    background-color: #222222!important;
+    color: white!important;
+  }
+}
+
+.image-filter-black-to-white {
+  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
+}
+
+.light-mode-surface {
+  background-color: #f5f4f3;
+}
+
+.light-mode-background {
+  transition: background-color 0.15s linear;
+  background-color: #FFFFFF;
+}
+
+.dark-mode-text {
+  color: white;
+}
+
+.dark-mode-text-washed {
+  color: rgba(255, 255, 255, 0.85)!important;
+}
+
+.dark-mode-section {
+  border-bottom: 1px solid #262626;
+  border-top: 1px solid #262626;
+}
+
+.transparent-border-section {
+  border-bottom: 1px solid transparent;
+  border-top: 1px solid transparent;
+}
+
+.force-monospace {
+  font-family: monospace!important;
+}
+
+.opacity-0-2 {
+  opacity: 0.2;
+}

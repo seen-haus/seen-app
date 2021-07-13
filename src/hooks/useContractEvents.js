@@ -1,7 +1,7 @@
 import useWeb3 from "@/connectors/hooks";
 import {formatEther, parseEther} from "@ethersproject/units";
 import {BigNumber} from "@ethersproject/bignumber";
-import {useV1AuctionContract, useV1NftContract, useV2AuctionContract} from "@/hooks/useContract";
+import {useV1AuctionContract, useV1NftContract, useV2AuctionContract, useV2OpenEditionContract} from "@/hooks/useContract";
 import {computed, ref, onBeforeUnmount} from 'vue';
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
@@ -17,6 +17,7 @@ export default function useContractEvents() {
     const contractAddress = ref(null);
     const mergedEvents = ref([]);
     const supply = ref(0);
+    const itemsBought = ref(0);
     const endsAt = ref(0);
     const startsAt = ref(0);
     const incomingBidSound = require("@/assets/sounds/bid_notification.mp3");
@@ -24,6 +25,7 @@ export default function useContractEvents() {
 
     const isAuction = computed(() => collectable.value.purchase_type === PURCHASE_TYPE.AUCTION);
     const version = computed(() => collectable.value ? collectable.value.version : '1.0');
+    const isOpenEdition = computed(() => collectable.value.is_open_edition);
 
     const createNormalizedEvent = async (contractEvent, type) => {
         const trx = await contractEvent.getTransaction();
@@ -132,25 +134,37 @@ export default function useContractEvents() {
                 if (!contractAddress.value) {
                 return;
                 }
-                contract = version.value === 1
-                    ? useV1NftContract(contractAddress.value)
-                    : useV1NftContract(contractAddress.value);
+                if(!isOpenEdition.value) {
+                    contract = version.value === 1
+                        ? useV1NftContract(contractAddress.value)
+                        : useV1NftContract(contractAddress.value);
+
+                    supply.value = +(await contract.supply()).toString();
+                } else {
+                    contract = useV2OpenEditionContract(contractAddress.value)
+                    itemsBought.value = +(await contract.buyCount()).toString();
+                }
 
                 let start = await contract.start();
                 let price = await contract.price();
 
-                supply.value = +(await contract.supply()).toString();
                 //
                 console.log("START TIME ", start);
                 console.log("PRICE ", price);
                 console.log("SUPPLY LEFT ", supply.value);
+                console.log("ITEMS BOUGHT OPEN EDITION ", itemsBought.value);
 
                 await contract.on("Buy", async (fromAddress, amount, evt) => {
                     // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
                     // console.log(fromAddress, amount.toString(), evt)
                     const event = await createNormalizedEvent(evt, 'buy');
+                    if(!isOpenEdition.value) {
+                        let remainingSupply = +(await contract.supply()).toString()
+                        supply.value = remainingSupply;
+                    }else{
+                        itemsBought.value = +(await contract.buyCount()).toString();
+                    }
                     mergeEvents(event);
-                    supply.value = +(await contract.supply()).toString();
                 });
 
                 const buys = await contract.queryFilter("Buy");
@@ -252,6 +266,7 @@ export default function useContractEvents() {
     return {
         mergedEvents,
         supply,
+        itemsBought,
         endsAt,
         startsAt,
         initializeContractEvents,

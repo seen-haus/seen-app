@@ -1,18 +1,24 @@
 <template>
-  <div class="bid-card shadow-lifted rounded-xl flex flex-col overflow-hidden">
+  <div class="bid-card shadow-lifted rounded-xl flex flex-col overflow-hidden" :class="darkMode ? 'dark-mode-surface' : 'light-mode-background'">
     <div class="top-part flex flex-col p-8">
       <div
           v-if="!isCollectableActive"
-          class="flex justify-start items-center text-gray-400 text-xs font-bold"
+          class="flex justify-start items-center text-xs font-bold"
+          :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
       >
-        {{ is_closed ? (isAuction ? 'AUCTION CLOSED' : 'SALE CLOSED') : 'ITEM HAS BEEN SOLD'}}
+        {{ is_closed ? (isAuction ? 'AUCTION CLOSED' : 'SALE CLOSED') : 'EDITION HAS BEEN SOLD'}}
       </div>
       <div
           v-else-if="!isAuction"
-          class="flex justify-start items-center text-gray-400 text-xs font-bold"
+          class="flex justify-start items-center text-xs font-bold"
+          :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
       >
-        <span class="tracking-widest mr-4">ITEMS LEFT </span>
-        <tag class="bg-fence-light self-end text-gray-400 font-semibold"
+        <span v-if="isOpenEdition" class="tracking-widest mr-4">OPEN EDITION</span>
+        <span v-if="!isOpenEdition" class="tracking-widest mr-4">EDITIONS LEFT </span>
+        <tag 
+          v-if="!isOpenEdition"
+          class="bg-fence-light self-end font-semibold"
+          :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
         >{{ items }}/{{ items_of }}
         </tag
         >
@@ -20,7 +26,8 @@
 
       <price-display
           size="lg"
-          class="text-black self-start mt-5"
+          class="self-start mt-5"
+          :class="darkMode ? 'dark-mode-text' : 'light-mode-text'"
           type="ETH"
           :price="price"
           :priceUSD="priceUSD"
@@ -28,7 +35,10 @@
       />
 
       <template v-if="isCollectableActive && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
-        <div class="outlined-input mt-5" :class="{ invalid: hasError || isFieldInvalid }">
+        <div class="outlined-input mt-5" :class="{ 
+          invalid: hasError || isFieldInvalid,
+          'light-mode-background': darkMode,
+        }">
           <input
               v-model="auctionField.value"
               v-if="isAuction"
@@ -72,10 +82,10 @@
       <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
         Claim Physical
       </button>
-      <button class="button opensea mt-6" v-if="!isCollectableActive" @click="viewOnOpenSea">
+      <button class="button opensea mt-6" v-if="!isCollectableActive && nftTokenId" @click="viewOnOpenSea">
         Opensea
       </button>
-      <template v-else>
+      <template v-else-if="isCollectableActive">
         <div v-if="bidDisclaimers && bidDisclaimers.length > 0 && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" class="text-gray-400 text-sm py-2">
             <p style="width: calc(100%)">
               Please note:<br/>
@@ -90,7 +100,7 @@
           <span v-if="!isSubmitting">{{ isAuction ? (`Place ${isAwaitingReserve ? 'reserve' : 'a'} bid`) : "Buy now" }}</span>
           <span v-else>Submitting...</span>
         </button>
-        <button class="button dark disabled opacity-50" v-if="account && !hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
+        <button :class="darkMode ? 'light' : 'dark'" class="button disabled opacity-50" v-if="account && !hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
           Insufficient funds
         </button>
         <template v-if="account && requiresRegistration && !isRegisteredBidder">
@@ -153,14 +163,17 @@
       </template>
     </div>
 
-    <div class="bottom-part bg-background-gray border-t p-8">
+    <div class="bottom-part border-t p-8" :class="darkMode ? 'dark-mode-surface-darkened black-border' : 'light-mode-surface'">
       <template v-if="!isCollectableActive">
         <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold" v-if="isAuction">
           AUCTION ENDED
         </div>
         <div v-else>
-          <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            {{ is_closed ? 'CLOSED' : 'SOLD OUT (' + items_of + ' items)'}}
+          <div v-if="!isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+            {{ is_closed ? 'CLOSED' : 'SOLD OUT (' + items_of + ' EDITIONS)'}}
+          </div>
+          <div v-if="isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+            {{ 'SOLD OUT (' + itemsBought + ' EDITIONS)' }}
           </div>
         </div>
         <!-- <button
@@ -183,7 +196,8 @@
         <progress-timer
             v-if="!isAwaitingReserve"
             ref="timerRef"
-            class="text-black text-3xl mt-2"
+            class="text-3xl mt-2"
+            :class="darkMode ? 'dark-mode-text' : 'text-black'"
             :isAuction="isAuction"
             :label="null"
             :startDate="startsAt"
@@ -215,7 +229,8 @@
           </div>
           <progress-timer
               ref="timerRef"
-              class="text-black text-3xl mt-2"
+              class="text-3xl mt-2"
+              :class="darkMode ? 'dark-mode-text' : 'text-black'"
               :isAuction="isAuction"
               :label="null"
               :startDate="startsAt"
@@ -238,13 +253,48 @@
         </template>
 
         <template v-else>
-          <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            ITEMS LEFT
+          <div v-if="!isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+            EDITIONS LEFT
           </div>
-          <div class="text-2.5xl font-bold py-2">
+          <div v-if="!isOpenEdition" class="text-2.5xl font-bold py-2" :class="darkMode && 'dark-mode-text'">
             {{ items }} out of {{ items_of }}
           </div>
-          <progress-bar :progress="progress" progressBackgroundColor="bg-gray-300" class="h-3 mt-3"/>
+          <div v-if="isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+            EDITIONS PURCHASED
+          </div>
+          <div v-if="isOpenEdition" class="text-2.5xl font-bold pt-2">
+            {{ itemsBought }}
+          </div>
+          <div v-if="isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold pt-4">
+            OPEN EDITION ENDS IN
+          </div>
+          <progress-bar v-if="!isOpenEdition" :progress="progress" progressBackgroundColor="bg-gray-300" class="h-3 mt-3"/>
+          <progress-timer
+              v-if="isOpenEdition"
+              ref="timerRef"
+              class="text-3xl mt-2"
+              :class="darkMode ? 'dark-mode-text' : 'text-black'"
+              :isAuction="isAuction"
+              :label="null"
+              :startDate="startsAt"
+              :endDate="endsAt"
+              @onProgress="updateProgress"
+              @onTimerStateChange="updateState"
+          />
+          <progress-bar
+              v-if="isOpenEdition"
+              :inversed="true"
+              :progress="currentProgress"
+              class="h-3 mt-3"
+              progressBackgroundColor="bg-gray-300"
+              :colorClass="
+              isCollectableActive
+                ? isUpcomming
+                  ? 'bg-opensea'
+                  : 'bg-primary'
+                : 'bg-gray-300'
+            "
+          />
         </template>
       </template>
     </div>
@@ -282,6 +332,9 @@ export default {
 
     isAuction: Boolean,
     numberOfBids: Number,
+
+    isOpenEdition: Boolean,
+    itemsBought: Number,
 
     edition: Number,
     edition_of: Number,
@@ -325,6 +378,7 @@ export default {
     const collectableData = ref(props.collectable);
     const winner = computed(() => collectableData.value.winner_address);
     const balance = computed(() => store.getters['application/balance'].eth);
+    const darkMode = computed(() => store.getters['application/darkMode']);
 
     const form = useForm({
       initialValues: {
@@ -672,6 +726,8 @@ export default {
       isRegisteredBidder,
       registerToBid,
       isCurrentAccountEntitledToPhysical,
+      darkMode,
+      nftTokenId: collectableData.value.nft_token_id,
     };
   },
 };

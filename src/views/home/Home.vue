@@ -27,7 +27,7 @@
           > Featured Drops</fenced-title
         >
         <router-link to="drops" class="hidden lg:block">
-          <button class="button dark flex-shrink-0">
+          <button :class="darkMode ? 'light' : 'dark'" class="button flex-shrink-0">
             View All Drops <i class="fas fa-arrow-right ml-3 icon-right"></i>
           </button>
         </router-link>
@@ -79,13 +79,13 @@
       </div>
 
       <router-link to="drops">
-        <button class="button dark mt-20 mx-auto w-full md:w-96">
+        <button :class="darkMode ? 'light' : 'dark'" class="button mt-20 mx-auto w-full md:w-96">
           View All Drops
         </button>
       </router-link>
     </container>
 
-    <div class="learn-how-to bg-background-gray border-t border-b">
+    <div :class="darkMode ? 'dark-mode-background' : 'bg-background-gray'" class="learn-how-to border-t border-b">
       <container class="py-24 pb-56 mb-8">
         <fenced-title
           class="flex-grow mr-0 mb-8 self-stretch"
@@ -104,7 +104,7 @@
         <how-to-video class="my-12"></how-to-video>
 
         <div class="flex justify-center">
-          <button class="button dark" @click="$router.push({name: 'faq'})">Read FAQs</button>
+          <button :class="darkMode ? 'light' : 'dark'" class="button" @click="$router.push({name: 'faq'})">Read FAQs</button>
         </div>
       </container>
     </div>
@@ -136,7 +136,7 @@
       </div>
 
       <router-link to="creators">
-        <button class="button dark mt-20 mx-auto w-full md:w-96">
+        <button :class="darkMode ? 'light' : 'dark'" class="button mt-20 mx-auto w-full md:w-96">
           View All Creators
         </button>
       </router-link>
@@ -148,6 +148,7 @@
 import {computed, watchEffect} from "vue";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
+import { useStore } from "vuex";
 
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
@@ -181,6 +182,12 @@ export default {
       title: "Home",
     });
     const router = useRouter();
+    const store = useStore();
+
+    // Disable dark mode until dark mode is supported across website
+    store.dispatch("application/setDarkMode", false);
+
+    const darkMode = computed(() => store.getters['application/darkMode']);
 
     const paginatedCollectables = useCollectablesWithPagination( 0);
     const listOfCollectables = computed(
@@ -231,6 +238,7 @@ export default {
       otherCollectables,
       listOfArtists,
       navigateToCollectable,
+      darkMode,
     };
   },
 };

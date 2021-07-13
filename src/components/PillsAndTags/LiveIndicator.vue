@@ -14,7 +14,7 @@
         'bg-accent': indicatorStatus === 'COMING SOON',
       }"
     ></div>
-    <div class="font-bold">
+    <div class="font-bold" :class="darkMode && 'dark-mode-text'">
       <slot>{{ indicatorStatusOverride ? indicatorStatusOverride : indicatorStatus }}</slot>
     </div>
   </div>
@@ -22,6 +22,8 @@
 
 
 <script>
+import {computed} from "vue";
+import {useStore} from "vuex";
 export default {
   name: "LiveIndicator",
   props: {
@@ -58,6 +60,17 @@ export default {
       return false;
     }
   },
+  setup() {
+    const store = useStore();
+
+    const darkMode = computed(() => {
+      return store.getters['application/darkMode']
+    });
+
+    return {
+      darkMode,
+    }
+  }
 };
 </script>
 

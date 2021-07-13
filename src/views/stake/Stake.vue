@@ -139,13 +139,13 @@
 </template>
 
 <script>
+import {computed, onBeforeMount, reactive, watchEffect} from "vue";
 import {useMeta} from "vue-meta";
+import { useStore } from "vuex";
 
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
 import StakeOrWithdrawCard from "@/views/stake/components/StakeOrWithdrawCard";
-import {computed, onBeforeMount, reactive, watchEffect} from "vue";
-import {useStore} from "vuex";
 import useExchangeRate from "@/hooks/useExchangeRate";
 import {useSEENContract, useStakingContract} from "@/hooks/useContract";
 import useWeb3 from "@/connectors/hooks";
@@ -161,6 +161,12 @@ export default {
     const {meta} = useMeta({
       title: "Stake",
     });
+
+    const store = useStore();
+
+    // Disable dark mode until dark mode is supported across website
+    store.dispatch("application/setDarkMode", false);
+
     const state = reactive({
 
       shareOfThePool: 0,
@@ -175,7 +181,7 @@ export default {
 
     })
     const {formatCrypto, formatCurrency, convertSeenToUSDAndFormat} = useExchangeRate();
-    const store = useStore();
+
     const seenBalance = computed(() => {
       return store.getters['application/balance'].seen
     });

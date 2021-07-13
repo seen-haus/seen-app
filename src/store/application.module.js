@@ -4,6 +4,7 @@ const state = {
     openModal: null,
     mobileMenu: null,
     currencies: null,
+    darkMode: false,
     balance: {
         eth: null,
         seen: null,
@@ -32,6 +33,9 @@ const mutations = {
     },
     SET_BALANCE(state, balance) {
         state.balance = balance;
+    },
+    SET_DARK_MODE(state, status) {
+        state.darkMode = status;
     }
 };
 
@@ -62,6 +66,9 @@ const actions = {
     },
     setBalance(context, balance) {
         context.commit('SET_BALANCE', balance);
+    },
+    setDarkMode(context, status) {
+        context.commit('SET_DARK_MODE', status);
     }
 };
 
@@ -77,6 +84,9 @@ const getters = {
     },
     balance(state) {
         return state.balance;
+    },
+    darkMode(state) {
+        return state.darkMode;
     }
 };
 

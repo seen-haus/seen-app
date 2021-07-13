@@ -1,8 +1,8 @@
 <template>
-  <div class="profile">
+  <div class="profile" :class="darkMode ? 'dark-mode-background pt-13' : 'light-mode-background'" v-bind:style="{ backgroundImage: 'url(' + getBackgroundImage(backgroundImage) + ')' }">
     <container class="relative pb-20">
       <div class="content-center">
-        <div class="top-bar">
+        <div class="top-bar" :class="darkMode ? 'dark-mode-background' : 'light-mode-background'">
           <img v-if="artist.header_image" :src="artist.header_image" class="mr-4 header" alt="">
           <img v-else :src="artist.avatar" class="mr-4 blur" alt="">
         </div>
@@ -15,14 +15,14 @@
           />
           <div class="mt-4 flex justify-between flex-wrap items-center mx-auto">
             <div class="flex justify-start flex-wrap">
-            <p class="font-bold text-3xl mr-4">{{artist.name}}</p>
+            <p class="font-bold text-3xl" :class="darkMode && 'dark-mode-text'">{{artist.name}}</p>
             <!-- <div class="wallet-address-badge flex justify-between items-center">
               <i class="fas fa-volleyball-ball text-lg"></i>
               <copy-helper :toCopy="user.wallet" :isIconSuffix="true" :text="cropWithExtension(user.wallet, 20)"/>
             </div> -->
           </div>
           </div>
-          <div class="mt-4 flex justify-between flex-wrap items-center mx-auto">
+          <div class="mt-4 flex justify-between flex-wrap items-center mx-auto" :class="darkMode && 'dark-mode-text'">
             <div v-html="artist?.bio ? artist.bio : 'No biography available.'"></div>
           </div>
           <div class="mt-4 flex justify-between flex-wrap items-center mx-auto">
@@ -71,6 +71,7 @@
 import {ref, computed} from "vue";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
+import {useStore} from "vuex";
 
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
@@ -88,13 +89,39 @@ export default {
       const txtLengthHalf = maxCharacters ? Math.round(maxCharacters / 2) : Math.round(txtLength / 2); // set max txtHalfLength
       return text.substring(0, (txtLengthHalf -1)).trim() + '...' + text.substring((txtLength - txtLengthHalf) + 2, txtLength).trim(); //Return the string
     },
+    getBackgroundImage(backgroundImage) {
+      console.log({backgroundImage})
+      if(backgroundImage) {
+        return require('../../assets/images/' + backgroundImage)
+      }
+    }
   },
   async setup() {
+    const store = useStore();
     const { meta } = useMeta({
       title: "Loading...",
     });
     const router = useRouter();
     const {data} = await ArtistService.show(router.currentRoute.value.params.artistSlug);
+    const backgroundImage = ref(false);
+
+    // TODO: Make this into a DB datasource unless V3 no longer uses this
+    if(['0xmons'].indexOf(router?.currentRoute?.value?.params?.artistSlug) > -1) {
+      store.dispatch("application/setDarkMode", true);
+      switch(router?.currentRoute?.value?.params?.artistSlug) {
+        case '0xmons':
+          backgroundImage.value = '0xmons-tile.png';
+          break;
+      }
+    } else {
+      // Disable dark mode until dark mode is supported across website
+      store.dispatch("application/setDarkMode", false);
+    }
+
+    const darkMode = computed(() => {
+      return store.getters['application/darkMode']
+    });
+
     const artist = ref(data);
     meta.title = artist.value.name;
 
@@ -126,7 +153,8 @@ export default {
       listOfCollectables,
       handleLoadMore,
       hasMore,
-
+      darkMode,
+      backgroundImage,
     };
   }
 }
@@ -149,7 +177,6 @@ export default {
 
 .description {
   z-index: 4;
-  background-color: white;
 }
 
 .top-bar {

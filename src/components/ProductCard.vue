@@ -1,6 +1,7 @@
 <template>
   <div
-      class="product-card flex flex-col overflow-hidden rounded-2xl shadow-lg cursor-pointer"
+      class="product-card flex flex-col overflow-hidden rounded-2xl rounded-t-3xl shadow-lg cursor-pointer"
+      :class="darkMode ? 'dark-mode-border dark-mode-background' : 'light-mode-background'"
       @mouseenter="handleHover(true)"
       @mouseleave="handleHover(false)"
   >
@@ -13,7 +14,7 @@
           muted
           loop
           :autoplay="autoplay"
-          class="overflow-hidden rounded-t-3xl flex-1"
+          class="overflow-hidden flex-1"
       />
 
       <div class="tags flex absolute top-6 left-6 right-6">
@@ -35,14 +36,17 @@
       <div class="title-and-price flex items-start">
         <span
             class="text-xl md:text-2xl font-title font-bold flex-1"
-            :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+            :class="isCollectableActive ? collectableActiveTextColor : 'text-gray-400'"
+            :style="{
+              ...(titleMonospace && {'font-family': 'monospace'})
+            }"
         >{{ title }}</span
         >
         <price-display
             v-if="!shouldHidePrice"
             size="sm"
             class="items-end ml-2 -mt-0.5 md:mt-0.5"
-            :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+            :class="isCollectableActive ? collectableActiveTextColor : 'text-gray-400'"
             type="Ether"
             :price="overridePriceEth || price"
             :priceUSD="
@@ -59,7 +63,7 @@
       <div class="flex-1"></div>
 
       <progress-bar
-          :inversed="isAuction"
+          :inversed="isAuction || isOpenEdition"
           :progress="progress"
           :endDate="endsAt"
           :colorClass="
@@ -79,7 +83,7 @@
             ref="timerRef"
             class="text-black text-sm mt-2"
             :isAuction="isAuction"
-            :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+            :class="isCollectableActive ? collectableActiveTextColor : 'text-gray-400'"
             :startDate="getStartsAt"
             :endDate="getEndsAt"
             @onProgress="updateProgress"
@@ -96,17 +100,38 @@
               ref="timerRef"
               class="text-black text-sm mt-2"
               :isAuction="isAuction"
-              :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+              :class="isCollectableActive ? collectableActiveTextColor : 'text-gray-400'"
               :startDate="getStartsAt"
               :endDate="getEndsAt"
               @onProgress="updateProgress"
               @onTimerStateChange="updateCollectableState"
           />
         </template>
+        <template v-else-if="isOpenEdition">
+          <progress-timer
+              ref="timerRef"
+              class="text-black text-sm mt-2"
+              :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+              :startDate="getStartsAt"
+              :endDate="getEndsAt"
+              @onProgress="updateProgress"
+              @onTimerStateChange="updateCollectableState"
+          />
+          <div
+              class="text-sm font-bold mt-2"
+              :class="'text-gray-400'"
+          >
+            {{
+              isCollectableActive
+                  ? `${itemsBought} Editions Purchased`
+                  : is_closed ? "Closed" : "Sold Out"
+            }}
+          </div>
+        </template>
         <template v-else>
           <div
               class="text-sm font-bold mt-2"
-              :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+              :class="isCollectableActive ? collectableActiveTextColor : 'text-gray-400'"
           >
             {{
               isCollectableActive
@@ -121,7 +146,8 @@
 </template>
 
 <script lang="ts">
-import {ref, watchEffect} from "vue";
+import {ref, watchEffect, computed} from "vue";
+import { useStore } from "vuex";
 import BigNumber from "bignumber.js";
 
 import Tag from "@/components/PillsAndTags/Tag.vue";
@@ -203,10 +229,18 @@ export default {
     },
   },
   setup(props) {
+    const store = useStore();
     const autoplay = true;
     // console.log('ProductCard', props.collectable);
     const mediaRef = ref(null);
     const timerRef = ref(null);
+
+    const titleMonospace = ref(false);
+
+    // TODO: Make this into a DB datasource unless V3 no longer uses this
+    if(props.collectable && [115].indexOf(props.collectable.id) > -1) {
+      titleMonospace.value = true;
+    }
 
     const {
       collectableState,
@@ -234,6 +268,8 @@ export default {
       isNft,
       isAuction,
       isUpcomming,
+      isOpenEdition,
+      itemsBought,
       // Methods
       updateProgress,
       // setCollectable,
@@ -246,6 +282,10 @@ export default {
     const addTime = function () {
       if (timerRef.value != null) timerRef.value.addSeconds(60 * 60 * 24);
     };
+
+    const darkMode = computed(() => store.getters['application/darkMode']);
+
+    const collectableActiveTextColor = computed(() => darkMode.value ? 'dark-mode-text' : collectableActiveTextColor);
 
     const handleHover = function (toState) {
       if (autoplay) return; // On autoplay we dont handle hover
@@ -288,6 +328,8 @@ export default {
       itemsOf,
       progress,
       isCollectableActive,
+      isOpenEdition,
+      itemsBought,
       // Static
       type,
       // media,
@@ -305,6 +347,7 @@ export default {
       isNft,
       isAuction,
       isUpcomming,
+      titleMonospace,
       // Methods
       updateProgress,
       addTime,
@@ -314,10 +357,15 @@ export default {
       overridePriceUsd,
       overridePriceEth,
       pillOverride,
+      darkMode,
+      collectableActiveTextColor,
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.dark-mode-border {
+  border: 1px solid #ffffff66;
+}
 </style>
