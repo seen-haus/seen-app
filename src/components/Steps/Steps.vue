@@ -103,8 +103,8 @@ export default {
 
 .active-step-number {
     opacity: 1;
-    border: 2px solid #10BE84;
-    background-color: #10BE84;
+    border: none;
+    background: linear-gradient(to right, #11998E, #38EF7D);
     color: white;
 }
 

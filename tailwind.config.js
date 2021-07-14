@@ -46,10 +46,12 @@ module.exports = {
                 'newsletter': '#333333',
                 'grey-9': '#999999',
                 'topbar': '#DDDDDD',
+                'light-grey': '#8E98A0',
+                'black': '#130B27',
             },
             fontFamily: {
                 body: ['Inter', "sans-serif"],
-                title: ['Playfair Display', "serif"],
+                title: ['Roboto', "sans-serif"],
                 address: ['Courier', 'serif']
             },
             fontSize: {

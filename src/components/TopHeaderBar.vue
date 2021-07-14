@@ -13,7 +13,7 @@
               class="cursor-pointer mr-2"
               alt="SEEN"
             />
-            <span class="hidden md:block mr-1">Seen: </span>
+            <span class="hidden md:block mr-1">SEEN: </span>
             <p v-if="!seen"><i class="fas fa-spinner fa-spin"></i></p>
             <p v-else>{{ formatCurrency(seen) }}</p>
           </a>
@@ -25,7 +25,7 @@
               class="cursor-pointer mr-2"
               alt="SEEN"
             />
-            <span class="hidden md:block mr-1">Ethereum: </span>
+            <span class="hidden md:block mr-1">ETH: </span>
             <p v-if="!ethereum"><i class="fas fa-spinner fa-spin"></i></p>
             <p v-else>{{ formatCurrency(ethereum) }}</p>
           </a>
@@ -37,7 +37,7 @@
               class="cursor-pointer mr-2"
               alt="SEEN"
             />
-            <span class="hidden md:block mr-1">Bitcoin: </span>
+            <span class="hidden md:block mr-1">BTC: </span>
             <p v-if="!bitcoin"><i class="fas fa-spinner fa-spin"></i></p>
             <p v-else>{{ formatCurrency(bitcoin) }}</p>
           </a>

@@ -1,29 +1,29 @@
 <template>
   <div class="faqs">
     <container class="section-featured-auctions pb-12">
-      <div class="flex items-center py-6 flex-col lg:flex-row">
-        <fenced-title
-          class="flex-grow mr-0 mb-2 self-stretch"
-          color="fence-gray"
-          textAlign="center"
-          :closed="true"
-          >Publish NFT</fenced-title
+        <unfenced-title
+            class="text-black hidden lg:flex pb-6 pt-12"
+            color="fence-dark"
+            text-align="left"
+          >Publish NFT</unfenced-title
         >
-      </div>
         <div class="flex items-center flex-col lg:flex-row">
             <div class="card flex-grow">
                 <Steps :steps="steps" :currentStep="currentStep" />
             </div>
         </div>
-        <div class="flex items-center flex-col lg:flex-row py-6">
-            <div v-if="currentStep === 0">
+        <div class="flex items-center flex-col lg:flex-row py-8">
+            <div class="flex-grow" v-if="currentStep === 0">
+                <type-selection/>
+            </div>
+            <div class="flex-grow" v-if="currentStep === 1">
                 <upload/>
             </div>
-            <div v-if="currentStep === 1">
-                Page 2
-            </div>
-            <div v-if="currentStep === 2">
+            <div class="flex-grow" v-if="currentStep === 2">
                 Page 3
+            </div>
+            <div class="flex-grow" v-if="currentStep === 3">
+                Page 4
             </div>
         </div>
         <div class="flex items-center flex-col lg:flex-row">
@@ -44,10 +44,13 @@ import { ref, reactive, computed } from "vue";
 import { useField, useForm } from "vee-validate";
 
 import Container from "@/components/Container.vue";
-import FencedTitle from "@/components/FencedTitle.vue";
+import UnfencedTitle from "@/components/UnfencedTitle.vue";
+import SubTitle from "@/components/SubTitle.vue";
+import LightTypography from "@/components/LightTypography.vue";
 import Steps from "@/components/Steps/Steps.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
 
+import TypeSelection from './components/TypeSelection.vue';
 import Upload from './components/Upload.vue';
 
 export default {
@@ -56,13 +59,20 @@ export default {
         return {
             steps: [
                 {
+                    label: 'Type',
+                    helperText: 'Select your NFT type'
+                },
+                {
                     label: 'Upload',
+                    helperText: 'Upload your media file'
                 },
                 {
                     label: 'Mint',
+                    helperText: 'Provide information about your listing'
                 },
                 {
                     label: 'Publish',
+                    helperText: 'Publish your listing on our site'
                 }
             ],
             formObject: {},
@@ -83,10 +93,13 @@ export default {
     },
     components: {
         Container,
-        FencedTitle,
+        UnfencedTitle,
+        SubTitle,
+        LightTypography,
         Steps,
         MediaLoader,
         Upload,
+        TypeSelection,
     },
     setup() {
 
