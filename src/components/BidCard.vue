@@ -76,12 +76,6 @@
           </p>
         </div>
       </template>
-      <button class="button primary mt-6" v-if="hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="viewOverrideClaimLink">
-        Claim Physical
-      </button>
-      <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
-        Claim Physical
-      </button>
       <button class="button opensea mt-6" v-if="!isCollectableActive && nftTokenId" @click="viewOnOpenSea">
         Opensea
       </button>
@@ -94,7 +88,7 @@
               </ul>
             </p>
         </div>
-        <button class="button primary"
+        <button class="button primary mt-1"
                 :class="{'cursor-wait disabled opacity-50': isSubmitting}"
                 :disabled="isSubmitting" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
           <span v-if="!isSubmitting">{{ isAuction ? (`Place ${isAwaitingReserve ? 'reserve' : 'a'} bid`) : "Buy now" }}</span>
@@ -161,6 +155,12 @@
           <i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
         </button>
       </template>
+      <button class="button primary mt-6" v-if="hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="viewOverrideClaimLink">
+        Claim Physical
+      </button>
+      <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
+        Claim Physical
+      </button>
     </div>
 
     <div class="bottom-part border-t p-8" :class="darkMode ? 'dark-mode-surface-darkened black-border' : 'light-mode-surface'">
@@ -421,7 +421,7 @@ export default {
     });
 
     watchEffect(async () => {
-      if (account?.value && isAuction?.value && !props?.isCollectableActive && collectableData?.value?.contract_address) {
+      if (account?.value && isAuction?.value && !props?.isCollectableActive && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
         let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
         let balanceOfAuctionContract = await nftContract.balanceOf(collectableData.value.contract_address, collectableData.value.nft_token_id)
         if(parseInt(balanceOfAuctionContract) > 0) {
@@ -439,6 +439,15 @@ export default {
           } else {
             isCurrentAccountEntitledToPhysical.value = false;
           }
+        }
+      } else if(account?.value && !isAuction?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
+        // Cover sale scenarios, show claim button when balance is positive
+        let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
+        let balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
+        if(parseInt(balanceOfCurrentAccount) > 0) {
+          isCurrentAccountEntitledToPhysical.value = true;
+        } else {
+          isCurrentAccountEntitledToPhysical.value = false;
         }
       }
     })
@@ -594,10 +603,20 @@ export default {
 
         isSubmitting.value = true
         await buy(amount)
-            .then((response) => {
+            .then(async (response) => {
               isSubmitting.value = false
               if (response) {
                 saleField.resetField(null)
+              }
+              if(account?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
+                // Cover sale scenarios, show claim button when balance is positive
+                let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
+                let balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
+                if(parseInt(balanceOfCurrentAccount) > 0) {
+                  isCurrentAccountEntitledToPhysical.value = true;
+                } else {
+                  isCurrentAccountEntitledToPhysical.value = false;
+                }
               }
             }).catch(e => {
               toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a buy order.', life: 3000});

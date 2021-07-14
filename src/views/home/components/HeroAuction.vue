@@ -30,7 +30,7 @@
             class="text-white flex lg:hidden mt-6"
             color="fence-dark"
             text-align="center"
-            :titleMonospace="true"
+            :titleMonospace="titleMonospace"
             :closed="true"
         ><span class="flex-shrink-0">{{ title }}</span></fenced-title
         >
@@ -39,7 +39,7 @@
             class="text-white hidden lg:flex"
             color="fence-dark"
             text-align="left"
-            :titleMonospace="true"
+            :titleMonospace="titleMonospace"
             :closed="true"
         ><span class="flex-shrink-0">{{ title }}</span></unfenced-title>
 
