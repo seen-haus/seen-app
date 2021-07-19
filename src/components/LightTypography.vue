@@ -9,6 +9,7 @@
           'text-align': alignment,
           'font-size': fontSize ? fontSize : '16px',
           'font-weight': fontWeight ? fontWeight : '400',
+          'margin-bottom': marginBottom ? marginBottom : '0px',
           ...(titleMonospace && {'font-family': 'monospace'})
         }"
     >
@@ -26,6 +27,7 @@ export default {
     monospace: Boolean,
     fontSize: Number,
     fontWeight: Number,
+    marginBottom: Number,
   },
   computed: {
     alignment: function () {

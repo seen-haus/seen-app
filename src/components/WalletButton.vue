@@ -12,7 +12,7 @@
           <div class="profile-avatar wallet-button-avatar" :style="{ backgroundImage: `url(${userLocal?.image})` }">
             <identicon :size="32" :address="account" v-if="!userLocal?.image"/>
           </div>
-          <div class="ml-2 flex flex-col items-start">
+          <div class="ml-2 flex flex-col items-start disable-text-transform">
             <span class="addressText" v-if="!userLocal?.username">{{ shortenAddress(account) }}</span>
             <span class="usernameText" v-if="userLocal?.username">{{ userLocal.username }}</span>
             <span class="block balanceText">{{ balanceFormatted ? balanceFormatted.substring(0, 8) : 'Fetching balance' }} ETH</span>
@@ -223,6 +223,7 @@ export default {
   padding: 0 .75rem !important;
 }
 .balanceText {
+  font-size: 13px;
   margin-top: -.25rem;
 }
 .addressText {
@@ -233,7 +234,7 @@ export default {
 }
 .usernameText {
   color: #b8ffe8;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 400;
   width: 100px;
   text-align: left;

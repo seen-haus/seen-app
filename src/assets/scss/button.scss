@@ -1,8 +1,13 @@
 // Slideout Menu
 .button {
-  @apply flex items-center justify-center border h-13 cursor-pointer rounded-5sm px-8 font-semibold border-transparent capitalize;
+  @apply flex items-center justify-center h-12 cursor-pointer rounded-5sm px-8 font-semibold uppercase;
 
   transition: box-shadow 0.1s;
+
+  &.disabled {
+    @apply text-white;
+    background-color: #8E98A0;
+  }
 
   &.primary {
     @apply text-white;
