@@ -1,5 +1,8 @@
 <template>
   <div class="faqs">
+    <div style="position: sticky;background-color:#000000d1;color:white; top: 0px;max-width: 500px;">
+        <pre>{{ JSON.stringify(processData, null, 4) }}</pre>
+    </div>
     <container class="section-featured-auctions pb-12">
         <unfenced-title
             class="text-black hidden lg:flex pb-6 pt-12"
@@ -9,12 +12,12 @@
         >
         <div class="flex items-center flex-col lg:flex-row">
             <div class="card flex-grow">
-                <Steps :steps="steps" :currentStep="currentStep" />
+                <Steps :steps="steps" :currentStep="currentStep"  />
             </div>
         </div>
         <div class="flex items-center flex-col lg:flex-row py-8">
             <div class="flex-grow" v-if="currentStep === 0">
-                <type-selection/>
+                <type-selection :nextStep="nextStep" :setTangibility="setTangibility" :setLocationData="setLocationData" :clearLocationData="clearLocationData"/>
             </div>
             <div class="flex-grow" v-if="currentStep === 1">
                 <upload/>
@@ -63,7 +66,7 @@ export default {
                     helperText: 'Select your NFT type'
                 },
                 {
-                    label: 'Upload',
+                    label: 'Media',
                     helperText: 'Upload your media file'
                 },
                 {
@@ -75,8 +78,20 @@ export default {
                     helperText: 'Publish your listing on our site'
                 }
             ],
-            formObject: {},
+            processData: {
+                tangibility: false,
+                locationData: {
+                    country: false,
+                    province: false,
+                    city: false,
+                },
+            },
             currentStep: 0,
+        }
+    },
+    filters: {
+        pretty: function(value) {
+            return JSON.stringify(JSON.parse(value), null, 2);
         }
     },
     methods: {
@@ -90,6 +105,28 @@ export default {
                 this.currentStep--;
             }
         },
+        setTangibility(tangibility) {
+            this.processData.tangibility = tangibility;
+        },
+        setLocationData(country = false, province = false, city = false) {
+            if(country) {
+                this.processData.locationData.country = country;
+            }
+            if(province) {
+                this.processData.locationData.province = province;
+            }
+            if(country) {
+                this.processData.locationData.city = city;
+            }
+        },
+        clearLocationData() {
+            this.processData.locationData = {
+                country: false,
+                province: false,
+                city: false,
+            }
+        },
+
     },
     components: {
         Container,

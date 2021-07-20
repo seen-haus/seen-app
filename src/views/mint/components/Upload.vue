@@ -2,13 +2,41 @@
   <div class="faqs">
     <container class="section-featured-auctions py-12">
         <div class="flex w-full items-center justify-center text-center" id="app">
-            <div class="bg-gray-100 border border-gray-300" @dragover="dragover" @dragleave="dragleave" @drop="drop">
+            <div class="bg-gray-100 border border-gray-300 dropzone flex-center" @dragover="dragover" @dragleave="dragleave" @drop="drop">
                 <input ref="mediaInputRef" type="file" id="profileAvatarUpload" class="hidden" @change="onMediaChange" accept="image/png,image/jpg,image/gif,video/mp4">
-                <label for="assetsFieldHandle" class="block cursor-pointer">
-                <div>
-                    Explain to our users they can drop files in here 
-                    or <span class="underline">click here</span> to upload their files
-                </div>
+                <label class="block cursor-pointer flex-center-column">
+                    <img src="@/assets/icons/upload-icon.svg" alt="Type NFT Only Icon" style="margin-bottom: 28px;">
+                    <sub-title
+                        class="text-black hidden lg:flex pb-5"
+                        text-align="center"
+                    >
+                        Upload
+                    </sub-title>
+                    <light-typography
+                        text-align="center"
+                        font-size="15px"
+                        font-weight="400"
+                        margin-bottom="5px"
+                    >
+                        JPG, PNG, GIF, MP4 allowed
+                    </light-typography>
+                    <light-typography
+                        text-align="center"
+                        font-size="14px"
+                        font-weight="400"
+                    >
+                    25 MB maximum
+                    </light-typography>
+                    <button :disabled="invalid" :class="'primary'" class="button mt-4 mb-6 w-full" @click="$refs.mediaInputRef.click()">
+                        Browse
+                    </button>
+                    <light-typography
+                        text-align="center"
+                        font-size="15px"
+                        font-weight="400"
+                    >
+                        or drag and drop into this space
+                    </light-typography>
                 </label>
                 <ul class="mt-4" v-if="mediaInputRef?.value?.files?.length" v-cloak>
                     <li class="text-sm p-1" v-for="file in mediaInputRef.value.files" :key="file">
@@ -26,8 +54,6 @@
             loop
             autoplay
         />
-        <button class="text-sm mb-8" @click="openUploadWindow"><i class="fas fa-pencil-alt"></i> Change Avatar</button>
-        
     </container>
   </div>
 </template>
@@ -39,6 +65,8 @@ import { useField, useForm } from "vee-validate";
 
 import Container from "@/components/Container.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
+import SubTitle from "@/components/SubTitle.vue";
+import LightTypography from "@/components/LightTypography.vue";
 
 export default {
     name: "Mint",
@@ -71,6 +99,8 @@ export default {
     components: {
         Container,
         MediaLoader,
+        SubTitle,
+        LightTypography,
     },
     setup() {
 
@@ -121,4 +151,10 @@ export default {
 </script>
 
 <style scoped>
+    .dropzone {
+        height: 470px;
+        width: 100%;
+        border-radius: 10px;
+        border: 2px dashed rgba(142, 152, 160, 0.3);
+    }
 </style>
