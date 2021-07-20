@@ -76,6 +76,15 @@
           </p>
         </div>
       </template>
+      <button class="button primary mt-6" v-if="hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="viewOverrideClaimLink">
+        Claim Physical
+      </button>
+      <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
+        Claim Physical
+      </button>
+      <button class="button primary mt-6" v-if="claimId !== null && isOpenEdition && isCurrentAccountEntitledToDigital" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
+        Claim NFT
+      </button>
       <button class="button opensea mt-6" v-if="!isCollectableActive && nftTokenId" @click="viewOnOpenSea">
         Opensea
       </button>
@@ -88,6 +97,13 @@
               </ul>
             </p>
         </div>
+        <template v-if="isOpenEdition && isCollectableActive">
+          <div class="text-gray-400 text-sm mb-4">
+            <p>
+              <strong>Please note:</strong> NFT(s) purchased in an open edition sale can only be claimed once the sale has ended. Please return to this area once the open edition has ended in order to claim your purchased NFT(s). This may take up to one hour after the timer has run out.
+            </p>
+          </div>
+        </template>
         <button class="button primary mt-1"
                 :class="{'cursor-wait disabled opacity-50': isSubmitting}"
                 :disabled="isSubmitting" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
@@ -305,22 +321,22 @@
 <script>
 import {ref, computed, watchEffect, reactive, watch} from "vue";
 import {useStore} from "vuex";
-import emitter from "@/services/utils/emitter";
-import useWeb3 from "@/connectors/hooks";
 
-import { BidRegistrationService } from "@/services/apiService"
+import {useField, useForm} from "vee-validate";
+import {useToast} from "primevue/usetoast";
+
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
+import numberHelper from "@/services/utils/numbers"
+import emitter from "@/services/utils/emitter";
+import { BidRegistrationService } from "@/services/apiService"
+import useWeb3 from "@/connectors/hooks";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
-import {formatEther} from "@ethersproject/units";
 import useSigner from "@/hooks/useSigner";
 import useContractEvents from "@/hooks/useContractEvents";
-import {useSeenNFTContract} from "@/hooks/useContract";
-import {useToast} from "primevue/usetoast";
-import {useField, useForm} from "vee-validate";
-import numberHelper from "@/services/utils/numbers"
+import {useSeenNFTContract, useV2OpenEditionContract} from "@/hooks/useContract";
 
 export default {
   name: "BidCard",
@@ -375,6 +391,7 @@ export default {
     const isRegisteredBidder = ref(false);
     const isSubmitting = ref(false);
     const isCurrentAccountEntitledToPhysical = ref(false);
+    const isCurrentAccountEntitledToDigital = ref(false);
     const collectableData = ref(props.collectable);
     const winner = computed(() => collectableData.value.winner_address);
     const balance = computed(() => store.getters['application/balance'].eth);
@@ -421,7 +438,7 @@ export default {
     });
 
     watchEffect(async () => {
-      if (account?.value && isAuction?.value && !props?.isCollectableActive && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
+      if (account?.value && isAuction?.value && !props.isOpenEdition && !props?.isCollectableActive && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
         let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
         let balanceOfAuctionContract = await nftContract.balanceOf(collectableData.value.contract_address, collectableData.value.nft_token_id)
         if(parseInt(balanceOfAuctionContract) > 0) {
@@ -440,7 +457,7 @@ export default {
             isCurrentAccountEntitledToPhysical.value = false;
           }
         }
-      } else if(account?.value && !isAuction?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
+      } else if(account?.value && !props.isOpenEdition && !isAuction?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
         // Cover sale scenarios, show claim button when balance is positive
         let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
         let balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
@@ -448,6 +465,16 @@ export default {
           isCurrentAccountEntitledToPhysical.value = true;
         } else {
           isCurrentAccountEntitledToPhysical.value = false;
+        }
+      } else if(account?.value && props.isOpenEdition && !props?.isCollectableActive) {
+        // Cover open edition claim scenarios, show claim button when balance is positive
+        let openEditionSaleContract = useV2OpenEditionContract(collectableData.value.contract_address);
+        let entitledBalanceOfCurrentAccount = await openEditionSaleContract.buyerToBuyCount(account.value);
+        console.log({entitledBalanceOfCurrentAccount})
+        if(parseInt(entitledBalanceOfCurrentAccount) > 0) {
+          isCurrentAccountEntitledToDigital.value = true;
+        } else {
+          isCurrentAccountEntitledToDigital.value = false;
         }
       }
     })
@@ -745,6 +772,7 @@ export default {
       isRegisteredBidder,
       registerToBid,
       isCurrentAccountEntitledToPhysical,
+      isCurrentAccountEntitledToDigital,
       darkMode,
       nftTokenId: collectableData.value.nft_token_id,
     };
