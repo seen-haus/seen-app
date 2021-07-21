@@ -70,7 +70,7 @@
 
         <div class="timer pt-12">
           <progress-bar
-              :inversed="isAuction"
+              :inversed="isAuction || isOpenEdition"
               class="h-3"
               progressBackgroundColor="bg-fence-dark"
               :endDate="currentEndsAt"
@@ -112,7 +112,7 @@
 
           <template v-else>
             <progress-timer
-                v-if="isUpcomming && isCollectableActive"
+                v-if="(isUpcomming || isOpenEdition) && isCollectableActive"
                 ref="timerRef"
                 class="text-black text-sm mt-2"
                 :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
@@ -122,6 +122,17 @@
                 @onProgress="updateState"
                 @onTimerStateChange="updateState"
             />
+            <div
+              v-if="isOpenEdition"
+              class="text-sm font-bold mt-2"
+              :class="'text-gray-400'"
+            >
+              {{
+                isCollectableActive
+                    ? `${itemsBought} Editions Purchased`
+                    : is_closed ? "Closed" : "Sold Out"
+              }}
+            </div>
             <div
                 v-else
                 class="text-sm font-bold mt-2"
@@ -228,6 +239,8 @@ export default {
       isNft,
       isAuction,
       isUpcomming,
+      isOpenEdition,
+      itemsBought,
       // Methods
       updateProgress,
       // setCollectable,
@@ -334,6 +347,8 @@ export default {
       isUpcomming,
       darkMode,
       titleMonospace,
+      isOpenEdition,
+      itemsBought,
       // Methods
       updateProgress,
       updateState,
