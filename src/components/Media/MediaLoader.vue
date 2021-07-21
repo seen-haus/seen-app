@@ -1,8 +1,9 @@
 <template>
   <div
-    class="media-loader relative h-0"
+    class="media-loader relative"
+    :class="!maxWidthAndHeight && 'h-0'"
     :style="{
-      'padding-bottom': calculatedAspecRatio,
+      'padding-bottom': ignoreAspectRatioPadding ? '0px' : calculatedAspecRatio,
     }"
   >
     <div
@@ -65,7 +66,7 @@
     <template v-if="mediaType === 'image'">
       <img
         ref="imageRef"
-        class="image absolute mx-auto h-full"
+        class="image relative mx-auto"
         :src="src"
         alt=""
       />
@@ -115,6 +116,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    maxWidthAndHeight: {
+      type: Boolean,
+      default: false,
+    },
+    ignoreAspectRatioPadding: {
+      type: Boolean,
+      default: false,
+    }
   },
   components: { PlayButton },
   setup(props) {

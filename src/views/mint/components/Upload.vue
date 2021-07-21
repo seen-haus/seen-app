@@ -5,7 +5,19 @@
             <div class="bg-gray-100 border border-gray-300 dropzone flex-center" @dragover="dragover" @dragleave="dragleave" @drop="drop">
                 <input ref="mediaInputRef" type="file" id="profileAvatarUpload" class="hidden" @change="onMediaChange" accept="image/png,image/jpg,image/gif,video/mp4">
                 <label class="block cursor-pointer flex-center-column">
-                    <img src="@/assets/icons/upload-icon.svg" alt="Type NFT Only Icon" style="margin-bottom: 28px;">
+                    <div class="flex-center media-preview-container">
+                        <media-loader
+                            :key="useTemporaryMediaUrl"
+                            v-if="useTemporaryMediaUrl"
+                            :src="useTemporaryMediaUrl"
+                            ignoreAspectRatioPadding
+                            muted
+                            loop
+                            autoplay
+                            maxWidthAndHeight
+                        />
+                        <img v-if="!useTemporaryMediaUrl" src="@/assets/icons/upload-icon.svg" style="width: 64px;height: 64px" alt="Upload">
+                    </div>
                     <sub-title
                         class="text-black hidden lg:flex pb-5"
                         text-align="center"
@@ -45,15 +57,6 @@
                 </ul>
             </div>
         </div>
-        <media-loader
-            :key="useTemporaryMediaUrl"
-            v-if="useTemporaryMediaUrl"
-            :src="useTemporaryMediaUrl"
-            aspectRatio="100%"
-            muted
-            loop
-            autoplay
-        />
     </container>
   </div>
 </template>
@@ -156,5 +159,17 @@ export default {
         width: 100%;
         border-radius: 10px;
         border: 2px dashed rgba(142, 152, 160, 0.3);
+    }
+    .media-preview-container {
+        border-radius: 10px;
+        border: 2px dashed rgba(142, 152, 160, 0.2);
+        margin-bottom: 28px;
+        width: 125px;
+        height: 125px;
+        overflow: hidden;
+    }
+    .media-preview {
+        max-width: 100%;
+        max-height: 100%;
     }
 </style>
