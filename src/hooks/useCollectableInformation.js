@@ -159,7 +159,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
                             return carry;
                         }, 0);
             }
-            price.value = +(data.price || 0).toFixed(2);
+            price.value = +(data.price || 0).toFixed(3);
             priceUSD.value = +(data.value_in_usd || 0).toFixed(2);
             priceUSDSold.value = (events.value || [])
                 .reduce((carry, evt) => {
