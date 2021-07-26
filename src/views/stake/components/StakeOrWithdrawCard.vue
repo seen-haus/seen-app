@@ -26,8 +26,7 @@
       <div class="text-sm text-gray-400 my-2">{{ typeOf === "stake" ? "Wallet balance:" : "Balance:" }}
         {{ formatCrypto(typeOf === "stake" ? seenBalance : seenDeposited, true) }} {{ typeOf === "stake" ? "SEEN" : "xSEEN" }}
       </div>
-      <button class="button primary w-full" @click="openWalletModal" v-if="!account">Connect Wallet
-      </button>
+      <button class="button primary w-full" @click="openWalletModal" v-if="!account">Connect Wallet</button>
       <button class="button primary w-full" :class="{'cursor-wait disabled opacity-50': state.approving}" @click="approve"
               v-if="account && typeOf === 'stake' && !state.isAllowed" :disabled="state.approving">
         {{ state.approving ? "Approving..." : "Approve" }}

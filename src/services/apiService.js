@@ -131,6 +131,16 @@ export const IPFSService = {
             throw new Error(`[RWV] ApiService ${error}`);
         });
     },
+    pin(payload, onProgressPercentCallback = false, fullFileSize = false) {
+        return ApiService.post(`ipfs/pin/`, payload, onProgressPercentCallback && fullFileSize && {
+            onUploadProgress: progressEvent => {
+                if(fullFileSize) {
+                    let progressPercent = Math.floor(progressEvent.loaded * 100 / fullFileSize);
+                    onProgressPercentCallback(progressPercent)
+                }
+            }
+        });
+    }
 };
 
 export const OpenSeaAPIService = {

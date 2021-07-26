@@ -95,9 +95,9 @@ const routes = [
         component: () => import(/* webpackChunkName: "spaceNFT" */ '../views/massDrops/SpaceNFT.vue')
     },
     {
-        path: '/mint',
-        name: 'mint',
-        component: () => import(/* webpackChunkName: "Mint" */ '../views/mint/Mint.vue')
+        path: '/create',
+        name: 'create',
+        component: () => import(/* webpackChunkName: "Create" */ '../views/selfCreate/SelfCreate.vue')
     },
 ]
 

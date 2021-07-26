@@ -20,10 +20,10 @@
                 <type-selection :nextStep="nextStep" :setTangibility="setTangibility" :setLocationData="setLocationData" :clearLocationData="clearLocationData"/>
             </div>
             <div class="flex-grow" v-if="currentStep === 1">
-                <upload/>
+                <upload :nextStep="nextStep" :setMediaIpfsHash="setMediaIpfsHash" :setTempMediaUrl="setTempMediaUrl" />
             </div>
             <div class="flex-grow" v-if="currentStep === 2">
-                Page 3
+                <mint :mediaUrl="processData.tempMediaUrl" :nextStep="nextStep" :setTangibility="setTangibility" :setLocationData="setLocationData" :clearLocationData="clearLocationData" />
             </div>
             <div class="flex-grow" v-if="currentStep === 3">
                 Page 4
@@ -55,9 +55,10 @@ import MediaLoader from "@/components/Media/MediaLoader.vue";
 
 import TypeSelection from './components/TypeSelection.vue';
 import Upload from './components/Upload.vue';
+import Mint from './components/Mint.vue';
 
 export default {
-    name: "Mint",
+    name: "SelfCreate",
     data() {
         return {
             steps: [
@@ -85,6 +86,8 @@ export default {
                     province: false,
                     city: false,
                 },
+                mediaIpfsHash: false,
+                tempMediaUrl: false,
             },
             currentStep: 0,
         }
@@ -107,6 +110,12 @@ export default {
         },
         setTangibility(tangibility) {
             this.processData.tangibility = tangibility;
+        },
+        setMediaIpfsHash(hash) {
+            this.processData.mediaIpfsHash = hash;
+        },
+        setTempMediaUrl(url) {
+            this.processData.tempMediaUrl = url;
         },
         setLocationData(country = false, province = false, city = false) {
             if(country) {
@@ -137,6 +146,7 @@ export default {
         MediaLoader,
         Upload,
         TypeSelection,
+        Mint,
     },
     setup() {
 

@@ -26,6 +26,15 @@
   align-items: center;
 }
 
+.flex-align-center {
+  display: flex;
+  align-items: center;
+}
+
+.flex {
+  display: flex;
+}
+
 .flex-center-column {
   display: flex;
   justify-content: center;
@@ -144,6 +153,10 @@
   color: rgba(255, 255, 255, 0.85)!important;
 }
 
+.light-mode-text-washed {
+  color: #8E98A0!important;
+}
+
 .dark-mode-section {
   border-bottom: 1px solid #262626;
   border-top: 1px solid #262626;
@@ -182,6 +195,10 @@
 
 .bg-light-grey {
   background-color: #ebeef266;
+}
+
+.placeholder-light-grey {
+  background-color: #DFE4E9;
 }
 
 .auto-margins {

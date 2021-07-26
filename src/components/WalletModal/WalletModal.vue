@@ -42,6 +42,7 @@ export default {
     const store = useStore()
 
     const name = 'WalletModal'
+    const connectOnlyName = 'WalletModalConnectOnly'
     const {account} = useWeb3();
     const view = ref(WALLET_VIEWS.OPTIONS)
     if (account.value) {
@@ -56,7 +57,7 @@ export default {
     const title = computed(() => view.value === WALLET_VIEWS.ACCOUNT
         ? 'Edit Profile'
         : (view.value === WALLET_VIEWS.PENDING ? '' : (account.value ? '' : 'Connect your wallet')))
-    const isOpen = computed(() => store.getters['application/openModal'] === name);
+    const isOpen = computed(() => store.getters['application/openModal'] === name || store.getters['application/openModal'] === connectOnlyName);
     watchEffect(() => {
       if (isOpen.value && account.value) {
         view.value = WALLET_VIEWS.ACCOUNT
