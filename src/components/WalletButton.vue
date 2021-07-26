@@ -43,6 +43,7 @@
               <div class="text-grey-9 font-normal">{{ seenBalanceUSD }}</div>
             </div>
           </a>
+          <div class="mx-8 h-0.5 bg-background-gray"></div>
           <router-link :to="{ name: 'stake'}">
             <button class="button dropdown-btn" @click="close">
               <div class="flex justify-between flex-grow">
