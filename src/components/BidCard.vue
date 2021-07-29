@@ -200,8 +200,11 @@
         <div v-if="!isAwaitingReserve" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
           {{ isUpcomming ? "AUCTION STARTS IN" : "AUCTION ENDS IN" }}
         </div>
-        <div v-if="isAwaitingReserve" class="tracking-widest mb-6 text-gray-400 text-xs font-bold">
+        <div v-if="isAwaitingReserve && currentProgress" class="tracking-widest mb-6 text-gray-400 text-xs font-bold">
           24 HR COUNTDOWN BEGINS ONCE RESERVE IS MET
+        </div>
+        <div v-if="isAwaitingReserve && !currentProgress" class="tracking-widest mb-6 text-gray-400 text-xs font-bold">
+          BIDDING OPENS IN
         </div>
         <progress-timer
             v-if="!isAwaitingReserve"
@@ -212,6 +215,18 @@
             :label="null"
             :startDate="startsAt"
             :endDate="endsAt"
+            @onProgress="updateProgress"
+            @onTimerStateChange="updateState"
+        />
+        <progress-timer
+            v-if="isAwaitingReserve"
+            ref="timerRef"
+            class="text-3xl mt-2"
+            :class="darkMode ? 'dark-mode-text' : 'text-black'"
+            :isAuction="isAuction"
+            :label="null"
+            :startDate="minimumStartsAt"
+            :isAwaitingReserve="true"
             @onProgress="updateProgress"
             @onTimerStateChange="updateState"
         />
@@ -229,7 +244,7 @@
               : 'bg-gray-300'
           "
         />
-        <p class="mt-6 text-gray-400 text-sm">Bids placed in the last 15 minutes will reset the auction to 15 minutes.</p>
+        <p class="mt-6 text-gray-400 text-sm" v-if="!isAwaitingReserve">Bids placed in the last 15 minutes will reset the auction to 15 minutes.</p>
       </template>
 
       <template v-else>
@@ -338,6 +353,7 @@ export default {
   props: {
     status: { type: String, default: "live" },
     startsAt: String,
+    minimumStartsAt: String,
     endsAt: String,
 
     isAuction: Boolean,
@@ -665,13 +681,13 @@ export default {
               }
             }).catch(e => {
               console.log({e})
-              toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a buy order.', life: 3000});
+              toast.add({severity: 'error', summary: 'Error', detail: `Error placing a bid: ${e?.error?.message}.`, life: 8000});
               isSubmitting.value = false
             });
       } catch (e) {
         isSubmitting.value = false
         console.error("Error placing bid/buy", e);
-        toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a bid.', life: 3000});
+        toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a bid.', life: 8000});
       }
     };
 

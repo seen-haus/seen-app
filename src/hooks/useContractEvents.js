@@ -20,6 +20,7 @@ export default function useContractEvents() {
     const itemsBought = ref(0);
     const endsAt = ref(0);
     const startsAt = ref(0);
+    const minimumStartsAt = ref(0);
     const incomingBidSound = require("@/assets/sounds/bid_notification.mp3");
     let contract = null;
 
@@ -77,6 +78,7 @@ export default function useContractEvents() {
             contractAddress.value = collectableData.contract_address;
             endsAt.value = new Date(collectable.value.ends_at).getTime();
             startsAt.value = new Date(collectable.value.starts_at).getTime();
+            minimumStartsAt.value = 0;
 
             if (onlySaveContractAddress) {
                 return;
@@ -95,13 +97,24 @@ export default function useContractEvents() {
                 if (version.value === 2) {
                     let endTime = await contract.endTime()
                     let startTime = await contract.startTime()
-                    collectable.value.ends_at = new Date(parseInt(endTime) * 1000)
-                    endsAt.value = new Date(parseInt(endTime) * 1000)
-                    if(collectable.value.is_reserve_price_auction) {
-                        collectable.value.starts_at = new Date(parseInt(startTime) * 1000)
-                        startsAt.value = new Date(parseInt(startTime) * 1000)
+                    if(Number(endTime) > 0) {
+                        collectable.value.ends_at = new Date(parseInt(endTime) * 1000)
+                        endsAt.value = new Date(parseInt(endTime) * 1000)
+                    } else {
+                        collectable.value.ends_at = null
+                        endsAt.value = null
                     }
-                    console.log("UPDATED ===>>",  {endsAt: endsAt.value, startsAt: startsAt.value})
+                    if(collectable.value.is_reserve_price_auction) {
+                        if(Number(startTime) > 0) {
+                            collectable.value.starts_at = new Date(parseInt(startTime) * 1000)
+                            startsAt.value = new Date(parseInt(startTime) * 1000)
+                        }else{
+                            let minimumStartTime = await contract.minimumStartTime();
+                            collectable.value.minimum_starts_at = new Date(parseInt(minimumStartTime) * 1000);
+                            minimumStartsAt.value = new Date(parseInt(minimumStartTime) * 1000);
+                        }
+                    }
+                    console.log("UPDATED ===>>",  {endsAt: endsAt.value, startsAt: startsAt.value, minimumStartsAt: minimumStartsAt.value})
                 }
                 await contract.on("Bid", async (fromAddress, amount, evt) => {
                     console.log(fromAddress, amount, evt)
@@ -269,6 +282,7 @@ export default function useContractEvents() {
         itemsBought,
         endsAt,
         startsAt,
+        minimumStartsAt,
         initializeContractEvents,
         bid,
         buy,

@@ -1,6 +1,52 @@
 [
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_reservePriceWei",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_minimumStartTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_hausFeePercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_percentageIncreasePerBid",
+        "type": "uint8"
+      },
+      {
+        "internalType": "address",
+        "name": "_sellerAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_hausAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_controllerAddress",
+        "type": "address"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
@@ -51,6 +97,45 @@
   },
   {
     "inputs": [],
+    "name": "containsAuctionNFT",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "controller",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "deployer",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "end",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -97,7 +182,7 @@
   },
   {
     "inputs": [],
-    "name": "id",
+    "name": "hausFeePercentage",
     "outputs": [
       {
         "internalType": "uint256",
@@ -148,6 +233,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "minimumStartTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -188,6 +286,19 @@
   },
   {
     "inputs": [],
+    "name": "percentageIncreasePerBid",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "pull",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -221,12 +332,25 @@
   },
   {
     "inputs": [],
-    "name": "token",
+    "name": "tokenAddress",
     "outputs": [
       {
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "tokenId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
