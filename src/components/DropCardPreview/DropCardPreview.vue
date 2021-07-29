@@ -12,23 +12,41 @@
                 autoplay
                 maxWidthAndHeight
             />
+            <div class="tangibility-container">
+                <tag v-if="data.tangibility === 'nft-physical' || data.tangibility === 'nft-digital'" class="bg-black mr-1 text-white">NFT</tag>
+                <tag v-if="data.tangibility === 'nft-physical'" class="bg-black mr-1 text-white">PHYSICAL</tag>
+            </div>
+            <div class="tag-container">
+                <tag :value="tagItem" v-for="(tagItem, index) in data.tags" :key="`inline-tag-${tagItem}-${index}`" class="bg-black mr-1 text-white">{{tagItem.toUpperCase()}}</tag>
+            </div>
         </div>
         <div class="drop-card-title mt-4 mb-4">
-            <div class="title-placeholder placeholder-light-grey"></div>
-        </div>
-        <div class="flex-align-center mt-4 mb-4">
-            <div v-if="!creatorAccount" class="artist-pic-placeholder mr-2 placeholder-light-grey"></div>
-            <div class="artist-avatar mr-2" :style="{ backgroundImage: `url(${creatorProfilePicture})` }">
-                <identicon :size="34" :address="creatorAccount" v-if="!creatorProfilePicture"/>
+            <div v-if="!titleText" class="title-placeholder-container mt-4">
+                <div class="placeholder-light-grey title-placeholder"></div>
             </div>
-            <div v-if="!creatorUsername" class="artist-name-placeholder placeholder-light-grey"></div>
             <sub-title
-                v-if="creatorUsername"
-                class="text-black hidden lg:flex mb-1 mt-2"
+                v-if="titleText"
+                class="text-black hidden lg:flex"
+                text-align="left"
+                font-size="24px"
+            >
+                {{titleText}}
+            </sub-title>
+        </div>
+        <div class="flex-align-center mb-4">
+            <div v-if="!data.creatorAccount" class="artist-pic-placeholder mr-2 placeholder-light-grey"></div>
+            <div v-if="data.creatorAccount" class="artist-avatar mr-2" :style="{ backgroundImage: `url(${data.creatorProfilePicture})` }">
+                <identicon :size="34" :address="data.creatorAccount" v-if="!data.creatorProfilePicture && data.creatorAccount"/>
+            </div>
+            <div v-if="!data.creatorUsername && !data.creatorAccount" class="artist-name-placeholder placeholder-light-grey"></div>
+            <sub-title
+                v-if="data.creatorUsername || data.creatorAccount"
+                class="text-black hidden lg:flex mb-1"
                 text-align="center"
                 font-size="15px"
+                style="margin-top: 10px;"
             >
-                @{{creatorUsername}}
+                {{(data.creatorUsername && `@${data.creatorUsername}`) || shortenAddress(data.creatorAccount)}}
             </sub-title>
         </div>
     </div>
@@ -38,10 +56,12 @@
 
 import { ref, reactive, computed, watchEffect } from "vue";
 
+import Tag from "@/components/PillsAndTags/Tag.vue";
 import SubTitle from "@/components/SubTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
-import Identicon from "@/components/Identicon/Identicon"
+import Identicon from "@/components/Identicon/Identicon";
+import { shortenAddress } from "@/services/utils/index"
 
 export default {
     name: "DropCardPreview",
@@ -50,6 +70,9 @@ export default {
         creatorUsername: String,
         creatorProfilePicture: String,
         creatorAccount: String,
+        titleText: String,
+        tags: Array,
+        tangibility: String,
     },
     methods: {
 
@@ -59,22 +82,44 @@ export default {
         LightTypography,
         MediaLoader,
         Identicon,
+        Tag,
     },
     setup(props) {
         
         const data = reactive({
             mediaUrl: false,
+            titleText: false,
+            creatorAccount: props.creatorAccount,
+            creatorUsername: props.creatorUsername,
+            creatorProfilePicture: props.creatorProfilePicture,
+            tags: props.tags || [],
+            tangibility: props.tangibility || "",
         })
 
         watchEffect(() => {
-            console.log({data})
             if(props.mediaUrl) {
                 data.mediaUrl = props.mediaUrl;
+            } else {
+                data.mediaUrl = false;
+            }
+            if(props.titleText) {
+                data.titleText = props.titleText;
+            } else {
+                data.titleText = false;
             }
         })
 
+        watchEffect(() => {
+            data.creatorAccount = props.creatorAccount;
+            data.creatorUsername = props.creatorUsername;
+            data.creatorProfilePicture = props.creatorProfilePicture;
+            data.tags = props.tags;
+            data.tangibility = props.tangibility;
+        })
+
         return {
-            data
+            data,
+            shortenAddress,
         }
 
     }
@@ -94,11 +139,17 @@ export default {
         width: 356px;
         height: 356px;
         border-radius: 6px;
+        position: relative;
     }
     .title-placeholder {
-        width: 215px;
-        height: 24px;
+        width: 100%;
+        height: 100%;
         border-radius: 10px;
+    }
+    .title-placeholder-container {
+        width: 215px;
+        height: 30px;
+        padding-bottom: 6px;
     }
     .drop-card-artist {
         display: flex;
@@ -118,5 +169,17 @@ export default {
         height: 34px;
         border-radius: 2rem;
         background-size: cover;
+    }
+    .tangibility-container {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        display: flex;
+    }
+    .tag-container {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        display: flex;
     }
 </style>

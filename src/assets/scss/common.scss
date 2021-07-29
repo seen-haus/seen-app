@@ -31,6 +31,11 @@
   align-items: center;
 }
 
+.flex-space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
 .flex {
   display: flex;
 }
@@ -213,4 +218,8 @@
 
 .disable-text-transform {
   text-transform: none;
+}
+
+.error-text {
+  color: #ff0000cc;
 }

@@ -16,16 +16,16 @@
             </div>
         </div>
         <div class="flex items-center flex-col lg:flex-row py-8">
-            <div class="flex-grow" v-if="currentStep === 0">
+            <!-- <div class="flex-grow" v-if="currentStep === 0">
                 <type-selection :nextStep="nextStep" :setTangibility="setTangibility" :setLocationData="setLocationData" :clearLocationData="clearLocationData"/>
-            </div>
-            <div class="flex-grow" v-if="currentStep === 1">
+            </div> -->
+            <div class="flex-grow" v-if="currentStep === 0">
                 <upload :nextStep="nextStep" :setMediaIpfsHash="setMediaIpfsHash" :setTempMediaUrl="setTempMediaUrl" />
             </div>
-            <div class="flex-grow" v-if="currentStep === 2">
+            <div class="flex-grow" v-if="currentStep === 1">
                 <mint :mediaUrl="processData.tempMediaUrl" :nextStep="nextStep" :setTangibility="setTangibility" :setLocationData="setLocationData" :clearLocationData="clearLocationData" />
             </div>
-            <div class="flex-grow" v-if="currentStep === 3">
+            <div class="flex-grow" v-if="currentStep === 2">
                 Page 4
             </div>
         </div>
@@ -63,15 +63,15 @@ export default {
         return {
             steps: [
                 {
-                    label: 'Type',
-                    helperText: 'Select your NFT type'
-                },
-                {
-                    label: 'Media',
-                    helperText: 'Upload your media file'
+                    label: 'Upload',
+                    helperText: 'Upload media to IPFS'
                 },
                 {
                     label: 'Mint',
+                    helperText: 'Mint your NFT on-chain'
+                },
+                {
+                    label: 'List',
                     helperText: 'Provide information about your listing'
                 },
                 {

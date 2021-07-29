@@ -4,7 +4,7 @@ import router from './router';
 import store from './store';
 import './assets/scss/index.scss';
 import {defineRule} from 'vee-validate';
-import {required, email, min} from '@vee-validate/rules';
+import {required, email, min, max} from '@vee-validate/rules';
 import ToastService from 'primevue/toastservice';
 import Toast from "primevue/toast";
 import PrimeVue from 'primevue/config';
@@ -20,6 +20,7 @@ import "primeicons/primeicons.css";
 defineRule('required', required);
 defineRule('email', email);
 defineRule('min', min);
+defineRule('max', max);
 const metaManager = createMetaManager(defaultConfig, deepestResolver);
 
 useMeta({}, metaManager);

@@ -211,9 +211,6 @@ export default {
 
                 IPFSService.pin(fd, handleProgressPercent, file.size)
                     .then(res => {
-                        // const imageSrc = res.data.url;
-                        // temporaryImageUrl.value = imageSrc;
-                        // form.setFieldValue('image', imageSrc);
                         isUploading.value = false;
                         isMediaProcessing.value = false;
                         handleProgressPercent(0);
@@ -229,7 +226,13 @@ export default {
                     })
                     .catch(e => {
                         console.error(e)
-                        toast.add({severity:'error', summary:'Error', detail:`Media upload failed ${e?.data?.message && '(' + (e?.data?.message?.message ? e?.data?.message?.message : e?.data?.message)  + ')'}`, life: 8000});
+                        isUploading.value = false;
+                        isMediaProcessing.value = false;
+                        let errorMessage = "(Gateway Error)";
+                        if(e?.data?.message) {
+                            errorMessage = '(' + (e?.data?.message?.message ? e?.data?.message?.message : e?.data?.message)  + ')';
+                        }
+                        toast.add({severity:'error', summary:'Error', detail:`Media upload failed ${errorMessage}`, life: 8000});
                     });
             }
         }
