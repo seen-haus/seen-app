@@ -23,7 +23,7 @@
                 <upload :nextStep="nextStep" :setMediaIpfsHash="setMediaIpfsHash" :setTempMediaUrl="setTempMediaUrl" />
             </div>
             <div class="flex-grow" v-if="currentStep === 1">
-                <mint :mediaUrl="processData.tempMediaUrl" :nextStep="nextStep" :setTangibility="setTangibility" :setLocationData="setLocationData" :clearLocationData="clearLocationData" />
+                <mint :setPropertyData="setPropertyData" :propertyData="processData.properties" :mediaUrl="processData.tempMediaUrl" :nextStep="nextStep" :setTangibility="setTangibility" :setLocationData="setLocationData" :clearLocationData="clearLocationData" />
             </div>
             <div class="flex-grow" v-if="currentStep === 2">
                 Page 4
@@ -88,6 +88,7 @@ export default {
                 },
                 mediaIpfsHash: false,
                 tempMediaUrl: false,
+                properties: [],
             },
             currentStep: 0,
         }
@@ -127,6 +128,9 @@ export default {
             if(country) {
                 this.processData.locationData.city = city;
             }
+        },
+        setPropertyData(propertyData) {
+            this.processData.properties = propertyData;
         },
         clearLocationData() {
             this.processData.locationData = {

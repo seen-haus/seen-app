@@ -57,6 +57,25 @@
                     </div>
                     <Chips :class="data.tagLength > maxLengths.tags && 'invalid-outline'" class="w-full outlined-input mt-2" placeholder="Keywords about your piece separated by commas" v-model="data.tags" separator="," />
                 </div>
+                <div class="fc mb-6">
+                    <div class="flex-space-between">
+                        <label for="description">Properties</label>
+                    </div>
+                    <sub-title
+                        class="text-black disable-text-transform green-text clickable hidden lg:flex mb-1 mt-2"
+                        text-align="left"
+                        font-size="13px"
+                        @click="showPropertiesModal"
+                    >
+                        Modify Properties <i class="fas fa-plus-circle mr-2"></i>
+                    </sub-title>
+                </div>
+                <mint-properties-modal :properties="data.properties" :setProperties="setProperties"/>
+                <div class="fc mb-6">
+                    <div class="flex-space-between">
+                        <label for="description">License</label>
+                    </div>
+                </div>
             </form>
             <div class="selection-container">
                 <div class="selection-option-wrapper" :class="data.selectedType === 'nft-digital' ? 'active-selection-option' : 'inactive-selection-option'">
@@ -109,7 +128,7 @@
             <div v-if="data.selectedType === 'nft-physical'" style="margin-top: 15px;">
                 <form
                     @submit="onSubmit"
-                    class="font-semibold uppercase text-md text-black"
+                    class="font-semibold text-md text-black"
                 >
                     <div class="fc mb-6">
                         <label for="country">Country</label>
@@ -167,7 +186,11 @@ import SubTitle from "@/components/SubTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
 import DropCardPreview from "@/components/DropCardPreview/DropCardPreview.vue";
 
+import MintPropertiesModal from "@/views/selfCreate/components/MintPropertiesModal.vue";
+
 import useWeb3 from "@/connectors/hooks"
+
+import emitter from "@/services/utils/emitter";
 
 export default {
     name: "TypeSelection",
@@ -177,6 +200,8 @@ export default {
         setTangibility: Function,
         setLocationData: Function,
         clearLocationData: Function,
+        setPropertyData: Function,
+        propertyData: Array,
     },
     methods: {
         setSelectedType(type) {
@@ -193,12 +218,26 @@ export default {
                 }
             }
         },
+        setProperties(properties) {
+            let builtProperties = [];
+            for(let item of properties) {
+                if(item.trait_type && item.value) {
+                    builtProperties.push({
+                        trait_type: item.trait_type,
+                        value: item.value,
+                    })
+                }
+            }
+            this.data.properties = builtProperties;
+            this.setPropertyData(builtProperties);
+        },
     },
     components: {
         SubTitle,
         LightTypography,
         DropCardPreview,
         Chips,
+        MintPropertiesModal,
     },
     setup(props) {
 
@@ -211,6 +250,10 @@ export default {
             profilePicture: false,
             username: false,
         });
+
+        const showPropertiesModal = () => {
+            emitter.emit("openNftMintPropertiesModal");
+        };
 
         watchEffect(() => {
             let userStoreData = store.getters['user/user'];
@@ -244,6 +287,7 @@ export default {
             isNextStepReady: false,
             tags: [],
             tagLength: 0,
+            properties: props.propertyData || [],
         })
 
         const form = useForm({
@@ -305,6 +349,7 @@ export default {
             data,
             maxLengths,
             creatorData,
+            showPropertiesModal,
         }
 
     }

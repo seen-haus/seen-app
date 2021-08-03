@@ -47,6 +47,11 @@
   flex-direction: column;
 }
 
+.flex-center-vertical {
+  display: flex;
+  align-items: center;
+}
+
 .text-shadow {
   text-shadow: 0 1px 1px #00000040;
 }
@@ -222,4 +227,12 @@
 
 .error-text {
   color: #ff0000cc;
+}
+
+.green-text {
+  color: #26c785;
+}
+
+.clickable {
+  cursor: pointer;
 }
