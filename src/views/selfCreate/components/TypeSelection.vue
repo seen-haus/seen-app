@@ -239,6 +239,7 @@ export default {
         max-width: calc(100% - 88px);
         display: flex;
         flex-direction: column;
+        align-items: center;
     }
     .active-selection-option {
         background: linear-gradient(to right, #11998E, #38EF7D);

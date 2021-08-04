@@ -1,6 +1,6 @@
 <template>
   <div class="faqs">
-    <div style="position: sticky;background-color:#000000d1;color:white; top: 0px;max-width: 500px;">
+    <div style="position: sticky;background-color:#000000d1;color:white; top: 0px;max-width: 500px;max-height: 300px;overflow: scroll;">
         <pre>{{ JSON.stringify(processData, null, 4) }}</pre>
     </div>
     <container class="section-featured-auctions pb-12">
@@ -23,10 +23,24 @@
                 <upload :nextStep="nextStep" :setMediaIpfsHash="setMediaIpfsHash" :setTempMediaUrl="setTempMediaUrl" />
             </div>
             <div class="flex-grow" v-if="currentStep === 1">
-                <mint :setPropertyData="setPropertyData" :propertyData="processData.properties" :mediaUrl="processData.tempMediaUrl" :nextStep="nextStep" :setTangibility="setTangibility" :setLocationData="setLocationData" :clearLocationData="clearLocationData" />
+                <mint 
+                    :setPropertyData="setPropertyData"
+                    :propertyData="processData.properties"
+                    :mediaUrl="processData.tempMediaUrl"
+                    :nextStep="nextStep"
+                    :setTangibilityData="setTangibilityData"
+                    :setLocationData="setLocationData"
+                    :clearLocationData="clearLocationData"
+                    :setTitleData="setTitleData"
+                    :setDescriptionData="setDescriptionData"
+                    :setTagData="setTagData"
+                    :setLicenseData="setLicenseData"
+                />
             </div>
             <div class="flex-grow" v-if="currentStep === 2">
-                Page 4
+                <self-create-listing
+                    :setListingType="setListingType"
+                />
             </div>
         </div>
         <div class="flex items-center flex-col lg:flex-row">
@@ -56,6 +70,7 @@ import MediaLoader from "@/components/Media/MediaLoader.vue";
 import TypeSelection from './components/TypeSelection.vue';
 import Upload from './components/Upload.vue';
 import Mint from './components/Mint.vue';
+import SelfCreateListing from './components/SelfCreateListing.vue';
 
 export default {
     name: "SelfCreate",
@@ -88,7 +103,15 @@ export default {
                 },
                 mediaIpfsHash: false,
                 tempMediaUrl: false,
+                licenseRights: false,
+                title: false,
+                description: false,
                 properties: [],
+                tags: [],
+                listingType: false,
+                price: false,
+                duration: false,
+                startDate: false,
             },
             currentStep: 0,
         }
@@ -109,8 +132,23 @@ export default {
                 this.currentStep--;
             }
         },
-        setTangibility(tangibility) {
+        setTitleData(title) {
+            this.processData.title = title;
+        },
+        setDescriptionData(description) {
+            this.processData.description = description;
+        },
+        setTagData(tags) {
+            this.processData.tags = tags;
+        },
+        setLicenseData(licenseRights) {
+            this.processData.licenseRights = licenseRights;
+        },
+        setTangibilityData(tangibility) {
             this.processData.tangibility = tangibility;
+        },
+        setListingType(listingType) {
+            this.processData.listingType = listingType;
         },
         setMediaIpfsHash(hash) {
             this.processData.mediaIpfsHash = hash;
@@ -151,6 +189,7 @@ export default {
         Upload,
         TypeSelection,
         Mint,
+        SelfCreateListing,
     },
     setup() {
 

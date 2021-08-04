@@ -61,6 +61,25 @@
                     <div class="flex-space-between">
                         <label for="description">Properties</label>
                     </div>
+                    <div class="metadata-property-grid-container">
+                        <div class="metadata-property-grid-item">
+                            <sub-title
+                                class="hidden lg:flex mt-2"
+                                text-align="center"
+                                font-size="14px"
+                            >
+                                Artist
+                            </sub-title>
+                            <sub-title
+                                class="disable-text-transform light-mode-text-washed property-value-text hidden lg:flex mb-2 mt-1"
+                                text-align="center"
+                                font-size="18px"
+                                font-weight="300"
+                            >
+                                Jisbar
+                            </sub-title>
+                        </div>
+                    </div>
                     <sub-title
                         class="text-black disable-text-transform green-text clickable hidden lg:flex mb-1 mt-2"
                         text-align="left"
@@ -91,13 +110,13 @@
                         </div>
                         <div class="selection-option-text-container">
                             <sub-title
-                                class="text-black hidden lg:flex mb-1 mt-2"
+                                class="text-black hidden lg:flex"
                                 text-align="center"
                                 font-size="15px"
                             >
                                 NFT ONLY
                             </sub-title>
-                            <i class="fas fa-info-circle light-mode-text-washed mt-1 ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.`}"></i>
+                            <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.`}"></i>
                         </div>
                     </div>
                 </div>
@@ -114,13 +133,13 @@
                         </div>
                         <div class="selection-option-text-container">
                             <sub-title
-                                class="text-black hidden lg:flex mb-1 mt-2"
+                                class="text-black hidden lg:flex"
                                 text-align="center"
                                 font-size="15px"
                             >
                                 NFT + PHYSICAL
                             </sub-title>
-                            <i class="fas fa-info-circle light-mode-text-washed mt-1 ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.`}"></i>
+                            <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.`}"></i>
                         </div>
                     </div>
                 </div>
@@ -197,20 +216,24 @@ export default {
     props: {
         mediaUrl: String,
         nextStep: Function,
-        setTangibility: Function,
+        setTangibilityData: Function,
         setLocationData: Function,
         clearLocationData: Function,
         setPropertyData: Function,
         propertyData: Array,
+        setTitleData: Function,
+        setDescriptionData: Function,
+        setTagData: Function,
+        setLicenseData: Function,
     },
     methods: {
         setSelectedType(type) {
             this.data.selectedType = type;
             if (type === 'nft-digital') {
                 this.data.isNextStepReady = true;
-                this.setTangibility('nft-digital')
+                this.setTangibilityData('nft-digital')
             } else if (type === 'nft-physical') {
-                this.setTangibility('nft-physical');
+                this.setTangibilityData('nft-physical');
                 if(this.data.locationData.country && this.data.locationData.province && this.data.locationData.city) {
                     this.data.isNextStepReady = true;
                 }else{
@@ -272,7 +295,6 @@ export default {
                 creatorData.value.username = false;
                 creatorData.value.account = account.value;
             }
-            console.log({'creatorData.value': creatorData.value})
         })
 
         const { account } = useWeb3();
@@ -315,6 +337,22 @@ export default {
         const descriptionField = reactive(useField("description", `required|min:1|max:${maxLengths.description}`));
 
         watchEffect(() => {
+            if(titleField?.value && !titleField.errors[0]) {
+                props.setTitleData(titleField.value)
+            } else if (titleField?.value === "") {
+                props.setTitleData(false)
+            }
+        })
+
+        watchEffect(() => {
+            if(descriptionField?.value && !descriptionField.errors[0]) {
+                props.setDescriptionData(descriptionField.value)
+            } else if (descriptionField?.value === "") {
+                props.setDescriptionData(false)
+            }
+        })
+
+        watchEffect(() => {
             if(data.selectedType === 'nft-physical') {
                 if(countryField.meta.valid && provinceField.meta.valid && cityField.meta.valid) {
                     data.isNextStepReady = true;
@@ -333,6 +371,11 @@ export default {
         watchEffect(() => {
             if(data.tags) {
                 data.tagLength = data.tags.reduce((accumulator, current) => accumulator + current, "").length;
+                if(data.tagLength <= maxLengths.tags) {
+                    props.setTagData(data.tags)
+                } else {
+                    props.setTagData(false)
+                }
             }
         })
 
@@ -400,6 +443,7 @@ export default {
         max-width: calc(100% - 88px);
         display: flex;
         justify-content: space-around;
+        align-items: center;
     }
     .active-selection-option {
         background: linear-gradient(to right, #11998E, #38EF7D);

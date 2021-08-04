@@ -92,7 +92,8 @@ export default {
       console.log({'this.propertySlots': this.propertySlots})
     },
     saveProperties() {
-      this.setProperties(this.propertySlots)
+      this.setProperties(this.propertySlots);
+      emitter.emit("closeNftMintPropertiesModal");
     },
   },
   setup(props) {
@@ -103,6 +104,10 @@ export default {
     const displayModal = ref(false);
     emitter.on('openNftMintPropertiesModal', payload => {
       displayModal.value = true;
+    });
+
+    emitter.on('closeNftMintPropertiesModal', payload => {
+      displayModal.value = false;
     });
 
     console.log({'props.properties': props.properties})

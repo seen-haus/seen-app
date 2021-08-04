@@ -236,3 +236,31 @@
 .clickable {
   cursor: pointer;
 }
+
+.input-inner-label {
+  position: relative;
+  input {
+    padding-right: 70px;
+  }
+}
+
+.input-icon-label {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metadata-property-grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-column-gap: 50px;
+  grid-row-gap: 50px;
+}
+
+.metadata-property-grid-item {
+  @apply border rounded-md border-gray-200;
+}

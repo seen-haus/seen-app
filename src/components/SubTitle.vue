@@ -9,7 +9,7 @@
           'width': '100%',
           'text-align': alignment,
           'font-size': fontSize ? fontSize : '36px',
-          'font-weight': '500',
+          'font-weight': fontWeight ? fontWeight : '500',
           ...(titleMonospace && {'font-family': 'monospace'})
         }"
     >
@@ -27,6 +27,7 @@ export default {
     unshrinkable: Boolean,
     titleMonospace: Boolean,
     fontSize: Number,
+    fontWeight: Number,
   },
   computed: {
     alignment: function () {
@@ -41,7 +42,6 @@ export default {
 .title-small {
   .title-text {
     max-width: 80%;
-    margin-top: -6px;
     font-size: 36px;
   }
 }
@@ -49,7 +49,6 @@ export default {
 .title-text {
   max-width: 80%;
   font-size: 36px;
-  margin-top: -6px;
   @screen md {
     font-size: 46px;
   }
