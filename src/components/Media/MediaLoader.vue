@@ -52,6 +52,8 @@
         :muted="muted"
         playsinline="playsinline"
         :loop="loop"
+        class="auto-horizontal-margins"
+        style="max-height: 616px;"
       ></video>
 
       <div
@@ -227,9 +229,14 @@ export default {
         if (videoRef.value.readyState >= 3) {
           isLoading.value = false;
           videoRef.value.removeEventListener("loadeddata", onLoadedCallback);
-          calculatedAspecRatio.value =
-            (videoRef.value.videoHeight / videoRef.value.videoWidth) * 100 +
-            "%";
+          // P.S. I did not create this aspect ratio logic
+          // just added a max of 100% because it breaks when it goes above that
+          // Haven't had a chance to work out why this is being done in the first place
+          let useAspectRatio = 100;
+          if(((videoRef.value.videoHeight / videoRef.value.videoWidth) * 100) <= 100) {
+            useAspectRatio = (videoRef.value.videoHeight / videoRef.value.videoWidth) * 100;
+          }
+          calculatedAspecRatio.value = `${useAspectRatio}%`;
         }
       }
 
