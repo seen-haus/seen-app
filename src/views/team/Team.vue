@@ -323,7 +323,7 @@ const multisig = [
       {
         url: "https://twitter.com/DavisRamsey",
         type: "twitter",
-        handle: "Solarcurve",
+        handle: "DavisRamsey",
       },
     ],
   },
