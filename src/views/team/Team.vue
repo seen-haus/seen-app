@@ -321,7 +321,7 @@ const multisig = [
     title: "Signee",
     socials: [
       {
-        url: "https://twitter.com/SolarCurve",
+        url: "https://twitter.com/DavisRamsey",
         type: "twitter",
         handle: "Solarcurve",
       },
