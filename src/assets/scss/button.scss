@@ -2,6 +2,12 @@
 .button {
   @apply flex items-center justify-center border h-13 cursor-pointer rounded-md px-8 font-semibold border-transparent capitalize;
 
+  &.disabled {
+    @apply text-white;
+    background-color: #8E98A0;
+    pointer-events: none;
+  }
+
   &.primary {
     @apply text-white;
     box-shadow: 0 3px 10px 0 rgba(0, 211, 115, 0.36);

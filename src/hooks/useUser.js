@@ -10,7 +10,9 @@ export default function useUser() {
   const fetchUser = async () => {
     try {
       const {data} = await UserService.get(account.value);
-      store.dispatch('user/setUser', data ? data.user : null);
+      store.dispatch('user/setUser', data ? data.user : {is_not_registered: true});
+      // Clear locally stored email preferences when switching users
+      store.dispatch('user/setUserEmailPreferences', null);
     } catch (err) {
       return;
     }

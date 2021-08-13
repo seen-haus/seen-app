@@ -38,7 +38,12 @@ export default {
             root.value.removeChild(child);
             child = root.value.firstElementChild;
         }
-        root.value.appendChild(Jazzicon(size.value, parseInt(accStr.slice(2, 10), 16)));
+        console.log({'root.value': root.value, accStr})
+        if(accStr) {
+          root.value.appendChild(Jazzicon(size.value, parseInt(accStr.slice(2, 10), 16)));
+        } else {
+          root.value = null;
+        }
       } else {
         root.value = null
       }

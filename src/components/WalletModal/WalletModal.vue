@@ -21,13 +21,11 @@ import useWeb3 from "@/connectors/hooks";
 import AccountView from "@/components/WalletModal/AccountView";
 import OptionsView from "@/components/WalletModal/OptionsView";
 import PendingView from "@/components/WalletModal/PendingView";
-
 const WALLET_VIEWS = {
   OPTIONS: 'options',
   ACCOUNT: 'account',
   PENDING: 'pending'
 }
-
 export default {
   name: "WalletModal",
   components: {
@@ -40,8 +38,8 @@ export default {
   },
   setup() {
     const store = useStore()
-
     const name = 'WalletModal'
+    const connectOnlyName = 'WalletModalConnectOnly'
     const {account} = useWeb3();
     const view = ref(WALLET_VIEWS.OPTIONS)
     if (account.value) {
@@ -56,10 +54,15 @@ export default {
     const title = computed(() => view.value === WALLET_VIEWS.ACCOUNT
         ? 'Edit Profile'
         : (view.value === WALLET_VIEWS.PENDING ? '' : (account.value ? '' : 'Connect your wallet')))
-    const isOpen = computed(() => store.getters['application/openModal'] === name);
+    const isOpen = computed(() => store.getters['application/openModal'] === name || store.getters['application/openModal'] === connectOnlyName);
     watchEffect(() => {
       if (isOpen.value && account.value) {
         view.value = WALLET_VIEWS.ACCOUNT
+      }
+    })
+    watchEffect(() => {
+      if (isOpen.value && !account.value) {
+        view.value = WALLET_VIEWS.OPTIONS
       }
     })
     const hasBackButton = computed(() => view.value === WALLET_VIEWS.PENDING
@@ -78,5 +81,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
