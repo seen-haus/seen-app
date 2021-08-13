@@ -20,22 +20,29 @@
 </template>
 
 <script>
-
+import {computed, watchEffect} from "vue";
+import {useStore} from "vuex"
 import useWeb3 from "@/connectors/hooks";
 import OptionItem from "@/components/WalletModal/OptionItem";
 import {SUPPORTED_WALLETS} from "@/connectors/constants";
-import {computed, watchEffect} from "vue";
-
 export default {
   name: "PendingView",
   components: {OptionItem},
   emits: [''],
   setup(props, {emit}) {
     const {error, connector, activate, connecting, account} = useWeb3()
+    const store = useStore()
+    const connectOnlyName = 'WalletModalConnectOnly'
     watchEffect(() => {
       if (!connecting.value) {
         console.log("change VIEW")
-        emit('changeView', account.value ? 'account' : 'options')
+        if(store.getters['application/openModal'] !== connectOnlyName) {
+          emit('changeView', account.value ? 'account' : 'options')
+        }else if(account.value){
+          store.dispatch('application/closeModal')
+        } else {
+          emit('changeView', 'options')
+        }
       }
     })
     const selectedOption = computed(() => {
@@ -49,11 +56,9 @@ export default {
             }
           }).filter(x=>x))[0]
     });
-
     const tryAgain = () => {
       activate(connecting.value)
     }
-
     return {
       connector,
       error,
@@ -65,5 +70,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

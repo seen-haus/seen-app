@@ -2,6 +2,7 @@ const state = {
     openModal: null,
     mobileMenu: null,
     user: null,
+    userEmailPreferences: null,
 };
 
 const mutations = {
@@ -20,6 +21,9 @@ const mutations = {
     SET_USER(state, user) {
         state.user = user
     },
+    SET_USER_EMAIL_PREFERENCES(state, userEmailPreferences) {
+        state.userEmailPreferences = userEmailPreferences
+    }
 };
 
 const actions = {
@@ -34,8 +38,13 @@ const actions = {
     },
     deleteUser(context) {
         context.commit('SET_USER', null)
-    }
-
+    },
+    setUserEmailPreferences(context, userEmailPreferences) {
+        context.commit('SET_USER_EMAIL_PREFERENCES', userEmailPreferences)
+    },
+    deleteUserEmailPreferences(context) {
+        context.commit('SET_USER_EMAIL_PREFERENCES', null)
+    },
 }
 
 const getters = {
@@ -47,6 +56,9 @@ const getters = {
     },
     user(state) {
         return state.user
+    },
+    userEmailPreferences(state) {
+        return state.userEmailPreferences
     }
 }
 

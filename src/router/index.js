@@ -94,6 +94,11 @@ const routes = [
         name: 'space-nft',
         component: () => import(/* webpackChunkName: "spaceNFT" */ '../views/massDrops/SpaceNFT.vue')
     },
+    {
+        path: '/notifications',
+        name: 'notifications',
+        component: () => import(/* webpackChunkName: "notifications" */ '../views/notifications/Notifications.vue')
+    },
 ]
 
 const router = createRouter({

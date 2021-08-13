@@ -101,6 +101,15 @@
           <span v-if="!isSubmitting">{{ isAuction ? (`Place ${isAwaitingReserve ? 'reserve' : 'a'} bid`) : "Buy now" }}</span>
           <span v-else>Submitting...</span>
         </button>
+        <button 
+          class="button primary mt-4"
+          :class="{'cursor-wait disabled opacity-50': isSubmitting}"
+          :disabled="isSubmitting"
+          v-if="showNotificationButton"
+          @click="openNotificationsModal"
+        >
+          <span>Notification Manager</span>
+        </button>
         <button :class="darkMode ? 'light' : 'dark'" class="button disabled opacity-50" v-if="account && !hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
           Insufficient funds
         </button>
@@ -244,7 +253,7 @@
               : 'bg-gray-300'
           "
         />
-        <p class="mt-6 text-gray-400 text-sm" v-if="!isAwaitingReserve">Bids placed in the last 15 minutes will reset the auction to 15 minutes.</p>
+        <p class="mt-6 text-gray-400 text-sm" v-if="!isAwaitingReserve">Bids placed in the last 15 minutes will reset the auction ending countdown to 15 minutes.</p>
       </template>
 
       <template v-else>
@@ -392,20 +401,25 @@ export default {
     },
   },
   setup(props, ctx) {
-    const price = ref(props.price);
     const toast = useToast();
     const store = useStore();
-    const isAuction = ref(props.isAuction);
     const {account} = useWeb3();
+
+    const price = ref(props.price);
+    const isAuction = ref(props.isAuction);
     const hasError = ref(null);
     const isRegisteredBidder = ref(false);
     const isSubmitting = ref(false);
     const isCurrentAccountEntitledToPhysical = ref(false);
     const isCurrentAccountEntitledToDigital = ref(false);
     const collectableData = ref(props.collectable);
+    const showNotificationButtonRef = ref(false);
+
+    const showNotificationButton = computed(() => showNotificationButtonRef.value);
     const winner = computed(() => collectableData.value.winner_address);
     const balance = computed(() => store.getters['application/balance'].eth);
     const darkMode = computed(() => store.getters['application/darkMode']);
+    const user = computed(() => store.getters['user/user']);
 
     const form = useForm({
       initialValues: {
@@ -551,6 +565,10 @@ export default {
       }
     });
 
+    const openNotificationsModal = () => {
+      store.dispatch('application/openModal', 'NotificationsModal')
+    };
+
     const placeABidOrBuy = () => {
       let amount = 0;
       try {
@@ -674,6 +692,10 @@ export default {
               try {
                 if(response) {
                   auctionField.resetField(null)
+                  showNotificationButtonRef.value = true;
+                  if(user?.value?.email === false || (!user?.value?.email && account?.value)) {
+                    openNotificationsModal(true);
+                  }
                 }
                 isSubmitting.value = false
               } catch(e) {
@@ -785,6 +807,8 @@ export default {
       isCurrentAccountEntitledToDigital,
       darkMode,
       nftTokenId: collectableData.value.nft_token_id,
+      showNotificationButton,
+      openNotificationsModal,
     };
   },
 };
