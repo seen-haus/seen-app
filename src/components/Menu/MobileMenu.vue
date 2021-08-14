@@ -2,7 +2,7 @@
   <nav id="menu" class="min-h-screen slideout-menu bg-black text-white pt-13">
     <button class="button w-full text-white" @click="closeMobileMenu">CLOSE</button>
 
-    <template v-for="item in menu" :key="item">
+    <template v-for="item in [...menu, ...mobileOnlyItems]" :key="item">
 
       <router-link v-if="typeof item.url === 'string'" :key="item" :to="{ name: item.url }" v-slot="{isActive}" class="routing-link block py-1 px-8" @click="closeMobileMenu">
         <img v-if="item.icon != null" :src="require('@/assets/icons/' + item.icon)" :class="isActive ? 'active-green-icon' : ''" class="cursor-pointer mr-2 inline-flex icon-fire" alt="SEEN">
