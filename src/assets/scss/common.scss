@@ -97,6 +97,20 @@
   @apply font-normal text-red-500 text-xs mt-2;
 }
 
+.clickable-blue-text {
+  @apply font-bold text-blue-500 text-xs mt-2;
+  cursor: pointer;
+}
+
+.clickable-text {
+  @apply font-bold text-xs mt-2;
+  cursor: pointer;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
 .p-overlaypanel .p-overlaypanel-content {
   padding: 0rem !important;
 }
@@ -212,6 +226,14 @@
 }
 
 .auto-margins {
+  margin: auto;
+}
+
+.opacity-0-6 {
+  opacity: 0.6;
+}
+
+.auto-horizontal-margins {
   margin-left: auto;
   margin-right: auto;
 }
@@ -263,4 +285,10 @@
 
 .metadata-property-grid-item {
   @apply border rounded-md border-gray-200;
+}
+
+.absolute-full-width-and-height {
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }

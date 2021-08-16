@@ -99,6 +99,11 @@ const routes = [
         name: 'create',
         component: () => import(/* webpackChunkName: "Create" */ '../views/selfCreate/SelfCreate.vue')
     },
+    {
+        path: '/notifications',
+        name: 'notifications',
+        component: () => import(/* webpackChunkName: "notifications" */ '../views/notifications/Notifications.vue')
+    },
 ]
 
 const router = createRouter({

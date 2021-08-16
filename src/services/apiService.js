@@ -50,12 +50,21 @@ export const UserService = {
     update(walletAddress, payload) {
         return ApiService.put('users/' + walletAddress, payload);
     },
+    getEmailAddressAndPreferences(walletAddress, payload) {
+        return ApiService.post(`users/${walletAddress}/get-email-address-and-preferences/`, payload);
+    },
+    updateEmailAddressAndPreferences(walletAddress, payload) {
+        return ApiService.post(`users/${walletAddress}/update-email-address-and-preferences/`, payload);
+    },
+    deleteEmailAddress(walletAddress, payload) {
+        return ApiService.post(`users/${walletAddress}/delete-email-address/`, payload);
+    },
     getExtendedUserData(payload) {
         return ApiService.post(`users/usernames/`, payload);
     },
     avatar(payload) {
         return ApiService.post(`users/avatars/`, payload);
-    }
+    },
 };
 
 export const LeaderboardService = {

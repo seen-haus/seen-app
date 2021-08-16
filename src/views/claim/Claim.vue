@@ -151,6 +151,19 @@
             <span class="error-notice">{{ messageField.errors[0] }}</span>
           </div>
 
+          <div class="fc mb-4">
+            <div :style="{'display': 'flex', 'justify-content': 'space-between'}">
+              <input
+                v-model="understandsClaimQuantityField.value"
+                type="checkbox"
+                placeholder="Understands Claim Quantity"
+                :style="{'display': 'inline-block', height: '30px'}"
+              />
+              <label :style="{'display': 'inline-block', width: 'calc(100% - 30px)', 'padding-left': '10px'}">By ticking this checkbox, you acknowledge that this claim submission will be considered as a physical claim for all the units of this NFT that are owned by your Ethereum address (e.g. if your Ethereum address owns 2 copies of this NFT, and each is redeeemable for a physical item, this submission will be considered as a claim for 2 physical copies of this NFT to be sent to the address provided above).</label>
+            </div>
+            <span class="error-notice">{{ understandsClaimQuantityField.errors[0] }}</span>
+          </div>
+
           <div class="flex items-center justify-center mb-4 mt-8">
             <button
               type="submit"
@@ -228,6 +241,7 @@ export default {
         zip: "",
         country: "",
         message: "",
+        understands_claim_quantity: false,
       },
     });
 
@@ -242,6 +256,7 @@ export default {
     const zipField = reactive(useField("zip", "required"));
     const countryField = reactive(useField("country", "required"));
     const messageField = reactive(useField("message"));
+    const understandsClaimQuantityField = reactive(useField("claim quantity acknowledgement", inputValue => !!inputValue));
 
     const onClaim = async () => {
       console.log(provider.value);
@@ -396,6 +411,7 @@ export default {
       countryField,
       countries,
       messageField,
+      understandsClaimQuantityField,
       state,
     };
   },

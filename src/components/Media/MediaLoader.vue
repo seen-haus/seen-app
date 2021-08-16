@@ -46,30 +46,38 @@
     </template>
 
     <template v-if="mediaType === 'video'">
-      <video
-        ref="videoRef"
-        :src="src"
-        :autoplay="autoplay"
-        :muted="muted"
-        playsinline="playsinline"
-        :loop="loop"
-      ></video>
+      <div class="absolute-full-width-and-height">
+        <video
+          ref="videoRef"
+          :src="src"
+          :autoplay="autoplay"
+          :muted="muted"
+          playsinline="playsinline"
+          :loop="loop"
+          class="auto-horizontal-margins"
+          :style="`max-height: 100%;`"
+        ></video>
 
-      <div
-        class="video-overlay flex items-center justify-center"
-        @click="togglePlay()"
-      >
-        <play-button v-if="controls && isPaused" />
+        <div
+          class="video-overlay flex items-center justify-center"
+          ref="videoOverlay"
+          @click="togglePlay()"
+        >
+          <play-button v-if="controls && isPaused" />
+        </div>
       </div>
     </template>
 
     <template v-if="mediaType === 'image'">
-      <img
-        ref="imageRef"
-        class="image relative mx-auto"
-        :src="src"
-        alt=""
-      />
+      <div class="absolute-full-width-and-height">
+        <img
+          ref="imageRef"
+          class="image absolute mx-auto h-full"
+          :src="src"
+          alt=""
+          :style="`max-height: 100%;`"
+        />
+      </div>
     </template>
   </div>
 </template>
@@ -240,9 +248,14 @@ export default {
         if (videoRef.value.readyState >= 3) {
           isLoading.value = false;
           videoRef.value.removeEventListener("loadeddata", onLoadedCallback);
-          calculatedAspecRatio.value =
-            (videoRef.value.videoHeight / videoRef.value.videoWidth) * 100 +
-            "%";
+          // P.S. I did not create this aspect ratio logic
+          // just added a max of 100% because it breaks when it goes above that
+          // Haven't had a chance to work out why this is being done in the first place
+          let useAspectRatio = 100;
+          if(((videoRef.value.videoHeight / videoRef.value.videoWidth) * 100) <= 100) {
+            useAspectRatio = (videoRef.value.videoHeight / videoRef.value.videoWidth) * 100;
+          }
+          calculatedAspecRatio.value = `${useAspectRatio}%`;
         }
       }
 
@@ -254,9 +267,14 @@ export default {
         isLoading.value = false;
         if (!imageRef.value) return;
         imageRef.value.removeEventListener("load", onLoadedCallback);
-        calculatedAspecRatio.value =
-          (imageRef.value.naturalHeight / imageRef.value.naturalWidth) * 100 +
-          "%";
+        // P.S. I did not create this aspect ratio logic
+        // just added a max of 100% because it breaks when it goes above that
+        // Haven't had a chance to work out why this is being done in the first place
+        let useAspectRatio = 100;
+        if(((imageRef.value.naturalHeight / imageRef.value.naturalWidth) * 100) <= 100) {
+          useAspectRatio = (imageRef.value.naturalHeight / imageRef.value.naturalWidth) * 100;
+        }
+        calculatedAspecRatio.value = `${useAspectRatio}%`;
       }
     }
 

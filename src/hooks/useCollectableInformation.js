@@ -23,6 +23,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         itemsBought,
         endsAt: updatedEndsAt,
         startsAt: updatedStartsAt,
+        minimumStartsAt: updatedMinimumStartsAt,
     } = useContractEvents();
 
     const collectable = ref(initialCollectable);
@@ -100,6 +101,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         return "live";
     });
     const startsAt = computed(() => collectable.value.starts_at);
+    const minimumStartsAt = computed(() => collectable.value.minimum_starts_at);
     const endsAt = computed(() => collectable.value.ends_at);
     const claim = computed(() => collectable.value.claim ? collectable.value.claim : false);
     const isAuction = computed(
@@ -159,7 +161,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
                             return carry;
                         }, 0);
             }
-            price.value = +(data.price || 0).toFixed(2);
+            price.value = +(data.price || 0).toFixed(3);
             priceUSD.value = +(data.value_in_usd || 0).toFixed(2);
             priceUSDSold.value = (events.value || [])
                 .reduce((carry, evt) => {
@@ -189,10 +191,10 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
     const updateCollectableState = function () {
         const now = Date.now();
-        const start = new Date(startsAt.value);
-        const end = new Date(endsAt.value);
+        const start = startsAt.value ? new Date(startsAt.value) : null;
+        const end = endsAt.value ? new Date(endsAt.value) : null;
 
-        if(end.getTime() === 0 && collectable.value.is_reserve_price_auction) {
+        if(end === null && collectable.value.is_reserve_price_auction) {
             collectableState.value = COLLECTABLE_STATE.AWAITING_RESERVE;
             return;
         }
@@ -207,7 +209,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
             return;
         }
 
-        if (now > end && (end.getTime() !== 0)) {
+        if (end && (now > end) && (end.getTime() !== 0)) {
             collectableState.value = COLLECTABLE_STATE.DONE;
             return;
         }
@@ -263,13 +265,17 @@ export default function useCollectableInformation(initialCollectable = {}) {
         events.value = newEvents;
         let endsAtNew = endsAt.value;
         let startsAtNew = startsAt.value;
+        let minimumStartsAtNew = minimumStartsAt.value;
         // Update price and item count
         if (isAuction.value) {
-            if (updatedEndsAt.value != null) {
+            if (updatedEndsAt.value) {
                 endsAtNew = new Date(updatedEndsAt.value).toString();
             }
-            if(updatedStartsAt.value != null) {
+            if(updatedStartsAt.value) {
                 startsAtNew = new Date(updatedStartsAt.value).toString();
+            }
+            if(updatedMinimumStartsAt.value) {
+                minimumStartsAtNew = new Date(updatedMinimumStartsAt.value).toString();
             }
         }
 
@@ -278,6 +284,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
             events: [...events.value],
             ends_at: endsAtNew,
             starts_at: startsAtNew,
+            minimum_starts_at: minimumStartsAtNew,
         });
         updateCollectableState();
     };
@@ -317,6 +324,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         bundleChildItems,
         startsAt,
         endsAt,
+        minimumStartsAt,
         liveStatus,
         is_sold_out,
         is_closed,

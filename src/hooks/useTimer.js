@@ -33,6 +33,7 @@ export default function useTimer(callback) {
     const state = reactive({
         startDate: null,
         endDate: null,
+        isAwaitingReserve: false,
         value: '',
         percentage: 0.0,
         callback: callback,
@@ -86,9 +87,17 @@ export default function useTimer(callback) {
         }
         
         state.percentage = +(progress / duration).toFixed(2);
-        if (progressLeft <= 0) {
+        if (progressLeft <= 0 || (state.isAwaitingReserve && new Date().getTime() > state.startDate)) {
             timerState.value = TIMER_STATE.DONE;
-            state.value = 'Auction ended';
+            if(state.isAwaitingReserve) {
+                state.value = 'Awaiting Reserve Bid';
+            } else {
+                state.value = 'Auction Ended';
+            }
+            endTimer();
+        } else if(progressLeft > 1000000000) {
+            timerState.value = TIMER_STATE.DONE;
+            state.value = 'Loading...'; // In case there is an issue fetching times (rather than show a very incorrect time)
             endTimer();
         } else {
             timerState.value = (now < state.startDate)
@@ -103,17 +112,18 @@ export default function useTimer(callback) {
         const {
             startDate,
             endDate = null,
+            isAwaitingReserve = false,
         } = options;
 
         const now = Date.now();
-        const start = new Date(startDate).getTime();
-        const end = endDate == null ? null : new Date(endDate).getTime();
+        const start = !startDate ? null : new Date(startDate).getTime();
+        const end = !endDate ? null : new Date(endDate).getTime();
 
         // const now = Date.now();
         // const start = Date.now() + 3000;
         // const end = Date.now() + 14000;
 
-        if (end != null && now > end) {
+        if (end && now > end) {
             unsubscribe();
             timerState.value = TIMER_STATE.DONE;
             state.percentage = 1.0;
@@ -121,7 +131,7 @@ export default function useTimer(callback) {
             return;
         }
 
-        if (now < start) {
+        if (now < start || isAwaitingReserve) {
             timerState.value = TIMER_STATE.WAITING;
         } else {
             timerState.value = TIMER_STATE.IN_PROGRESS;
@@ -130,12 +140,13 @@ export default function useTimer(callback) {
         state.value = 'Loading...';
         state.startDate = start;
         state.endDate = end;
+        state.isAwaitingReserve = isAwaitingReserve;
 
         unsubscribe();
         subscribe();
     }
 
-    function addSeconds(endSeconds, startSeconds = 0) {
+    function addSeconds(endSeconds, startSeconds = 0, isAwaitingReserve = false) {
         let old = state.endDate;
         console.log("OLD", old)
         if(!old) {
@@ -144,7 +155,7 @@ export default function useTimer(callback) {
         let newEndDate = state.endDate + (endSeconds * 1000);
         let newStartDate = state.startDate + (startSeconds * 1000);
         if(state.endDate !== newEndDate || state.startDate !== newStartDate) {
-            startTimer({startDate: newStartDate, endDate: newEndDate});
+            startTimer({startDate: newStartDate, endDate: newEndDate, isAwaitingReserve});
         }
     }
 

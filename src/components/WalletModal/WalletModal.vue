@@ -21,13 +21,11 @@ import useWeb3 from "@/connectors/hooks";
 import AccountView from "@/components/WalletModal/AccountView";
 import OptionsView from "@/components/WalletModal/OptionsView";
 import PendingView from "@/components/WalletModal/PendingView";
-
 const WALLET_VIEWS = {
   OPTIONS: 'options',
   ACCOUNT: 'account',
   PENDING: 'pending'
 }
-
 export default {
   name: "WalletModal",
   components: {
@@ -40,7 +38,6 @@ export default {
   },
   setup() {
     const store = useStore()
-
     const name = 'WalletModal'
     const connectOnlyName = 'WalletModalConnectOnly'
     const {account} = useWeb3();
@@ -63,6 +60,11 @@ export default {
         view.value = WALLET_VIEWS.ACCOUNT
       }
     })
+    watchEffect(() => {
+      if (isOpen.value && !account.value) {
+        view.value = WALLET_VIEWS.OPTIONS
+      }
+    })
     const hasBackButton = computed(() => view.value === WALLET_VIEWS.PENDING
         || view.value === WALLET_VIEWS.ACCOUNT);
     return {
@@ -79,5 +81,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

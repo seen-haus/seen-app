@@ -109,10 +109,10 @@ export default {
         .map(k => SUPPORTED_WALLETS[k].name)[0];
     const form = useForm({
       initialValues: {
-        username: user.value ? user.value.username : "",
+        username: (user.value && user.value.username) ? user.value.username : "",
         twitter: (user.value && user.value.socials) ? user.value.socials.twitter : "",
         website: (user.value && user.value.socials) ? user.value.socials.website : "",
-        description: user.value ? user.value.description : "",
+        description: (user.value && user.value.description) ? user.value.description : "",
       },
     });
 

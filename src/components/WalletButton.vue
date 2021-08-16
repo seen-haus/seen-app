@@ -62,7 +62,13 @@
           <div class="mx-8 h-0.5 bg-background-gray"></div>
           <span>
             <button class="button dropdown-btn" @click="openWalletModal">
-            <i class="gray fas fa-user cursor-pointer mr-2" alt="SEEN"></i> Edit Profile
+              <i class="gray fas fa-user cursor-pointer mr-2" alt="SEEN"></i> Edit Profile
+            </button>
+          </span>
+          <div class="mx-8 h-0.5 bg-background-gray"></div>
+          <span>
+            <button class="button dropdown-btn" @click="openNotificationsModal">
+              <i class="gray fas fa-bell cursor-pointer mr-2" alt="Notification Manager"></i> Notification Manager
             </button>
           </span>
           <div class="mx-8 h-0.5 bg-background-gray"></div>
@@ -137,6 +143,11 @@ export default {
       isOpen.value = false;
       store.dispatch('application/openModal', 'WalletModal')
     };
+    const openNotificationsModal = () => {
+      op.value.hide();
+      isOpen.value = false;
+      store.dispatch('application/openModal', 'NotificationsModal')
+    };
     const handleDisconnect = () => {
       close();
       store.dispatch('user/setUser', null);
@@ -185,6 +196,7 @@ export default {
       error,
       account,
       openWalletModal,
+      openNotificationsModal,
       formatCrypto,
       shortenAddress,
       handleDisconnect,

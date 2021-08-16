@@ -42,6 +42,12 @@ export default {
                             }
                         ]
                     }
+                ],
+                mobileOnlyItems: [
+                    {
+                        title: 'Notifications',
+                        url: 'notifications'
+                    },
                 ]
         }
     }

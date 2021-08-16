@@ -105,6 +105,7 @@
               :status="liveStatus"
               :collectable="collectable"
               :startsAt="currentStartsAt"
+              :minimumStartsAt="currentMinimumStartsAt"
               :endsAt="currentEndsAt"
               :isAuction="isAuction"
               :numberOfBids="events.length"
@@ -266,6 +267,7 @@ export default {
       description,
       events,
       startsAt,
+      minimumStartsAt,
       endsAt,
       liveStatus,
       is_sold_out,
@@ -308,6 +310,10 @@ export default {
 
     const currentStartsAt = computed(() => {
       return startsAt.value;
+    });
+
+    const currentMinimumStartsAt = computed(() => {
+      return minimumStartsAt.value;
     });
 
     const keywords = computed(() => {
@@ -421,6 +427,7 @@ export default {
       events,
       currentStartsAt,
       currentEndsAt,
+      currentMinimumStartsAt,
       liveStatus,
       is_sold_out,
       is_closed,

@@ -60,11 +60,9 @@ export default {
             }
           }).filter(x=>x))[0]
     });
-
     const tryAgain = () => {
       activate(connecting.value)
     }
-
     return {
       connector,
       error,
@@ -76,5 +74,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

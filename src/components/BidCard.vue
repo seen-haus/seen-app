@@ -76,12 +76,6 @@
           </p>
         </div>
       </template>
-      <button class="button primary mt-6" v-if="hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="viewOverrideClaimLink">
-        Claim Physical
-      </button>
-      <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
-        Claim Physical
-      </button>
       <button class="button opensea mt-6" v-if="!isCollectableActive && nftTokenId" @click="viewOnOpenSea">
         Opensea
       </button>
@@ -94,11 +88,27 @@
               </ul>
             </p>
         </div>
-        <button class="button primary"
+        <template v-if="isOpenEdition && isCollectableActive">
+          <div class="text-gray-400 text-sm mb-4">
+            <p>
+              <strong>Please note:</strong> NFT(s) purchased in an open edition sale can only be claimed once the sale has ended. Please return to this area once the open edition has ended in order to claim your purchased NFT(s). This may take up to one hour after the timer has run out.
+            </p>
+          </div>
+        </template>
+        <button class="button primary mt-1"
                 :class="{'cursor-wait disabled opacity-50': isSubmitting}"
                 :disabled="isSubmitting" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
           <span v-if="!isSubmitting">{{ isAuction ? (`Place ${isAwaitingReserve ? 'reserve' : 'a'} bid`) : "Buy now" }}</span>
           <span v-else>Submitting...</span>
+        </button>
+        <button 
+          class="button primary mt-4"
+          :class="{'cursor-wait disabled opacity-50': isSubmitting}"
+          :disabled="isSubmitting"
+          v-if="showNotificationButton"
+          @click="openNotificationsModal"
+        >
+          <span>Notification Manager</span>
         </button>
         <button :class="darkMode ? 'light' : 'dark'" class="button disabled opacity-50" v-if="account && !hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
           Insufficient funds
@@ -161,6 +171,15 @@
           <i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
         </button>
       </template>
+      <button class="button primary mt-6" v-if="hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="viewOverrideClaimLink">
+        Claim Physical
+      </button>
+      <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
+        Claim Physical
+      </button>
+      <button class="button primary mt-6" v-if="claimId !== null && isOpenEdition && isCurrentAccountEntitledToDigital" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
+        Claim NFT
+      </button>
     </div>
 
     <div class="bottom-part border-t p-8" :class="darkMode ? 'dark-mode-surface-darkened black-border' : 'light-mode-surface'">
@@ -190,8 +209,11 @@
         <div v-if="!isAwaitingReserve" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
           {{ isUpcomming ? "AUCTION STARTS IN" : "AUCTION ENDS IN" }}
         </div>
-        <div v-if="isAwaitingReserve" class="tracking-widest mb-6 text-gray-400 text-xs font-bold">
+        <div v-if="isAwaitingReserve && currentProgress" class="tracking-widest mb-6 text-gray-400 text-xs font-bold">
           24 HR COUNTDOWN BEGINS ONCE RESERVE IS MET
+        </div>
+        <div v-if="isAwaitingReserve && !currentProgress" class="tracking-widest mb-6 text-gray-400 text-xs font-bold">
+          BIDDING OPENS IN
         </div>
         <progress-timer
             v-if="!isAwaitingReserve"
@@ -202,6 +224,18 @@
             :label="null"
             :startDate="startsAt"
             :endDate="endsAt"
+            @onProgress="updateProgress"
+            @onTimerStateChange="updateState"
+        />
+        <progress-timer
+            v-if="isAwaitingReserve"
+            ref="timerRef"
+            class="text-3xl mt-2"
+            :class="darkMode ? 'dark-mode-text' : 'text-black'"
+            :isAuction="isAuction"
+            :label="null"
+            :startDate="minimumStartsAt"
+            :isAwaitingReserve="true"
             @onProgress="updateProgress"
             @onTimerStateChange="updateState"
         />
@@ -219,7 +253,7 @@
               : 'bg-gray-300'
           "
         />
-        <p class="mt-6 text-gray-400 text-sm">Bids placed in the last 15 minutes will reset the auction to 15 minutes.</p>
+        <p class="mt-6 text-gray-400 text-sm" v-if="!isAwaitingReserve">Bids placed in the last 15 minutes will reset the auction ending countdown to 15 minutes.</p>
       </template>
 
       <template v-else>
@@ -305,22 +339,22 @@
 <script>
 import {ref, computed, watchEffect, reactive, watch} from "vue";
 import {useStore} from "vuex";
-import emitter from "@/services/utils/emitter";
-import useWeb3 from "@/connectors/hooks";
 
-import { BidRegistrationService } from "@/services/apiService"
+import {useField, useForm} from "vee-validate";
+import {useToast} from "primevue/usetoast";
+
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
+import numberHelper from "@/services/utils/numbers"
+import emitter from "@/services/utils/emitter";
+import { BidRegistrationService } from "@/services/apiService"
+import useWeb3 from "@/connectors/hooks";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
-import {formatEther} from "@ethersproject/units";
 import useSigner from "@/hooks/useSigner";
 import useContractEvents from "@/hooks/useContractEvents";
-import {useSeenNFTContract} from "@/hooks/useContract";
-import {useToast} from "primevue/usetoast";
-import {useField, useForm} from "vee-validate";
-import numberHelper from "@/services/utils/numbers"
+import {useSeenNFTContract, useV2OpenEditionContract} from "@/hooks/useContract";
 
 export default {
   name: "BidCard",
@@ -328,6 +362,7 @@ export default {
   props: {
     status: { type: String, default: "live" },
     startsAt: String,
+    minimumStartsAt: String,
     endsAt: String,
 
     isAuction: Boolean,
@@ -366,19 +401,25 @@ export default {
     },
   },
   setup(props, ctx) {
-    const price = ref(props.price);
     const toast = useToast();
     const store = useStore();
-    const isAuction = ref(props.isAuction);
     const {account} = useWeb3();
+
+    const price = ref(props.price);
+    const isAuction = ref(props.isAuction);
     const hasError = ref(null);
     const isRegisteredBidder = ref(false);
     const isSubmitting = ref(false);
     const isCurrentAccountEntitledToPhysical = ref(false);
+    const isCurrentAccountEntitledToDigital = ref(false);
     const collectableData = ref(props.collectable);
+    const showNotificationButtonRef = ref(false);
+
+    const showNotificationButton = computed(() => showNotificationButtonRef.value);
     const winner = computed(() => collectableData.value.winner_address);
     const balance = computed(() => store.getters['application/balance'].eth);
     const darkMode = computed(() => store.getters['application/darkMode']);
+    const user = computed(() => store.getters['user/user']);
 
     const form = useForm({
       initialValues: {
@@ -421,7 +462,7 @@ export default {
     });
 
     watchEffect(async () => {
-      if (account?.value && isAuction?.value && !props?.isCollectableActive && collectableData?.value?.contract_address) {
+      if (account?.value && isAuction?.value && !props.isOpenEdition && !props?.isCollectableActive && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
         let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
         let balanceOfAuctionContract = await nftContract.balanceOf(collectableData.value.contract_address, collectableData.value.nft_token_id)
         if(parseInt(balanceOfAuctionContract) > 0) {
@@ -439,6 +480,25 @@ export default {
           } else {
             isCurrentAccountEntitledToPhysical.value = false;
           }
+        }
+      } else if(account?.value && !props.isOpenEdition && !isAuction?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
+        // Cover sale scenarios, show claim button when balance is positive
+        let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
+        let balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
+        if(parseInt(balanceOfCurrentAccount) > 0) {
+          isCurrentAccountEntitledToPhysical.value = true;
+        } else {
+          isCurrentAccountEntitledToPhysical.value = false;
+        }
+      } else if(account?.value && props.isOpenEdition && !props?.isCollectableActive) {
+        // Cover open edition claim scenarios, show claim button when balance is positive
+        let openEditionSaleContract = useV2OpenEditionContract(collectableData.value.contract_address);
+        let entitledBalanceOfCurrentAccount = await openEditionSaleContract.buyerToBuyCount(account.value);
+        console.log({entitledBalanceOfCurrentAccount})
+        if(parseInt(entitledBalanceOfCurrentAccount) > 0) {
+          isCurrentAccountEntitledToDigital.value = true;
+        } else {
+          isCurrentAccountEntitledToDigital.value = false;
         }
       }
     })
@@ -504,6 +564,10 @@ export default {
         return parseInt(saleField.value) * price.value;
       }
     });
+
+    const openNotificationsModal = () => {
+      store.dispatch('application/openModal', 'NotificationsModal')
+    };
 
     const placeABidOrBuy = () => {
       let amount = 0;
@@ -594,10 +658,20 @@ export default {
 
         isSubmitting.value = true
         await buy(amount)
-            .then((response) => {
+            .then(async (response) => {
               isSubmitting.value = false
               if (response) {
                 saleField.resetField(null)
+              }
+              if(account?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
+                // Cover sale scenarios, show claim button when balance is positive
+                let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
+                let balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
+                if(parseInt(balanceOfCurrentAccount) > 0) {
+                  isCurrentAccountEntitledToPhysical.value = true;
+                } else {
+                  isCurrentAccountEntitledToPhysical.value = false;
+                }
               }
             }).catch(e => {
               toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a buy order.', life: 3000});
@@ -618,6 +692,10 @@ export default {
               try {
                 if(response) {
                   auctionField.resetField(null)
+                  showNotificationButtonRef.value = true;
+                  if(user?.value?.email === false || (!user?.value?.email && account?.value)) {
+                    openNotificationsModal(true);
+                  }
                 }
                 isSubmitting.value = false
               } catch(e) {
@@ -625,13 +703,13 @@ export default {
               }
             }).catch(e => {
               console.log({e})
-              toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a buy order.', life: 3000});
+              toast.add({severity: 'error', summary: 'Error', detail: `Error placing a bid: ${e?.error?.message}.`, life: 8000});
               isSubmitting.value = false
             });
       } catch (e) {
         isSubmitting.value = false
         console.error("Error placing bid/buy", e);
-        toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a bid.', life: 3000});
+        toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a bid.', life: 8000});
       }
     };
 
@@ -726,8 +804,11 @@ export default {
       isRegisteredBidder,
       registerToBid,
       isCurrentAccountEntitledToPhysical,
+      isCurrentAccountEntitledToDigital,
       darkMode,
       nftTokenId: collectableData.value.nft_token_id,
+      showNotificationButton,
+      openNotificationsModal,
     };
   },
 };

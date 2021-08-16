@@ -173,7 +173,7 @@ export default {
     const userLocal = computed(() => store.getters['user/user']);
     const collection = useUsersCollectionWithPagination();
     watchEffect(() => {
-      if (isOwnProfile.value && userLocal.value) {
+      if (isOwnProfile.value && userLocal.value && userLocal.value.wallet) {
         collection.setAddress(userLocal.value.wallet);
         collection.load();
       }
@@ -189,10 +189,10 @@ export default {
 
     const isUserFound = computed(() => {
       console.log((!!user.value) || (isOwnProfile.value && account.value));
-      return (!!user.value) || (isOwnProfile.value && account.value);
+      return (!!user.value && user?.value?.wallet) || (isOwnProfile.value && account.value);
     });
 
-    const hasUserData = computed(() => !!user.value);
+    const hasUserData = computed(() => !!user.value && user?.value?.wallet);
 
     const socials = computed(() =>
       user.value && user.value.socials
