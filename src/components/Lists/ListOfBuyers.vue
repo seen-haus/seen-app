@@ -2,7 +2,7 @@
   <div class="list-of-buyers rounded-container" :class="darkMode ? 'dark-mode-surface no-border' : 'light-mode-surface'">
     <template v-if="list.length === 0">
       <div class="text-center text-gray-400">
-        {{ isAuction ? "No bids yet! Be the first!" : "No buyers yet! Be the first!" }}
+        {{ isAuction ? "No bidders yet! Be the first!" : "No buyers yet! Be the first!" }}
       </div>
     </template>
     <template v-else>
