@@ -130,7 +130,7 @@
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
             {{ isAuction ? "Recent bids" : "Recent buys" }}
           </div>
-          <list-of-buyers class="mb-12" :list="events"/>
+          <list-of-buyers class="mb-12" :list="events" :isAuction="isAuction"/>
 
           <template v-if="isAuction">
             <button class="button dark w-full" :class="darkMode && 'dark-mode-outline'" @click="openModal('video', 'https://www.youtube.com/watch?v=1G5caDyf-kA')">
