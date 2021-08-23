@@ -111,6 +111,11 @@
   cursor: pointer;
 }
 
+.abstract-circles {
+  position: absolute;
+  z-index: -1;
+}
+
 .p-overlaypanel .p-overlaypanel-content {
   padding: 0rem !important;
 }
