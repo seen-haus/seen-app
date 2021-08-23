@@ -25,7 +25,7 @@ export default {
   props: {
     textAlign: String, // left, center, right
     monospace: Boolean,
-    fontSize: Number,
+    fontSize: String,
     fontWeight: Number,
     marginBottom: Number,
   },
