@@ -30,12 +30,12 @@
           </light-typography>
           <light-typography textAlign="left">
             Please watch this video
-              <a
-                href="https://www.youtube.com/watch?v=I6BcTbTDWHc"
-                class="green-link"
-                target="_blank"
-                >here</a
-              >
+            <a
+              href="https://www.youtube.com/watch?v=I6BcTbTDWHc"
+              class="green-link"
+              target="_blank"
+              >here</a
+            >
             for more clarity.
           </light-typography>
         </collapsible-tile>
