@@ -150,7 +150,7 @@
           </template>
         </div>
 
-        <div class="abstract-circles-hero">
+        <div class="abstract-circles abstract-circles-hero">
           <img src="@/assets/images/abstract-circles.svg" alt="">
         </div>
 

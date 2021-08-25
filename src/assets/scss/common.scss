@@ -111,6 +111,11 @@
   cursor: pointer;
 }
 
+.abstract-circles {
+  position: absolute;
+  z-index: -1;
+}
+
 .p-overlaypanel .p-overlaypanel-content {
   padding: 0rem !important;
 }
@@ -179,6 +184,11 @@
 
 .light-mode-text-washed {
   color: #8E98A0!important;
+}
+
+.green-link {
+  color: #1ebc87;
+  font-weight: bold;
 }
 
 .dark-mode-section {
