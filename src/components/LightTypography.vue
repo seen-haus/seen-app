@@ -42,7 +42,6 @@ export default {
 .title-small {
   .title-text {
     max-width: 80%;
-    margin-top: -6px;
     font-size: 36px;
   }
 }
@@ -51,7 +50,6 @@ export default {
  @apply text-light-grey;
   max-width: 80%;
   font-size: 36px;
-  margin-top: -6px;
   @screen md {
     font-size: 46px;
   }

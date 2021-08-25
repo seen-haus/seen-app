@@ -9,8 +9,8 @@
         class="title-text font-title lg:flex-shrink-0 font-bold"
         :class="unshrinkable ? 'flex-shrink-0' : 'flex-shrink'"
         :style="{
-          'max-width': hideBars ? '100%' : '80%',
-          'width': hideBars ? '100%' : 'auto',
+          'max-width': '100%',
+          'width': '100%',
           'text-align': alignment,
           'font-size': fontSize ? fontSize : '48px',
           ...(titleMonospace && {'font-family': 'monospace'})
