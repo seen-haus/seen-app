@@ -10,7 +10,14 @@
           'text-align': alignment,
           'font-size': fontSize ? fontSize : '36px',
           'font-weight': fontWeight ? fontWeight : '500',
-          ...(titleMonospace && {'font-family': 'monospace'})
+          ...(titleMonospace && {'font-family': 'monospace'}),
+          ...(lineHeight && {'line-height': lineHeight}),
+          ...(upperCase && {'text-transform': 'uppercase'}),
+          ...(overflowEllipsis && {
+            'text-overflow': 'ellipsis',
+            'overflow': 'hidden',
+            'white-space': 'nowrap',
+          })
         }"
     >
       <slot> Title</slot>
@@ -26,8 +33,11 @@ export default {
     textAlign: String, // left, center, right
     unshrinkable: Boolean,
     titleMonospace: Boolean,
-    fontSize: Number,
+    fontSize: String,
     fontWeight: Number,
+    lineHeight: String,
+    overflowEllipsis: Boolean,
+    upperCase: Boolean,
   },
   computed: {
     alignment: function () {
