@@ -2,13 +2,13 @@
   <div :class="darkMode ? 'hero-auction-dark-mode' : 'hero-auction-light-mode'" class="hero-auction">
     <container class="py-15 flex flex-col lg:flex-row">
       <div
-          class="media relative flex items-center flex-1 cursor-pointer"
+          class="media relative flex items-center flex-1 cursor-pointer rounded-3xl bg-black overflow-hidden"
           @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route)"
       >
         <media-loader
             :src="firstMedia"
             aspectRatio="100%"
-            class="overflow-hidden rounded-3xl flex-1"
+            class="overflow-hidden flex-1"
             muted
             loop
             autoplay
