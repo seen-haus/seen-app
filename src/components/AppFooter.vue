@@ -52,6 +52,9 @@
               <router-link :to="{ name: 'faq'}" class="block">
                 FAQs
               </router-link>
+              <!-- <router-link :to="{ name: 'privacy'}" class="block">
+                Privacy
+              </router-link> -->
             </div>
           </div>
           <div>
