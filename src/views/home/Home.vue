@@ -198,7 +198,7 @@ export default {
       () => paginatedCollectables.listOfCollectables.value.filter(item =>  item && !item.featured_drop)
     );
 
-    const heroCollectable = computed(() => listOfCollectables.value[0]);
+    const heroCollectable = computed(() => listOfCollectables.value.filter(item =>  item && item.featured_drop)[0] || listOfCollectables.value[0]);
     const featuredCollectables = computed(() =>
       [listOfNonHeroCollectables.value[0], listOfNonHeroCollectables.value[1]].filter(
         (i) => i !== undefined
