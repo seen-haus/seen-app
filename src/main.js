@@ -2,9 +2,8 @@ import {createApp} from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import './assets/scss/index.scss';
 import {defineRule} from 'vee-validate';
-import {required, email, min, max} from '@vee-validate/rules';
+import {required, email, min, max, min_value, max_value, integer} from '@vee-validate/rules';
 import ToastService from 'primevue/toastservice';
 import Toast from "primevue/toast";
 import PrimeVue from 'primevue/config';
@@ -17,10 +16,15 @@ import "primevue/resources/themes/saga-blue/theme.css"; //theme
 import "primevue/resources/primevue.min.css"; //core css
 import "primeicons/primeicons.css";
 
+import './assets/scss/index.scss';
+
 defineRule('required', required);
 defineRule('email', email);
+defineRule('integer', integer);
 defineRule('min', min);
 defineRule('max', max);
+defineRule('min_value', min_value);
+defineRule('max_value', max_value);
 const metaManager = createMetaManager(defaultConfig, deepestResolver);
 
 useMeta({}, metaManager);

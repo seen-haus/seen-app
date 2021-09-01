@@ -25,6 +25,14 @@
   }
 }
 
+.p-calendar .p-inputtext {
+  padding:0!important;
+  border: none;
+  &:enabled:focus {
+    box-shadow: none;
+  }
+}
+
 .p-chips {
   @apply flex items-center border rounded-md border-gray-200 px-5;
   height: 60px;
@@ -56,6 +64,25 @@
 
 .p-chips .p-chips-multiple-container .p-chips-input-token {
   padding: 0!important;
+}
+
+.p-radiobutton .p-radiobutton-box.p-highlight {
+  border-color: #38EF7D;
+  background: #38EF7D;
+}
+
+.p-radiobutton .p-radiobutton-box.p-highlight:not(.p-disabled):hover {
+  border-color: #26c785;
+  background: #26c785;
+}
+
+.p-radiobutton .p-radiobutton-box:not(.p-disabled).p-focus {
+  box-shadow: 0 0 0 0.2rem #eafbf3;
+  border-color: #eafbf3;
+}
+
+.p-radiobutton .p-radiobutton-box:not(.p-disabled):not(.p-highlight):hover {
+  border-color: #49da81;
 }
 
 .outlined-input-checkbox {

@@ -1,6 +1,5 @@
 <template>
-  <div class="faqs">
-    <container class="section-featured-auctions py-12">
+    <div>
         <div class="flex w-full items-center justify-center text-center" id="app">
             <div class="bg-gray-100 border border-gray-300 dropzone flex-center" @dragover="dragover" @dragleave="dragleave" @drop="drop">
                 <input ref="mediaInputRef" type="file" id="file-to-pin" class="hidden" @change="onMediaChange" accept="image/png,image/jpg,image/gif,video/mp4">
@@ -40,7 +39,7 @@
                     25 MB maximum
                     </light-typography>
                     <button :disabled="invalid" :class="'primary'" class="button mt-4 mb-6 w-full" @click="$refs.mediaInputRef.click()">
-                        Browse
+                        {{mediaIpfsHash ? 'Replace' : 'Browse'}} Media
                     </button>
                     <light-typography
                         text-align="center"
@@ -50,15 +49,18 @@
                         or drag and drop into this space
                     </light-typography>
                 </label>
-                <ul class="mt-4" v-if="mediaInputRef?.value?.files?.length" v-cloak>
+                <ul class="mt-4" v-if="mediaInputRef?.value?.files?.length">
                     <li class="text-sm p-1" v-for="file in mediaInputRef.value.files" :key="file">
                         ${ file.name }<button class="ml-2" type="button" @click="remove(filelist.indexOf(file))" title="Remove file">remove</button>
                     </li>
                 </ul>
             </div>
         </div>
-        <button class="button mt-4 mb-6 w-full primary" @click="openWalletModal" v-if="!account && !useIsUploadComplete && useTemporaryMediaUrl">Connect Wallet</button>
-        <button v-if="account && !useIsUploadComplete && useTemporaryMediaUrl" :class="useIsUploading ? 'disabled' : 'primary'" :disabled="useIsUploading" class="button mt-4 mb-6 w-full" @click="pinFile()">
+        <button class="button mt-4 w-full primary" @click="openWalletModal" v-if="!account && !useIsUploadComplete">Connect Wallet</button>
+        <button v-if="account && !useIsUploadComplete && !useTemporaryMediaUrl" :class="'disabled'" class="button mt-4 w-full" @click="$refs.mediaInputRef.click()">
+            Upload Media To Continue
+        </button>
+        <button v-if="account && !useIsUploadComplete && (useTemporaryMediaUrl && !mediaIpfsHash)" :class="useIsUploading ? 'disabled' : 'primary'" :disabled="useIsUploading" class="button mt-4 w-full" @click="pinFile()">
             {{
                 useIsUploading 
                     ? 
@@ -68,11 +70,10 @@
                     : 'Upload Media To IPFS'
             }}
         </button>
-        <button v-if="useIsUploadComplete" :class="'primary'" class="button mt-4 mb-6 w-full" @click="nextStep">
+        <button v-if="useIsUploadComplete || (useTemporaryMediaUrl && mediaIpfsHash)" :class="'primary'" class="button mt-4 w-full" @click="nextStep">
             Continue
         </button>
-    </container>
-  </div>
+    </div>
 </template>
 
 <script>
@@ -99,6 +100,8 @@ export default {
         nextStep: Function,
         setMediaIpfsHash: Function,
         setTempMediaUrl: Function,
+        tempMediaUrl: String,
+        mediaIpfsHash: String,
     },
     data() {
         return {
@@ -153,7 +156,7 @@ export default {
         let isMediaProcessing = ref(false);
         let isUploadComplete = ref(false);
 
-        const useTemporaryMediaUrl = computed(() => temporaryMediaUrl.value);
+        const useTemporaryMediaUrl = computed(() => temporaryMediaUrl.value || props.tempMediaUrl);
 
         const useUploadProgress = computed(() => uploadProgress.value);
         const useIsUploading = computed(() => isUploading.value);
@@ -185,31 +188,37 @@ export default {
             if (file && file.size > 25000000) {
                 toast.add({severity:'error', summary:'Error', detail:'Media must be less than 25 MB.', life: 3000});
                 return;
+            } else if(!file) {
+                toast.add({severity:'error', summary:'Error', detail:'File not found, please reselect it via the file browser.', life: 8000});
+                return;
             }
 
             const msg = `{"reason":"Distribute file via SEEN.HAUS IPFS Gateway","account":"${account.value.toLowerCase()}","timestamp":${Math.floor(new Date().getTime() / 1000)}}`;
             const signer = useSigner();
 
             if (signer) {
+
+                let signingError = false;
                 const sig = await signer
                 .signMessage(msg)
                 .catch((e) => {
                     toast.add({severity:'error', summary:'Error', detail:'Message signing failed.', life: 3000});
-                    // let msg = 'Error has occurred. Try again later.';
-                    // if (e.code === 4001) {
-                    //     msg = 'Request was rejected.';
-                    // }
-                    // ToastifyService.fail(msg);
-                    //this.submitting = false;
+                    signingError = true;
                     return e;
                 });
+
+                if(signingError) {
+                    return false;
+                }
+
+                console.log({file})
                 fd.append('files', file);
                 fd.append('msg', msg);
                 fd.append('signature', sig);
 
                 isUploading.value = true;
 
-                IPFSService.pin(fd, handleProgressPercent, file.size)
+                IPFSService.pinFile(fd, handleProgressPercent, file.size)
                     .then(res => {
                         isUploading.value = false;
                         isMediaProcessing.value = false;

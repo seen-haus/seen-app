@@ -348,6 +348,9 @@ export default {
 
 <style lang="scss">
 .media-loader {
+  width: 100%;
+  height: 100%;
+
   .loading-indicator {
     opacity: 0;
     visibility: 0;

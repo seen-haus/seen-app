@@ -95,9 +95,9 @@ const routes = [
         component: () => import(/* webpackChunkName: "spaceNFT" */ '../views/massDrops/SpaceNFT.vue')
     },
     {
-        path: '/create',
-        name: 'create',
-        component: () => import(/* webpackChunkName: "Create" */ '../views/selfCreate/SelfCreate.vue')
+        path: '/create/:stepName',
+        name: 'selfCreate',
+        component: () => import(/* webpackChunkName: "SelfCreate" */ '../views/selfCreate/SelfCreate.vue')
     },
     {
         path: '/notifications',
@@ -107,8 +107,15 @@ const routes = [
 ]
 
 const router = createRouter({
-    scrollBehavior() {
-        return {top: 0}
+    scrollBehavior(navigationEvent) {
+        if(navigationEvent?.name === 'selfCreate') {
+            let currentScrollTop = document.body.scrollTop = document.documentElement.scrollTop;
+            if(currentScrollTop > 240) {
+                return { top: 240 }
+            }
+        }else{
+            return {top: 0}
+        }
     },
     history: createWebHistory(process.env.BASE_URL),
     routes

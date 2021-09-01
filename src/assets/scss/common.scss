@@ -97,6 +97,10 @@
   @apply font-normal text-red-500 text-xs mt-2;
 }
 
+.input-helper {
+  @apply font-normal text-gray-500 text-xs mt-2;
+}
+
 .clickable-blue-text {
   @apply font-bold text-blue-500 text-xs mt-2;
   cursor: pointer;
@@ -196,6 +200,11 @@
   border-top: 1px solid #262626;
 }
 
+.light-self-create-back-button {
+  position: absolute;
+  top: -35px;
+}
+
 .transparent-border-section {
   border-bottom: 1px solid transparent;
   border-top: 1px solid transparent;
@@ -231,6 +240,10 @@
   background-color: #ebeef266;
 }
 
+.bg-light-grey-darkened {
+  background-color: #E0E4EB;
+}
+
 .placeholder-light-grey {
   background-color: #DFE4E9;
 }
@@ -253,6 +266,10 @@
   pointer-events: none;
 }
 
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
 .disable-text-transform {
   text-transform: none;
 }
@@ -263,6 +280,10 @@
 
 .green-text {
   color: #26c785;
+}
+
+.light-green-text {
+  color: #37ee7c;
 }
 
 .clickable {
@@ -289,8 +310,8 @@
 .metadata-property-grid-container {
   display: grid;
   grid-template-columns: auto auto auto;
-  grid-column-gap: 50px;
-  grid-row-gap: 50px;
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
 }
 
 .metadata-property-grid-item {

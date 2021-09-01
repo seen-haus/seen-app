@@ -1,193 +1,259 @@
 <template>
     <div class="flex w-full mt-8">
         <div class="mint-info-form-container">
-            <form
-                @submit="onSubmit"
-                class="font-semibold uppercase text-md text-black"
+            <sub-title
+                class="light-self-create-back-button light-mode-text-washed disable-text-transform clickable hidden lg:flex mb-1 mt-2"
+                text-align="left"
+                font-size="13px"
+                @click="prevStep"
             >
-                <div class="fc mb-6">
-                    <div class="flex-space-between">
-                        <label for="title">Title</label>
-                        <label 
-                            :class="titleField?.value?.length > maxLengths.title ? 'error-text' : 'light-mode-text-washed'"
-                        >
-                            {{titleField.value ? titleField.value.length : 0}} / {{maxLengths.title}}
-                        </label>
-                    </div>
-                    <input
-                        type="text"
-                        id="title"
-                        class="w-full outlined-input mt-2"
-                        placeholder="Name your NFT"
-                        :class="titleField.errors[0] && 'invalid-outline'"
-                        v-model="titleField.value"
-                    />
-                    <span class="error-notice">{{ titleField.errors[0] }}</span>
-                </div>
-                <div class="fc mb-6">
-                    <div class="flex-space-between">
-                        <label for="description">Description</label>
-                        <label 
-                            :class="descriptionField?.value?.length > maxLengths.description ? 'error-text' : 'light-mode-text-washed'"
-                        >
-                            {{descriptionField.value ? descriptionField.value.length : 0}} / {{maxLengths.description}}
-                        </label>
-                    </div>
-                    <textarea 
-                        name="description"
-                        id="description"
-                        class="w-full outlined-input mt-2"
-                        :class="descriptionField.errors[0] && 'invalid-outline'"
-                        placeholder="Tell the world more about your piece"
-                        v-model="descriptionField.value"
-                        spellcheck="true"
-                        rows="7"
-                        style="height: auto"
-                    />
-                    <span class="error-notice">{{ descriptionField.errors[0] }}</span>
-                </div>
-                <div class="fc mb-6">
-                    <div class="flex-space-between">
-                        <label for="description">Tags</label>
-                        <label 
-                            :class="data.tagLength > maxLengths.tags ? 'error-text' : 'light-mode-text-washed'"
-                        >
-                            {{data.tagLength ? data.tagLength : 0}} / {{maxLengths.tags}}
-                        </label>
-                    </div>
-                    <Chips :class="data.tagLength > maxLengths.tags && 'invalid-outline'" class="w-full outlined-input mt-2" placeholder="Keywords about your piece separated by commas" v-model="data.tags" separator="," />
-                </div>
-                <div class="fc mb-6">
-                    <div class="flex-space-between">
-                        <label for="description">Properties</label>
-                    </div>
-                    <div class="metadata-property-grid-container">
-                        <div class="metadata-property-grid-item">
-                            <sub-title
-                                class="hidden lg:flex mt-2"
-                                text-align="center"
-                                font-size="14px"
-                            >
-                                Artist
-                            </sub-title>
-                            <sub-title
-                                class="disable-text-transform light-mode-text-washed property-value-text hidden lg:flex mb-2 mt-1"
-                                text-align="center"
-                                font-size="18px"
-                                font-weight="300"
-                            >
-                                Jisbar
-                            </sub-title>
-                        </div>
-                    </div>
-                    <sub-title
-                        class="text-black disable-text-transform green-text clickable hidden lg:flex mb-1 mt-2"
-                        text-align="left"
-                        font-size="13px"
-                        @click="showPropertiesModal"
+                <i class="fas fa-chevron-left mr-1"></i>Go Back
+            </sub-title>
+            <div :class="data.nftTokenId && 'cursor-not-allowed'">
+                <div :class="data.nftTokenId && 'disabled opacity-0-6'">
+                    <form
+                        @submit="onSubmit"
+                        class="font-semibold uppercase text-md text-black"
                     >
-                        Modify Properties <i class="fas fa-plus-circle mr-2"></i>
-                    </sub-title>
-                </div>
-                <mint-properties-modal :properties="data.properties" :setProperties="setProperties"/>
-                <div class="fc mb-6">
-                    <div class="flex-space-between">
-                        <label for="description">License</label>
-                    </div>
-                </div>
-            </form>
-            <div class="selection-container">
-                <div class="selection-option-wrapper" :class="data.selectedType === 'nft-digital' ? 'active-selection-option' : 'inactive-selection-option'">
-                    <div
-                        class="selection-option cursor-pointer"
-                        @click="setSelectedType('nft-digital')"
-                    >
-                        <div 
-                            class="icon-container flex-center"
-                            :class="data.selectedType === 'nft-digital' ? 'active-icon-container' : 'inactive-icon-container'"
-                        >
-                            <img src="@/assets/icons/type-mint-nft-icon.svg" alt="Type NFT Only Icon">
+                        <div class="fc mb-6">
+                            <div class="flex-space-between">
+                                <label for="title">Title</label>
+                                <label 
+                                    :class="titleField?.value?.length > maxLengths.title ? 'error-text' : 'light-mode-text-washed'"
+                                >
+                                    {{titleField.value ? titleField.value.length : 0}} / {{maxLengths.title}}
+                                </label>
+                            </div>
+                            <input
+                                type="text"
+                                id="title"
+                                class="w-full outlined-input mt-2"
+                                placeholder="Name your NFT"
+                                :class="titleField.errors[0] && 'invalid-outline'"
+                                v-model="titleField.value"
+                            />
+                            <span class="error-notice">{{ titleField.errors[0] }}</span>
                         </div>
-                        <div class="selection-option-text-container">
+                        <div class="fc mb-6">
+                            <div class="flex-space-between">
+                                <label for="description">Description</label>
+                                <label 
+                                    :class="descriptionField?.value?.length > maxLengths.description ? 'error-text' : 'light-mode-text-washed'"
+                                >
+                                    {{descriptionField.value ? descriptionField.value.length : 0}} / {{maxLengths.description}}
+                                </label>
+                            </div>
+                            <textarea 
+                                name="description"
+                                id="description"
+                                class="w-full outlined-input mt-2"
+                                :class="descriptionField.errors[0] && 'invalid-outline'"
+                                placeholder="Tell the world more about your piece"
+                                v-model="descriptionField.value"
+                                spellcheck="true"
+                                rows="7"
+                                style="height: auto"
+                            />
+                            <span class="error-notice">{{ descriptionField.errors[0] }}</span>
+                        </div>
+                        <div class="fc mb-6">
+                            <div class="flex-space-between">
+                                <label for="units">Unit Count</label>
+                                <label 
+                                    :class="unitField?.value?.length > maxLengths.units ? 'error-text' : 'light-mode-text-washed'"
+                                >
+                                    {{unitField.value ? unitField.value.length : 0}} / {{maxLengths.units}}
+                                </label>
+                            </div>
+                            <input
+                                type="number"
+                                id="units"
+                                @wheel="$event.target.blur()"
+                                class="w-full outlined-input mt-2"
+                                placeholder="How many units or editions of this NFT will there be?"
+                                :class="unitField.errors[0] && 'invalid-outline'"
+                                v-model="unitField.value"
+                            />
+                            <span class="error-notice">{{ unitField.errors[0] }}</span>
+                        </div>
+                        <div class="fc mb-6">
+                            <div class="flex-space-between">
+                                <label for="tags">Tags</label>
+                                <label 
+                                    :class="data.tagLength > maxLengths.tags ? 'error-text' : 'light-mode-text-washed'"
+                                >
+                                    {{data.tagLength ? data.tagLength : 0}} / {{maxLengths.tags}}
+                                </label>
+                            </div>
+                            <Chips :class="data.tagLength > maxLengths.tags && 'invalid-outline'" class="w-full outlined-input mt-2" placeholder="Keywords about your piece separated by commas" v-model="data.tags" separator="," />
+                        </div>
+                        <div class="fc mb-6">
+                            <div class="flex-space-between mb-2">
+                                <label for="properties">Properties</label>
+                            </div>
+                            <div class="metadata-property-grid-container">
+                                <div v-for="(propertySlot, index) in data.properties" :key="`saved-property-slot-${index}`" class="metadata-property-grid-item py-4">
+                                    <sub-title
+                                        class="hidden lg:flex"
+                                        text-align="center"
+                                        font-size="14px"
+                                    >
+                                        {{propertySlot.trait_type}}
+                                    </sub-title>
+                                    <sub-title
+                                        class="disable-text-transform light-mode-text-washed property-value-text hidden lg:flex mt-1"
+                                        text-align="center"
+                                        font-size="18px"
+                                        font-weight="300"
+                                    >
+                                        {{propertySlot.value}}
+                                    </sub-title>
+                                </div>
+                            </div>
                             <sub-title
-                                class="text-black hidden lg:flex"
-                                text-align="center"
-                                font-size="15px"
+                                class="text-black disable-text-transform green-text clickable hidden lg:flex mb-1 mt-2"
+                                text-align="left"
+                                font-size="13px"
+                                @click="showPropertiesModal"
                             >
-                                NFT ONLY
+                                Modify Properties <i class="fas fa-plus-circle mr-2"></i>
                             </sub-title>
-                            <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.`}"></i>
+                        </div>
+                        <mint-properties-modal :properties="data.properties" :setProperties="setProperties"/>
+                        <div class="fc mb-6">
+                            <div class="flex flex-col">
+                                <div>
+                                    <label for="rights">Rights</label>
+                                </div>
+                                <div class="mt-2">
+                                    <RadioButton id="rights1" name="rights" value="commercial-included" v-model="data.rights" />
+                                    <label for="rights1" class="ml-2">Commercial Rights Included</label>
+                                </div>
+                                <div class="mt-2">
+                                    <RadioButton id="rights2" name="rights" value="non-commercial-included" v-model="data.rights" />
+                                    <label for="rights2" class="ml-2">Non-Commercial Rights Included</label>
+                                </div>
+                                <div class="mt-2">
+                                    <RadioButton id="rights3" name="rights" value="rights-not-included" v-model="data.rights" />
+                                    <label for="rights3" class="ml-2">Rights Not Included</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fc mb-2">
+                            <label for="rights">Tangibility</label>
+                        </div>
+                    </form>
+                    <div class="selection-container">
+                        <div class="selection-option-wrapper" :class="data.selectedType === 'nft-digital' ? 'active-selection-option' : 'inactive-selection-option'">
+                            <div
+                                class="selection-option cursor-pointer"
+                                @click="setSelectedType('nft-digital')"
+                            >
+                                <div 
+                                    class="icon-container flex-center"
+                                    :class="data.selectedType === 'nft-digital' ? 'active-icon-container' : 'inactive-icon-container'"
+                                >
+                                    <img src="@/assets/icons/type-mint-nft-icon.svg" alt="Type NFT Only Icon">
+                                </div>
+                                <div class="selection-option-text-container">
+                                    <sub-title
+                                        class="text-black hidden lg:flex"
+                                        text-align="center"
+                                        font-size="15px"
+                                    >
+                                        NFT ONLY
+                                    </sub-title>
+                                    <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.`}"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="selection-option-wrapper" :class="data.selectedType === 'nft-physical' ? 'active-selection-option' : 'inactive-selection-option'">
+                            <div 
+                                class="selection-option cursor-pointer"
+                                @click="setSelectedType('nft-physical')"
+                            >
+                                <div 
+                                    class="icon-container flex-center"
+                                    :class="data.selectedType === 'nft-physical' ? 'active-icon-container' : 'inactive-icon-container'"
+                                >
+                                    <img src="@/assets/icons/type-mint-nft-physical-icon.svg" alt="Type NFT Only Icon">
+                                </div>
+                                <div class="selection-option-text-container">
+                                    <sub-title
+                                        class="text-black hidden lg:flex"
+                                        text-align="center"
+                                        font-size="15px"
+                                    >
+                                        NFT + PHYSICAL
+                                    </sub-title>
+                                    <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.`}"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="selection-option-wrapper" :class="data.selectedType === 'nft-physical' ? 'active-selection-option' : 'inactive-selection-option'">
-                    <div 
-                        class="selection-option cursor-pointer"
-                        @click="setSelectedType('nft-physical')"
-                    >
-                        <div 
-                            class="icon-container flex-center"
-                            :class="data.selectedType === 'nft-physical' ? 'active-icon-container' : 'inactive-icon-container'"
+                    <div v-if="data.selectedType === 'nft-physical'" style="margin-top: 15px;">
+                        <form
+                            @submit="onSubmit"
+                            class="font-semibold text-md text-black"
                         >
-                            <img src="@/assets/icons/type-mint-nft-physical-icon.svg" alt="Type NFT Only Icon">
-                        </div>
-                        <div class="selection-option-text-container">
-                            <sub-title
-                                class="text-black hidden lg:flex"
-                                text-align="center"
-                                font-size="15px"
-                            >
-                                NFT + PHYSICAL
-                            </sub-title>
-                            <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.`}"></i>
-                        </div>
+                            <div class="fc mb-6">
+                                <label for="country">Country</label>
+                                <select :class="countryField.errors[0] && 'invalid-outline'" v-model="countryField.value" name="country" id="country" autocomplete="country-name" class="w-full outlined-input mt-2">
+                                <option :value="country" v-for="country in countries" :key="country">{{country}}</option>
+                                </select>
+                                <span class="error-notice">{{ countryField.errors[0] }}</span>
+                            </div>
+                            <div class="fc mb-6">
+                                <label for="winner-state">State / Province</label>
+                                <input
+                                    type="text"
+                                    id="winner-state"
+                                    class="w-full outlined-input mt-2"
+                                    :class="provinceField.errors[0] && 'invalid-outline'"
+                                    autocomplete="address-level1"
+                                    v-model="provinceField.value"
+                                />
+                                <span class="error-notice">{{ provinceField.errors[0] }}</span>
+                            </div>
+                            <div class="fc mb-6">
+                                <label for="winner-city">City</label>
+                                <input
+                                    type="text"
+                                    id="winner-city"
+                                    class="w-full outlined-input mt-2"
+                                    :class="cityField.errors[0] && 'invalid-outline'"
+                                    autocomplete="address-level2"
+                                    v-model="cityField.value"
+                                />
+                                <span class="error-notice">{{ cityField.errors[0] }}</span>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            <div v-if="data.selectedType === 'nft-physical'" style="margin-top: 15px;">
-                <form
-                    @submit="onSubmit"
-                    class="font-semibold text-md text-black"
-                >
-                    <div class="fc mb-6">
-                        <label for="country">Country</label>
-                        <select :class="countryField.errors[0] && 'invalid-outline'" v-model="countryField.value" name="country" id="country" autocomplete="country-name" class="w-full outlined-input mt-2">
-                        <option :value="country" v-for="country in countries" :key="country">{{country}}</option>
-                        </select>
-                        <span class="error-notice">{{ countryField.errors[0] }}</span>
-                    </div>
-                    <div class="fc mb-6">
-                        <label for="winner-state">State / Province</label>
-                        <input
-                            type="text"
-                            id="winner-state"
-                            class="w-full outlined-input mt-2"
-                            :class="provinceField.errors[0] && 'invalid-outline'"
-                            autocomplete="address-level1"
-                            v-model="provinceField.value"
-                        />
-                        <span class="error-notice">{{ provinceField.errors[0] }}</span>
-                    </div>
-                    <div class="fc mb-6">
-                        <label for="winner-city">City</label>
-                        <input
-                            type="text"
-                            id="winner-city"
-                            class="w-full outlined-input mt-2"
-                            :class="cityField.errors[0] && 'invalid-outline'"
-                            autocomplete="address-level2"
-                            v-model="cityField.value"
-                        />
-                        <span class="error-notice">{{ cityField.errors[0] }}</span>
-                    </div>
-                </form>
-            </div>
-            <button :disabled="invalid" :class="data.isNextStepReady ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="nextStep">
+            <button v-if="data.nftTokenId" class="button mt-6 w-full primary" @click="nextStep">
                 Continue
             </button>
+            <button v-if="metaDataIpfsHashData && data.preparedMetaDataLocal && !data.nftTokenId" :disabled="invalid" :class="metaDataIpfsHashData ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="mintNftOnChain">
+                Mint NFT On-Chain
+            </button>
+            <button v-if="!metaDataIpfsHashData" :disabled="invalid" :class="(data.preparedMetaDataLocal && !data.isUploadingMetaData) ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="uploadMetaDataToIPFS">
+                {{data.isUploadingMetaData ? 'Distributing Metadata To IPFS...' : 'Upload Metadata To IPFS'}}
+            </button>
+            <!-- <sub-title
+                class="disable-text-transform green-text clickable hidden lg:flex mb-1 mt-2"
+                text-align="left"
+                font-size="13px"
+                @click="toggleShowMetaData"
+            >
+                {{data.showPreparedMetaData ? 'Hide' : 'View'}} Prepared Token Metadata <i class="fas fa-eye mr-2"></i>
+            </sub-title>
+            <div :class="(data.preparedMetaDataLocal && data.showPreparedMetaData) ? 'max-height-transition hidden-metadata' : 'max-height-transition shown-metadata'">
+                <pre>{{JSON.stringify(data.preparedMetaDataLocal, null, 4)}}</pre>
+            </div> -->
         </div>
         <div class="preview-container">
-            <drop-card-preview :tangibility="data.selectedType" :tags="data.tags" :titleText="titleField.value" :creatorAccount="creatorData.account" :creatorProfilePicture="creatorData.profilePicture" :creatorUsername="creatorData.username" :mediaUrl="mediaUrl" />
+            <drop-card-preview :sticky="true" :listingType="listingTypeData" :startTime="openingTimeUnixData ? openingTimeUnixData * 1000 : null"  :priceType="priceTypeData" :price="priceData" :units="unitField.value" :tangibility="data.selectedType" :tags="data.tags" :titleText="titleField.value" :creatorAccount="creatorData.account" :creatorProfilePicture="creatorData.profilePicture" :creatorUsername="creatorData.username" :mediaUrl="mediaUrl" />
         </div>
     </div>
 </template>
@@ -198,47 +264,72 @@ import { ref, reactive, computed, watchEffect } from "vue";
 import {useField, useForm} from "vee-validate";
 import {useStore} from "vuex"
 
+import { useToast } from "primevue/usetoast";
+
+import RadioButton from 'primevue/radiobutton';
 import Chips from 'primevue/chips';
 
-import { countryList } from "@/connectors/constants";
 import SubTitle from "@/components/SubTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
 import DropCardPreview from "@/components/DropCardPreview/DropCardPreview.vue";
 
-import MintPropertiesModal from "@/views/selfCreate/components/MintPropertiesModal.vue";
+import { countryList } from "@/connectors/constants";
+import useWeb3 from "@/connectors/hooks";
 
-import useWeb3 from "@/connectors/hooks"
+import useSigner from "@/hooks/useSigner";
 
 import emitter from "@/services/utils/emitter";
+import { IPFSService } from "@/services/apiService";
+
+import MintPropertiesModal from "@/views/selfCreate/components/MintPropertiesModal.vue";
 
 export default {
     name: "TypeSelection",
     props: {
-        mediaUrl: String,
         nextStep: Function,
+        prevStep: Function,
+        mediaUrl: String,
         setTangibilityData: Function,
+        tangibilityData: String,
         setLocationData: Function,
+        setCountryData: Function,
+        setProvinceData: Function,
+        setCityData: Function,
         clearLocationData: Function,
+        locationDataCountry: String,
+        locationDataProvince: String,
+        locationDataCity: String,
         setPropertyData: Function,
         propertyData: Array,
         setTitleData: Function,
+        titleData: String,
         setDescriptionData: Function,
+        descriptionData: String,
         setTagData: Function,
-        setLicenseData: Function,
+        tagData: Array,
+        setRightsData: Function,
+        rightsData: String,
+        setUnitData: Function,
+        unitData: Number,
+        priceData: String,
+        priceTypeData: String,
+        openingTimeUnixData: String,
+        listingTypeData: String,
+        setPreparedMetaData: Function,
+        preparedMetaData: Object,
+        setMetaDataIpfsHashData: Function,
+        metaDataIpfsHashData: String,
+        mediaIpfsHash: String,
+        setNftTokenIdData: Function,
+        nftTokenIdData: String,
     },
     methods: {
         setSelectedType(type) {
             this.data.selectedType = type;
             if (type === 'nft-digital') {
-                this.data.isNextStepReady = true;
                 this.setTangibilityData('nft-digital')
             } else if (type === 'nft-physical') {
                 this.setTangibilityData('nft-physical');
-                if(this.data.locationData.country && this.data.locationData.province && this.data.locationData.city) {
-                    this.data.isNextStepReady = true;
-                }else{
-                    this.data.isNextStepReady = false;
-                }
             }
         },
         setProperties(properties) {
@@ -254,6 +345,9 @@ export default {
             this.data.properties = builtProperties;
             this.setPropertyData(builtProperties);
         },
+        toggleShowMetaData() {
+            this.data.showPreparedMetaData = !this.data.showPreparedMetaData;
+        },
     },
     components: {
         SubTitle,
@@ -261,10 +355,12 @@ export default {
         DropCardPreview,
         Chips,
         MintPropertiesModal,
+        RadioButton,
     },
     setup(props) {
 
         const store = useStore();
+        const toast = useToast();
         
         const userLocal = computed(() => store.getters['user/user']);
 
@@ -278,17 +374,25 @@ export default {
             emitter.emit("openNftMintPropertiesModal");
         };
 
+        const { account } = useWeb3();
+
         watchEffect(() => {
             let userStoreData = store.getters['user/user'];
             if(userStoreData) {
                 if(userStoreData?.username?.length > 0) {
                     creatorData.value.username = userStoreData.username;
+                } else {
+                    creatorData.value.username = false;
                 }
                 if(userStoreData?.wallet?.length > 0) {
                     creatorData.value.account = userStoreData.wallet;
+                } else {
+                    creatorData.value.account = false;
                 }
                 if(userStoreData?.image?.length > 0) {
                     creatorData.value.profilePicture = userStoreData.image;
+                } else {
+                    creatorData.value.profilePicture = false;
                 }
             } else if(account) {
                 creatorData.value.profilePicture = false;
@@ -297,19 +401,22 @@ export default {
             }
         })
 
-        const { account } = useWeb3();
-
         const data = reactive({
-            selectedType: null,
+            selectedType: props.tangibilityData ? props.tangibilityData : null,
             locationData: {
                 country: false,
                 province: false,
                 city: false,
             },
             isNextStepReady: false,
-            tags: [],
+            tags: props.tagData || [],
             tagLength: 0,
             properties: props.propertyData || [],
+            rights: false,
+            preparedMetaDataLocal: props.preparedMetaData || false,
+            showPreparedMetaData: false,
+            isUploadingMetaData: false,
+            nftTokenId: props.nftTokenIdData || false,
         })
 
         const form = useForm({
@@ -327,45 +434,72 @@ export default {
         let maxLengths = {
             title: 30,
             description: 500,
-            tags: 10,
+            units: 5,
+            tags: 25, // Max text length of combined tags
+            properties: 10, // 10 properties max, not a limit per text value
         }
 
         const countryField = reactive(useField("country", "required|min:3"));
         const provinceField = reactive(useField("province", "required|min:3"));
         const cityField = reactive(useField("city", "required|min:3"));
         const titleField = reactive(useField("title", `required|min:1|max:${maxLengths.title}`));
+        const unitField = reactive(useField("units", `required|integer|min:1|max:${maxLengths.units}|min_value:1|max_value:99999`));
         const descriptionField = reactive(useField("description", `required|min:1|max:${maxLengths.description}`));
 
         watchEffect(() => {
-            if(titleField?.value && !titleField.errors[0]) {
+            let { resetField } = titleField;
+            if(titleField?.value && (props.titleData !== titleField.value)) {
                 props.setTitleData(titleField.value)
+            } else if (titleField?.value === "" && props.titleData !== false) {
+                props.setTitleData(false)
+            } else if(props.titleData !== false && titleField?.value !== props.titleData) {
+                resetField({
+                    value: props.titleData
+                })
             } else if (titleField?.value === "") {
                 props.setTitleData(false)
             }
         })
 
         watchEffect(() => {
-            if(descriptionField?.value && !descriptionField.errors[0]) {
+            data.nftTokenId = props.nftTokenIdData;
+        })
+
+        watchEffect(() => {
+            let { resetField } = descriptionField;
+            if(descriptionField?.value && (props.descriptionData !== descriptionField?.value)) {
                 props.setDescriptionData(descriptionField.value)
+            } else if (descriptionField?.value === "" && props.descriptionData !== false) {
+                props.setDescriptionData(false)
+            } else if(props.descriptionData !== false && descriptionField?.value !== props.descriptionData) {
+                resetField({
+                    value: props.descriptionData
+                })
             } else if (descriptionField?.value === "") {
                 props.setDescriptionData(false)
             }
         })
 
         watchEffect(() => {
-            if(data.selectedType === 'nft-physical') {
-                if(countryField.meta.valid && provinceField.meta.valid && cityField.meta.valid) {
-                    data.isNextStepReady = true;
-                    props.setLocationData(countryField.value, provinceField.value, cityField.value);
-                    return;
-                }
-                props.clearLocationData();
-            } else if (data.selectedType === 'nft-digital') {
-                data.isNextStepReady = true;
+            let { resetField } = unitField;
+            if(unitField?.value && (props.unitData !== unitField.value)) {
+                props.setUnitData(unitField.value)
+            } else if (unitField?.value === "" && props.unitData !== false) {
+                props.setUnitData(false)
+            } else if(props.unitData !== false && unitField?.value !== props.unitData) {
+                resetField({
+                    value: props.unitData
+                })
+            } else if (unitField?.value === "") {
+                props.setUnitData(false)
+            }
+        })
+
+        watchEffect(() => {
+            if (data.selectedType === 'nft-digital') {
                 props.clearLocationData();
                 return;
             }
-            data.isNextStepReady = false;
         })
 
         watchEffect(() => {
@@ -379,7 +513,170 @@ export default {
             }
         })
 
-        console.log({'userLocal?.value': userLocal?.value, 'userLocal?.value?.wallet': userLocal?.value?.wallet})
+        watchEffect(() => {
+            if(data.rights && (data.rights !== props.rightsData)) {
+                props.setRightsData(data.rights)
+            }else if(props.rightsData && (props.rightsData !== data.rights)) {
+                data.rights = props.rightsData
+            }
+        })
+
+        watchEffect(() => {
+            let { resetField } = countryField;
+            if(countryField?.value && (props.locationDataCountry !== countryField.value)) {
+                props.setCountryData(countryField.value)
+            } else if (countryField?.value === "" && props.locationDataCountry !== false) {
+                props.setCountryData(false)
+            } else if(props.locationDataCountry !== false && countryField?.value !== props.locationDataCountry) {
+                resetField({
+                    value: props.locationDataCountry
+                })
+            } else if (countryField?.value === "") {
+                props.setCountryData(false)
+            }
+        })
+
+        watchEffect(() => {
+            let { resetField } = provinceField;
+            if(provinceField?.value && (props.locationDataProvince !== provinceField.value)) {
+                props.setProvinceData(provinceField.value)
+            } else if (provinceField?.value === "" && props.locationDataProvince !== false) {
+                props.setProvinceData(false)
+            } else if(props.locationDataProvince !== false && provinceField?.value !== props.locationDataProvince) {
+                resetField({
+                    value: props.locationDataProvince
+                })
+            } else if (provinceField?.value === "") {
+                props.setProvinceData(false)
+            }
+        })
+
+        watchEffect(() => {
+            let { resetField } = cityField;
+            if(cityField?.value && (props.locationDataCity !== cityField.value)) {
+                props.setCityData(cityField.value)
+            } else if (cityField?.value === "" && props.locationDataCity !== false) {
+                props.setCityData(false)
+            } else if(props.locationDataCity !== false && cityField?.value !== props.locationDataCity) {
+                resetField({
+                    value: props.locationDataCity
+                })
+            } else if (cityField?.value === "") {
+                props.setCityData(false)
+            }
+        })
+
+        watchEffect(() => {
+            // This doesn't actually handle validation, it's just meant to check if there are validation errors
+
+            // Required fields
+            let isValidTitle = titleField?.value && !titleField.errors[0];
+            let isValidDescription = descriptionField?.value && !descriptionField.errors[0];
+            let isValidUnit = unitField?.value && !unitField.errors[0];
+            let isValidTangibility = data.selectedType;
+
+            let isValidLocationData = false;
+            if(data.selectedType === 'nft-digital') {
+                isValidLocationData = true;
+            } else if(data.selectedType === 'nft-physical') {
+                if((countryField?.value && !countryField.errors[0]) && (provinceField?.value && !provinceField.errors[0]) && (cityField?.value && !cityField.errors[0])) {
+                    isValidLocationData = true;
+                }
+            }
+
+            // Optional fields
+            let isValidTags = data.tags.length === 0 || data.tagLength <= maxLengths.tags;
+            let isValidProperties = data.properties.length === 0 || data.properties.length <= maxLengths.properties;
+            let isValidRights = !data.rights || data.rights;
+
+            if(
+                isValidTitle
+                && isValidDescription
+                && isValidUnit
+                && isValidTangibility
+                && isValidLocationData
+                && isValidTags
+                && isValidProperties
+                && isValidRights
+                && props.mediaIpfsHash
+            ) {
+                data.preparedMetaDataLocal = {
+                    "name": titleField?.value,
+                    "description": descriptionField?.value,
+                    "image":`ipfs://${props.mediaIpfsHash}`,
+                    "tangibility": data.selectedType,
+                    ...(data.rights && { rights: data.rights }),
+                    ...(data.tags && (data.tags.length > 0) && { tags: data.tags }),
+                    ...(data.properties && (data.properties.length > 0) && { attributes: data.properties }),
+                }
+                if(JSON.stringify(data.preparedMetaDataLocal) !== JSON.stringify(props.preparedMetaData)) {
+                    props.setMetaDataIpfsHashData(false);
+                }
+            } else {
+                data.preparedMetaDataLocal = false;
+                props.setMetaDataIpfsHashData(false);
+            }
+        })
+
+        const uploadMetaDataToIPFS = async () => {
+            const fd = new FormData();
+
+            if(!data.preparedMetaDataLocal) {
+                toast.add({severity:'error', summary:'Error', detail:'File not found, please reselect it via the file browser.', life: 8000});
+                return;
+            }
+
+            const msg = `{"reason":"Distribute Metadata via SEEN.HAUS IPFS Gateway","account":"${account.value.toLowerCase()}","timestamp":${Math.floor(new Date().getTime() / 1000)}}`;
+            const signer = useSigner();
+
+            if (signer) {
+
+                let signingError = false;
+                const sig = await signer
+                .signMessage(msg)
+                .catch((e) => {
+                    toast.add({severity:'error', summary:'Error', detail:'Message signing failed.', life: 3000});
+                    signingError = true;
+                    return e;
+                });
+
+                if(signingError) {
+                    return false;
+                }
+
+                fd.append('json', JSON.stringify(data.preparedMetaDataLocal));
+                fd.append('msg', msg);
+                fd.append('signature', sig);
+
+                data.isUploadingMetaData = true;
+
+                IPFSService.pinJSON(fd)
+                    .then(res => {
+                        data.isUploadingMetaData = false;
+                        if(res.data.ipfsHash) {
+                            props.setMetaDataIpfsHashData(res.data.ipfsHash);
+                            props.setPreparedMetaData(data.preparedMetaDataLocal);
+                        }else{
+                            props.setMetaDataIpfsHashData(false);
+                            toast.add({severity:'error', summary:'Error', detail:`IPFS Hash Retrieval Failed`, life: 8000});
+                        }
+                    })
+                    .catch(e => {
+                        console.error(e)
+                        data.isUploadingMetaData = false;
+                        props.setMetaDataIpfsHashData(false);
+                        let errorMessage = "(Gateway Error)";
+                        if(e?.data?.message) {
+                            errorMessage = '(' + (e?.data?.message?.message ? e?.data?.message?.message : e?.data?.message)  + ')';
+                        }
+                        toast.add({severity:'error', summary:'Error', detail:`Media upload failed ${errorMessage}`, life: 8000});
+                    });
+            }
+        }
+
+        const mintNftOnChain = async () => {
+            props.setNftTokenIdData('1');
+        }
 
         return {
             countries,
@@ -389,10 +686,13 @@ export default {
             cityField,
             titleField,
             descriptionField,
+            unitField,
             data,
             maxLengths,
             creatorData,
             showPropertiesModal,
+            uploadMetaDataToIPFS,
+            mintNftOnChain,
         }
 
     }
@@ -400,12 +700,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+    .max-height-transition {
+        transition: max-height 0.5s;
+    }
+    .hidden-metadata {
+        overflow: hidden;
+        max-height: 0px;
+    }
+    .shown-metadata {
+        overflow-y: auto;
+        max-height: 400px;
+    }
     .mint-info-form-container {
         max-width: 800px;
-        width: 60%;
+        width: calc(100% - 368px);
+        margin-right: 20px;
+        position: relative;
     }
     .preview-container {
-        width: 40%;
+        width: 348px;
     }
     .selection-container {
         display: flex;

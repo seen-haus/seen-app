@@ -1,6 +1,14 @@
 <template>
     <div class="flex w-full mt-8">
         <div class="mint-info-form-container">
+            <sub-title
+                class="light-self-create-back-button light-mode-text-washed disable-text-transform clickable hidden lg:flex mb-1 mt-2"
+                text-align="left"
+                font-size="13px"
+                @click="prevStep"
+            >
+                <i class="fas fa-chevron-left mr-1"></i>Go Back
+            </sub-title>
             <div class="fc mb-3">
                 <label class="font-semibold uppercase text-md text-black">Type</label>
             </div>
@@ -40,9 +48,13 @@
                     </div>
                 </div>
             </div>
-            <div class="fc mb-8">
+            <div class="fc mb-4">
                 <div class="flex-space-between">
-                    <label class="font-semibold uppercase text-md text-black" for="price">Reserve Price</label>
+                    <label class="font-semibold uppercase text-md text-black" for="price">
+                        {{data.selectedType === 'sale' ? `Sale Price` : null}}
+                        {{data.selectedType === 'auction' ? `Reserve Price` : null}}
+                        {{['auction', 'sale'].indexOf(data.selectedType) === -1  ? `Price` : null}}
+                    </label>
                 </div>
                 <div class="input-inner-label">
                     <div class="input-icon-label" style="width: 50px;height: 20px;">
@@ -64,14 +76,64 @@
                         v-model="priceField.value"
                     />
                 </div>
+                <span v-if="!ethereum"><i class="fas fa-spinner fa-spin"></i></span>
+                <span class="input-helper" v-else-if="!priceField.errors[0] && priceField.value">Approximately {{ formatCurrency(ethereum * priceField.value) }}</span>
+                <span class="input-helper" v-else-if="!priceField.errors[0] && !priceField.value">Price Estimated Upon Entering Value</span>
                 <span class="error-notice">{{ priceField.errors[0] }}</span>
             </div>
-            <button :disabled="invalid" :class="data.isNextStepReady ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="nextStep">
+            <div class="fc mb-3">
+                <label class="font-semibold uppercase text-md text-black">Opening Time</label>
+            </div>
+            <div class="selection-container mb-4">
+                <div class="selection-option-wrapper" :class="openingTimeTypeData === 'immediate' ? 'active-selection-option' : 'inactive-selection-option'">
+                    <div
+                        class="selection-option cursor-pointer"
+                        @click="setOpeningTimeTypeInternal('immediate')"
+                    >
+                        <div class="selection-option-text-container">
+                            <sub-title
+                                class="text-black hidden uppercase lg:flex"
+                                text-align="center"
+                                font-size="15px"
+                            >
+                                Immediate
+                            </sub-title>
+                            <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Users will be able to immediately ${data.selectedType === 'sale' ? 'purchase' : 'bid on'} your piece.`}" :key="`immediate-tooltip-${data.selectedType}`"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="selection-option-wrapper" :class="openingTimeTypeData === 'schedule' ? 'active-selection-option' : 'inactive-selection-option'">
+                    <div 
+                        class="selection-option cursor-pointer"
+                        @click="setOpeningTimeTypeInternal('schedule')"
+                    >
+                        <div class="selection-option-text-container">
+                            <sub-title
+                                class="text-black hidden uppercase lg:flex"
+                                text-align="center"
+                                font-size="15px"
+                            >
+                                Schedule
+                            </sub-title>
+                            <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Users will be able to see your listing, but will not be able to ${data.selectedType === 'sale' ? 'purchase' : 'bid on'} your piece until the scheduled time.`}" :key="`schedule-tooltip-${data.selectedType}`"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fc mb-6">
+                <div class="p-field p-col-12 p-md-4">
+                    <Calendar :disabled="openingTimeTypeData === 'immediate'" :class="openingTimeTypeData === 'immediate' ? 'disabled' : null" placeholder="Opening Time" class="w-full outlined-input mt-2" id="opening-time" v-model="data.openingTime" :showTime="true" hourFormat="12" />
+                </div>
+            </div>
+            <!-- <button :disabled="invalid" :class="data.isNextStepReady ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="nextStep">
                 Continue
+            </button> -->
+            <button :class="!data.consignmentId ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="nextStep">
+                Deploy on-chain {{data.selectedType}}
             </button>
         </div>
         <div class="preview-container">
-            <drop-card-preview :tangibility="data.selectedType" :tags="data.tags" :titleText="priceField.value" :creatorAccount="creatorData.account" :creatorProfilePicture="creatorData.profilePicture" :creatorUsername="creatorData.username" :mediaUrl="mediaUrl" />
+            <drop-card-preview :sticky="true" :listingType="listingTypeData" :startTime="openingTimeUnixData ? openingTimeUnixData * 1000 : null" :units="unitData" :price="priceData" :priceType="priceTypeData" :tangibility="tangibilityData" :tags="tagData" :titleText="titleData" :creatorAccount="creatorData.account" :creatorProfilePicture="creatorData.profilePicture" :creatorUsername="creatorData.username" :mediaUrl="mediaUrl" />
         </div>
     </div>
 </template>
@@ -80,7 +142,8 @@
 
 import { ref, reactive, computed, watchEffect } from "vue";
 import {useField, useForm} from "vee-validate";
-import {useStore} from "vuex"
+import {useStore} from "vuex";
+import Calendar from 'primevue/calendar';
 
 import Chips from 'primevue/chips';
 
@@ -89,17 +152,71 @@ import LightTypography from "@/components/LightTypography.vue";
 import DropCardPreview from "@/components/DropCardPreview/DropCardPreview.vue";
 
 import useWeb3 from "@/connectors/hooks"
+import useExchangeRate from "@/hooks/useExchangeRate.js";
 
 export default {
     name: "TypeSelection",
+    created() {
+        let today = new Date();
+        let month = today.getMonth();
+        let year = today.getFullYear();
+        let prevMonth = (month === 0) ? 11 : month -1;
+        let prevYear = (prevMonth === 11) ? year - 1 : year;
+        let nextMonth = (month === 11) ? 0 : month + 1;
+        let nextYear = (nextMonth === 0) ? year + 1 : year;
+        this.minDate = new Date();
+        this.minDate.setMonth(prevMonth);
+        this.minDate.setFullYear(prevYear);
+        this.maxDate = new Date();
+        this.maxDate.setMonth(nextMonth);
+        this.maxDate.setFullYear(nextYear);
+
+        let invalidDate = new Date();
+        invalidDate.setDate(today.getDate() - 1);
+        this.invalidDates = [today,invalidDate];
+    },
     props: {
         nextStep: Function,
-        setListingType: Function,
+        prevStep: Function,
+        setListingTypeData: Function,
+        listingTypeData: String,
+        setPriceData: Function,
+        priceData: String,
+        setPriceTypeData: Function,
+        priceTypeData: String,
+        mediaUrl: String,
+        tangibilityData: String,
+        titleData: String,
+        tagData: Array,
+        unitData: String,
+        openingTimeTypeData: String,
+        setOpeningTimeType: Function,
+        openingTimeUnixData: String,
+        setOpeningTimeUnix: Function,
     },
     methods: {
         setSelectedType(type) {
             this.data.selectedType = type;
-            this.setListingType(type)
+            this.setListingTypeData(type);
+            if(type === 'auction') {
+                this.setPriceTypeData('Reserve Price');
+            } else if(type === 'sale') {
+                this.setPriceTypeData('Sale Price');
+            }
+        },
+        setOpeningTimeTypeInternal(type) {
+            this.setOpeningTimeType(type);
+            console.log({type})
+            if(type === 'immediate') {
+                let unixTimeNow = Math.floor(new Date().getTime() / 1000);
+                this.setOpeningTimeUnix(unixTimeNow);
+                this.data.openingTimeType = 'immediate';
+                this.data.openingTime = new Date(unixTimeNow * 1000);
+            } else if (type === 'schedule' && document.getElementById('opening-time')) {
+                setTimeout(() => {
+                    document.getElementById('opening-time').focus();
+                }, 100)
+            }
         },
     },
     components: {
@@ -107,10 +224,12 @@ export default {
         LightTypography,
         DropCardPreview,
         Chips,
+        Calendar,
     },
     setup(props) {
 
         const store = useStore();
+        const { formatCurrency, ethereum } = useExchangeRate();
         
         const userLocal = computed(() => store.getters['user/user']);
 
@@ -125,12 +244,18 @@ export default {
             if(userStoreData) {
                 if(userStoreData?.username?.length > 0) {
                     creatorData.value.username = userStoreData.username;
+                } else {
+                    creatorData.value.username = false;
                 }
                 if(userStoreData?.wallet?.length > 0) {
                     creatorData.value.account = userStoreData.wallet;
+                } else {
+                    creatorData.value.account = false;
                 }
                 if(userStoreData?.image?.length > 0) {
                     creatorData.value.profilePicture = userStoreData.image;
+                } else {
+                    creatorData.value.profilePicture = false;
                 }
             } else if(account) {
                 creatorData.value.profilePicture = false;
@@ -143,39 +268,85 @@ export default {
         const { account } = useWeb3();
 
         const data = reactive({
-            selectedType: null,
+            selectedType: props.listingTypeData ? props.listingTypeData : null,
+            price: false,
             isNextStepReady: false,
+            openingTime: props.openingTimeUnixData && new Date(props.openingTimeUnixData * 1000) || false,
+            openingTimeType: props.openingTimeTypeData || false,
+            consignmentId: false,
         })
 
-        let maxLengths = {
-            title: 30,
-            description: 500,
-            tags: 10,
-        }
+        const priceField = reactive(useField("price", `required|min:1|min_value:0.00001`));
 
-        const priceField = reactive(useField("price", `required|min:1|max:${maxLengths.title}`));
+        watchEffect(() => {
+            let { resetField } = priceField;
+            if(priceField?.value && (props.priceData !== priceField.value)) {
+                props.setPriceData(priceField.value)
+            } else if (priceField?.value === "" && props.priceData !== false) {
+                props.setPriceData(false)
+            } else if(props.priceData !== false && priceField?.value !== props.priceData) {
+                resetField({
+                    value: props.priceData
+                })
+            } else if (priceField?.value === "") {
+                props.setPriceData(false)
+            }
+        })
 
-        // watchEffect(() => {
-        //     if(data.selectedType === 'nft-physical') {
-        //         if(countryField.meta.valid && provinceField.meta.valid && cityField.meta.valid) {
-        //             data.isNextStepReady = true;
-        //             props.setLocationData(countryField.value, provinceField.value, cityField.value);
-        //             return;
-        //         }
-        //         props.clearLocationData();
-        //     } else if (data.selectedType === 'nft-digital') {
-        //         data.isNextStepReady = true;
-        //         props.clearLocationData();
-        //         return;
-        //     }
-        //     data.isNextStepReady = false;
-        // })
+        watchEffect(() => {
+            console.log({data: data.openingTime})
+            if(data.openingTime && data.openingTime.getTime && data.openingTime.getTime()) {
+                if(Math.floor(data.openingTime.getTime() / 1000) !== props.openingTimeUnixData) {
+                    props.setOpeningTimeUnix(Math.floor(data.openingTime.getTime() / 1000));
+                    if(!props.openingTimeTypeData && !data.openingTimeType) {
+                        props.setOpeningTimeType('schedule');
+                    }
+                }
+            } else if (data.openingTime) {
+                console.log({'data.openingTime': data.openingTime})
+                let fragments = data.openingTime.split(' ');
+                if(fragments.length === 3) {
+                    if((fragments[0].length === 9) && (fragments[1].length === 5) && (fragments[2].length === 2)) {
+                        let date = new Date(data.openingTime);
+                        if(date.getTime()) {
+                            data.openingTime = date;
+                            this.setOpeningTimeUnix(Math.floor(date.getTime() / 1000));
+                        }
+                    }
+                }
+            }
+        })
+
+        watchEffect(() => {
+            // This doesn't actually handle validation, it's just meant to check if there are validation errors
+
+            // Required fields
+            let isValidType = data.openingTimeType;
+            let isValidPrice = priceField?.value && !priceField.errors[0];
+            let isValidOpeningTimeType = data.openingTimeType;
+            let isValidOpeningTime = data.openingTime && !isNaN(new Date(data.openingTime));
+
+            if(
+                isValidType
+                && isValidPrice
+                && isValidOpeningTimeType
+                && isValidOpeningTime
+            ) {
+                // if(JSON.stringify(data.preparedMetaDataLocal) !== JSON.stringify(props.preparedMetaData)) {
+                //     props.setMetaDataIpfsHashData(false);
+                // }
+            } else {
+                // data.preparedMetaDataLocal = false;
+                // props.setMetaDataIpfsHashData(false);
+            }
+        })
 
         return {
             priceField,
             data,
-            maxLengths,
             creatorData,
+            ethereum,
+            formatCurrency,
         }
 
     }
@@ -185,10 +356,12 @@ export default {
 <style lang="scss" scoped>
     .mint-info-form-container {
         max-width: 800px;
-        width: 60%;
+        width: calc(100% - 368px);
+        margin-right: 20px;
+        position: relative;
     }
     .preview-container {
-        width: 40%;
+        width: 348px;
     }
     .selection-container {
         display: flex;

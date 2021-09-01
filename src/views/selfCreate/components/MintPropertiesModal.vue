@@ -22,36 +22,55 @@
           </div>
         </div>
       </div>
-      <div class="flex flex-wrap -mx-2 wrapper" v-for="(propertySlot, index) in propertySlots" :key="`property-slot-${index}`">
+      <div class="flex flex-wrap -mx-2 wrapper mt-4" v-for="(propertySlot, index) in propertySlots" :key="`property-slot-${index}`">
         <div class="remove-icon-container flex-center-vertical">
           <img src="@/assets/icons/remove-icon.svg" class="clickable mt-2" @click="removePropertySlot(index)" alt="Remove Property">
         </div>
         <div class="input-container flex-space-between">
-          <input
-              type="text"
-              id="title"
-              class="outlined-input mt-2 property-input"
-              placeholder=""
-              :class="error && 'invalid-outline'"
-              v-model="propertySlot.trait_type"
-          />
-          <input
-              type="text"
-              id="title"
-              class="outlined-input mt-2 property-input"
-              placeholder=""
-              :class="error && 'invalid-outline'"
-              v-model="propertySlot.value"
-          />
+          <div class="property-input-container property-input-type-container">
+            <label 
+              class="length-indicator"
+              :class="propertySlot.trait_type?.length > maxLengths.propertyType ? 'error-text' : 'light-mode-text-washed'"
+            >
+                {{propertySlot.trait_type ? propertySlot.trait_type?.length : 0}} / {{maxLengths.propertyType}}
+            </label>
+            <input
+                type="text"
+                id="title"
+                class="outlined-input mt-2 property-input"
+                placeholder=""
+                :class="propertySlot.trait_type_error && 'invalid-outline'"
+                v-model="propertySlot.trait_type"
+            />
+          </div>
+          <div class="property-input-container property-input-value-container">
+            <label 
+              class="length-indicator"
+              :class="propertySlot.value?.length > maxLengths.propertyValue ? 'error-text' : 'light-mode-text-washed'"
+            >
+                {{propertySlot.value ? propertySlot.value?.length : 0}} / {{maxLengths.propertyValue}}
+            </label>
+            <input
+                type="text"
+                id="title"
+                class="outlined-input mt-2 property-input"
+                placeholder=""
+                :class="propertySlot.value_error && 'invalid-outline'"
+                v-model="propertySlot.value"
+            />
+          </div>
         </div>
       </div>
       <div class="flex flex-wrap -mx-2 wrapper">
-        <button class="button primary mt-6 mr-6" @click="addPropertySlot">
-          Add Another Property
-        </button>
+        <div class="remove-icon-container flex-center-vertical">
+          
+        </div>
       </div>
-      <div class="flex flex-wrap -mx-2 wrapper">
-        <button class="button w-full primary mt-6" @click="saveProperties">
+      <div class="flex flex-wrap justify-between -mx-2 wrapper">
+        <button class="button primary mt-6 add-save-button" @click="addPropertySlot">
+          Add {{propertySlots && propertySlots.length > 0 ? 'Another' : 'A'}} Property
+        </button>
+        <button :class="(data.containsError || data.containsTypeWithoutValue || data.containsValueWithoutType) ? 'disabled' : 'primary'" class="button mt-6 add-save-button" @click="saveProperties">
           Save Properties
         </button>
       </div>
@@ -60,7 +79,7 @@
 </template>
 
 <script>
-import {ref, computed, reactive} from "vue";
+import {ref, computed, reactive, watchEffect} from "vue";
 import {useStore} from "vuex";
 
 import Dialog from 'primevue/dialog';
@@ -112,20 +131,63 @@ export default {
 
     console.log({'props.properties': props.properties})
 
+    let maxLengths = {
+        propertyType: 30,
+        propertyValue: 30,
+    }
+
     const propertySlots = reactive(
       props.properties.map((item) => {
         return {
           trait_type: item.trait_type,
+          trait_type_error: false,
           value: item.value,
-          error: false,
+          value_error: false,
         }
       })
     )
+
+    const data = reactive({
+      containsError: false,
+      containsTypeWithoutValue: false,
+      containsValueWithoutType: false,
+    })
+
+    watchEffect(() => {
+      let containsError = false;
+      let containsTypeWithoutValue = false;
+      let containsValueWithoutType = false;
+      for(let propertySlot of propertySlots) {
+        if(propertySlot.trait_type.length > maxLengths.propertyType) {
+          propertySlot.trait_type_error = true;
+          containsError = true;
+        } else {
+          propertySlot.trait_type_error = false;
+        }
+        if(propertySlot.value.length > maxLengths.propertyValue) {
+          containsError = true;
+          propertySlot.value_error = true;
+        } else {
+          propertySlot.value_error = false;
+        }
+        if(propertySlot.trait_type.length > 0 && !propertySlot.value) {
+          containsTypeWithoutValue = true;
+        }
+        if(propertySlot.value.length > 0 && !propertySlot.trait_type) {
+          containsValueWithoutType = true;
+        }
+      }
+      data.containsError = containsError
+      data.containsTypeWithoutValue = containsTypeWithoutValue;
+      data.containsValueWithoutType = containsValueWithoutType;
+    })
 
     return {
       displayModal,
       darkMode,
       propertySlots,
+      data,
+      maxLengths,
     }
 
   }
@@ -154,16 +216,39 @@ export default {
   border-bottom-right-radius: 3px;
 }
 
-.property-input {
-  width: calc(50% - 10px);
+.property-input-container {
   flex-grow: 0;
+  position: relative;
+}
+
+.property-input-type-container {
+  width: calc(50% - 27px);
+}
+
+.property-input-value-container {
+  width: calc(50% + 9px);
+}
+
+.property-input {
+  width: 100%;
+}
+
+.length-indicator {
+  position: absolute;
+  right: 0px;
+  top: -14px;
+  font-size: 14px;
 }
 
 .remove-icon-container {
-  width: 45px;
+  width: 40px;
 }
 
 .input-container {
   width: calc(100% - 45px);
+}
+
+.add-save-button {
+  width: calc(50% - 10px);
 }
 </style>
