@@ -104,6 +104,11 @@ const routes = [
         name: 'notifications',
         component: () => import(/* webpackChunkName: "notifications" */ '../views/notifications/Notifications.vue')
     },
+    {
+        path: '/privacy',
+        name: 'privacy',
+        component: () => import(/* webpackChunkName: "privacy" */ '../views/privacy/Privacy.vue')
+    },
 ]
 
 const router = createRouter({
