@@ -19,10 +19,10 @@
             <!-- <div class="flex-grow" v-if="currentStep === 0">
                 <type-selection :nextStep="nextStep" :setTangibility="setTangibility" :setLocationData="setLocationData" :clearLocationData="clearLocationData"/>
             </div> -->
-            <div class="flex-grow" v-if="currentStep === 0">
+            <div class="flex-grow" v-if="currentStep === 1">
                 <upload :nextStep="nextStep" :setMediaIpfsHash="setMediaIpfsHash" :setTempMediaUrl="setTempMediaUrl" />
             </div>
-            <div class="flex-grow" v-if="currentStep === 1">
+            <div class="flex-grow" v-if="currentStep === 0">
                 <mint 
                     :setPropertyData="setPropertyData"
                     :propertyData="processData.properties"
