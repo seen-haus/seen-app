@@ -17,6 +17,7 @@
     <container>
       <div class="flex items-center py-6 flex-col">
         <fenced-title
+            v-if="title?.length < 40"
             class="flex-grow mr-0 mb-2 self-stretch"
             color="fence-gray"
             :titleMonospace="titleMonospace"
@@ -24,6 +25,18 @@
             :closed="true"
         >{{ title }}
         </fenced-title>
+        
+        <unfenced-title
+          v-if="title?.length >= 40"
+          class="flex-grow mr-0 mb-2 self-stretch"
+          color="fence-gray"
+          :titleMonospace="titleMonospace"
+          textAlign="center"
+          :closed="true"
+          maxWidth="90%"
+        >
+          {{ title }}
+        </unfenced-title>
 
         <div class="status flex justify-center items-center mb-5">
           <user-badge
@@ -130,7 +143,7 @@
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
             {{ isAuction ? "Recent bids" : "Recent buys" }}
           </div>
-          <list-of-buyers class="mb-12" :list="events"/>
+          <list-of-buyers class="mb-12" :list="events" :isAuction="isAuction"/>
 
           <template v-if="isAuction">
             <button class="button dark w-full" :class="darkMode && 'dark-mode-outline'" @click="openModal('video', 'https://www.youtube.com/watch?v=1G5caDyf-kA')">
@@ -188,6 +201,7 @@ import {useMeta} from "vue-meta";
 import {useStore} from "vuex";
 
 import FencedTitle from "@/components/FencedTitle.vue";
+import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
 import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
 import Tag from "@/components/PillsAndTags/Tag.vue";
@@ -221,6 +235,7 @@ export default {
     ListOfBuyers,
     HeroGallery,
     NftData,
+    UnfencedTitle,
   },
   methods: {
     getBackgroundImage(backgroundImage) {

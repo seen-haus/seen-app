@@ -749,7 +749,7 @@ export default {
     };
 
     const openWalletModal = () => {
-      store.dispatch("application/openModal", "WalletModal");
+      store.dispatch('application/openModal', 'WalletModalConnectOnly')
     };
 
     const viewOnOpenSea = () => {

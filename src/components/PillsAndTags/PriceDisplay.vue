@@ -8,7 +8,7 @@
           class="ml-2"
           :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
         >
-          ({{ numberOfBids }} bids)
+          ({{ numberOfBids }} {{ numberOfBids === 1 ? 'bid' : 'bids' }})
         </span>
     </div>
     <div :class="fiatSize">{{ formattedPrice }}</div>
