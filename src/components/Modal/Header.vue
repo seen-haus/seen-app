@@ -23,6 +23,10 @@ export default {
     isProfilePage: {
       type: Boolean,
       default: false
+    },
+    additionalDismissFunctionality: {
+      type: Function,
+      default: null
     }
   },
   beforeUnmount() {
@@ -34,6 +38,9 @@ export default {
   methods: {
     onDismiss() {
       this.$store.dispatch('application/closeModal')
+      if(this.additionalDismissFunctionality) {
+        this.additionalDismissFunctionality()
+      }
     },
     onKeyPress(evt) {
       if (evt.key === "Escape") {
