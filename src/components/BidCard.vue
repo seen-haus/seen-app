@@ -693,7 +693,7 @@ export default {
                 if(response) {
                   auctionField.resetField(null)
                   showNotificationButtonRef.value = true;
-                  if(user?.value?.email === false || (!user?.value?.email && account?.value)) {
+                  if((user?.value?.email === false || (!user?.value?.email && account?.value)) && !localStorage.getItem(`hasDismissedNotificationModal-${account?.value}`)) {
                     openNotificationsModal(true);
                   }
                 }
