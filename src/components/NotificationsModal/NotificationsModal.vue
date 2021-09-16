@@ -47,7 +47,6 @@ export default {
     return {
       isOpen,
       title,
-      account,
       dismissFunction,
     }
   }
