@@ -9,6 +9,7 @@ import NFT_SALE_V1_ABI from "@/constants/abis/NFTSaleABI.json"
 import XSEEN_ABI from "@/constants/abis/xseenABI.json"
 import CLAIM_ABI from "@/constants/abis/claimABI.json"
 import SEEN_NFT_ABI from "@/constants/abis/SeenNFT.json"
+import DISTRIBUTION_ABI from "@/constants/abis/distributionABI.json"
 import {Web3Provider, WebSocketProvider} from "@ethersproject/providers"
 
 function useContract(address, ABI, withSignerIfPossible = true) {
@@ -65,5 +66,11 @@ export function useSeenNFTContract(contract, withSignerIfPossible) {
 
 export function useClaimContract(contractAddress, withSignerIfPossible) {
     return useContract(contractAddress, CLAIM_ABI, withSignerIfPossible);
+}
+
+export function useDistributionContract(withSignerIfPossible) {
+    const contractAddress = process.env.VUE_APP_DISTRIBUTION_CONTRACT_ADDRESS
+
+    return useContract(contractAddress, DISTRIBUTION_ABI, withSignerIfPossible)
 }
 
