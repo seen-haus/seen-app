@@ -154,8 +154,10 @@ export default function useTimer(callback) {
         }
         let newEndDate = state.endDate + (endSeconds * 1000);
         let newStartDate = state.startDate + (startSeconds * 1000);
-        if(state.endDate !== newEndDate || state.startDate !== newStartDate) {
-            startTimer({startDate: newStartDate, endDate: newEndDate, isAwaitingReserve});
+        if(newEndDate && newStartDate) {
+            if(state.endDate !== newEndDate || state.startDate !== newStartDate) {
+                startTimer({startDate: newStartDate, endDate: newEndDate, isAwaitingReserve});
+            }
         }
     }
 
