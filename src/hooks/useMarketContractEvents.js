@@ -9,7 +9,7 @@ import {Web3Provider} from "@ethersproject/providers";
 import parseError from "@/services/utils/parseError";
 import {useToast} from "primevue/usetoast";
 
-export default function useContractEvents() {
+const useMarketContractEvents = () => {
     const {converEthToUSD} = useExchangeRate();
     const {account, provider} = useWeb3();
     const toast = useToast();
@@ -288,3 +288,5 @@ export default function useContractEvents() {
         buy,
     };
 }
+
+export default useMarketContractEvents;

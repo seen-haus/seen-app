@@ -4,7 +4,7 @@ import useWeb3 from "@/connectors/hooks";
 import { BigNumber } from "@ethersproject/bignumber";
 import { formatEther, parseEther } from "@ethersproject/units";
 
-import useContractEvents from "@/hooks/useContractEvents";
+import useMarketContractEvents from "@/hooks/useMarketContractEvents";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 import orderBy from "lodash/orderBy";
 
@@ -24,7 +24,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         endsAt: updatedEndsAt,
         startsAt: updatedStartsAt,
         minimumStartsAt: updatedMinimumStartsAt,
-    } = useContractEvents();
+    } = useMarketContractEvents();
 
     const collectable = ref(initialCollectable);
     const events = ref(collectable.value.events || []);
