@@ -15,7 +15,7 @@
       >
         <span v-if="isOpenEdition" class="tracking-widest mr-4">OPEN EDITION</span>
         <span v-if="!isOpenEdition" class="tracking-widest mr-4">EDITIONS LEFT </span>
-        <tag 
+        <tag
           v-if="!isOpenEdition"
           class="bg-fence-light self-end font-semibold"
           :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
@@ -35,7 +35,7 @@
       />
 
       <template v-if="isCollectableActive && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
-        <div class="outlined-input mt-5" :class="{ 
+        <div class="outlined-input mt-5" :class="{
           invalid: hasError || isFieldInvalid,
           'light-mode-background': darkMode,
         }">
@@ -101,7 +101,7 @@
           <span v-if="!isSubmitting">{{ isAuction ? (`Place ${isAwaitingReserve ? 'reserve' : 'a'} bid`) : "Buy now" }}</span>
           <span v-else>Submitting...</span>
         </button>
-        <button 
+        <button
           class="button primary mt-4"
           :class="{'cursor-wait disabled opacity-50': isSubmitting}"
           :disabled="isSubmitting"
@@ -353,7 +353,7 @@ import { BidRegistrationService } from "@/services/apiService"
 import useWeb3 from "@/connectors/hooks";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 import useSigner from "@/hooks/useSigner";
-import useContractEvents from "@/hooks/useContractEvents";
+import useMarketContractEvents from "@/hooks/useMarketContractEvents";
 import {useSeenNFTContract, useV2OpenEditionContract} from "@/hooks/useContract";
 
 export default {
@@ -430,7 +430,6 @@ export default {
 
     const auctionField = reactive(useField("bid", (val) => fieldValidatorAuction(val)));
     const saleField = reactive(useField("amount", (val) => fieldValidatorSale(val)));
-    
     const firstNameField = reactive(useField("first name", "required|min:3"));
     const lastNameField = reactive(useField("last name", "required|min:3"));
     const emailField = reactive(useField("email", "email"));
@@ -536,7 +535,7 @@ export default {
       bid,
       buy,
       initializeContractEvents,
-    } = useContractEvents();
+    } = useMarketContractEvents();
 
     watchEffect(() => {
       if (collectableData.value) {

@@ -10,7 +10,9 @@
         "
     >
         <div class="py-7 px-10 flex-1">
-            <div class="text-4xl font-title font-bold mb-6">Staking Pool</div>
+            <div class="text-4xl font-title font-bold mb-6">
+                Distribution Pool
+            </div>
 
             <button
                 class="button primary w-full font-base"
@@ -22,16 +24,31 @@
             <button
                 class="button primary w-full text-base font-bold"
                 :class="{
-                    'cursor-wait disabled opacity-50': state.distributing,
+                    'cursor-wait disabled opacity-50': !distributionEnabled,
                 }"
                 @click="distribute"
                 v-if="account"
-                :disabled="state.distributing"
+                :disabled="state.distributing || !distributionEnabled"
             >
                 {{ state.distributing ? "Dsitributing..." : "Distribute" }}
             </button>
-            <div class="text-sm text-gray-400 my-2">
-                Last distributed SOMETIME{{
+            <div
+                class="text-sm text-gray-400 my-2"
+                v-if="latestDistributionDate || latestDistributorUsername"
+            >
+                Last distributed
+                {{
+                    latestDistributionDate
+                        ? latestDistributionDate.toLocaleString(undefined, {
+                              weekday: "short",
+                              month: "long",
+                              year: "numeric",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                          })
+                        : null
+                }}{{
                     latestDistributorUsername
                         ? " by " + latestDistributorUsername
                         : null
@@ -40,36 +57,34 @@
         </div>
         <div
             class="
-                h-full
                 bg-background-gray
                 py-7
                 px-10
                 text-gray-400 text-2xs
-                tracking-wide
-                border-t
-                flex-1
+                flex-1 flex flex-col
             "
         >
-            <p class="text-sm font-bold uppercase mb-5">
-                Staking pool balance
+            <div class="flex-1 text-sm font-bold uppercase mb-5">
+                Distribution pool balance
                 <i
                     class="fas fa-info-circle"
                     v-tooltip="{ text: 'Staking pool balance' }"
                 ></i>
-            </p>
-            <p class="mb-5">
+            </div>
+            <div class="flex-1 mb-5 content-center text-2xl font-bold">
                 <img
                     src="@/assets/icons/icon--ethereum.svg"
                     class="mr-2 fill-current text-purple-700 inline"
                     alt="Ether"
+                    s
                 />
-                {{ balanceOfDistribution }}
-            </p>
+                {{ outstandingDistributionBalance }}
+            </div>
 
-            <p>
+            <div class="flex-1">
                 Clicking "Distribute" will swap the balance of Ether in the
-                distribution pool for SEEN and send it over to the staking pool.
-            </p>
+                Distribution pool for SEEN and transfer it to the staking pool.
+            </div>
         </div>
     </div>
 </template>
@@ -79,6 +94,7 @@ import { computed, reactive, watchEffect } from "vue";
 import useWeb3 from "@/connectors/hooks";
 import { useStore } from "vuex";
 import { useDistributionContract } from "@/hooks/useContract";
+import useDistributionContractEvents from "@/hooks/useDistributionContractEvents";
 import { Web3Provider } from "@ethersproject/providers";
 import { useToast } from "primevue/usetoast";
 import parseError from "@/services/utils/parseError";
@@ -90,11 +106,15 @@ export default {
     setup() {
         const state = reactive({
             distributing: false,
-            balanceOfDistribution: 0,
+            distributionEnabled: false,
+            outstandingDistributionBalance: 0,
+            latestDistributorUsername: null,
+            latestDistributionDate: null,
         });
         const toast = useToast();
         const store = useStore();
         const { account, provider } = useWeb3();
+        const { getDistributionEvents } = useDistributionContractEvents();
 
         watchEffect(async () => {
             if (!account.value) {
@@ -105,35 +125,80 @@ export default {
                 process.env.VUE_APP_DISTRIBUTION_CONTRACT_ADDRESS;
 
             const temporaryProvider = new Web3Provider(provider.value);
-            state.balanceOfDistribution = await temporaryProvider.getBalance(
-                distributionAddress
-            );
-            state.balanceOfDistribution = formatEther(
-                state.balanceOfDistribution
-            );
-            state.balanceOfDistribution = Math.round(
-                (state.balanceOfDistribution * 100) / 100
+            const outstandingDistributionBalance =
+                await temporaryProvider.getBalance(distributionAddress);
+
+            if (!outstandingDistributionBalance) {
+                return;
+            }
+
+            state.outstandingDistributionBalance = Math.round(
+                (formatEther(outstandingDistributionBalance) * 100) / 100
             ).toFixed(1);
+        });
+
+        watchEffect(async () => {
+            const events = await getDistributionEvents();
+
+            let latestDistributionBlockNumber = null;
+            let latestDistributionTransaction = null;
+            let latestDistributionEvent = null;
+
+            for (const event of events) {
+                const transaction = await event.getTransaction();
+
+                if (
+                    !latestDistributionBlockNumber ||
+                    transaction.blockNumber > latestDistributionBlockNumber
+                ) {
+                    latestDistributionBlockNumber = transaction.blockNumber;
+                    latestDistributionTransaction = transaction;
+                    latestDistributionEvent = event;
+                }
+            }
+
+            if (!latestDistributionBlockNumber) {
+                return;
+            }
+
+            const latestDistributionBlock =
+                await latestDistributionEvent.getBlock(
+                    latestDistributionBlockNumber
+                );
+
+            const distributorData = UserService.get(
+                latestDistributionTransaction.from.toLowerCase()
+            );
+
+            state.latestDistributionDate = new Date(
+                latestDistributionBlock.timestamp * 1000
+            );
+            state.latestDistributorUsername =
+                distributorData?.data?.user?.username;
         });
 
         const openWalletModal = () => {
             store.dispatch("application/openModal", "WalletModal");
         };
 
-        const balanceOfDistribution = computed(() => {
-            return state.balanceOfDistribution;
+        const outstandingDistributionBalance = computed(() => {
+            return state.outstandingDistributionBalance;
         });
 
         const latestDistributorUsername = computed(() => {
-            // TODO: get latest transaction data on the swap contract
-            const distributorAddress = 0x00;
-            const distributorData = UserService.get(distributorAddress);
+            return state.latestDistributorUsername;
+        });
 
-            return distributorData.data?.user?.username;
+        const latestDistributionDate = computed(() => {
+            return state.latestDistributionDate;
+        });
+
+        const distributionEnabled = computed(() => {
+            return outstandingDistributionBalance?.value > 0;
         });
 
         const distribute = async () => {
-            if (state.distributionBalance === 0) {
+            if (outstandingDistributionBalance.value === 0) {
                 return;
             }
 
@@ -200,12 +265,14 @@ export default {
         };
 
         return {
-            balanceOfDistribution,
+            distributionEnabled,
+            outstandingDistributionBalance,
+            latestDistributorUsername,
+            latestDistributionDate,
             distribute,
             state,
             account,
             openWalletModal,
-            latestDistributorUsername,
         };
     },
 };
