@@ -1,14 +1,5 @@
 <template>
-  <div
-    class="
-            stake-or-withdraw-card
-            rounded-lg
-            overflow-hidden
-            shadow-lifted
-            flex-1 flex
-            bg-white
-        "
-  >
+  <div class="stake-or-withdraw-card rounded-lg overflow-hidden shadow-lifted flex-1 flex bg-white">
     <div class="py-7 px-10 flex-1">
       <div class="text-4xl font-title font-bold mb-6">
         Distribution Pool
@@ -24,7 +15,7 @@
       <button
         class="button primary w-full text-base font-bold"
         :class="{
-          'cursor-wait disabled opacity-50': !distributionEnabled
+          'cursor-wait disabled opacity-50': state.distributing || !distributionEnabled
         }"
         @click="distribute"
         v-if="account"
