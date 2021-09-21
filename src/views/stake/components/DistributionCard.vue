@@ -15,13 +15,13 @@
       <button
         class="button primary w-full text-base font-bold"
         :class="{
-          'cursor-wait disabled opacity-50': state.distributing || !distributionEnabled
+          'cursor-wait disabled opacity-50': distributing || !distributionEnabled
         }"
         @click="distribute"
         v-if="account"
-        :disabled="state.distributing || !distributionEnabled"
+        :disabled="distributing || !distributionEnabled"
       >
-        {{ state.distributing ? "Distributing..." : "Distribute" }}
+        {{ distributing ? "Distributing..." : "Distribute" }}
       </button>
       <div
         class="text-sm text-gray-400 my-2"
@@ -59,7 +59,7 @@
           alt="Ether"
           s
         />
-        {{ distributionBalance }}
+        {{ formatCrypto(distributionBalance).substr(0, 8) }}
       </div>
 
       <div class="flex-1">
@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import {computed, reactive} from "vue";
+import {computed, ref, onMounted} from "vue";
 import {useStore} from "vuex";
 import {Web3Provider} from "@ethersproject/providers";
 import {useToast} from "primevue/usetoast";
@@ -87,19 +87,23 @@ import {getEtherscanLink} from "@/services/utils";
 export default {
   name: "DistributionCard",
   setup() {
-    const state = reactive({
-      distributing: false,
-      distributionEnabled: false,
-      distributionBalance: 0,
-      latestDistributorUsernameOrAddress: null,
-      latestDistributionDate: null,
-      latestDistributionTransactionEtherscanUrl: null,
-    });
     const toast = useToast();
     const store = useStore();
     const {account, provider} = useWeb3();
     const {formatCrypto} = useExchangeRate();
     const {getDistributionEvents} = useDistributionContractEvents();
+    
+    const distributing = ref(false);
+    const distributionBalance = ref(0.0);
+    const distributionEnabled = computed(() => distributionBalance.value > 0);
+    const latestDistributorUsernameOrAddress = ref(null);
+    const latestDistributionDate = ref(null);
+    const latestDistributionTransactionEtherscanUrl = ref(null);
+
+    onMounted(async () => {
+      await loadLatestDistributionBalance();
+      await loadLatestDistribution();
+    })
 
     const loadLatestDistributionBalance = async () => {
       if (!account.value) {
@@ -110,15 +114,15 @@ export default {
         process.env.VUE_APP_DISTRIBUTION_CONTRACT_ADDRESS;
 
       const temporaryProvider = new Web3Provider(provider.value);
-      const distributionBalance = await temporaryProvider.getBalance(
+      const balance = await temporaryProvider.getBalance(
         distributionAddress
       );
 
-      if (!distributionBalance) {
+      if (!balance) {
         return;
       }
 
-      state.distributionBalance = distributionBalance;
+      distributionBalance.value = balance;
     }
 
     const loadLatestDistribution = async () => {
@@ -153,48 +157,22 @@ export default {
         latestDistributionTransaction.from.toLowerCase()
       );
 
-      state.latestDistributionDate = new Date(
+      latestDistributionDate.value = new Date(
         latestDistributionBlock.timestamp * 1000
       );
-      state.latestDistributorUsernameOrAddress = distributorData?.data?.user?.username ?? shortenAddress(latestDistributionTransaction.from);
-      state.latestDistributionTransactionEtherscanUrl = getEtherscanLink(latestDistributionTransaction.chainId, latestDistributionTransaction.hash, 'transaction')
-  
+      latestDistributorUsernameOrAddress.value = distributorData?.data?.user?.username ?? shortenAddress(latestDistributionTransaction.from);
+      latestDistributionTransactionEtherscanUrl.value = getEtherscanLink(latestDistributionTransaction.chainId, latestDistributionTransaction.hash, 'transaction')
     }
 
-    loadLatestDistributionBalance();
-    loadLatestDistribution();
-
-    const openWalletModal = () => {
-      store.dispatch("application/openModal", "WalletModal");
-    };
-
-    const distributionBalance = computed(() => {
-      return formatCrypto(state.distributionBalance).substr(0, 8);
-    });
-
-    const latestDistributorUsernameOrAddress = computed(() => {
-      return state.latestDistributorUsernameOrAddress;
-    });
-
-    const latestDistributionDate = computed(() => {
-      return state.latestDistributionDate;
-    });
-
-    const latestDistributionTransactionEtherscanUrl = computed(() => {
-      return state.latestDistributionTransactionEtherscanUrl;
-    });
-
-    const distributionEnabled = computed(() => {
-      return distributionBalance?.value > 0;
-    });
-
     const distribute = async () => {
-      if (distributionBalance.value === 0) {
+      if (distributing.value || !distributionEnabled.value) {
         return;
       }
 
+      distributing.value = true;
+
       const temporaryProvider = new Web3Provider(provider.value);
-      const gasPrice = await temporaryProvider.getGasPrice().catch(e => {
+      const gasPrice = await temporaryProvider.getGasPrice().catch(() => {
         toast.add({
           severity: "error",
           summary: "Error",
@@ -203,11 +181,9 @@ export default {
         });
       });
 
-      state.distributing = true;
-
       const contract = useDistributionContract(true);
       const tx = await contract.swap({ gasPrice }).catch(e => {
-        state.distributing = false;
+        distributing.value = false;
 
         toast.add({
           severity: "error",
@@ -220,14 +196,14 @@ export default {
       });
 
       if (!tx) {
-        state.distributing = false;
+        distributing.value = false;
         return;
       }
 
       return tx
         .wait()
         .then(async () => {
-          state.distributionBalance = "0.0000";
+          distributionBalance.value = 0.0;
           toast.add({
             severity: "success",
             summary: "Success",
@@ -238,10 +214,10 @@ export default {
           await loadLatestDistribution();
           await loadLatestDistributionBalance();
 
-          state.distributing = false;
+          distributing.value = false;
         })
         .catch(e => {
-          state.distributing = false;
+          distributing.value = false;
 
           toast.add({
             severity: "error",
@@ -252,6 +228,10 @@ export default {
         });
     };
 
+    const openWalletModal = () => {
+      store.dispatch("application/openModal", "WalletModal");
+    };
+
     return {
       distributionEnabled,
       distributionBalance,
@@ -259,8 +239,9 @@ export default {
       latestDistributionDate,
       latestDistributionTransactionEtherscanUrl,
       distribute,
-      state,
+      distributing,
       account,
+      formatCrypto,
       openWalletModal
     };
   }
