@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import {computed, ref, onMounted} from "vue";
+import {computed, ref, watchEffect} from "vue";
 import {useStore} from "vuex";
 import {Web3Provider} from "@ethersproject/providers";
 import {useToast} from "primevue/usetoast";
@@ -100,13 +100,8 @@ export default {
     const latestDistributionDate = ref(null);
     const latestDistributionTransactionEtherscanUrl = ref(null);
 
-    onMounted(async () => {
-      await loadLatestDistributionBalance();
-      await loadLatestDistribution();
-    })
-
     const loadLatestDistributionBalance = async () => {
-      if (!account.value) {
+      if (!provider.value) {
         return;
       }
 
@@ -122,7 +117,7 @@ export default {
         return;
       }
 
-      distributionBalance.value = balance;
+      distributionBalance.value = balance.toNumber();
     }
 
     const loadLatestDistribution = async () => {
@@ -160,7 +155,7 @@ export default {
       latestDistributionDate.value = new Date(
         latestDistributionBlock.timestamp * 1000
       );
-      latestDistributorUsernameOrAddress.value = distributorData?.data?.user?.username ?? shortenAddress(latestDistributionTransaction.from);
+      latestDistributorUsernameOrAddress.value = distributorData?.data?.user?.username || shortenAddress(latestDistributionTransaction.from);
       latestDistributionTransactionEtherscanUrl.value = getEtherscanLink(latestDistributionTransaction.chainId, latestDistributionTransaction.hash, 'transaction')
     }
 
@@ -188,7 +183,7 @@ export default {
         toast.add({
           severity: "error",
           summary: "Error",
-          detail: parseError(e.message) ?? e.message,
+          detail: parseError(e.message) || e.message,
           life: 6000
         });
 
@@ -222,7 +217,7 @@ export default {
           toast.add({
             severity: "error",
             summary: "Error",
-            detail: parseError(e.message) ?? e.message,
+            detail: parseError(e.message) || e.message,
             life: 6000
           });
         });
@@ -231,6 +226,15 @@ export default {
     const openWalletModal = () => {
       store.dispatch("application/openModal", "WalletModal");
     };
+
+    watchEffect(() => {
+      if (!provider.value) {
+        return;
+      }
+
+      loadLatestDistributionBalance();
+      loadLatestDistribution();
+    });
 
     return {
       distributionEnabled,

@@ -79,7 +79,7 @@
         <stake-or-withdraw-card :amount="seenBalance" :state="state" type-of="withdraw"/>
       </div>
       <div class="cards flex flex-col xl:flex-row">
-        <distribution-card :state="state" />
+        <distribution-card />
       </div>
     </container>
 
