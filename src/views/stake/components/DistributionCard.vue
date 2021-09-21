@@ -30,7 +30,7 @@
         v-if="account"
         :disabled="state.distributing || !distributionEnabled"
       >
-        {{ state.distributing ? "Dsitributing..." : "Distribute" }}
+        {{ state.distributing ? "Distributing..." : "Distribute" }}
       </button>
       <div
         class="text-sm text-gray-400 my-2"
