@@ -27,7 +27,7 @@
         class="text-sm text-gray-400 my-2"
         v-if="latestDistributionDate && latestDistributorUsernameOrAddress"
       >
-        <a href="{{ latestDistributionTransactionEtherscanUrl }}" target="_blank">
+        <a :href="latestDistributionTransactionEtherscanUrl" target="_blank">
           Last distributed
           {{ 
             latestDistributionDate.toLocaleString(undefined, {
@@ -44,15 +44,7 @@
         </a>
       </div>
     </div>
-    <div
-      class="
-                bg-background-gray
-                py-7
-                px-10
-                text-gray-400 text-2xs
-                flex-1 flex flex-col
-            "
-    >
+    <div class="bg-background-gray py-7 px-10 text-gray-400 text-2xs flex-1 flex flex-col">
       <div class="flex-1 text-sm font-bold uppercase mb-5">
         Distribution pool balance
         <i
@@ -79,7 +71,7 @@
 </template>
 
 <script>
-import {computed, reactive, watchEffect} from "vue";
+import {computed, reactive} from "vue";
 import {useStore} from "vuex";
 import {Web3Provider} from "@ethersproject/providers";
 import {useToast} from "primevue/usetoast";
