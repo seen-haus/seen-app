@@ -34,23 +34,23 @@
       </button>
       <div
         class="text-sm text-gray-400 my-2"
-        v-if="latestDistributionDate || latestDistributorUsername"
+        v-if="latestDistributionDate && latestDistributorUsernameOrAddress"
       >
-        Last distributed
-        {{
-          latestDistributionDate
-            ? latestDistributionDate.toLocaleString(undefined, {
-                weekday: "short",
-                month: "long",
-                year: "numeric",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit"
-              })
-            : null
-        }}{{
-          latestDistributorUsername ? " by " + latestDistributorUsername : null
-        }}
+        <a href="{{ latestDistributionTransactionEtherscanUrl }}" target="_blank">
+          Last distributed
+          {{ 
+            latestDistributionDate.toLocaleString(undefined, {
+              weekday: "short",
+              month: "long",
+              year: "numeric",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit"
+            })
+          }}{{
+            " by " + latestDistributorUsernameOrAddress
+          }}
+        </a>
       </div>
     </div>
     <div
@@ -76,7 +76,7 @@
           alt="Ether"
           s
         />
-        {{ outstandingDistributionBalance }}
+        {{ distributionBalance }}
       </div>
 
       <div class="flex-1">
@@ -88,16 +88,18 @@
 </template>
 
 <script>
-import { computed, reactive, watchEffect } from "vue";
+import {computed, reactive, watchEffect} from "vue";
+import {useStore} from "vuex";
+import {Web3Provider} from "@ethersproject/providers";
+import {useToast} from "primevue/usetoast";
 import useWeb3 from "@/connectors/hooks";
-import { useStore } from "vuex";
-import { useDistributionContract } from "@/hooks/useContract";
+import {useDistributionContract} from "@/hooks/useContract";
 import useDistributionContractEvents from "@/hooks/useDistributionContractEvents";
-import { Web3Provider } from "@ethersproject/providers";
-import { useToast } from "primevue/usetoast";
+import useExchangeRate from "@/hooks/useExchangeRate";
 import parseError from "@/services/utils/parseError";
-import { formatEther } from "@ethersproject/units";
-import { UserService } from "@/services/apiService";
+import {UserService} from "@/services/apiService";
+import {shortenAddress} from "@/services/utils/index";
+import {getEtherscanLink} from "@/services/utils";
 
 export default {
   name: "DistributionCard",
@@ -105,16 +107,18 @@ export default {
     const state = reactive({
       distributing: false,
       distributionEnabled: false,
-      outstandingDistributionBalance: 0,
-      latestDistributorUsername: null,
-      latestDistributionDate: null
+      distributionBalance: 0,
+      latestDistributorUsernameOrAddress: null,
+      latestDistributionDate: null,
+      latestDistributionTransactionEtherscanUrl: null,
     });
     const toast = useToast();
     const store = useStore();
-    const { account, provider } = useWeb3();
-    const { getDistributionEvents } = useDistributionContractEvents();
+    const {account, provider} = useWeb3();
+    const {formatCrypto} = useExchangeRate();
+    const {getDistributionEvents} = useDistributionContractEvents();
 
-    watchEffect(async () => {
+    const loadLatestDistributionBalance = async () => {
       if (!account.value) {
         return;
       }
@@ -123,20 +127,18 @@ export default {
         process.env.VUE_APP_DISTRIBUTION_CONTRACT_ADDRESS;
 
       const temporaryProvider = new Web3Provider(provider.value);
-      const outstandingDistributionBalance = await temporaryProvider.getBalance(
+      const distributionBalance = await temporaryProvider.getBalance(
         distributionAddress
       );
 
-      if (!outstandingDistributionBalance) {
+      if (!distributionBalance) {
         return;
       }
 
-      state.outstandingDistributionBalance = Math.round(
-        (formatEther(outstandingDistributionBalance) * 100) / 100
-      ).toFixed(1);
-    });
+      state.distributionBalance = distributionBalance;
+    }
 
-    watchEffect(async () => {
+    const loadLatestDistribution = async () => {
       const events = await getDistributionEvents();
 
       let latestDistributionBlockNumber = null;
@@ -171,38 +173,45 @@ export default {
       state.latestDistributionDate = new Date(
         latestDistributionBlock.timestamp * 1000
       );
-      state.latestDistributorUsername = distributorData?.data?.user?.username;
-    });
+      state.latestDistributorUsernameOrAddress = distributorData?.data?.user?.username ?? shortenAddress(latestDistributionTransaction.from);
+      state.latestDistributionTransactionEtherscanUrl = getEtherscanLink(latestDistributionTransaction.chainId, latestDistributionTransaction.hash, 'transaction')
+  
+    }
+
+    loadLatestDistributionBalance();
+    loadLatestDistribution();
 
     const openWalletModal = () => {
       store.dispatch("application/openModal", "WalletModal");
     };
 
-    const outstandingDistributionBalance = computed(() => {
-      return state.outstandingDistributionBalance;
+    const distributionBalance = computed(() => {
+      return formatCrypto(state.distributionBalance).substr(0, 8);
     });
 
-    const latestDistributorUsername = computed(() => {
-      return state.latestDistributorUsername;
+    const latestDistributorUsernameOrAddress = computed(() => {
+      return state.latestDistributorUsernameOrAddress;
     });
 
     const latestDistributionDate = computed(() => {
       return state.latestDistributionDate;
     });
 
+    const latestDistributionTransactionEtherscanUrl = computed(() => {
+      return state.latestDistributionTransactionEtherscanUrl;
+    });
+
     const distributionEnabled = computed(() => {
-      return outstandingDistributionBalance?.value > 0;
+      return distributionBalance?.value > 0;
     });
 
     const distribute = async () => {
-      if (outstandingDistributionBalance.value === 0) {
+      if (distributionBalance.value === 0) {
         return;
       }
 
       const temporaryProvider = new Web3Provider(provider.value);
       const gasPrice = await temporaryProvider.getGasPrice().catch(e => {
-        console.log(e);
-
         toast.add({
           severity: "error",
           summary: "Error",
@@ -234,18 +243,19 @@ export default {
 
       return tx
         .wait()
-        .then(() => {
-          state.balanceOfDistribution = "0.0";
+        .then(async () => {
+          state.distributionBalance = "0.0000";
           toast.add({
             severity: "success",
             summary: "Success",
             detail: "You have successfully distributed the SEEN in the pool.",
             life: 3000
           });
-          setTimeout(() => {
-            window.location.reload();
-            state.distributing = false;
-          }, 3000);
+
+          await loadLatestDistribution();
+          await loadLatestDistributionBalance();
+
+          state.distributing = false;
         })
         .catch(e => {
           state.distributing = false;
@@ -261,9 +271,10 @@ export default {
 
     return {
       distributionEnabled,
-      outstandingDistributionBalance,
-      latestDistributorUsername,
+      distributionBalance,
+      latestDistributorUsernameOrAddress,
       latestDistributionDate,
+      latestDistributionTransactionEtherscanUrl,
       distribute,
       state,
       account,

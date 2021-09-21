@@ -72,7 +72,7 @@
 
       </div>
 
-      <div class="cards flex flex-col xl:flex-row">
+      <div class="cards flex flex-col xl:flex-row mb-12">
 
         <stake-or-withdraw-card :amount="seenBalance" :state="state"
                                 class="mr-0 mb-12 xl:mb-0 xl:mr-12" type-of="stake"/>
