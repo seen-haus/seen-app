@@ -73,15 +73,14 @@
 </template>
 
 <script>
-import {ref, computed} from "vue";
-import {useStore} from "vuex";
-
+import {ref} from "vue";
 import Dialog from 'primevue/dialog';
 
 import emitter from "@/services/utils/emitter";
 import {useSeenNFTContract} from "@/hooks/useContract";
 import useIPFS from "@/hooks/useIPFS";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
+import useDarkMode from "@/hooks/useDarkMode";
 
 export default {
   name: "NftData",
@@ -93,9 +92,7 @@ export default {
     collectable: Object
   },
   setup(props) {
-
-    const store = useStore();
-    const darkMode = computed(() => store.getters['application/darkMode']);
+    const { darkMode } = useDarkMode();
 
     const displayModal = ref(false);
     emitter.on('openNftDataModal', payload => {

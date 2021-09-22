@@ -35,8 +35,9 @@
 import { useStore } from "vuex";
 import { useMeta, useActiveMeta } from "vue-meta";
 import useWeb3 from "@/connectors/hooks"
-import {watchEffect, computed} from 'vue';
+import {watchEffect} from 'vue';
 import {useStakingContract, useTokenContract} from "@/hooks/useContract";
+import useDarkMode from '@/hooks/useDarkMode';
 
 import Web3Provider from "@/connector/Web3Provider";
 import WalletModal from "@/components/WalletModal/WalletModal";
@@ -65,9 +66,7 @@ export default {
     const store = useStore();
     let accountCurrent = null;
 
-    const darkMode = computed(() => {
-      return store.getters['application/darkMode']
-    });
+    const { darkMode } = useDarkMode();
 
     watchEffect(async () => {
       if (account.value && account.value !== accountCurrent) {

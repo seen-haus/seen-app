@@ -62,9 +62,9 @@
 
 <script>
 import { computed, ref } from "vue";
-import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
+import useDarkMode from '@/hooks/useDarkMode';
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import SocialLine from "@/components/PillsAndTags/SocialLine.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
@@ -89,11 +89,7 @@ export default {
       return artist.value.collectablesCount || 0;
     });
 
-    const store = useStore();
-
-    const darkMode = computed(() => {
-      return store.getters['application/darkMode']
-    });
+    const { darkMode } = useDarkMode();
 
     const navigateToArtist = () => {
       router.push({

@@ -147,7 +147,6 @@
 
 <script lang="ts">
 import {ref, watchEffect, computed} from "vue";
-import { useStore } from "vuex";
 import BigNumber from "bignumber.js";
 
 import Tag from "@/components/PillsAndTags/Tag.vue";
@@ -157,7 +156,7 @@ import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import UserBadge from "./PillsAndTags/UserBadge.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
-
+import useDarkMode from '@/hooks/useDarkMode';
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
 
 export default {
@@ -229,7 +228,6 @@ export default {
     },
   },
   setup(props) {
-    const store = useStore();
     const autoplay = true;
     // console.log('ProductCard', props.collectable);
     const mediaRef = ref(null);
@@ -283,7 +281,7 @@ export default {
       if (timerRef.value != null) timerRef.value.addSeconds(60 * 60 * 24);
     };
 
-    const darkMode = computed(() => store.getters['application/darkMode']);
+    const { darkMode } = useDarkMode();
 
     const collectableActiveTextColor = computed(() => darkMode.value ? 'dark-mode-text' : collectableActiveTextColor);
 

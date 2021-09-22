@@ -32,10 +32,10 @@
 
 <script>
 import { computed } from "vue";
-import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
 
+import useDarkMode from "@/hooks/useDarkMode";
 import ArtistCard from "@/components/ArtistCard.vue";
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
@@ -49,11 +49,6 @@ export default {
     ArtistCard,
   },
   setup() {
-    const store = useStore();
-    
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
-
     const { meta } = useMeta({
       title: "Creators",
     });
@@ -61,7 +56,7 @@ export default {
     const paginatedArtists = useArtistsWithPagination(48);
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
     const hasMore = computed(() => paginatedArtists.hasMore.value);
-    const darkMode = computed(() => store.getters['application/darkMode']);
+    const { darkMode } = useDarkMode();
 
     paginatedArtists.load();
 

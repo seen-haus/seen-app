@@ -351,6 +351,7 @@ import numberHelper from "@/services/utils/numbers"
 import emitter from "@/services/utils/emitter";
 import { BidRegistrationService } from "@/services/apiService"
 import useWeb3 from "@/connectors/hooks";
+import useDarkMode from '@/hooks/useDarkMode';
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 import useSigner from "@/hooks/useSigner";
 import useContractEvents from "@/hooks/useContractEvents";
@@ -418,8 +419,8 @@ export default {
     const showNotificationButton = computed(() => showNotificationButtonRef.value);
     const winner = computed(() => collectableData.value.winner_address);
     const balance = computed(() => store.getters['application/balance'].eth);
-    const darkMode = computed(() => store.getters['application/darkMode']);
     const user = computed(() => store.getters['user/user']);
+    const { darkMode } = useDarkMode();
 
     const form = useForm({
       initialValues: {

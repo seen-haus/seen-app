@@ -145,10 +145,9 @@
 </template>
 
 <script>
-import {computed, watchEffect} from "vue";
+import {computed} from "vue";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
-import { useStore } from "vuex";
 
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
@@ -157,14 +156,9 @@ import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 import HeroAuction from "./components/HeroAuction.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
-
-import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
+import useDarkMode from "@/hooks/useDarkMode";
 import useCollectablesWithPagination from "@/hooks/useCollectablesWithPagination.js";
 import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
-import useWeb3 from "@/connectors/hooks";
-import {Web3Provider} from "@ethersproject/providers";
-import {formatEther} from "@ethersproject/units";
-import {useTokenContract} from "@/hooks/useContract";
 
 export default {
   name: "Home",
@@ -182,12 +176,7 @@ export default {
       title: "Home",
     });
     const router = useRouter();
-    const store = useStore();
-
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
-
-    const darkMode = computed(() => store.getters['application/darkMode']);
+    const { darkMode } = useDarkMode();
 
     const paginatedCollectables = useCollectablesWithPagination( 0);
     const listOfCollectables = computed(
