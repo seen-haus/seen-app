@@ -101,7 +101,7 @@ export default {
     const latestDistributionTransactionEtherscanUrl = ref(null);
 
     const loadLatestDistributionBalance = async () => {
-      if (!provider.value) {
+      if (!provider?.value) {
         return;
       }
 
@@ -228,7 +228,7 @@ export default {
     };
 
     watchEffect(() => {
-      if (!provider.value) {
+      if (!provider?.value) {
         return;
       }
 
