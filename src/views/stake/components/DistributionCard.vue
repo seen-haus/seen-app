@@ -1,12 +1,12 @@
 <template>
   <div class="stake-or-withdraw-card rounded-lg overflow-hidden shadow-lifted flex-1 flex bg-white">
-    <div class="py-7 px-10 flex-1">
+    <div class="p-8 flex-1">
       <div class="text-4xl font-title font-bold mb-6">
         Distribution Pool
       </div>
 
       <button
-        class="button primary w-full font-base"
+        class="button primary w-full text-xs"
         @click="openWalletModal"
         v-if="!account"
       >
@@ -45,7 +45,7 @@
       </div>
     </div>
     <div class="bg-background-gray py-7 px-10 text-gray-400 text-2xs flex-1 flex flex-col">
-      <div class="flex-1 text-sm font-bold uppercase mb-5">
+      <div class="flex-1 text-xs font-bold uppercase mb-5">
         Distribution pool balance
         <i
           class="fas fa-info-circle"
@@ -62,7 +62,7 @@
         {{ formatCrypto(distributionBalance).substr(0, 8) }}
       </div>
 
-      <div class="flex-1">
+      <div class="flex-1 text-sm font-medium">
         Clicking "Distribute" will swap the balance of Ether in the Distribution
         pool for SEEN and transfer it to the staking pool.
       </div>
