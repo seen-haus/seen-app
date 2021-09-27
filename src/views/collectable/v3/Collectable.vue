@@ -217,7 +217,6 @@ import {CollectablesService} from "@/services/apiService";
 import {useToast} from "primevue/usetoast";
 
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
-import useContractEvents from "@/hooks/useContractEvents";
 import {getEtherscanLink} from "@/services/utils";
 import GLightbox from 'glightbox';
 import 'glightbox/dist/css/glightbox.css';

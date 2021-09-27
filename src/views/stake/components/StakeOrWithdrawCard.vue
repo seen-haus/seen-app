@@ -2,12 +2,12 @@
   <div
       class="stake-or-withdraw-card rounded-lg overflow-hidden shadow-lifted flex-1 bg-white"
   >
-    <div class="top py-7 px-10">
+    <div class="top p-8">
       <div class="text-4xl font-title font-bold mb-6 text-center">
         {{ title }}
       </div>
 
-      <div class="flex font-bold text-sm uppercase">
+      <div class="flex font-bold text-sm">
         <span class="flex-1">{{ label }}</span>
         <span class="px-1 cursor-pointer" @click="setPercent(25)">25%</span>/
         <span class="px-1 cursor-pointer" @click="setPercent(50)">50%</span>/
@@ -15,7 +15,7 @@
         <span class="px-1 cursor-pointer" @click="setPercent(100)">100%</span>
       </div>
 
-      <div class="outlined-input mt-4">
+      <div class="outlined-input mt-1">
         <input type="text" :placeholder="placeholder" @keypress="isNumber" v-model="state.number"/>
         <div class="icon w-5 mr-1">
           <img src="@/assets/icons/icon--seen.svg" alt="SEEN" class="mr-2">
@@ -23,26 +23,27 @@
         <div class="type font-bold">{{ typeOf === "stake" ? "SEEN" : "xSEEN" }}</div>
       </div>
 
-      <div class="text-sm text-gray-400 my-2">{{ typeOf === "stake" ? "Wallet balance:" : "Balance:" }}
+      <div class="text-sm text-gray-400 my-2 mb-4">
+        {{ typeOf === "stake" ? "Wallet balance:" : "Balance:" }}
         {{ formatCrypto(typeOf === "stake" ? seenBalance : seenDeposited, true) }} {{ typeOf === "stake" ? "SEEN" : "xSEEN" }}
       </div>
-      <button class="button primary w-full" @click="openWalletModal" v-if="!account">Connect Wallet</button>
-      <button class="button primary w-full" :class="{'cursor-wait disabled opacity-50': state.approving}" @click="approve"
+      <button class="button primary w-full text-xs" @click="openWalletModal" v-if="!account">Connect Wallet</button>
+      <button class="button primary w-full text-xs " :class="{'cursor-wait disabled opacity-50': state.approving}" @click="approve"
               v-if="account && typeOf === 'stake' && !state.isAllowed" :disabled="state.approving">
         {{ state.approving ? "Approving..." : "Approve" }}
       </button>
-      <button class="button primary w-full" @click="stake"
+      <button class="button primary w-full text-xs" @click="stake"
               v-if="account && typeOf === 'stake' && state.isAllowed" :class="{'cursor-wait disabled opacity-50': state.depositing}">
         {{ state.depositing ? "Depositing..." : "Stake" }}
       </button>
-      <button class="button primary w-full" @click="withdraw"
+      <button class="button primary w-full text-xs" @click="withdraw"
               v-if="account && typeOf === 'withdraw'"
               :class="{'cursor-wait disabled opacity-50': state.withdrawing}"> {{ state.withdrawing ? "Withdrawing..." : "Withdraw" }}
       </button>
     </div>
 
     <div
-        class="bottom h-full bg-background-gray py-7 px-10 text-gray-400 text-2xs tracking-wide border-t"
+        class="bottom h-full bg-background-gray py-7 px-10 text-gray-400 text-sm font-medium tracking-wide border-t"
     >
       {{ description }}
     </div>

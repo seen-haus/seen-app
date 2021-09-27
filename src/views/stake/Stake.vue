@@ -72,11 +72,14 @@
 
       </div>
 
-      <div class="cards flex flex-col xl:flex-row">
+      <div class="cards flex flex-col xl:flex-row mb-12">
 
         <stake-or-withdraw-card :amount="seenBalance" :state="state"
                                 class="mr-0 mb-12 xl:mb-0 xl:mr-12" type-of="stake"/>
         <stake-or-withdraw-card :amount="seenBalance" :state="state" type-of="withdraw"/>
+      </div>
+      <div class="cards flex flex-col xl:flex-row">
+        <distribution-card />
       </div>
     </container>
 
@@ -144,6 +147,7 @@ import {useMeta} from "vue-meta";
 
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
+import DistributionCard from "@/views/stake/components/DistributionCard";
 import StakeOrWithdrawCard from "@/views/stake/components/StakeOrWithdrawCard";
 import useExchangeRate from "@/hooks/useExchangeRate";
 import {useSEENContract, useStakingContract} from "@/hooks/useContract";
@@ -155,7 +159,7 @@ import { useStore } from 'vuex';
 
 export default {
   name: "Stake",
-  components: {FencedTitle, Container, StakeOrWithdrawCard},
+  components: {FencedTitle, Container, DistributionCard, StakeOrWithdrawCard},
   setup() {
     const {account, provider} = useWeb3();
     const {meta} = useMeta({

@@ -216,7 +216,6 @@ import {useToast} from "primevue/usetoast";
 
 import useDarkMode from "@/hooks/useDarkMode";
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
-import useContractEvents from "@/hooks/useContractEvents";
 import {getEtherscanLink} from "@/services/utils";
 import GLightbox from 'glightbox';
 import 'glightbox/dist/css/glightbox.css';
