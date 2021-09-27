@@ -176,8 +176,8 @@ import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
-
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
+import useDarkMode from "@/hooks/useDarkMode";
 
 export default {
   name: "HeroAuction",
@@ -211,15 +211,12 @@ export default {
     const router = useRouter();
     const timerRef = ref(null);
     const titleMonospace = ref(false);
+    const { darkMode } = useDarkMode();
 
     // TODO: Make this into a DB datasource unless V3 no longer uses this
     if([115].indexOf(props?.collectable?.id) > -1) {
       titleMonospace.value = true;
     }
-
-    const store = useStore();
-
-    const darkMode = computed(() => store.getters['application/darkMode']);
 
     const {
       collectableState,

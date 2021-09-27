@@ -156,14 +156,9 @@ export default {
   },
 
   setup() {
-    const store = useStore();
-
     const data = reactive({
       selectedType: 'all',
     })
-
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
 
     return {
       founders,

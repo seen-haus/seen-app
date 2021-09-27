@@ -130,7 +130,6 @@
 
 <script>
 import { useMeta } from "vue-meta";
-import { useStore } from "vuex";
 
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
@@ -144,11 +143,6 @@ export default {
     const { meta } = useMeta({
       title: "Spotlight",
     });
-
-    const store = useStore();
-
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
   },
   data() {
     return {

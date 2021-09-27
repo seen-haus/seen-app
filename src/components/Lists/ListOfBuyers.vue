@@ -59,7 +59,7 @@
 
 <script>
 import {computed, ref, toRefs, watch} from "vue";
-import {useStore} from "vuex";
+import useDarkMode from '@/hooks/useDarkMode';
 import {format} from 'timeago.js';
 
 import { UserService } from "@/services/apiService"
@@ -78,8 +78,7 @@ export default {
     },
   },
   setup(props) {
-    const store = useStore();
-    const darkMode = computed(() => store.getters['application/darkMode']);
+    const { darkMode } = useDarkMode();    
 
     const {list: inputList} = toRefs(props);
     const extendedUserData = ref({});

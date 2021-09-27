@@ -79,13 +79,11 @@
 </template>
 
 <script>
-import {ref, computed, reactive, watchEffect} from "vue";
-import {useStore} from "vuex";
-
+import {ref, reactive, watchEffect} from "vue";
 import Dialog from 'primevue/dialog';
 
+import useDarkMode from "@/hooks/useDarkMode";
 import SubTitle from "@/components/SubTitle.vue";
-
 import emitter from "@/services/utils/emitter";
 
 export default {
@@ -116,9 +114,7 @@ export default {
     },
   },
   setup(props) {
-
-    const store = useStore();
-    const darkMode = computed(() => store.getters['application/darkMode']);
+    const { darkMode } = useDarkMode();
 
     const displayModal = ref(false);
     emitter.on('openNftMintPropertiesModal', payload => {

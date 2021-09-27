@@ -66,10 +66,9 @@
 </template>
 
 <script>
-import { computed, reactive, ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
-import { useStore } from "vuex";
 
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
@@ -78,8 +77,8 @@ import Toggle from "@/components/Inputs/Toggle.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
 import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
-
 import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
+import useDarkMode from "@/hooks/useDarkMode";
 
 export default {
   name: "Drops",
@@ -93,13 +92,7 @@ export default {
     ArtistCard,
   },
   setup() {
-
-    const store = useStore();
-
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
-
-    const darkMode = computed(() => store.getters['application/darkMode']);
+    const { darkMode } = useDarkMode();
 
     const { meta } = useMeta({
       title: "Drops",

@@ -167,8 +167,6 @@
 
 <script>
 import { useMeta } from "vue-meta";
-import { useStore } from "vuex";
-
 import Container from "@/components/Container.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
@@ -186,9 +184,6 @@ export default {
     const { meta } = useMeta({
       title: "About",
     });
-    const store = useStore();
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
   },
 };
 </script>

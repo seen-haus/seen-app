@@ -141,7 +141,6 @@
 <script>
 import {computed, onBeforeMount, reactive, watchEffect} from "vue";
 import {useMeta} from "vue-meta";
-import { useStore } from "vuex";
 
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
@@ -152,6 +151,7 @@ import useWeb3 from "@/connectors/hooks";
 import {formatEther} from "@ethersproject/units";
 import BigNumber from "bignumber.js";
 import {Web3Provider, WebSocketProvider} from "@ethersproject/providers";
+import { useStore } from 'vuex';
 
 export default {
   name: "Stake",
@@ -161,14 +161,9 @@ export default {
     const {meta} = useMeta({
       title: "Stake",
     });
-
     const store = useStore();
 
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
-
     const state = reactive({
-
       shareOfThePool: 0,
       userSeenInPool: 0,
       totalStaked: 0,

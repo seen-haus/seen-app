@@ -31,22 +31,21 @@
 </template>
 
 <script>
-import { computed } from "vue";
 import {useStore} from "vuex";
 
 import DesktopMenu from "@/components/Menu/DesktopMenu";
 import WalletButton from "@/components/WalletButton";
 import Container from "@/components/Container";
 import TopHeaderBar from "@/components/TopHeaderBar";
+import useDarkMode from "@/hooks/useDarkMode";
 
 export default {
   name: 'AppHeader',
   components: {TopHeaderBar, Container, WalletButton, DesktopMenu},
   setup() {
     const store = useStore();
-    const darkMode = computed(() => {
-      return store.getters['application/darkMode']
-    });
+    const { darkMode } = useDarkMode();
+
     return {
       openMobileMenu: () => store.commit('application/OPEN_MOBILE_MENU'),
       darkMode

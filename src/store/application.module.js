@@ -5,7 +5,6 @@ const state = {
     pendingTransactionHash: null,
     mobileMenu: null,
     currencies: null,
-    darkMode: false,
     balance: {
         eth: null,
         seen: null,

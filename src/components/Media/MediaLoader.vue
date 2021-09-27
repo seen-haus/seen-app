@@ -93,7 +93,7 @@ import {
   toRefs,
   watchEffect,
 } from "vue";
-import {useStore} from "vuex";
+import useDarkMode from '@/hooks/useDarkMode';
 
 import PlayButton from "./components/PlayButton.vue";
 
@@ -135,9 +135,7 @@ export default {
   },
   components: { PlayButton },
   setup(props) {
-
-    const store = useStore();
-    const darkMode = computed(() => store.getters['application/darkMode']);
+    const { darkMode } = useDarkMode();    
 
     let observer = null;
     const { autoplay } = toRefs(props);

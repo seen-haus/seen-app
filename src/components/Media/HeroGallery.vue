@@ -37,8 +37,8 @@
 </template>
 
 <script>
-  import {ref, computed} from 'vue';
-  import {useStore} from "vuex";
+  import {ref} from 'vue';
+  import useDarkMode from '@/hooks/useDarkMode';
   import MediaLoader from "@/components/Media/MediaLoader.vue"
 
  // import Swiper core and required modules
@@ -66,11 +66,7 @@ export default {
     mediaResources: Object,
   },
   setup(props) {
-    const store = useStore();
-
-    const darkMode = computed(() => {
-      return store.getters['application/darkMode']
-    });
+    const { darkMode } = useDarkMode();
     const media = ref(props.mediaResources);
     const breakpoints = {
       300: {

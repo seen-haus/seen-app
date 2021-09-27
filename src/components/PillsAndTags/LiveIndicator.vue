@@ -20,10 +20,9 @@
   </div>
 </template>
 
-
 <script>
-import {computed} from "vue";
-import {useStore} from "vuex";
+import useDarkMode from '@/hooks/useDarkMode';
+
 export default {
   name: "LiveIndicator",
   props: {
@@ -61,11 +60,7 @@ export default {
     }
   },
   setup() {
-    const store = useStore();
-
-    const darkMode = computed(() => {
-      return store.getters['application/darkMode']
-    });
+    const { darkMode } = useDarkMode();
 
     return {
       darkMode,
