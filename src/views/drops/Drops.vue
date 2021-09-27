@@ -43,7 +43,7 @@
           <product-card
             v-if="collectable != null"
             :collectable="collectable"
-            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route)"
+            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
           />
           <div
             v-else
@@ -131,16 +131,23 @@ export default {
       filterEditions.value = event;
       paginatedCollectables.filter(filterAuctions.value, filterEditions.value);
     }
-    const navigateToCollectable = function (slug, isSlugFullRoute) {
+    const navigateToCollectable = function (slug, isSlugFullRoute, version) {
       if(isSlugFullRoute) {
         router.push({
           name: slug,
         });
       } else {
-        router.push({
-          name: "collectableAuction",
-          params: { slug: slug },
-        });
+        if(version === 2) {
+          router.push({
+            name: "collectableDropV2",
+            params: { slug: slug },
+          });
+        } else if (version === 3) {
+          router.push({
+            name: "collectableDropV3",
+            params: { slug: slug },
+          });
+        }
       }
     };
 

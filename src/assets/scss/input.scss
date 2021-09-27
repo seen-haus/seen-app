@@ -141,3 +141,16 @@ form.dirty {
     }
   }
 }
+
+.p-slider .p-slider-range {
+  background: #26c785;
+}
+
+.p-slider .p-slider-handle {
+  border: 2px solid #26c785;
+}
+
+.p-slider:not(.p-disabled) .p-slider-handle:hover {
+  background: #26c785;
+  border-color: #26c785;
+}

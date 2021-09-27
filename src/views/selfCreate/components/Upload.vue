@@ -227,6 +227,7 @@ export default {
                             isUploadComplete.value = true;
                             props.setMediaIpfsHash(res.data.ipfsHash)
                             props.setTempMediaUrl(useTemporaryMediaUrl)
+                            props.nextStep();
                         }else{
                             props.setMediaIpfsHash(false)
                             props.setTempMediaUrl(false)

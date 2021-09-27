@@ -1,3 +1,4 @@
+const ethers = require('ethers');
 import {Contract} from '@ethersproject/contracts';
 import {getAddress} from '@ethersproject/address';
 import {AddressZero} from '@ethersproject/constants';
@@ -151,4 +152,23 @@ export function getDaysAgo(dateFrom) {
     if (days < 1) return 'Less than a day ago';
     if (days < 2) return 'One day ago';
     return ~~days + ' days ago';
+}
+
+export function parseConsignmentRegisteredEventData(data) {
+    // event ConsignmentRegistered(address indexed consignor, address indexed seller, SeenTypes.Consignment consignment);
+    // struct Consignment {
+    //     Market market;
+    //     MarketHandler marketHandler;
+    //     address payable seller;
+    //     address tokenAddress;
+    //     uint256 tokenId;
+    //     uint256 supply;
+    //     uint256 id;
+    //     bool multiToken;
+    //     bool released;
+    // }
+    return ethers.utils.defaultAbiCoder.decode(
+        [ 'uint256','uint256','address','address','uint256','uint256','uint256','bool','bool'],
+        data
+    )
 }

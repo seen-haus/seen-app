@@ -2,6 +2,7 @@ import {ExchangeRateService} from "@/services/apiService";
 
 const state = {
     openModal: null,
+    pendingTransactionHash: null,
     mobileMenu: null,
     currencies: null,
     darkMode: false,
@@ -21,6 +22,12 @@ const mutations = {
     },
     CLOSE_MODAL(state) {
         state.openModal = null
+    },
+    SET_PENDING_TRANSACTION_HASH(state, hash) {
+        state.pendingTransactionHash = hash
+    },
+    CLEAR_PENDING_TRANSACTION_HASH(state) {
+        state.pendingTransactionHash = null
     },
     OPEN_MOBILE_MENU(state) {
         state.mobileMenu = true
@@ -45,6 +52,12 @@ const actions = {
     },
     closeModal(context) {
         context.commit('CLOSE_MODAL')
+    },
+    setPendingTransactionHash(context, hash) {
+        context.commit('SET_PENDING_TRANSACTION_HASH', hash)
+    },
+    clearPendingTransactionHash(context) {
+        context.commit('CLEAR_PENDING_TRANSACTION_HASH')
     },
     async getExchangeRates(context) {
         ExchangeRateService.get()
@@ -87,6 +100,9 @@ const getters = {
     },
     darkMode(state) {
         return state.darkMode;
+    },
+    pendingTransactionHash(state) {
+        return state.pendingTransactionHash;
     }
 };
 

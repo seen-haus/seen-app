@@ -89,7 +89,7 @@ export default function useTimer(callback) {
         state.percentage = +(progress / duration).toFixed(2);
         if (progressLeft <= 0 || (state.isAwaitingReserve && new Date().getTime() > state.startDate)) {
             timerState.value = TIMER_STATE.DONE;
-            if(state.isAwaitingReserve) {
+            if(state.isAwaitingReserve) { // || !state.endDate maybe
                 state.value = 'Awaiting Reserve Bid';
             } else {
                 state.value = 'Auction Ended';

@@ -50,6 +50,7 @@ const activate = async (connector) => {
     }
 
     state.provider = result.provider
+    state.chainId = result.provider.chainId
     connector.on(ConnectorEvent.Deactivate, handleDeactivate)
     connector.on(ConnectorEvent.Error, handleError)
     connector.on(ConnectorEvent.Update, handleUpdate)
@@ -77,8 +78,15 @@ const setError = (error) => {
     state.error = error;
 }
 const update = (payload) => {
-    state.account = payload.account
-    // state.provider = payload.provider // TODO: ASK NEJC ABOUT THAT
+    if(payload.account) {
+        state.account = payload.account
+    }
+    if(payload.provider) {
+        state.provider = payload.provider
+    }
+    if(payload.chainId) {
+        state.chainId = payload.chainId
+    }
 }
 
 

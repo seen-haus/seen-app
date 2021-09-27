@@ -1,109 +1,151 @@
 <template>
   <div>
-    <div style="position: sticky;top: 0px;">
-        <div style="position: absolute;background-color:#000000d1;color:white; top: 0px;width: 500px;max-height: 120px;overflow: scroll;">
+    <!-- <div style="position: sticky;top: 0px;"> -->
+        <!-- <div style="position: absolute;background-color:#000000d1;color:white; top: 0px;width: 500px;max-height: 120px;overflow: scroll;">
             <pre>{{ JSON.stringify(processData, null, 4) }}</pre>
-        </div>
+        </div> -->
+    <!-- </div> -->
+    <div v-if="!processData.hasCheckedRoles">
+        <container class="role-checking-loader-section flex-center pb-12">
+            <div class="flex-col flex">
+                <ProgressSpinner />
+                <sub-title
+                    class="text-black hidden lg:flex pt-6"
+                    text-align="center"
+                >
+                    Checking Roles
+                </sub-title>
+            </div>
+        </container>
     </div>
-    <container class="section-featured-auctions pb-12" v-if="processData.currentStep < 4">
-        <unfenced-title
-            class="text-black hidden lg:flex pb-6 pt-12"
-            color="fence-dark"
-            text-align="left"
-          >Publish NFT</unfenced-title
-        >
-        <div class="flex items-center flex-col lg:flex-row mb-8">
-            <div class="card flex-grow">
-                <Steps :steps="steps" :currentStep="processData.currentStep" :setStep="setStep"  />
+    <div v-if="processData.isMinter && processData.isSeller && processData.hasCheckedRoles">
+        <container class="pb-12" v-if="processData.currentStep < 4">
+            <unfenced-title
+                class="text-black hidden lg:flex pb-6 pt-12"
+                color="fence-dark"
+                text-align="left"
+            >Publish NFT</unfenced-title>
+            <div class="flex items-center flex-col lg:flex-row mb-8">
+                <div class="card flex-grow">
+                    <Steps :steps="steps" :currentStep="processData.currentStep" :setStep="setStep"  />
+                </div>
             </div>
-        </div>
-        <div class="flex items-center flex-col lg:flex-row">
-            <!-- <div class="flex-grow" v-if="currentStep === 0">
-                <type-selection :nextStep="nextStep" :setTangibility="setTangibility" :setLocationData="setLocationData" :clearLocationData="clearLocationData"/>
-            </div> -->
-            <div class="flex-grow" v-if="processData.currentStep === 0">
-                <upload :nextStep="nextStep" :setMediaIpfsHash="setMediaIpfsHash" :setTempMediaUrl="setTempMediaUrl" :tempMediaUrl="processData.tempMediaUrl" :mediaIpfsHash="processData.mediaIpfsHash" />
+            <div class="flex items-center flex-col lg:flex-row">
+                <!-- <div class="flex-grow" v-if="currentStep === 0">
+                    <type-selection :nextStep="nextStep" :setTangibility="setTangibility" :setLocationData="setLocationData" :clearLocationData="clearLocationData"/>
+                </div> -->
+                <div class="flex-grow" v-if="processData.currentStep === 0">
+                    <upload :nextStep="nextStep" :setMediaIpfsHash="setMediaIpfsHash" :setTempMediaUrl="setTempMediaUrl" :tempMediaUrl="processData.tempMediaUrl" :mediaIpfsHash="processData.mediaIpfsHash" />
+                </div>
+                <div class="flex-grow" v-if="processData.currentStep === 1">
+                    <mint 
+                        :setPropertyData="setPropertyData"
+                        :propertyData="processData.properties"
+                        :mediaUrl="processData.tempMediaUrl"
+                        :nextStep="nextStep"
+                        :prevStep="prevStep"
+                        :setTangibilityData="setTangibilityData"
+                        :tangibilityData="processData.tangibility"
+                        :setLocationData="setLocationData"
+                        :setCountryData="setCountryData"
+                        :setProvinceData="setProvinceData"
+                        :setCityData="setCityData"
+                        :clearLocationData="clearLocationData"
+                        :locationDataCountry="processData.locationData.country"
+                        :locationDataProvince="processData.locationData.province"
+                        :locationDataCity="processData.locationData.city"
+                        :setTitleData="setTitleData"
+                        :titleData="processData.title"
+                        :setDescriptionData="setDescriptionData"
+                        :descriptionData="processData.description"
+                        :setTagData="setTagData"
+                        :tagData="processData.tags"
+                        :setRightsData="setRightsData"
+                        :rightsData="processData.rights"
+                        :setUnitData="setUnitData"
+                        :unitData="processData.units"
+                        :priceData="processData.price"
+                        :priceTypeData="processData.priceType"
+                        :openingTimeTypeData="processData.openingTimeType"
+                        :openingTimeUnixData="processData.openingTimeUnix"
+                        :listingTypeData="processData.listingType"
+                        :mediaIpfsHash="processData.mediaIpfsHash"
+                        :setPreparedMetaData="setPreparedMetaData"
+                        :preparedMetaData="processData.preparedMetaData"
+                        :setMetaDataIpfsHashData="setMetaDataIpfsHash"
+                        :metaDataIpfsHashData="processData.metaDataIpfsHash"
+                        :setNftTokenIdData="setNftTokenId"
+                        :nftTokenIdData="processData.nftTokenId"
+                        :secondaryRoyaltyFeeData="processData.secondaryRoyaltyFee"
+                        :setSecondaryRoyaltyFeeData="setSecondaryRoyaltyFee"
+                        :setNftConsignmentIdData="setNftConsignmentId"
+                        :nftConsignmentIdData="processData.nftConsignmentId"
+                        :isEscrowAgentData="processData.isEscrowAgent"
+                    />
+                </div>
+                <div class="flex-grow" v-if="processData.currentStep === 2">
+                    <self-create-listing
+                        :nextStep="nextStep"
+                        :prevStep="prevStep"
+                        :setStep="setStep"
+                        :setListingTypeData="setListingTypeData"
+                        :listingTypeData="processData.listingType"
+                        :setPriceData="setPriceData"
+                        :priceData="processData.price"
+                        :setPriceTypeData="setPriceTypeData"
+                        :setOpeningTimeType="setOpeningTimeType"
+                        :setOpeningTimeUnix="setOpeningTimeUnix"
+                        :priceTypeData="processData.priceType"
+                        :mediaUrl="processData.tempMediaUrl"
+                        :tangibilityData="processData.tangibility"
+                        :titleData="processData.title"
+                        :tagData="processData.tags"
+                        :unitData="processData.units"
+                        :openingTimeTypeData="processData.openingTimeType"
+                        :openingTimeUnixData="processData.openingTimeUnix"
+                        :setNftTokenIdData="setNftTokenId"
+                        :nftTokenIdData="processData.nftTokenId"
+                        :setNftConsignmentIdData="setNftConsignmentId"
+                        :nftConsignmentIdData="processData.nftConsignmentId"
+                        :isMarketHandlerAssignedData="processData.isMarketHandlerAssigned"
+                        :setIsMarketHandlerAssignedData="setIsMarketHandlerAssigned"
+                    />
+                </div>
+                <div class="flex-grow" v-if="processData.currentStep === 3">
+                    <container class="publishing-loader-section flex-center pb-12">
+                        <div class="flex-col flex">
+                            <ProgressSpinner />
+                            <sub-title
+                                class="text-black hidden lg:flex pt-6"
+                                text-align="center"
+                            >
+                                Publishing Listing
+                            </sub-title>
+                            <light-typography>
+                                Please wait for this to finish, it may take up to one minute.
+                            </light-typography>
+                        </div>
+                    </container>
+                </div>
             </div>
-            <div class="flex-grow" v-if="processData.currentStep === 1">
-                <mint 
-                    :setPropertyData="setPropertyData"
-                    :propertyData="processData.properties"
+        </container>
+        <div v-if="processData.currentStep === 4">
+            <div class="bg-light-grey-darkened live-preview-card-zone flex-center">
+                <drop-card-preview
+                    :listingType="processData.listingType"
+                    :startTime="processData.openingTimeUnix ? processData.openingTimeUnix * 1000 : null"
+                    :priceType="processData.priceType"
+                    :price="processData.price"
+                    :units="processData.units"
+                    :tangibility="processData.tangibility"
+                    :tags="processData.tags"
+                    :titleText="processData.title"
+                    :creatorAccount="creatorData.account"
+                    :creatorProfilePicture="creatorData.profilePicture"
+                    :creatorUsername="creatorData.username"
                     :mediaUrl="processData.tempMediaUrl"
-                    :nextStep="nextStep"
-                    :prevStep="prevStep"
-                    :setTangibilityData="setTangibilityData"
-                    :tangibilityData="processData.tangibility"
-                    :setLocationData="setLocationData"
-                    :setCountryData="setCountryData"
-                    :setProvinceData="setProvinceData"
-                    :setCityData="setCityData"
-                    :clearLocationData="clearLocationData"
-                    :locationDataCountry="processData.locationData.country"
-                    :locationDataProvince="processData.locationData.province"
-                    :locationDataCity="processData.locationData.city"
-                    :setTitleData="setTitleData"
-                    :titleData="processData.title"
-                    :setDescriptionData="setDescriptionData"
-                    :descriptionData="processData.description"
-                    :setTagData="setTagData"
-                    :tagData="processData.tags"
-                    :setRightsData="setRightsData"
-                    :rightsData="processData.rights"
-                    :setUnitData="setUnitData"
-                    :unitData="processData.units"
-                    :priceData="processData.price"
-                    :priceTypeData="processData.priceType"
-                    :openingTimeTypeData="processData.openingTimeType"
-                    :openingTimeUnixData="processData.openingTimeUnix"
-                    :listingTypeData="processData.listingType"
-                    :mediaIpfsHash="processData.mediaIpfsHash"
-                    :setPreparedMetaData="setPreparedMetaData"
-                    :preparedMetaData="processData.preparedMetaData"
-                    :setMetaDataIpfsHashData="setMetaDataIpfsHash"
-                    :metaDataIpfsHashData="processData.metaDataIpfsHash"
-                    :setNftTokenIdData="setNftTokenId"
-                    :nftTokenIdData="processData.nftTokenId"
                 />
             </div>
-            <div class="flex-grow" v-if="processData.currentStep === 2">
-                <self-create-listing
-                    :nextStep="nextStep"
-                    :prevStep="prevStep"
-                    :setListingTypeData="setListingTypeData"
-                    :listingTypeData="processData.listingType"
-                    :setPriceData="setPriceData"
-                    :priceData="processData.price"
-                    :setPriceTypeData="setPriceTypeData"
-                    :setOpeningTimeType="setOpeningTimeType"
-                    :setOpeningTimeUnix="setOpeningTimeUnix"
-                    :priceTypeData="processData.priceType"
-                    :mediaUrl="processData.tempMediaUrl"
-                    :tangibilityData="processData.tangibility"
-                    :titleData="processData.title"
-                    :tagData="processData.tags"
-                    :unitData="processData.units"
-                    :openingTimeTypeData="processData.openingTimeType"
-                    :openingTimeUnixData="processData.openingTimeUnix"
-                />
-            </div>
-        </div>
-    </container>
-    <div v-if="processData.currentStep === 4">
-        <div class="bg-light-grey-darkened live-preview-card-zone flex-center">
-            <drop-card-preview
-                :listingType="processData.listingType"
-                :startTime="processData.openingTimeUnix ? processData.openingTimeUnix * 1000 : null"
-                :priceType="processData.priceType"
-                :price="processData.price"
-                :units="processData.units"
-                :tangibility="processData.tangibility"
-                :tags="processData.tags"
-                :titleText="processData.title"
-                :creatorAccount="creatorData.account"
-                :creatorProfilePicture="creatorData.profilePicture"
-                :creatorUsername="creatorData.username"
-                :mediaUrl="processData.tempMediaUrl"
-            />
         </div>
     </div>
   </div>
@@ -114,7 +156,9 @@
 import { ref, reactive, computed, watchEffect } from "vue";
 import { useField, useForm } from "vee-validate";
 import { useRoute, useRouter } from "vue-router";
-import { useStore } from "vuex"
+import { useStore } from "vuex";
+
+import { useToast } from "primevue/usetoast";
 
 import Container from "@/components/Container.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
@@ -124,18 +168,24 @@ import Steps from "@/components/Steps/Steps.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
 import DropCardPreview from "@/components/DropCardPreview/DropCardPreview.vue";
 import useWeb3 from "@/connectors/hooks";
+import { useAccessControllerContractNetworkReactive, useV3MarketClerkContractNetworkReactive } from '@/hooks/useContract.js';
+
+import { CollectablesService } from "@/services/apiService";
+import parseError from "@/services/utils/parseError";
 
 import TypeSelection from './components/TypeSelection.vue';
 import Upload from './components/Upload.vue';
 import Mint from './components/Mint.vue';
 import SelfCreateListing from './components/SelfCreateListing.vue';
 
+import { roleToBytes } from '@/constants';
+
 export default {
     name: "SelfCreateWithRoutes",
     beforeRouteLeave (to, from, next) {
         // If the form is dirty and the user did not confirm leave,
         // prevent losing unsaved changes by canceling navigation
-        if (this.confirmStayInDirtyForm()) {
+        if ((this.processData.currentStep < 3 || (this.processData.currentStep === 3 && !this.processData.isMarketHandlerAssigned)) && this.confirmStayInDirtyForm()) {
             next(false);
         } else {
             next();
@@ -182,7 +232,7 @@ export default {
             return !this.confirmLeave()
         },
         beforeWindowUnload(e) {
-            if (this.confirmStayInDirtyForm()) {
+            if (this.processData.currentStep < 3 && this.confirmStayInDirtyForm()) {
                 // Cancel the event
                 e.preventDefault()
                 // Chrome requires returnValue to be set
@@ -290,7 +340,16 @@ export default {
         },
         setNftTokenId(id) {
             this.processData.nftTokenId = id;
-        }
+        },
+        setNftConsignmentId(id) {
+            this.processData.nftConsignmentId = id;
+        },
+        setSecondaryRoyaltyFee(feePercentage) {
+            this.processData.secondaryRoyaltyFee = feePercentage;
+        },
+        setIsMarketHandlerAssigned(isAssigned) {
+            this.processData.isMarketHandlerAssigned = isAssigned;
+        },
     },
     components: {
         Container,
@@ -305,9 +364,11 @@ export default {
         SelfCreateListing,
         DropCardPreview,
     },
-    setup() {
+    async setup() {
 
         const store = useStore();
+
+        const toast = useToast();
 
         const router = useRouter();
         const route = useRoute();
@@ -315,6 +376,46 @@ export default {
         const stepName = route.params.stepName
             ? route.params.stepName
             : 'upload';
+
+        const publishConsignmentId = route.params.consignmentId;
+
+        const marketClerkContract = ref({});
+
+        watchEffect(async () => {
+            let contract = await useV3MarketClerkContractNetworkReactive();
+            marketClerkContract.value = contract.state;
+        })
+
+        watchEffect(async () => {
+            let currentStepName = route.params.stepName;
+            if(currentStepName === 'publish') {
+                if(marketClerkContract.value.contract && account?.value) {
+                    let useConsignmentId = publishConsignmentId ? publishConsignmentId : processData.nftConsignmentId
+                    if(useConsignmentId === 0 || useConsignmentId) {
+                        try {
+                            await CollectablesService.publishConsignmentByConsignmentId(useConsignmentId)
+                            .then(() => {
+                                router.push({
+                                    name: "selfCreate",
+                                    params: { stepName: 'live'},
+                                });
+                            })
+                            .catch((e) => {
+                                console.log({e})
+                                let message = e?.data?.message ? parseError(e?.data?.message) : e;
+                                toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 5000});
+                            })
+                        } catch (e) {
+                            console.log({e})
+                            let message = e?.message ? parseError(e.message) : e;
+                            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 5000});
+                        }
+                    } else {
+                        toast.add({severity: 'error', summary: 'Error', detail: `Consignment ID not found`, life: 5000});
+                    }
+                }
+            }
+        })
 
         const mediaInputRef = ref(null);
 
@@ -393,6 +494,7 @@ export default {
             rights: false,
             title: false,
             description: false,
+            secondaryRoyaltyFee: false,
             properties: [],
             tags: [],
             listingType: false,
@@ -402,6 +504,12 @@ export default {
             openingTimeUnix: false,
             openingTimeType: false,
             nftTokenId: false,
+            nftConsignmentId: false,
+            isMinter: false,
+            isSeller: false,
+            isEscrowAgent: false,
+            hasCheckedRoles: false,
+            isMarketHandlerAssigned: false,
         })
 
         watchEffect(() => {
@@ -416,11 +524,36 @@ export default {
 
         const onMediaChange = () => {
             temporaryMediaUrl.value = URL.createObjectURL(mediaInputRef.value.files[0])
-            console.log({temporaryMediaUrl: temporaryMediaUrl.value})
-            console.log({useTemporaryMediaUrl: useTemporaryMediaUrl.value})
         }
 
         const uploadField = reactive(useField("email", "email"));
+
+        const accessControllerContract = ref({});
+
+        watchEffect(async () => {
+            let contract = await useAccessControllerContractNetworkReactive();
+            accessControllerContract.value = contract.state;
+        })
+
+        watchEffect(async () => {
+            if(accessControllerContract.value.contract && account?.value) {
+                // Check that current user has access to NFT minting & selling
+                let hasMinterRole = await accessControllerContract.value.contract.hasRole(roleToBytes["MINTER"], account?.value);
+                let hasSellerRole = await accessControllerContract.value.contract.hasRole(roleToBytes["SELLER"], account?.value);
+                let hasEscrowAgentRole = await accessControllerContract.value.contract.hasRole(roleToBytes["ESCROW_AGENT"], account?.value);
+                processData.isMinter = hasMinterRole;
+                processData.isSeller = hasSellerRole;
+                processData.isEscrowAgent = hasEscrowAgentRole;
+                processData.hasCheckedRoles = true;
+            }else{
+                // Assume no access
+                processData.isMinter = false;
+                processData.isSeller = false;
+                processData.isEscrowAgent = false;
+            }
+        })
+
+        
 
         return {
             uploadForm,
@@ -443,6 +576,14 @@ export default {
 
     .live-preview-card-zone {
         height: 650px;
+    }
+
+    .role-checking-loader-section {
+        height: 808px;
+    }
+
+    .publishing-loader-section {
+        height: 408px;
     }
 
 </style>

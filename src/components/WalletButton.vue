@@ -141,7 +141,7 @@ export default {
     const openWalletModal = () => {
       op.value.hide();
       isOpen.value = false;
-      store.dispatch('application/openModal', 'WalletModal')
+      store.dispatch('application/openModal', 'WalletModalConnectOnly')
     };
     const openNotificationsModal = () => {
       op.value.hide();

@@ -8,7 +8,7 @@
 
 <script>
 import useTimer, {TIMER_STATE} from "@/hooks/useTimer.js";
-import {computed, watch, ref, toRefs} from 'vue';
+import {computed, watch, watchEffect, ref, toRefs} from 'vue';
 
 export default {
   name: "ProgressTimer",
@@ -74,13 +74,13 @@ export default {
         if(props.overrideStartsInLabel) {
           return props.overrideStartsInLabel;
         }
-        return props.isAuction ? 'Auction starts in: ' : 'Sale starts in: ';
+        return props.isAuction ? 'Bidding opens in: ' : 'Sale starts in: ';
       }
       if (timerState.value === TIMER_STATE.IN_PROGRESS) {
         if(props.overrideEndsInLabel) {
           return props.overrideEndsInLabel;
         }
-        return 'Ends in: ' || props.label;
+        return `${props.isAuction ? 'Auction' : 'Sale'} ends in: ` || props.label;
       }
       if (timerState.value === TIMER_STATE.DONE) {
         return '';
@@ -93,11 +93,14 @@ export default {
       timerState.value = state;
     }
 
-    startTimer({
-      startDate: props.startDate,
-      endDate: props.endDate,
-      isAwaitingReserve: props.isAwaitingReserve,
-    });
+
+    watchEffect(() => {
+      startTimer({
+        startDate: props.startDate,
+        endDate: props.endDate,
+        isAwaitingReserve: props.isAwaitingReserve,
+      });
+    })
 
     return {
       percentage,

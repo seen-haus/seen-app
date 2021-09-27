@@ -78,6 +78,14 @@
                         </div>
                         <div class="fc mb-6">
                             <div class="flex-space-between">
+                                <label>Secondary Market Royalty Fee ({{data.secondaryRoyaltyFee}}%)</label>
+                            </div>
+                            <div class="mt-4">
+                                <Slider v-model="data.secondaryRoyaltyFee" :max="15" :min="1" />
+                            </div>
+                        </div>
+                        <div class="fc mb-6">
+                            <div class="flex-space-between">
                                 <label for="tags">Tags</label>
                                 <label 
                                     :class="data.tagLength > maxLengths.tags ? 'error-text' : 'light-mode-text-washed'"
@@ -169,24 +177,28 @@
                         </div>
                         <div class="selection-option-wrapper" :class="data.selectedType === 'nft-physical' ? 'active-selection-option' : 'inactive-selection-option'">
                             <div 
-                                class="selection-option cursor-pointer"
-                                @click="setSelectedType('nft-physical')"
+                                class="selection-option"
+                                :class="data.isEscrowAgent ? 'cursor-pointer' : 'cursor-not-allowed'"
+                                @click="data.isEscrowAgent && setSelectedType('nft-physical')"
                             >
-                                <div 
-                                    class="icon-container flex-center"
-                                    :class="data.selectedType === 'nft-physical' ? 'active-icon-container' : 'inactive-icon-container'"
-                                >
-                                    <img src="@/assets/icons/type-mint-nft-physical-icon.svg" alt="Type NFT Only Icon">
+                                <div :class="!data.isEscrowAgent && 'opacity-50'">
+                                    <div 
+                                        class="icon-container flex-center"
+                                        :class="data.selectedType === 'nft-physical' ? 'active-icon-container' : 'inactive-icon-container'"
+                                    >
+                                        <img src="@/assets/icons/type-mint-nft-physical-icon.svg" alt="Type NFT Only Icon">
+                                    </div>
                                 </div>
                                 <div class="selection-option-text-container">
                                     <sub-title
                                         class="text-black hidden lg:flex"
                                         text-align="center"
                                         font-size="15px"
+                                        :class="!data.isEscrowAgent && 'opacity-50'"
                                     >
                                         NFT + PHYSICAL
                                     </sub-title>
-                                    <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.`}"></i>
+                                    <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="!data.isEscrowAgent && {text: `Minting NFT + Physical pairs requires the ESCROW_AGENT role, please contact the SEEN.HAUS team if you would like to find out more about getting this role.`}"></i>
                                 </div>
                             </div>
                         </div>
@@ -231,14 +243,14 @@
                     </div>
                 </div>
             </div>
-            <button v-if="data.nftTokenId" class="button mt-6 w-full primary" @click="nextStep">
-                Continue
+            <button :disabled="invalid" :class="(data.preparedMetaDataLocal && !data.isUploadingMetaData && !metaDataIpfsHashData) ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="uploadMetaDataToIPFS">
+                {{data.isUploadingMetaData ? 'Distributing Metadata To IPFS...' : 'Upload Metadata To IPFS'}}
             </button>
-            <button v-if="metaDataIpfsHashData && data.preparedMetaDataLocal && !data.nftTokenId" :disabled="invalid" :class="metaDataIpfsHashData ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="mintNftOnChain">
+            <button v-if="metaDataIpfsHashData" :disabled="invalid" :class="(metaDataIpfsHashData && data.preparedMetaDataLocal && !data.nftTokenId) ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="mintNftOnChain">
                 Mint NFT On-Chain
             </button>
-            <button v-if="!metaDataIpfsHashData" :disabled="invalid" :class="(data.preparedMetaDataLocal && !data.isUploadingMetaData) ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="uploadMetaDataToIPFS">
-                {{data.isUploadingMetaData ? 'Distributing Metadata To IPFS...' : 'Upload Metadata To IPFS'}}
+            <button v-if="data.nftTokenId" class="button mt-6 w-full primary" @click="nextStep">
+                Continue
             </button>
             <!-- <sub-title
                 class="disable-text-transform green-text clickable hidden lg:flex mb-1 mt-2"
@@ -277,11 +289,15 @@ import { countryList } from "@/connectors/constants";
 import useWeb3 from "@/connectors/hooks";
 
 import useSigner from "@/hooks/useSigner";
+import { useV3NftContractNetworkReactive } from '@/hooks/useContract.js';
 
+import parseError from "@/services/utils/parseError";
 import emitter from "@/services/utils/emitter";
 import { IPFSService } from "@/services/apiService";
 
 import MintPropertiesModal from "@/views/selfCreate/components/MintPropertiesModal.vue";
+
+import { parseConsignmentRegisteredEventData } from "@/services/utils";
 
 export default {
     name: "TypeSelection",
@@ -322,6 +338,11 @@ export default {
         mediaIpfsHash: String,
         setNftTokenIdData: Function,
         nftTokenIdData: String,
+        setNftConsignmentIdData: Function,
+        consignmentIdData: String,
+        isEscrowAgentData: Boolean,
+        setSecondaryRoyaltyFeeData: Function,
+        secondaryRoyaltyFeeData: String,
     },
     methods: {
         setSelectedType(type) {
@@ -409,6 +430,7 @@ export default {
                 city: false,
             },
             isNextStepReady: false,
+            secondaryRoyaltyFee: props.secondaryRoyaltyFeeData || 5,
             tags: props.tagData || [],
             tagLength: 0,
             properties: props.propertyData || [],
@@ -417,6 +439,8 @@ export default {
             showPreparedMetaData: false,
             isUploadingMetaData: false,
             nftTokenId: props.nftTokenIdData || false,
+            consignmentIdData: props.nftConsignmentIdData || false,
+            isEscrowAgent: props.isEscrowAgentData || false,
         })
 
         const form = useForm({
@@ -463,6 +487,8 @@ export default {
 
         watchEffect(() => {
             data.nftTokenId = props.nftTokenIdData;
+            data.nftConsignmentId = props.nftConsignmentIdData;
+            data.isEscrowAgent = props.isEscrowAgentData;
         })
 
         watchEffect(() => {
@@ -492,6 +518,16 @@ export default {
                 })
             } else if (unitField?.value === "") {
                 props.setUnitData(false)
+            }
+        })
+
+        watchEffect(() => {
+            if(data.secondaryRoyaltyFee) {
+                if(data.secondaryRoyaltyFee <= 15) {
+                    props.setSecondaryRoyaltyFeeData(data.secondaryRoyaltyFee)
+                } else {
+                    props.setSecondaryRoyaltyFeeData(false)
+                }
             }
         })
 
@@ -574,6 +610,7 @@ export default {
             let isValidDescription = descriptionField?.value && !descriptionField.errors[0];
             let isValidUnit = unitField?.value && !unitField.errors[0];
             let isValidTangibility = data.selectedType;
+            let isValidRoyaltyFee = data.secondaryRoyaltyFee && (data.secondaryRoyaltyFee <= 15) && (data.secondaryRoyaltyFee >= 1) && !isNaN(data.secondaryRoyaltyFee);
 
             let isValidLocationData = false;
             if(data.selectedType === 'nft-digital') {
@@ -592,6 +629,7 @@ export default {
             if(
                 isValidTitle
                 && isValidDescription
+                && isValidRoyaltyFee
                 && isValidUnit
                 && isValidTangibility
                 && isValidLocationData
@@ -674,8 +712,54 @@ export default {
             }
         }
 
+        const seenNFTContract = ref({});
+
+        watchEffect(async () => {
+            let contract = await useV3NftContractNetworkReactive(true);
+            seenNFTContract.value = contract.state;
+        })
+
         const mintNftOnChain = async () => {
-            props.setNftTokenIdData('1');
+            if(seenNFTContract.value.contract && account?.value) {
+                if(data.selectedType === 'nft-digital') {
+                    store.dispatch('application/openModal', 'TransactionModal')
+                    try {
+                        let tx = await seenNFTContract.value.contract.mintDigital(unitField?.value, account?.value, `ipfs://${props.metaDataIpfsHashData}`, props.secondaryRoyaltyFeeData);
+                        store.dispatch('application/setPendingTransactionHash', tx.hash)
+                        tx.wait()
+                            .then((response) => {
+                                toast.add({
+                                    severity: 'success',
+                                    summary: 'Success',
+                                    detail: 'NFT successfully minted.',
+                                    life: 3000
+                                });
+                                let eventData = parseConsignmentRegisteredEventData(response.events[1].data)
+                                let tokenId = Number(eventData[4]);
+                                let consignmentId = Number(eventData[6]);
+                                props.setNftTokenIdData(tokenId);
+                                props.setNftConsignmentIdData(consignmentId);
+                                store.dispatch('application/closeModal')
+                                store.dispatch('application/clearPendingTransactionHash')
+                                props.nextStep();
+                            }).catch((e) => {
+                                let message = parseError(e.message)
+                                props.setNftTokenIdData(false);
+                                props.setNftConsignmentIdData(false);
+                                toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                                store.dispatch('application/closeModal')
+                                store.dispatch('application/clearPendingTransactionHash')
+                            })
+                    } catch (e) {
+                        let message = e?.message ? parseError(e.message) : e;
+                        props.setNftTokenIdData(false);
+                        props.setNftConsignmentIdData(false);
+                        toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                        store.dispatch('application/closeModal')
+                        store.dispatch('application/clearPendingTransactionHash')
+                    }
+                }
+            }
         }
 
         return {

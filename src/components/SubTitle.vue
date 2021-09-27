@@ -10,6 +10,7 @@
           'text-align': alignment,
           'font-size': fontSize ? fontSize : '36px',
           'font-weight': fontWeight ? fontWeight : '500',
+          ...(alignment === 'center' && {'justify-content': 'center'}),
           ...(titleMonospace && {'font-family': 'monospace'}),
           ...(lineHeight && {'line-height': lineHeight}),
           ...(upperCase && {'text-transform': 'uppercase'}),

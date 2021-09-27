@@ -207,7 +207,7 @@
 
       <template v-else-if="isAuction">
         <div v-if="!isAwaitingReserve" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-          {{ isUpcomming ? "AUCTION STARTS IN" : "AUCTION ENDS IN" }}
+          {{ isUpcomming ? "BIDDING OPENS IN" : "AUCTION ENDS IN" }}
         </div>
         <div v-if="isAwaitingReserve && currentProgress" class="tracking-widest mb-6 text-gray-400 text-xs font-bold">
           24 HR COUNTDOWN BEGINS ONCE RESERVE IS MET
@@ -259,7 +259,7 @@
       <template v-else>
         <template v-if="isUpcomming">
           <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            {{ isAuction ? "AUCTION STARTS IN" : "DROP OPENS IN" }}
+            {{ isAuction ? "BIDDING OPENS IN" : "DROP OPENS IN" }}
           </div>
           <progress-timer
               ref="timerRef"
@@ -384,6 +384,8 @@ export default {
     is_sold_out: Boolean,
     is_closed: Boolean,
     collectable: Object,
+    collectableVersion: Number,
+    collectableConsignmentId: Number,
     nextBidPrice: Number,
     claim: [Number, Boolean],
     requiresRegistration: Boolean,
@@ -576,7 +578,7 @@ export default {
           amount = parseFloat(auctionField.value, 10);
           if (isNaN(amount)) throw new Error("invalid number");
           if (amount < props.nextBidPrice) throw new Error("not enough funds");
-          onBid(auctionField.value);
+          onBid(auctionField.value, props.collectableConsignmentId);
         } else {
           amount = parseInt(saleField.value, 10);
           if (isNaN(amount)) throw new Error("invalid number");
@@ -584,7 +586,7 @@ export default {
           // if (amount > props.items_of - props.items) {
           //   throw new Error("not enough items");
           // }
-          onBuy(saleField.value);
+          onBuy(saleField.value, props.collectableConsignmentId);
 
         }
         hasError.value = null;
@@ -650,14 +652,14 @@ export default {
       }
     };
 
-    const onBuy = async (event) => {
+    const onBuy = async (event, collectableConsignmentId) => {
       try {
         const currentPrice = price.value;
         const amount = +parseInt(event, 10);
         const totalPrice = amount * currentPrice;
 
         isSubmitting.value = true
-        await buy(amount)
+        await buy(amount, collectableConsignmentId)
             .then(async (response) => {
               isSubmitting.value = false
               if (response) {
@@ -683,11 +685,11 @@ export default {
       }
     };
 
-    const onBid = async (event) => {
+    const onBid = async (event, collectableConsignmentId) => {
       try {
         const amount = +parseFloat(event, 10);
         isSubmitting.value = true
-        await bid(amount)
+        await bid(amount, collectableConsignmentId)
             .then((response) => {
               try {
                 if(response) {

@@ -101,7 +101,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         return "live";
     });
     const startsAt = computed(() => collectable.value.starts_at);
-    const minimumStartsAt = computed(() => collectable.value.minimum_starts_at);
+    const minimumStartsAt = computed(() => collectable.value.minimum_starts_at || collectable.value.starts_at);
     const endsAt = computed(() => collectable.value.ends_at);
     const claim = computed(() => collectable.value.claim ? collectable.value.claim : false);
     const isAuction = computed(
@@ -193,8 +193,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
         const now = Date.now();
         const start = startsAt.value ? new Date(startsAt.value) : null;
         const end = endsAt.value ? new Date(endsAt.value) : null;
+        const isStartInPast = start && start.getTime() <= now;
 
-        if(end === null && collectable.value.is_reserve_price_auction) {
+        if(end === null && collectable.value.is_reserve_price_auction && isStartInPast) {
             collectableState.value = COLLECTABLE_STATE.AWAITING_RESERVE;
             return;
         }
@@ -241,7 +242,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         if (((now >= start) && (now < end) && !is_sold_out.value) || (new Date(endsAt.value).getTime() === 0 && collectable.value.is_reserve_price_auction)) {
             console.log('contract initialized');
             initializeContractEvents(collectable.value);
-        } else if (now < end && !is_sold_out.value) {
+        } else if ((now < end || !endsAt.value) && !is_sold_out.value) {
             timeoutHandler = setTimeout(() => {
                 console.log('starting soon');
                 initializeContractEvents(collectable.value);

@@ -23,9 +23,14 @@ const routes = [
         component: () => import(/* webpackChunkName: "collectablePropyDrop" */ '../views/collectable/propy/Collectable.vue')
     },
     {
+        path: '/drops/v2/:slug',
+        name: 'collectableDropV2',
+        component: () => import(/* webpackChunkName: "collectableDropV2" */ '../views/collectable/Collectable.vue')
+    },
+    {
         path: '/drops/:slug',
-        name: 'collectableDrops',
-        component: () => import(/* webpackChunkName: "collectableDrops" */ '../views/collectable/Collectable.vue')
+        name: 'collectableDropV3',
+        component: () => import(/* webpackChunkName: "collectableDropV3" */ '../views/collectable/v3/Collectable.vue')
     },
     {
         path: '/claims/:contractAddress',
@@ -93,6 +98,16 @@ const routes = [
         path: '/space-nft',
         name: 'space-nft',
         component: () => import(/* webpackChunkName: "spaceNFT" */ '../views/massDrops/SpaceNFT.vue')
+    },
+    {
+        path: '/create',
+        name: 'selfCreateWithoutStep',
+        component: () => import(/* webpackChunkName: "SelfCreateWithoutStep" */ '../views/selfCreate/SelfCreate.vue')
+    },
+    {
+        path: '/create/:stepName/:consignmentId',
+        name: 'selfCreateWithConsignmentId',
+        component: () => import(/* webpackChunkName: "SelfCreate" */ '../views/selfCreate/SelfCreate.vue')
     },
     {
         path: '/create/:stepName',

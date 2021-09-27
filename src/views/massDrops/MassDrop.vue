@@ -74,7 +74,7 @@
             :is-reserved="collectable && !isNaN(reservedId) && collectable.id === reservedId"
             :is-next-phase="collectable && nextPhaseIds && nextPhaseIds.indexOf(collectable.id) > -1"
             :collectable="collectable"
-            @click="collectable.id !== reservedId && navigateToCollectable(collectable.slug)"
+            @click="collectable.id !== reservedId && navigateToCollectable(collectable.slug, collectable.version)"
           />
         </template>
       </div>
@@ -259,11 +259,18 @@ export default {
 
     paginatedCollectables.load();
 
-    const navigateToCollectable = function (slug) {
-      router.push({
-        name: "collectableAuction",
-        params: { slug: slug },
-      });
+    const navigateToCollectable = function (slug, version) {
+      if(version === 2) {
+        router.push({
+          name: "collectableDropV2",
+          params: { slug: slug },
+        });
+      } else if (version === 3) {
+        router.push({
+          name: "collectableDropV3",
+          params: { slug: slug },
+        });
+      }
     };
 
 

@@ -84,6 +84,9 @@ export const CollectablesService = {
     winner(contractAddress, payload) {
         return ApiService.post(`collectables/${contractAddress}/winner`, payload);
     },
+    publishConsignmentByConsignmentId(consignmentId) {
+        return ApiService.post(`/collectables/publish-consignment`, {consignment_id: consignmentId});
+    },
 };
 
 export const BidRegistrationService = {

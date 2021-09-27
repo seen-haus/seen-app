@@ -47,6 +47,7 @@
         <div class="flex lg:justify-start items-center mt-2 justify-center">
           <user-badge
               type="dark"
+              v-if="artist"
               :url="artist.avatar"
               :username="pillOverride ? pillOverride : artist.name"
               :artistSlug="artist.slug"
@@ -267,10 +268,17 @@ export default {
           name: props.collectable.slug,
         });
       }else{
-        router.push({
-          name: "collectableAuction",
-          params: {slug: props.collectable.slug},
-        });
+        if(props.collectable.version === 2) {
+          router.push({
+            name: "collectableDropV2",
+            params: { slug: props.collectable.slug },
+          });
+        } else if (props.collectable.version === 3) {
+          router.push({
+            name: "collectableDropV3",
+            params: { slug: props.collectable.slug },
+          });
+        }
       }
     };
 

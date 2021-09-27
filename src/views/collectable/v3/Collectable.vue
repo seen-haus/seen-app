@@ -118,6 +118,8 @@
           <bid-card
               :status="liveStatus"
               :collectable="collectable"
+              :collectableVersion="collectable.version"
+              :collectableConsignmentId="collectable.consignment_id"
               :startsAt="currentStartsAt"
               :minimumStartsAt="currentMinimumStartsAt"
               :endsAt="currentEndsAt"
@@ -241,7 +243,7 @@ export default {
   methods: {
     getBackgroundImage(backgroundImage) {
       if(backgroundImage) {
-        return require('../../assets/images/' + backgroundImage)
+        return require('../../../assets/images/' + backgroundImage)
       }
     }
   },

@@ -27,6 +27,7 @@
     <div class="description relative p-6 pb-3 flex flex-col flex-grow">
       <user-badge
           type="light"
+          v-if="artist"
           :url="artist.avatar"
           :username="pillOverride ? pillOverride : artist.name"
           :artistSlug="artist.slug"
@@ -79,9 +80,9 @@
 
       <template v-if="isAuction">
         <progress-timer
-            v-if="!isAwaitingReserve"
             ref="timerRef"
             class="text-black text-sm mt-2"
+            :isAwaitingReserve="isAwaitingReserve"
             :isAuction="isAuction"
             :class="isCollectableActive ? collectableActiveTextColor : 'text-gray-400'"
             :startDate="getStartsAt"
@@ -89,9 +90,6 @@
             @onProgress="updateProgress"
             @onTimerStateChange="updateCollectableState"
         />
-        <span v-if="isAwaitingReserve" class="text-gray-400 text-sm mt-2">
-          Awaiting Reserve Bid
-        </span>
       </template>
 
       <template v-else>

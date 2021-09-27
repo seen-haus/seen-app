@@ -9,6 +9,7 @@
     <!--  Modals -->
     <wallet-modal />
     <notifications-modal />
+    <transaction-modal />
     <!--  Modals END -->
     <mobile-menu/>
     <Toast />
@@ -41,6 +42,7 @@ import {useStakingContract, useTokenContract} from "@/hooks/useContract";
 import Web3Provider from "@/connector/Web3Provider";
 import WalletModal from "@/components/WalletModal/WalletModal";
 import NotificationsModal from "@/components/NotificationsModal/NotificationsModal";
+import TransactionModal from "@/components/TransactionModal/TransactionModal";
 import MobileMenu from "@/components/Menu/MobileMenu";
 import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
@@ -57,6 +59,7 @@ export default {
     MobileMenu,
     WalletModal,
     NotificationsModal,
+    TransactionModal,
     Web3Provider,
     WinnerInfo,
   },

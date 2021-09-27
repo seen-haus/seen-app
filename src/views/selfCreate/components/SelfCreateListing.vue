@@ -9,127 +9,132 @@
             >
                 <i class="fas fa-chevron-left mr-1"></i>Go Back
             </sub-title>
-            <div class="fc mb-3">
-                <label class="font-semibold uppercase text-md text-black">Type</label>
-            </div>
-            <div class="selection-container mb-6">
-                <div class="selection-option-wrapper" :class="data.selectedType === 'auction' ? 'active-selection-option' : 'inactive-selection-option'">
-                    <div
-                        class="selection-option cursor-pointer"
-                        @click="setSelectedType('auction')"
-                    >
-                        <div class="selection-option-text-container">
-                            <sub-title
-                                class="text-black hidden uppercase lg:flex"
-                                text-align="center"
-                                font-size="15px"
+            <div :class="data.isMarketHandlerAssigned && 'cursor-not-allowed'">
+                <div :class="data.nftTokenId && 'disabled opacity-0-6'">
+                    <div class="fc mb-3">
+                        <label class="font-semibold uppercase text-md text-black">Type</label>
+                    </div>
+                    <div class="selection-container mb-6">
+                        <div class="selection-option-wrapper" :class="data.selectedType === 'auction' ? 'active-selection-option' : 'inactive-selection-option'">
+                            <div
+                                class="selection-option cursor-pointer"
+                                @click="setSelectedType('auction')"
                             >
-                                Auction
-                            </sub-title>
-                            <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.`}"></i>
+                                <div class="selection-option-text-container">
+                                    <sub-title
+                                        class="text-black hidden uppercase lg:flex"
+                                        text-align="center"
+                                        font-size="15px"
+                                    >
+                                        Auction
+                                    </sub-title>
+                                    <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.`}"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="selection-option-wrapper" :class="data.selectedType === 'sale' ? 'active-selection-option' : 'inactive-selection-option'">
+                            <div 
+                                class="selection-option cursor-pointer"
+                                @click="setSelectedType('sale')"
+                            >
+                                <div class="selection-option-text-container">
+                                    <sub-title
+                                        class="text-black hidden uppercase lg:flex"
+                                        text-align="center"
+                                        font-size="15px"
+                                    >
+                                        Sale
+                                    </sub-title>
+                                    <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.`}"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fc mb-4">
+                        <div class="flex-space-between">
+                            <label class="font-semibold uppercase text-md text-black" for="price">
+                                {{data.selectedType === 'sale' ? `Sale Price` : null}}
+                                {{data.selectedType === 'auction' ? `Reserve Price` : null}}
+                                {{['auction', 'sale'].indexOf(data.selectedType) === -1  ? `Price` : null}}
+                            </label>
+                        </div>
+                        <div class="input-inner-label">
+                            <div class="input-icon-label" style="width: 50px;height: 20px;">
+                                <img src="@/assets/icons/ethereum-icon.svg"  class="" alt="Ethereum logo">
+                                <sub-title
+                                    class="text-black hidden uppercase lg:flex light-mode-text-washed"
+                                    text-align="center"
+                                    font-size="15px"
+                                >
+                                    ETH
+                                </sub-title>
+                            </div>
+                            <input
+                                type="number"
+                                @wheel="$event.target.blur()"
+                                id="price"
+                                class="w-full outlined-input mt-2"
+                                placeholder="Minimum acceptable price"
+                                :class="priceField.errors[0] && 'invalid-outline'"
+                                v-model="priceField.value"
+                            />
+                        </div>
+                        <span v-if="!ethereum"><i class="fas fa-spinner fa-spin"></i></span>
+                        <span class="input-helper" v-else-if="!priceField.errors[0] && priceField.value">Approximately {{ formatCurrency(ethereum * priceField.value) }}</span>
+                        <span class="input-helper" v-else-if="!priceField.errors[0] && !priceField.value">Price Estimated Upon Entering Value</span>
+                        <span class="error-notice">{{ priceField.errors[0] }}</span>
+                    </div>
+                    <div class="fc mb-3">
+                        <label class="font-semibold uppercase text-md text-black">Opening Time</label>
+                    </div>
+                    <div class="selection-container mb-4">
+                        <div class="selection-option-wrapper" :class="openingTimeTypeData === 'immediate' ? 'active-selection-option' : 'inactive-selection-option'">
+                            <div
+                                class="selection-option cursor-pointer"
+                                @click="setOpeningTimeTypeInternal('immediate')"
+                            >
+                                <div class="selection-option-text-container">
+                                    <sub-title
+                                        class="text-black hidden uppercase lg:flex"
+                                        text-align="center"
+                                        font-size="15px"
+                                    >
+                                        Immediate
+                                    </sub-title>
+                                    <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Users will be able to immediately ${data.selectedType === 'sale' ? 'purchase' : 'bid on'} your piece.`}" :key="`immediate-tooltip-${data.selectedType}`"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="selection-option-wrapper" :class="openingTimeTypeData === 'schedule' ? 'active-selection-option' : 'inactive-selection-option'">
+                            <div 
+                                class="selection-option cursor-pointer"
+                                @click="setOpeningTimeTypeInternal('schedule')"
+                            >
+                                <div class="selection-option-text-container">
+                                    <sub-title
+                                        class="text-black hidden uppercase lg:flex"
+                                        text-align="center"
+                                        font-size="15px"
+                                    >
+                                        Schedule
+                                    </sub-title>
+                                    <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Users will be able to see your listing, but will not be able to ${data.selectedType === 'sale' ? 'purchase' : 'bid on'} your piece until the scheduled time.`}" :key="`schedule-tooltip-${data.selectedType}`"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fc mb-6">
+                        <div class="p-field p-col-12 p-md-4">
+                            <Calendar :disabled="openingTimeTypeData === 'immediate'" :class="openingTimeTypeData === 'immediate' ? 'disabled' : null" placeholder="Opening Time" class="w-full outlined-input mt-2" id="opening-time" v-model="data.openingTime" :showTime="true" hourFormat="12" />
                         </div>
                     </div>
                 </div>
-                <div class="selection-option-wrapper" :class="data.selectedType === 'sale' ? 'active-selection-option' : 'inactive-selection-option'">
-                    <div 
-                        class="selection-option cursor-pointer"
-                        @click="setSelectedType('sale')"
-                    >
-                        <div class="selection-option-text-container">
-                            <sub-title
-                                class="text-black hidden uppercase lg:flex"
-                                text-align="center"
-                                font-size="15px"
-                            >
-                                Sale
-                            </sub-title>
-                            <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.`}"></i>
-                        </div>
-                    </div>
-                </div>
             </div>
-            <div class="fc mb-4">
-                <div class="flex-space-between">
-                    <label class="font-semibold uppercase text-md text-black" for="price">
-                        {{data.selectedType === 'sale' ? `Sale Price` : null}}
-                        {{data.selectedType === 'auction' ? `Reserve Price` : null}}
-                        {{['auction', 'sale'].indexOf(data.selectedType) === -1  ? `Price` : null}}
-                    </label>
-                </div>
-                <div class="input-inner-label">
-                    <div class="input-icon-label" style="width: 50px;height: 20px;">
-                        <img src="@/assets/icons/ethereum-icon.svg"  class="" alt="Ethereum logo">
-                        <sub-title
-                            class="text-black hidden uppercase lg:flex light-mode-text-washed"
-                            text-align="center"
-                            font-size="15px"
-                        >
-                            ETH
-                        </sub-title>
-                    </div>
-                    <input
-                        type="number"
-                        id="price"
-                        class="w-full outlined-input mt-2"
-                        placeholder="Minimum acceptable price"
-                        :class="priceField.errors[0] && 'invalid-outline'"
-                        v-model="priceField.value"
-                    />
-                </div>
-                <span v-if="!ethereum"><i class="fas fa-spinner fa-spin"></i></span>
-                <span class="input-helper" v-else-if="!priceField.errors[0] && priceField.value">Approximately {{ formatCurrency(ethereum * priceField.value) }}</span>
-                <span class="input-helper" v-else-if="!priceField.errors[0] && !priceField.value">Price Estimated Upon Entering Value</span>
-                <span class="error-notice">{{ priceField.errors[0] }}</span>
-            </div>
-            <div class="fc mb-3">
-                <label class="font-semibold uppercase text-md text-black">Opening Time</label>
-            </div>
-            <div class="selection-container mb-4">
-                <div class="selection-option-wrapper" :class="openingTimeTypeData === 'immediate' ? 'active-selection-option' : 'inactive-selection-option'">
-                    <div
-                        class="selection-option cursor-pointer"
-                        @click="setOpeningTimeTypeInternal('immediate')"
-                    >
-                        <div class="selection-option-text-container">
-                            <sub-title
-                                class="text-black hidden uppercase lg:flex"
-                                text-align="center"
-                                font-size="15px"
-                            >
-                                Immediate
-                            </sub-title>
-                            <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Users will be able to immediately ${data.selectedType === 'sale' ? 'purchase' : 'bid on'} your piece.`}" :key="`immediate-tooltip-${data.selectedType}`"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="selection-option-wrapper" :class="openingTimeTypeData === 'schedule' ? 'active-selection-option' : 'inactive-selection-option'">
-                    <div 
-                        class="selection-option cursor-pointer"
-                        @click="setOpeningTimeTypeInternal('schedule')"
-                    >
-                        <div class="selection-option-text-container">
-                            <sub-title
-                                class="text-black hidden uppercase lg:flex"
-                                text-align="center"
-                                font-size="15px"
-                            >
-                                Schedule
-                            </sub-title>
-                            <i class="fas fa-info-circle light-mode-text-washed ml-2" tooltip-ignore-click="true" v-tooltip="{text: `Users will be able to see your listing, but will not be able to ${data.selectedType === 'sale' ? 'purchase' : 'bid on'} your piece until the scheduled time.`}" :key="`schedule-tooltip-${data.selectedType}`"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="fc mb-6">
-                <div class="p-field p-col-12 p-md-4">
-                    <Calendar :disabled="openingTimeTypeData === 'immediate'" :class="openingTimeTypeData === 'immediate' ? 'disabled' : null" placeholder="Opening Time" class="w-full outlined-input mt-2" id="opening-time" v-model="data.openingTime" :showTime="true" hourFormat="12" />
-                </div>
-            </div>
-            <!-- <button :disabled="invalid" :class="data.isNextStepReady ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="nextStep">
-                Continue
-            </button> -->
-            <button :class="!data.consignmentId ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="nextStep">
+            <button v-if="!data.isMarketHandlerAssigned" :class="'primary'" class="button mt-6 w-full" @click="deployListingOnChain">
                 Deploy on-chain {{data.selectedType}}
+            </button>
+            <button v-if="data.isMarketHandlerAssigned" :class="'primary'" class="button mt-6 w-full" @click="nextStep">
+                Continue
             </button>
         </div>
         <div class="preview-container">
@@ -143,16 +148,28 @@
 import { ref, reactive, computed, watchEffect } from "vue";
 import {useField, useForm} from "vee-validate";
 import {useStore} from "vuex";
-import Calendar from 'primevue/calendar';
 
+import { useToast } from "primevue/usetoast";
+
+import Calendar from 'primevue/calendar';
 import Chips from 'primevue/chips';
+
+import {parseEther} from "ethers/lib/utils";
 
 import SubTitle from "@/components/SubTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
 import DropCardPreview from "@/components/DropCardPreview/DropCardPreview.vue";
 
+import parseError from "@/services/utils/parseError";
 import useWeb3 from "@/connectors/hooks"
 import useExchangeRate from "@/hooks/useExchangeRate.js";
+
+import { 
+    useV3AuctionBuilderContractNetworkReactive,
+    useV3SaleBuilderContractNetworkReactive
+} from '@/hooks/useContract.js';
+
+import { parseConsignmentRegisteredEventData } from "@/services/utils";
 
 export default {
     name: "TypeSelection",
@@ -178,6 +195,7 @@ export default {
     props: {
         nextStep: Function,
         prevStep: Function,
+        setStep: Function,
         setListingTypeData: Function,
         listingTypeData: String,
         setPriceData: Function,
@@ -193,6 +211,12 @@ export default {
         setOpeningTimeType: Function,
         openingTimeUnixData: String,
         setOpeningTimeUnix: Function,
+        setNftTokenIdData: Function,
+        nftTokenIdData: String,
+        setNftConsignmentIdData: Function,
+        nftConsignmentIdData: String,
+        isMarketHandlerAssignedData: Boolean,
+        setIsMarketHandlerAssignedData: Function,
     },
     methods: {
         setSelectedType(type) {
@@ -206,7 +230,6 @@ export default {
         },
         setOpeningTimeTypeInternal(type) {
             this.setOpeningTimeType(type);
-            console.log({type})
             if(type === 'immediate') {
                 let unixTimeNow = Math.floor(new Date().getTime() / 1000);
                 this.setOpeningTimeUnix(unixTimeNow);
@@ -230,6 +253,7 @@ export default {
 
         const store = useStore();
         const { formatCurrency, ethereum } = useExchangeRate();
+        const toast = useToast();
         
         const userLocal = computed(() => store.getters['user/user']);
 
@@ -262,7 +286,6 @@ export default {
                 creatorData.value.username = false;
                 creatorData.value.account = account.value;
             }
-            console.log({'creatorData.value': creatorData.value})
         })
 
         const { account } = useWeb3();
@@ -273,7 +296,12 @@ export default {
             isNextStepReady: false,
             openingTime: props.openingTimeUnixData && new Date(props.openingTimeUnixData * 1000) || false,
             openingTimeType: props.openingTimeTypeData || false,
-            consignmentId: false,
+            consignmentId: props.consignmentIdData || false,
+            isMarketHandlerAssigned: props.isMarketHandlerAssignedData || false,
+        })
+
+        watchEffect(() => {
+            data.isMarketHandlerAssigned = props.isMarketHandlerAssignedData;
         })
 
         const priceField = reactive(useField("price", `required|min:1|min_value:0.00001`));
@@ -294,7 +322,6 @@ export default {
         })
 
         watchEffect(() => {
-            console.log({data: data.openingTime})
             if(data.openingTime && data.openingTime.getTime && data.openingTime.getTime()) {
                 if(Math.floor(data.openingTime.getTime() / 1000) !== props.openingTimeUnixData) {
                     props.setOpeningTimeUnix(Math.floor(data.openingTime.getTime() / 1000));
@@ -303,7 +330,6 @@ export default {
                     }
                 }
             } else if (data.openingTime) {
-                console.log({'data.openingTime': data.openingTime})
                 let fragments = data.openingTime.split(' ');
                 if(fragments.length === 3) {
                     if((fragments[0].length === 9) && (fragments[1].length === 5) && (fragments[2].length === 2)) {
@@ -341,12 +367,97 @@ export default {
             }
         })
 
+        const seenAuctionBuilderContract = ref({});
+        const seenSaleBuilderContract = ref({});
+
+        watchEffect(async () => {
+            let contract = await useV3AuctionBuilderContractNetworkReactive(true);
+            seenAuctionBuilderContract.value = contract.state;
+        })
+
+        watchEffect(async () => {
+            let contract = await useV3SaleBuilderContractNetworkReactive(true);
+            seenSaleBuilderContract.value = contract.state;
+        })
+
+        const deployListingOnChain = async () => {
+            if(
+                (
+                    (data.selectedType === 'auction' && seenAuctionBuilderContract.value.contract) ||
+                    (data.selectedType === 'sale' && seenSaleBuilderContract.value.contract)
+                )
+                && account?.value
+            ) {
+                let useListingContract;
+                if(data.selectedType === 'auction') {
+                    useListingContract = seenAuctionBuilderContract.value.contract;
+                } else if (data.selectedType === 'sale') {
+                    useListingContract = seenSaleBuilderContract.value.contract;
+                }
+                store.dispatch('application/openModal', 'TransactionModal')
+                try {
+                    let tx;
+                    let audience = 0; // Open
+                    let priceWei = parseEther(priceField?.value).toString();
+                    if(data.selectedType === 'auction') {
+                        // function createPrimaryAuction (
+                        //     uint256 _consignmentId,
+                        //     uint256 _start,
+                        //     uint256 _duration,
+                        //     uint256 _reserve,
+                        //     SeenTypes.Audience _audience,
+                        //     SeenTypes.Clock _clock
+                        // )
+                        let duration = 86400; // 24 hours
+                        let clock = 1; // Triggered when reserve is hit
+                        tx = await useListingContract.createPrimaryAuction(props.nftConsignmentIdData, props.openingTimeUnixData, duration, priceWei, audience, clock);
+                    } else if(data.selectedType === 'sale') {
+                        // function createPrimarySale (
+                        //     uint256 _consignmentId,
+                        //     uint256 _start,
+                        //     uint256 _price,
+                        //     uint256 _perTxCap,
+                        //     Audience _audience
+                        // )
+                        tx = await useListingContract.createPrimarySale(props.nftConsignmentIdData, props.openingTimeUnixData, priceWei, props.unitData, audience);
+                    }
+                    store.dispatch('application/setPendingTransactionHash', tx.hash)
+                    tx.wait()
+                        .then((response) => {
+                            toast.add({
+                                severity: 'success',
+                                summary: 'Success',
+                                detail: `Successfully deployed ${data.selectedType}.`,
+                                life: 3000
+                            });
+                            store.dispatch('application/closeModal')
+                            store.dispatch('application/clearPendingTransactionHash')
+                            props.setIsMarketHandlerAssignedData(true);
+                            props.nextStep();
+                        }).catch((e) => {
+                            let message = parseError(e.message)
+                            props.setIsMarketHandlerAssignedData(false);
+                            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                            store.dispatch('application/closeModal')
+                            store.dispatch('application/clearPendingTransactionHash')
+                        })
+                } catch (e) {
+                    let message = e?.message ? parseError(e.message) : e;
+                    props.setIsMarketHandlerAssignedData(false);
+                    toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                    store.dispatch('application/closeModal')
+                    store.dispatch('application/clearPendingTransactionHash')
+                }
+            }
+        }
+
         return {
             priceField,
             data,
             creatorData,
             ethereum,
             formatCurrency,
+            deployListingOnChain,
         }
 
     }
