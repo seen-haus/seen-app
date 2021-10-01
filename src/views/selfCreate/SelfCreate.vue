@@ -1,11 +1,30 @@
 <template>
   <div>
     <!-- <div style="position: sticky;top: 0px;"> -->
-        <!-- <div style="position: absolute;background-color:#000000d1;color:white; top: 0px;width: 500px;max-height: 120px;overflow: scroll;">
+        <div style="position: absolute;background-color:#000000d1;color:white; top: 0px;width: 500px;max-height: 120px;overflow: scroll;">
             <pre>{{ JSON.stringify(processData, null, 4) }}</pre>
-        </div> -->
+        </div>
     <!-- </div> -->
-    <div v-if="!processData.hasCheckedRoles">
+    <div v-if="!account">
+        <container class="role-checking-loader-section flex-center pb-12">
+            <div class="flex-col flex">
+                <div class="w-full rounded-container flex items-center mb-6">
+                    <i
+                        class="fas fa-wallet transform rotate-12 text-3xl icon-right mr-6"
+                        :class="'text-gray-500'"
+                    ></i>
+
+                    <div class="text-sm font-bold">
+                        In order to access this section of the SEEN platform, you must first connect your wallet.
+                    </div>
+                </div>
+                <button class="primary w-full cursor-pointer button mt-3 md:mt-0" @click="openWalletModal">
+                    <i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
+                </button>
+            </div>
+        </container>
+    </div>
+    <div v-if="!processData.hasCheckedRoles && account">
         <container class="role-checking-loader-section flex-center pb-12">
             <div class="flex-col flex">
                 <ProgressSpinner />
@@ -15,6 +34,13 @@
                 >
                     Checking Roles
                 </sub-title>
+            </div>
+        </container>
+    </div>
+    <div v-if="!processData.isMinter && !processData.isSeller && processData.hasCheckedRoles">
+        <container class="role-checking-loader-section flex-center pb-12">
+            <div class="flex-col flex">
+                <AccessRequestForm />
             </div>
         </container>
     </div>
@@ -165,18 +191,17 @@ import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import SubTitle from "@/components/SubTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
 import Steps from "@/components/Steps/Steps.vue";
-import MediaLoader from "@/components/Media/MediaLoader.vue";
-import DropCardPreview from "@/components/DropCardPreview/DropCardPreview.vue";
 import useWeb3 from "@/connectors/hooks";
 import { useAccessControllerContractNetworkReactive, useV3MarketClerkContractNetworkReactive } from '@/hooks/useContract.js';
 
 import { CollectablesService } from "@/services/apiService";
 import parseError from "@/services/utils/parseError";
 
-import TypeSelection from './components/TypeSelection.vue';
+import AccessRequestForm from './components/AccessRequestForm';
 import Upload from './components/Upload.vue';
 import Mint from './components/Mint.vue';
 import SelfCreateListing from './components/SelfCreateListing.vue';
+import DropCardPreview from "@/components/DropCardPreview/DropCardPreview.vue";
 
 import { roleToBytes } from '@/constants';
 
@@ -357,9 +382,8 @@ export default {
         SubTitle,
         LightTypography,
         Steps,
-        MediaLoader,
+        AccessRequestForm,
         Upload,
-        TypeSelection,
         Mint,
         SelfCreateListing,
         DropCardPreview,
@@ -367,6 +391,10 @@ export default {
     async setup() {
 
         const store = useStore();
+
+        const openWalletModal = () => {
+            store.dispatch('application/openModal', 'WalletModalConnectOnly')
+        };
 
         const toast = useToast();
 
@@ -536,6 +564,11 @@ export default {
         })
 
         watchEffect(async () => {
+            // Assume no access
+            processData.hasCheckedRoles = false;
+            processData.isMinter = false;
+            processData.isSeller = false;
+            processData.isEscrowAgent = false;
             if(accessControllerContract.value.contract && account?.value) {
                 // Check that current user has access to NFT minting & selling
                 let hasMinterRole = await accessControllerContract.value.contract.hasRole(roleToBytes["MINTER"], account?.value);
@@ -545,17 +578,14 @@ export default {
                 processData.isSeller = hasSellerRole;
                 processData.isEscrowAgent = hasEscrowAgentRole;
                 processData.hasCheckedRoles = true;
-            }else{
-                // Assume no access
-                processData.isMinter = false;
-                processData.isSeller = false;
-                processData.isEscrowAgent = false;
             }
         })
 
         
 
         return {
+            account,
+            openWalletModal,
             uploadForm,
             uploadField,
             mediaInputRef,
