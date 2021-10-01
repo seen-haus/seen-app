@@ -474,6 +474,7 @@ export default {
 
 <style lang="scss">
 .description {
+  word-break: break-word;
   p {
     margin-bottom: 1rem;
   }
