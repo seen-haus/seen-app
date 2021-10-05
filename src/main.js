@@ -7,6 +7,7 @@ import ToastService from 'primevue/toastservice';
 import Toast from "primevue/toast";
 import PrimeVue from 'primevue/config';
 import Dialog from "primevue/dialog";
+import Chart from "primevue/chart";
 import {createMetaManager, defaultConfig, useMeta, deepestResolver} from 'vue-meta';
 import VueGoogleMaps from '@fawmi/vue-google-maps'
 
@@ -48,4 +49,5 @@ app.component("ProgressSpinner", ProgressSpinner)
 app.component("Slider", Slider)
 app.component("Toast", Toast)
 app.component("Dialog", Dialog)
+app.component("Chart", Chart)
 app.mount('#app');
