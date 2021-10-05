@@ -138,7 +138,22 @@
             </button>
         </div>
         <div class="preview-container">
-            <drop-card-preview :sticky="true" :listingType="listingTypeData" :startTime="openingTimeUnixData ? openingTimeUnixData * 1000 : null" :units="unitData" :price="priceData" :priceType="priceTypeData" :tangibility="tangibilityData" :tags="tagData" :titleText="titleData" :creatorAccount="creatorData.account" :creatorProfilePicture="creatorData.profilePicture" :creatorUsername="creatorData.username" :mediaUrl="mediaUrl" />
+            <drop-card-preview 
+                :autoMargins="true"
+                :sticky="true"
+                :listingType="listingTypeData"
+                :startTime="openingTimeUnixData ? openingTimeUnixData * 1000 : null"
+                :units="unitData"
+                :price="priceData"
+                :priceType="priceTypeData"
+                :tangibility="tangibilityData"
+                :tags="tagData"
+                :titleText="titleData"
+                :creatorAccount="creatorData.account"
+                :creatorProfilePicture="creatorData.profilePicture"
+                :creatorUsername="creatorData.username"
+                :mediaUrl="mediaUrl"
+            />
         </div>
     </div>
 </template>

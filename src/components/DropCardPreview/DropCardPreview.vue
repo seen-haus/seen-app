@@ -1,5 +1,11 @@
 <template>
-    <div class="auto-margins drop-card-container-border" :class="sticky && 'creation-step-sticky'">
+    <div 
+        class="drop-card-container-border" 
+        :class="{
+            'auto-margins': autoMargins,
+            'creation-step-sticky': sticky
+        }"
+    >
         <div class="drop-card-preview-container">
             <div class="drop-card-inner-padding-top">
                 <div class="drop-card-media-container flex-center placeholder-light-grey">
@@ -141,6 +147,7 @@ export default {
         listingType: String,
         startTime: String,
         sticky: Boolean,
+        autoMargins: Boolean,
     },
     methods: {
         updateTimerState(state) {
@@ -211,14 +218,14 @@ export default {
     .drop-card-container-border {
         // This class is just here for if we ever want to add a border that can support gradients
         height: 514px;
-        width: 348px;
+        width: 338px;
         background: #FFFFFF;
         box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.2);
         border-radius: 10px;
     }
     .drop-card-preview-container {
         height: 514px;
-        width: 348px;
+        width: 338px;
         background: #FFFFFF;
         box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.2);
         border-radius: 10px;
@@ -236,8 +243,8 @@ export default {
         padding-top: 0px;
     }
     .drop-card-media-container {
-        width: 320px;
-        height: 320px;
+        width: 310px;
+        height: 310px;
         border-radius: 6px;
         position: relative;
     }

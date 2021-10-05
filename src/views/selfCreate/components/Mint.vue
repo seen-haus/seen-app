@@ -74,6 +74,7 @@
                                 :class="unitField.errors[0] && 'invalid-outline'"
                                 v-model="unitField.value"
                             />
+                            <span class="input-helper disable-text-transform">For auctions, use a unit count of 1. Fixed price sales may have a unit count above 1.</span>
                             <span class="error-notice">{{ unitField.errors[0] }}</span>
                         </div>
                         <div class="fc mb-6">
@@ -265,7 +266,7 @@
             </div> -->
         </div>
         <div class="preview-container">
-            <drop-card-preview :sticky="true" :listingType="listingTypeData" :startTime="openingTimeUnixData ? openingTimeUnixData * 1000 : null"  :priceType="priceTypeData" :price="priceData" :units="unitField.value" :tangibility="data.selectedType" :tags="data.tags" :titleText="titleField.value" :creatorAccount="creatorData.account" :creatorProfilePicture="creatorData.profilePicture" :creatorUsername="creatorData.username" :mediaUrl="mediaUrl" />
+            <drop-card-preview :autoMargins="true" :sticky="true" :listingType="listingTypeData" :startTime="openingTimeUnixData ? openingTimeUnixData * 1000 : null"  :priceType="priceTypeData" :price="priceData" :units="unitField.value" :tangibility="data.selectedType" :tags="data.tags" :titleText="titleField.value" :creatorAccount="creatorData.account" :creatorProfilePicture="creatorData.profilePicture" :creatorUsername="creatorData.username" :mediaUrl="mediaUrl" />
         </div>
     </div>
 </template>
@@ -398,6 +399,8 @@ export default {
         const { account } = useWeb3();
 
         watchEffect(() => {
+            // If the logic here is changed (i.e. how it calculates the creator username/image)
+            // Make sure to check if anything needs change in ProcessRecoveryCard.vue
             let userStoreData = store.getters['user/user'];
             if(userStoreData) {
                 if(userStoreData?.username?.length > 0) {

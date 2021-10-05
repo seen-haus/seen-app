@@ -12,7 +12,7 @@
                 index === useCurrentStep && 'active-step-number',
                 index < useCurrentStep && 'completed-step clickable',
             ]"
-            @click="(index < useCurrentStep) && setStep(index)"
+            @click="(index < useCurrentStep) && setStep(index + stepOffset)"
         >
             <div v-if="index < useCurrentStep" class="mr-4 check-container">
                 <img src="@/assets/icons/check-circle-green.svg">
@@ -57,6 +57,7 @@ export default {
     steps: Object,
     currentStep: Number,
     setStep: Function,
+    stepOffset: Number,
   },
   setup(props) {
 

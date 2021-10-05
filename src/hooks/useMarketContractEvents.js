@@ -141,7 +141,7 @@ const useMarketContractEvents = () => {
                 }
                 if (version.value === 3) {
                     const auctionBuilderContractRaw = await useV3AuctionBuilderContractNetworkReactive();
-                    const builderContract = auctionBuilderContractRaw.state.contract;
+                    builderContract = auctionBuilderContractRaw.state.contract;
 
                     let auction = await builderContract.getAuction(consignmentId)
                     let parsedStartTime = parseInt(auction.start);

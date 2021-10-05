@@ -1,9 +1,9 @@
 <template>
   <div>
     <!-- <div style="position: sticky;top: 0px;"> -->
-        <div style="position: absolute;background-color:#000000d1;color:white; top: 0px;width: 500px;max-height: 120px;overflow: scroll;">
+        <!-- <div style="position: absolute;background-color:#000000d1;color:white; top: 0px;width: 500px;max-height: 120px;overflow: scroll;">
             <pre>{{ JSON.stringify(processData, null, 4) }}</pre>
-        </div>
+        </div> -->
     <!-- </div> -->
     <div v-if="!account">
         <container class="role-checking-loader-section flex-center pb-12">
@@ -45,25 +45,47 @@
         </container>
     </div>
     <div v-if="processData.isMinter && processData.isSeller && processData.hasCheckedRoles">
-        <container class="pb-12" v-if="processData.currentStep < 4">
+        <container class="pb-12" v-if="processData.currentStep < 5">
             <unfenced-title
                 class="text-black hidden lg:flex pb-6 pt-12"
                 color="fence-dark"
                 text-align="left"
             >Publish NFT</unfenced-title>
-            <div class="flex items-center flex-col lg:flex-row mb-8">
+            <div v-if="processData.currentStep > 0" class="flex items-center flex-col lg:flex-row mb-8">
                 <div class="card flex-grow">
-                    <Steps :steps="steps" :currentStep="processData.currentStep" :setStep="setStep"  />
+                    <!-- First step isn't part of step process, so we set currentStep in Step component to currentStep - 1 -->
+                    <Steps :stepOffset="1" :steps="steps" :currentStep="processData.currentStep - 1" :setStep="setStep"  />
                 </div>
             </div>
             <div class="flex items-center flex-col lg:flex-row">
                 <!-- <div class="flex-grow" v-if="currentStep === 0">
                     <type-selection :nextStep="nextStep" :setTangibility="setTangibility" :setLocationData="setLocationData" :clearLocationData="clearLocationData"/>
                 </div> -->
-                <div class="flex-grow" v-if="processData.currentStep === 0">
-                    <upload :nextStep="nextStep" :setMediaIpfsHash="setMediaIpfsHash" :setTempMediaUrl="setTempMediaUrl" :tempMediaUrl="processData.tempMediaUrl" :mediaIpfsHash="processData.mediaIpfsHash" />
+                <div class="w-full" v-if="processData.currentStep === 0">
+                    <initiation
+                        :setStep="setStep"
+                        :nextStep="nextStep"
+                        :prevStep="prevStep"
+                        :setMediaIpfsHash="setMediaIpfsHash"
+                        :setTempMediaUrl="setTempMediaUrl"
+                        :setPropertyData="setPropertyData"
+                        :setTangibilityData="setTangibilityData"
+                        :setTitleData="setTitleData"
+                        :setDescriptionData="setDescriptionData"
+                        :setTagData="setTagData"
+                        :setRightsData="setRightsData"
+                        :setUnitData="setUnitData"
+                        :setPreparedMetaData="setPreparedMetaData"
+                        :setMetaDataIpfsHashData="setMetaDataIpfsHash"
+                        :setNftTokenIdData="setNftTokenId"
+                        :setSecondaryRoyaltyFeeData="setSecondaryRoyaltyFee"
+                        :setNftConsignmentIdData="setNftConsignmentId"
+                    />
                 </div>
                 <div class="flex-grow" v-if="processData.currentStep === 1">
+                    <upload :nextStep="nextStep" :setMediaIpfsHash="setMediaIpfsHash" :setTempMediaUrl="setTempMediaUrl" :tempMediaUrl="processData.tempMediaUrl" :mediaIpfsHash="processData.mediaIpfsHash" />
+                </div>
+                <div class="flex-grow" v-if="processData.currentStep === 2">
                     <mint 
                         :setPropertyData="setPropertyData"
                         :propertyData="processData.properties"
@@ -109,7 +131,7 @@
                         :isEscrowAgentData="processData.isEscrowAgent"
                     />
                 </div>
-                <div class="flex-grow" v-if="processData.currentStep === 2">
+                <div class="flex-grow" v-if="processData.currentStep === 3">
                     <self-create-listing
                         :nextStep="nextStep"
                         :prevStep="prevStep"
@@ -137,7 +159,7 @@
                         :setIsMarketHandlerAssignedData="setIsMarketHandlerAssigned"
                     />
                 </div>
-                <div class="flex-grow" v-if="processData.currentStep === 3">
+                <div class="flex-grow" v-if="processData.currentStep === 4">
                     <container class="publishing-loader-section flex-center pb-12">
                         <div class="flex-col flex">
                             <ProgressSpinner />
@@ -155,9 +177,10 @@
                 </div>
             </div>
         </container>
-        <div v-if="processData.currentStep === 4">
+        <div v-if="processData.currentStep === 5">
             <div class="bg-light-grey-darkened live-preview-card-zone flex-center">
                 <drop-card-preview
+                    :autoMargins="true"
                     :listingType="processData.listingType"
                     :startTime="processData.openingTimeUnix ? processData.openingTimeUnix * 1000 : null"
                     :priceType="processData.priceType"
@@ -198,6 +221,7 @@ import { CollectablesService } from "@/services/apiService";
 import parseError from "@/services/utils/parseError";
 
 import AccessRequestForm from './components/AccessRequestForm';
+import Initiation from './components/Initiation.vue';
 import Upload from './components/Upload.vue';
 import Mint from './components/Mint.vue';
 import SelfCreateListing from './components/SelfCreateListing.vue';
@@ -207,10 +231,23 @@ import { roleToBytes } from '@/constants';
 
 export default {
     name: "SelfCreateWithRoutes",
+    components: {
+        Container,
+        UnfencedTitle,
+        SubTitle,
+        LightTypography,
+        Steps,
+        AccessRequestForm,
+        Initiation,
+        Upload,
+        Mint,
+        SelfCreateListing,
+        DropCardPreview,
+    },
     beforeRouteLeave (to, from, next) {
         // If the form is dirty and the user did not confirm leave,
         // prevent losing unsaved changes by canceling navigation
-        if ((this.processData.currentStep < 3 || (this.processData.currentStep === 3 && !this.processData.isMarketHandlerAssigned)) && this.confirmStayInDirtyForm()) {
+        if ((((this.processData.currentStep >= 1) && (this.processData.currentStep < 4)) || (this.processData.currentStep === 4 && !this.processData.isMarketHandlerAssigned)) && this.confirmStayInDirtyForm()) {
             next(false);
         } else {
             next();
@@ -257,7 +294,7 @@ export default {
             return !this.confirmLeave()
         },
         beforeWindowUnload(e) {
-            if (this.processData.currentStep < 3 && this.confirmStayInDirtyForm()) {
+            if (((this.processData.currentStep >= 1) && (this.processData.currentStep < 4)) && this.confirmStayInDirtyForm()) {
                 // Cancel the event
                 e.preventDefault()
                 // Chrome requires returnValue to be set
@@ -376,18 +413,6 @@ export default {
             this.processData.isMarketHandlerAssigned = isAssigned;
         },
     },
-    components: {
-        Container,
-        UnfencedTitle,
-        SubTitle,
-        LightTypography,
-        Steps,
-        AccessRequestForm,
-        Upload,
-        Mint,
-        SelfCreateListing,
-        DropCardPreview,
-    },
     async setup() {
 
         const store = useStore();
@@ -403,7 +428,7 @@ export default {
 
         const stepName = route.params.stepName
             ? route.params.stepName
-            : 'upload';
+            : 'initiation';
 
         const publishConsignmentId = route.params.consignmentId;
 
@@ -491,19 +516,21 @@ export default {
         })
 
         const stepNameToStepIndex = {
-            'upload': 0,
-            'mint': 1,
-            'list': 2,
-            'publish': 3,
-            'live': 4,
+            'initiation': 0,
+            'upload': 1,
+            'mint': 2,
+            'list': 3,
+            'publish': 4,
+            'live': 5,
         }
 
         const stepIndexToName = {
-            0: 'upload',
-            1: 'mint',
-            2: 'list',
-            3: 'publish',
-            4: 'live',
+            0: 'initiation',
+            1: 'upload',
+            2: 'mint',
+            3: 'list',
+            4: 'publish',
+            5: 'live',
         }
 
         const processData = reactive({
@@ -543,6 +570,8 @@ export default {
         watchEffect(() => {
             if(route.params.stepName) {
                 processData.currentStep = stepNameToStepIndex[route.params.stepName];
+            } else {
+                processData.currentStep = 0;
             }
         })
 
@@ -609,7 +638,8 @@ export default {
     }
 
     .role-checking-loader-section {
-        height: 808px;
+        height: calc(100vh - 120px);
+        max-height: 808px;
     }
 
     .publishing-loader-section {

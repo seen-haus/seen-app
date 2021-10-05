@@ -5,7 +5,7 @@ export const chainIdToAccessController = (chainId = false) => {
         if(useChainId === 1) {
             return null;
         } else if(useChainId === 4) {
-            return '0x4Df17b603cFc656B82b7B8909Ca6012f67cEBDF5'
+            return '0xfc1c1eCE11FCe7e60E0Dc57a49E258a04D69Abb2'
         }
     }
 }
@@ -17,7 +17,7 @@ export const chainIdToSeenNFT = (chainId = false) => {
         if(useChainId === 1) {
             return null;
         } else if(useChainId === 4) {
-            return '0x2f59374b282C9eb3619544c8d83EC9b81928ffFE'
+            return '0x6C03e12153De621aa7213A22b6FaA60aC0bAA3EF'
         }
     }
 }
@@ -29,7 +29,7 @@ export const chainIdToMarketDiamond = (chainId = false) => {
         if(useChainId === 1) {
             return null;
         } else if(useChainId === 4) {
-            return '0x5e56Fc9b88fd6E354a4f6E4b0cB4D565DE6ceFC7'
+            return '0x9A571BC17F3a1bFE9010901a7d85Cb269610D9C2'
         }
     }
 }
