@@ -4,6 +4,14 @@
 
   transition: box-shadow 0.1s;
 
+  &.extended {
+    @apply px-16
+  }
+
+  &.shortened {
+    @apply px-4
+  }
+
   &.disabled {
     @apply text-white;
     background-color: #8E98A0;
@@ -46,7 +54,8 @@
   }
 
   &.outline {
-    @apply bg-transparent border-gray-400;
+    @apply bg-transparent;
+    border-color: #130B27;
     border-width: 2px;
   }
 
@@ -65,11 +74,11 @@
 
   .icon-left {
     margin-left: -10px;
-    margin-right: 24px;
+    margin-right: 12px;
   }
 
   .icon-right {
-    margin-left: 24px;
+    margin-left: 12px;
     margin-right: -10px;
   }
 

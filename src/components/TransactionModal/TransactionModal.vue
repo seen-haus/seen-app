@@ -7,7 +7,7 @@
               :class="'text-gray-500'"
           ></i>
           <div class="text-sm font-bold">
-              Please review the pending transaction in your Ethereum wallet provider (e.g. MetaMask).
+              Please review the pending interaction in your Ethereum wallet provider (e.g. MetaMask).
           </div>
       </div>
       <div v-if="pendingTransactionHash" class="flex-col flex">

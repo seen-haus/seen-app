@@ -24,8 +24,7 @@
         </button>
       </div>
     </div>
-    <OverlayPanel ref="op" appendTo="body" @hide="close" :showCloseIcon="false" id="overlay_panel" style="width: 280px"
-                  :breakpoints="{'960px': '75vw'}">
+    <OverlayPanel ref="op" appendTo="body" @hide="close" :showCloseIcon="false" id="overlay_panel" :breakpoints="{'960px': '75vw'}">
       <div class="dropdown-menu">
         <div class="arrow-up"></div>
         <div class="py-6 px-8 bg-background-gray lg:rounded-t-lg">

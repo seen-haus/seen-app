@@ -17,17 +17,8 @@ export default {
                         url: 'stake',
                     },
                     {
-                        title: 'Gallery',
-                        url: [
-                            {
-                                title: 'Top Collectors',
-                                url: 'collectors'
-                            },
-                            {
-                                title: 'VR Gallery',
-                                url: 'https://www.cryptovoxels.com/play?coords=S@105W,125N'
-                            }
-                        ]
+                        title: 'Create',
+                        url: 'create',
                     },
                     {
                         title: 'Press',

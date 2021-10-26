@@ -18,7 +18,7 @@
                         <div class="selection-option-wrapper" :class="data.selectedType === 'auction' ? 'active-selection-option' : 'inactive-selection-option'">
                             <div
                                 class="selection-option cursor-pointer"
-                                @click="setSelectedType('auction')"
+                                @click="setSelectedType('auction', unitCountField)"
                             >
                                 <div class="selection-option-text-container">
                                     <sub-title
@@ -35,7 +35,7 @@
                         <div class="selection-option-wrapper" :class="data.selectedType === 'sale' ? 'active-selection-option' : 'inactive-selection-option'">
                             <div 
                                 class="selection-option cursor-pointer"
-                                @click="setSelectedType('sale')"
+                                @click="setSelectedType('sale', unitCountField)"
                             >
                                 <div class="selection-option-text-container">
                                     <sub-title
@@ -49,6 +49,34 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div 
+                        v-if="marketTypeData === 'secondary'"
+                        class="fc mb-4"
+                        :class="{
+                            'invalid-outline': unitCountField.errors[0],
+                            'disabled': data.selectedType === 'auction',
+                            'opacity-0-6': data.selectedType === 'auction',
+                        }"
+                    >
+                        <div class="flex-space-between">
+                            <label class="font-semibold uppercase text-md text-black" for="unit-count">
+                                Unit Count
+                            </label>
+                        </div>
+                        <div>
+                            <input
+                                type="number"
+                                @wheel="$event.target.blur()"
+                                id="unit-count"
+                                class="w-full outlined-input mt-2"
+                                :placeholder="`Number of units to include in ${data.selectedType ? data.selectedType : 'sale'}`"
+                                :disabled="data.selectedType === 'auction'"
+                                v-model="unitCountField.value"
+                            />
+                        </div>
+                        <span class="input-helper" v-if="!unitCountField.errors[0]">Balance: {{secondaryBalanceData}}</span>
+                        <span class="error-notice">{{ unitCountField.errors[0] }}</span>
                     </div>
                     <div class="fc mb-4">
                         <div class="flex-space-between">
@@ -130,9 +158,19 @@
                     </div>
                 </div>
             </div>
-            <button v-if="!data.isMarketHandlerAssigned" :class="'primary'" class="button mt-6 w-full" @click="deployListingOnChain">
-                Deploy on-chain {{data.selectedType}}
-            </button>
+            <div v-if="marketTypeData === 'primary' && !data.isMarketHandlerAssigned">
+                <button v-if="!data.isMarketHandlerAssigned" :class="'primary'" class="button mt-6 w-full" @click="deployListingOnChain">
+                    Deploy on-chain {{data.selectedType}}
+                </button>
+            </div>
+            <div v-if="marketTypeData === 'secondary' && !data.isMarketHandlerAssigned">
+                <button v-if="!processData.hasApprovedMarketPlaceAsOperator" :class="'primary'" class="button mt-6 w-full" @click="approveMarketOperator">
+                    Approve Market Operator
+                </button>
+                <button :disabled="!processData.hasApprovedMarketPlaceAsOperator" :class="processData.hasApprovedMarketPlaceAsOperator ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="deployListingOnChain">
+                    Deploy on-chain {{data.selectedType}}
+                </button>
+            </div>
             <button v-if="data.isMarketHandlerAssigned" :class="'primary'" class="button mt-6 w-full" @click="nextStep">
                 Continue
             </button>
@@ -144,6 +182,8 @@
                 :listingType="listingTypeData"
                 :startTime="openingTimeUnixData ? openingTimeUnixData * 1000 : null"
                 :units="unitData"
+                :items="unitData"
+                :itemsOf="unitData"
                 :price="priceData"
                 :priceType="priceTypeData"
                 :tangibility="tangibilityData"
@@ -153,6 +193,11 @@
                 :creatorProfilePicture="creatorData.profilePicture"
                 :creatorUsername="creatorData.username"
                 :mediaUrl="mediaUrl"
+                :collectableState="collectableState"
+                :updateProgress="updateProgress"
+                :progress="100"
+                :timerState="timerState"
+                :liveStatus="liveStatus"
             />
         </div>
     </div>
@@ -179,10 +224,15 @@ import parseError from "@/services/utils/parseError";
 import useWeb3 from "@/connectors/hooks"
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 
-import { 
+import {
+    useV3NftContractNetworkReactive,
     useV3AuctionBuilderContractNetworkReactive,
-    useV3SaleBuilderContractNetworkReactive
+    useV3SaleBuilderContractNetworkReactive,
 } from '@/hooks/useContract.js';
+
+import {
+    chainIdToMarketDiamond
+} from '@/constants/ContractAddressesV3';
 
 import { parseConsignmentRegisteredEventData } from "@/services/utils";
 
@@ -222,31 +272,49 @@ export default {
         titleData: String,
         tagData: Array,
         unitData: String,
+        setUnitData: Function,
         openingTimeTypeData: String,
         setOpeningTimeType: Function,
         openingTimeUnixData: String,
         setOpeningTimeUnix: Function,
         setNftTokenIdData: Function,
         nftTokenIdData: String,
+        nftTokenAddressData: String,
         setNftConsignmentIdData: Function,
         nftConsignmentIdData: String,
         isMarketHandlerAssignedData: Boolean,
         setIsMarketHandlerAssignedData: Function,
+        collectableState: [String, Boolean],
+        updateProgress: Function,
+        timerState: [String, Boolean],
+        liveStatus: [String, Boolean],
+        marketTypeData: String,
+        secondaryBalanceData: [Number, Boolean],
     },
     methods: {
-        setSelectedType(type) {
+        setSelectedType(type, unitCountField) {
+            let { resetField } = unitCountField;
             this.data.selectedType = type;
+            console.log({resetField, 'this.marketTypeData': this.marketTypeData})
             this.setListingTypeData(type);
             if(type === 'auction') {
                 this.setPriceTypeData('Reserve Price');
+                if(this.marketTypeData === 'secondary') {
+                    // resetField("1");
+                    this.setUnitData(1)
+                }
             } else if(type === 'sale') {
                 this.setPriceTypeData('Sale Price');
+                if(this.marketTypeData === 'secondary') {
+                    this.setUnitData(this.secondaryBalanceData);
+                    // resetField(this.secondaryBalanceData);
+                }
             }
         },
         setOpeningTimeTypeInternal(type) {
             this.setOpeningTimeType(type);
             if(type === 'immediate') {
-                let unixTimeNow = Math.floor(new Date().getTime() / 1000);
+                let unixTimeNow = Math.floor(new Date().setSeconds(0) / 1000);
                 this.setOpeningTimeUnix(unixTimeNow);
                 this.data.openingTimeType = 'immediate';
                 this.data.openingTime = new Date(unixTimeNow * 1000);
@@ -278,6 +346,11 @@ export default {
             username: false,
         });
 
+        const processData = reactive({
+            lastCheckedAccountForApproval: false,
+            hasApprovedMarketPlaceAsOperator: false,
+        })
+
         watchEffect(() => {
             let userStoreData = store.getters['user/user'];
             if(userStoreData) {
@@ -303,7 +376,7 @@ export default {
             }
         })
 
-        const { account } = useWeb3();
+        const { account, chainId } = useWeb3();
 
         const data = reactive({
             selectedType: props.listingTypeData ? props.listingTypeData : null,
@@ -313,6 +386,8 @@ export default {
             openingTimeType: props.openingTimeTypeData || false,
             consignmentId: props.consignmentIdData || false,
             isMarketHandlerAssigned: props.isMarketHandlerAssignedData || false,
+            unitData: props.unitData,
+            marketType: props.marketTypeData,
         })
 
         watchEffect(() => {
@@ -336,8 +411,59 @@ export default {
             }
         })
 
+        const unitCountField = reactive(useField("unit-count", `required|min:1|min_value:1|max_value:${props.secondaryBalanceData}`));
+
+        watchEffect(() => {
+            let { resetField } = unitCountField;
+            console.log({'props.unitData': props.unitData, 'data.unitData': data.unitData, 'unitCountField.value': unitCountField.value, 'props.listingTypeData': props.listingTypeData})
+            if(unitCountField?.value && (props.unitData !== unitCountField.value)) {
+                console.log("Here 1")
+                if(props.marketTypeData === 'secondary' && (typeof unitCountField?.value !== 'string' || props.listingTypeData === 'auction')) {
+                    if(props.listingTypeData === 'auction') {
+                        props.setUnitData(1)
+                        resetField({
+                            value: 1
+                        })
+                    }else{
+                        props.setUnitData(props.unitData)
+                        resetField({
+                            value: props.unitData
+                        })
+                    }
+                } else {
+                    props.setUnitData(unitCountField.value)
+                }
+            } else if (unitCountField?.value === "" && props.unitData !== false) {
+                console.log("Here 2")
+                props.setUnitData(false)
+            } else if(props.unitData !== false && unitCountField?.value !== props.unitData) {
+                console.log("Here 3")
+                resetField({
+                    value: props.unitData
+                })
+            } else if (unitCountField?.value === "") {
+                console.log("Here 4")
+                if(props.marketTypeData === 'secondary' && (typeof unitCountField?.value !== 'string' || props.listingTypeData === 'auction')) {
+                    if(props.listingTypeData === 'auction') {
+                        props.setUnitData(1)
+                        resetField({
+                            value: 1
+                        })
+                    }else{
+                        props.setUnitData(props.unitData)
+                        resetField({
+                            value: props.unitData
+                        })
+                    }
+                } else {
+                    props.setUnitData(false)
+                }
+            }
+        })
+
         watchEffect(() => {
             if(data.openingTime && data.openingTime.getTime && data.openingTime.getTime()) {
+                data.openingTime.setSeconds(0);
                 if(Math.floor(data.openingTime.getTime() / 1000) !== props.openingTimeUnixData) {
                     props.setOpeningTimeUnix(Math.floor(data.openingTime.getTime() / 1000));
                     if(!props.openingTimeTypeData && !data.openingTimeType) {
@@ -348,7 +474,7 @@ export default {
                 let fragments = data.openingTime.split(' ');
                 if(fragments.length === 3) {
                     if((fragments[0].length === 9) && (fragments[1].length === 5) && (fragments[2].length === 2)) {
-                        let date = new Date(data.openingTime);
+                        let date = new Date(data.openingTime).setSeconds(0);
                         if(date.getTime()) {
                             data.openingTime = date;
                             this.setOpeningTimeUnix(Math.floor(date.getTime() / 1000));
@@ -382,6 +508,7 @@ export default {
             }
         })
 
+        const seenNFTContract = ref({});
         const seenAuctionBuilderContract = ref({});
         const seenSaleBuilderContract = ref({});
 
@@ -394,6 +521,66 @@ export default {
             let contract = await useV3SaleBuilderContractNetworkReactive(true);
             seenSaleBuilderContract.value = contract.state;
         })
+
+        watchEffect(async () => {
+            let contract = await useV3NftContractNetworkReactive(true);
+            seenNFTContract.value = contract.state;
+        })
+
+        watchEffect(async () => {
+            // Assume no access
+            if(account?.value && (account?.value !== processData.lastCheckedAccountForApproval)) {
+                processData.hasApprovedMarketPlaceAsOperator = false;
+                if(seenNFTContract.value.contract && (Number(chainId.value) > 0)) {
+                    processData.lastCheckedAccountForApproval = account?.value;
+                    // Check that current user has approved the marketplace diamond as an operator for their SEEN NFTs
+                    console.log(account?.value, chainIdToMarketDiamond(Number(chainId.value)), Number(chainId.value))
+                    let hasApprovedMarketPlaceAsOperator = await seenNFTContract.value.contract.isApprovedForAll(account?.value, chainIdToMarketDiamond(Number(chainId.value)));
+                    console.log({hasApprovedMarketPlaceAsOperator})
+                    processData.hasApprovedMarketPlaceAsOperator = hasApprovedMarketPlaceAsOperator;
+                }
+            } else if (!account?.value) {
+                processData.lastCheckedAccountForApproval = false;
+                processData.hasApprovedMarketPlaceAsOperator = false;
+            }
+        })
+
+        const approveMarketOperator = async () => {
+            if(seenNFTContract.value.contract && (Number(chainId.value) > 0 && account?.value)) {
+                let nftContract = seenNFTContract.value.contract;
+                store.dispatch('application/openModal', 'TransactionModal')
+                try {
+                    let tx = await nftContract.setApprovalForAll(chainIdToMarketDiamond(Number(chainId.value)), true);
+                    store.dispatch('application/setPendingTransactionHash', tx.hash)
+                    tx.wait()
+                        .then((response) => {
+                            if(response.status === 1) {
+                                toast.add({
+                                    severity: 'success',
+                                    summary: 'Success',
+                                    detail: `Successfully approved market operator.`,
+                                    life: 3000
+                                });
+                                processData.hasApprovedMarketPlaceAsOperator = true;
+                                store.dispatch('application/closeModal')
+                                store.dispatch('application/clearPendingTransactionHash')
+                            } else {
+                                throw new Error('Transaction Reverted');
+                            }
+                        }).catch((e) => {
+                            let message = parseError(e.message)
+                            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                            store.dispatch('application/closeModal')
+                            store.dispatch('application/clearPendingTransactionHash')
+                        })
+                } catch (e) {
+                    let message = e?.message ? parseError(e.message) : e;
+                    toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                    store.dispatch('application/closeModal')
+                    store.dispatch('application/clearPendingTransactionHash')
+                }
+            }
+        }
 
         const deployListingOnChain = async () => {
             if(
@@ -423,9 +610,13 @@ export default {
                         //     SeenTypes.Audience _audience,
                         //     SeenTypes.Clock _clock
                         // )
-                        let duration = 86400; // 24 hours
+                        let duration = 120; // 24 hours
                         let clock = 1; // Triggered when reserve is hit
-                        tx = await useListingContract.createPrimaryAuction(props.nftConsignmentIdData, props.openingTimeUnixData, duration, priceWei, audience, clock);
+                        if(props.marketTypeData === 'secondary') {
+                            tx = await useListingContract.createSecondaryAuction(account?.value, props.nftTokenAddressData, props.nftTokenIdData, props.openingTimeUnixData, duration, priceWei, audience, clock);
+                        } else {
+                            tx = await useListingContract.createPrimaryAuction(props.nftConsignmentIdData, props.openingTimeUnixData, duration, priceWei, audience, clock);
+                        }
                     } else if(data.selectedType === 'sale') {
                         // function createPrimarySale (
                         //     uint256 _consignmentId,
@@ -439,16 +630,22 @@ export default {
                     store.dispatch('application/setPendingTransactionHash', tx.hash)
                     tx.wait()
                         .then((response) => {
-                            toast.add({
-                                severity: 'success',
-                                summary: 'Success',
-                                detail: `Successfully deployed ${data.selectedType}.`,
-                                life: 3000
-                            });
-                            store.dispatch('application/closeModal')
-                            store.dispatch('application/clearPendingTransactionHash')
-                            props.setIsMarketHandlerAssignedData(true);
-                            props.nextStep();
+                            if(response.status === 1) {
+                                const consignmentId = Number(response.events[3].args.consignmentId);
+                                props.setNftConsignmentIdData(consignmentId);
+                                toast.add({
+                                    severity: 'success',
+                                    summary: 'Success',
+                                    detail: `Successfully deployed ${data.selectedType}.`,
+                                    life: 3000
+                                });
+                                store.dispatch('application/closeModal')
+                                store.dispatch('application/clearPendingTransactionHash')
+                                props.setIsMarketHandlerAssignedData(true);
+                                props.nextStep();
+                            } else {
+                                throw new Error('Transaction Reverted');
+                            }
                         }).catch((e) => {
                             let message = parseError(e.message)
                             props.setIsMarketHandlerAssignedData(false);
@@ -468,11 +665,14 @@ export default {
 
         return {
             priceField,
+            unitCountField,
             data,
             creatorData,
             ethereum,
             formatCurrency,
             deployListingOnChain,
+            approveMarketOperator,
+            processData,
         }
 
     }

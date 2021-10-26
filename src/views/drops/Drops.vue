@@ -40,7 +40,12 @@
           v-for="collectable in listOfCollectables"
           :key="collectable && collectable.id"
         >
-          <product-card
+          <!-- <product-card
+            v-if="collectable != null"
+            :collectable="collectable"
+            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
+          /> -->
+          <product-card-v3
             v-if="collectable != null"
             :collectable="collectable"
             @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
@@ -72,6 +77,7 @@ import { useMeta } from "vue-meta";
 
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
+import ProductCardV3 from "@/components/ProductCardV3.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import Toggle from "@/components/Inputs/Toggle.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
@@ -86,6 +92,7 @@ export default {
     Container,
     FencedTitle,
     ProductCard,
+    ProductCardV3,
     Toggle,
     HowToVideo,
     QuoteCarousel,

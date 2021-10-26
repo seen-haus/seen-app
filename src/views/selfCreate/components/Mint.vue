@@ -79,10 +79,10 @@
                         </div>
                         <div class="fc mb-6">
                             <div class="flex-space-between">
-                                <label>Secondary Market Royalty Fee ({{data.secondaryRoyaltyFee}}%)</label>
+                                <label>Secondary Market Royalty Fee ({{data.secondaryRoyaltyFee.toFixed(2)}}%)</label>
                             </div>
                             <div class="mt-4">
-                                <Slider v-model="data.secondaryRoyaltyFee" :max="15" :min="1" />
+                                <Slider :step="0.25" v-model="data.secondaryRoyaltyFee" :max="15" :min="1" />
                             </div>
                         </div>
                         <div class="fc mb-6">
@@ -247,7 +247,7 @@
             <button :disabled="invalid" :class="(data.preparedMetaDataLocal && !data.isUploadingMetaData && !metaDataIpfsHashData) ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="uploadMetaDataToIPFS">
                 {{data.isUploadingMetaData ? 'Distributing Metadata To IPFS...' : 'Upload Metadata To IPFS'}}
             </button>
-            <button v-if="metaDataIpfsHashData" :disabled="invalid" :class="(metaDataIpfsHashData && data.preparedMetaDataLocal && !data.nftTokenId) ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="mintNftOnChain">
+            <button v-if="metaDataIpfsHashData" id="mint-button" :disabled="invalid" :class="(metaDataIpfsHashData && data.preparedMetaDataLocal && !data.nftTokenId) ? 'primary' : 'disabled'" class="button mt-6 w-full" @click="mintNftOnChain">
                 Mint NFT On-Chain
             </button>
             <button v-if="data.nftTokenId" class="button mt-6 w-full primary" @click="nextStep">
@@ -266,7 +266,29 @@
             </div> -->
         </div>
         <div class="preview-container">
-            <drop-card-preview :autoMargins="true" :sticky="true" :listingType="listingTypeData" :startTime="openingTimeUnixData ? openingTimeUnixData * 1000 : null"  :priceType="priceTypeData" :price="priceData" :units="unitField.value" :tangibility="data.selectedType" :tags="data.tags" :titleText="titleField.value" :creatorAccount="creatorData.account" :creatorProfilePicture="creatorData.profilePicture" :creatorUsername="creatorData.username" :mediaUrl="mediaUrl" />
+            <drop-card-preview 
+                :autoMargins="true"
+                :sticky="true"
+                :listingType="listingTypeData"
+                :startTime="openingTimeUnixData ? openingTimeUnixData * 1000 : null"
+                :priceType="priceTypeData"
+                :price="priceData"
+                :units="unitField.value"
+                :items="unitData"
+                :itemsOf="unitData"
+                :tangibility="data.selectedType"
+                :tags="data.tags"
+                :titleText="titleField.value"
+                :creatorAccount="creatorData.account"
+                :creatorProfilePicture="creatorData.profilePicture"
+                :creatorUsername="creatorData.username"
+                :mediaUrl="mediaUrl"
+                :collectableState="collectableState"
+                :updateProgress="updateProgress"
+                :progress="100"
+                :timerState="timerState"
+                :liveStatus="liveStatus"
+            />
         </div>
     </div>
 </template>
@@ -344,6 +366,10 @@ export default {
         isEscrowAgentData: Boolean,
         setSecondaryRoyaltyFeeData: Function,
         secondaryRoyaltyFeeData: String,
+        collectableState: [String, Boolean],
+        updateProgress: Function,
+        timerState: [String, Boolean],
+        liveStatus: [String, Boolean],
     },
     methods: {
         setSelectedType(type) {
@@ -673,6 +699,7 @@ export default {
             if (signer) {
 
                 let signingError = false;
+                store.dispatch('application/openModal', 'TransactionModal')
                 const sig = await signer
                 .signMessage(msg)
                 .catch((e) => {
@@ -680,6 +707,8 @@ export default {
                     signingError = true;
                     return e;
                 });
+
+                store.dispatch('application/closeModal')
 
                 if(signingError) {
                     return false;
@@ -697,6 +726,10 @@ export default {
                         if(res.data.ipfsHash) {
                             props.setMetaDataIpfsHashData(res.data.ipfsHash);
                             props.setPreparedMetaData(data.preparedMetaDataLocal);
+                            setTimeout(() => {
+                                let element = document.querySelector(`#mint-button`);
+                                element.scrollIntoView({ behavior: "smooth", block: "center" });
+                            }, 100)
                         }else{
                             props.setMetaDataIpfsHashData(false);
                             toast.add({severity:'error', summary:'Error', detail:`IPFS Hash Retrieval Failed`, life: 8000});
@@ -731,20 +764,24 @@ export default {
                         store.dispatch('application/setPendingTransactionHash', tx.hash)
                         tx.wait()
                             .then((response) => {
-                                toast.add({
-                                    severity: 'success',
-                                    summary: 'Success',
-                                    detail: 'NFT successfully minted.',
-                                    life: 3000
-                                });
-                                let eventData = parseConsignmentRegisteredEventData(response.events[1].data)
-                                let tokenId = Number(eventData[4]);
-                                let consignmentId = Number(eventData[6]);
-                                props.setNftTokenIdData(tokenId);
-                                props.setNftConsignmentIdData(consignmentId);
-                                store.dispatch('application/closeModal')
-                                store.dispatch('application/clearPendingTransactionHash')
-                                props.nextStep();
+                                if(response.status === 1) {
+                                    toast.add({
+                                        severity: 'success',
+                                        summary: 'Success',
+                                        detail: 'NFT successfully minted.',
+                                        life: 3000
+                                    });
+                                    let eventData = parseConsignmentRegisteredEventData(response.events[1].data)
+                                    let tokenId = Number(eventData[4]);
+                                    let consignmentId = Number(eventData[6]);
+                                    props.setNftTokenIdData(tokenId);
+                                    props.setNftConsignmentIdData(consignmentId);
+                                    store.dispatch('application/closeModal')
+                                    store.dispatch('application/clearPendingTransactionHash')
+                                    props.nextStep();
+                                } else {
+                                    throw new Error('Transaction Reverted');
+                                }
                             }).catch((e) => {
                                 let message = parseError(e.message)
                                 props.setNftTokenIdData(false);

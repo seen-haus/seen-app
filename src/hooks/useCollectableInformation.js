@@ -13,6 +13,9 @@ import {
     COLLECTABLE_STATE,
 } from "@/constants/Collectables.js";
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
+import MARKET_HANDLER_TYPES from "@/constants/MarketHandlerTypes.js";
+
+import { marketHandlerToListingType } from '@/constants';
 
 export default function useCollectableInformation(initialCollectable = {}) {
     const { converEthToUSD } = useExchangeRate();
@@ -21,6 +24,11 @@ export default function useCollectableInformation(initialCollectable = {}) {
         initializeContractEvents,
         supply,
         itemsBought,
+        isReadyForClosure,
+        checkClosureStatusFn,
+        isClosed,
+        isCancelled,
+        winningAddress,
         endsAt: updatedEndsAt,
         startsAt: updatedStartsAt,
         minimumStartsAt: updatedMinimumStartsAt,
@@ -71,7 +79,8 @@ export default function useCollectableInformation(initialCollectable = {}) {
         return (
             collectableState.value === COLLECTABLE_STATE.WAITING ||
             collectableState.value === COLLECTABLE_STATE.IN_PROGRESS ||
-            collectableState.value === COLLECTABLE_STATE.AWAITING_RESERVE
+            collectableState.value === COLLECTABLE_STATE.AWAITING_RESERVE ||
+            (!is_closed.value && !isReadyForClosure.value && !isClosed.value && !isCancelled.value && new Date(collectable.value.ends_at).getTime() > new Date().getTime())
         );
     });
     const edition = computed(() => collectable.value.edition || 0);
@@ -88,7 +97,12 @@ export default function useCollectableInformation(initialCollectable = {}) {
     );
     const liveStatus = computed(() => {
         if (collectableState.value === COLLECTABLE_STATE.CLOSED) return "closed";
-        if (collectableState.value === COLLECTABLE_STATE.DONE) return "ended";
+        if (collectableState.value === COLLECTABLE_STATE.DONE) {
+            if(checkClosureStatusFn?.value && !isReadyForClosure.value && collectable.value && (collectable.value.consignment_id === 0 || collectable.value.consignment_id)) {
+                checkClosureStatusFn.value(collectable.value.consignment_id.toString())
+            }
+            return "ended"
+        }
         if (collectableState.value === COLLECTABLE_STATE.AWAITING_RESERVE) return "awaiting-reserve-bid";
         if (collectableState.value === COLLECTABLE_STATE.WAITING)
             return "coming soon";
@@ -109,6 +123,51 @@ export default function useCollectableInformation(initialCollectable = {}) {
     );
     const isUpcomming = computed(() => collectableState.value === COLLECTABLE_STATE.WAITING);
     const isOpenEdition = computed(() => collectable.value.is_open_edition);
+    const tangibility = computed(() => collectable.value.type === 'tangible_nft' ? 'nft-physical' : 'nft-digital');
+    const tags = computed(() => collectable.value.tags.map(tag => tag.name));
+    const listingType = computed(() => marketHandlerToListingType[collectable.value.market_handler_type]);
+    const priceType = computed(() => {
+        let listingTypeCheck = marketHandlerToListingType[collectable.value.market_handler_type];
+        if(listingTypeCheck === 'auction') {
+            if(events.value.length === 0) {
+                return 'Reserve Price';
+            } else if ((collectableState.value === COLLECTABLE_STATE.DONE) || (collectableState.value === COLLECTABLE_STATE.CLOSED)) {
+                return 'Winning Bid';
+            } else {
+                return 'Current Bid';
+            }
+        } else {
+            return 'Sale Price';
+        }
+    });
+    const creatorAccount = computed(() => {
+        if(collectable.value.user?.wallet) {
+            return collectable.value.user.wallet;
+        } else if (collectable.value?.artist.wallet) {
+            return collectable.value.artist.wallet
+        } else {
+            return false;
+        }
+    })
+    const creatorProfilePicture = computed(() => {
+        if(collectable.value.user?.image) {
+            return collectable.value.user.image;
+        } else if (collectable.value.artist?.avatar) {
+            return collectable.value.artist.avatar
+        } else {
+            return false;
+        }
+    })
+    const creatorUsername = computed(() => {
+        if(collectable.value.user?.username) {
+            return collectable.value.user.username;
+        } else if (collectable.value.artist?.name) {
+            return collectable.value.artist.name
+        } else {
+            return false;
+        }
+    })
+    
 
     const updateProgress = function (event) {
         progress.value = event;
@@ -193,12 +252,17 @@ export default function useCollectableInformation(initialCollectable = {}) {
         const now = Date.now();
         const start = startsAt.value ? new Date(startsAt.value) : null;
         const end = endsAt.value ? new Date(endsAt.value) : null;
+        console.log({endUpdate: end})
         const isStartInPast = start && start.getTime() <= now;
+
+        console.log({end, 'collectable.value.is_reserve_price_auction': collectable.value.is_reserve_price_auction, isStartInPast})
 
         if(end === null && collectable.value.is_reserve_price_auction && isStartInPast) {
             collectableState.value = COLLECTABLE_STATE.AWAITING_RESERVE;
             return;
         }
+
+        console.log({is_closed})
 
         if (is_closed.value) {
             collectableState.value = COLLECTABLE_STATE.CLOSED;
@@ -239,7 +303,12 @@ export default function useCollectableInformation(initialCollectable = {}) {
         let endDate = new Date(endsAt.value);
         endDate.setHours(endDate.getHours() + 6);
         const end = endDate.getTime();
-        if (((now >= start) && (now < end) && !is_sold_out.value) || (new Date(endsAt.value).getTime() === 0 && collectable.value.is_reserve_price_auction)) {
+        if (
+            ((now >= start) && (now < end) && !is_sold_out.value) ||
+            (new Date(endsAt.value).getTime() === 0 && collectable.value.is_reserve_price_auction) ||
+            (isAuction.value && !collectable.value.winner_address) ||
+            ((collectable.value.version === 3) && (collectable.value.market_handler_type === MARKET_HANDLER_TYPES.SALE) && !collectable.value.is_closed)
+        ) {
             console.log('contract initialized');
             initializeContractEvents(collectable.value);
         } else if ((now < end || !endsAt.value) && !is_sold_out.value) {
@@ -340,6 +409,17 @@ export default function useCollectableInformation(initialCollectable = {}) {
         pillOverride,
         requiresRegistration,
         isOpenEdition,
+        tangibility,
+        priceType,
+        tags,
+        creatorAccount,
+        creatorProfilePicture,
+        creatorUsername,
+        listingType,
+        isReadyForClosure,
+        isClosed,
+        isCancelled,
+        winningAddress,
         // Methods
         updateProgress,
         setCollectable,

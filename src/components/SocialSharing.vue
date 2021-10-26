@@ -1,6 +1,6 @@
 <template>
   <div class="wrapme" v-click-outside="handleClickOutside">
-    <div class="relative mb-4">
+    <div class="relative">
       <button @click="showDropdown=!showDropdown" class="button shadow-lifted" :class="darkMode ? 'dark-mode-surface dark-mode-text' : 'light-mode-surface'">
         Share <i class="px-2 fas fa-share"></i>
       </button>
@@ -81,6 +81,6 @@ export default {
 .wrapme {
   position: relative;
   float: right;
-  margin-top: -100px;
+  transform: translateY(-50%);
 }
 </style>

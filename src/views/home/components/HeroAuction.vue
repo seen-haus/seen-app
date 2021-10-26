@@ -2,7 +2,7 @@
   <div :class="darkMode ? 'hero-auction-dark-mode' : 'hero-auction-light-mode'" class="hero-auction">
     <container class="py-15 flex flex-col lg:flex-row">
       <div
-          class="media relative flex items-center flex-1 cursor-pointer rounded-3xl bg-black overflow-hidden"
+          class="media relative flex items-center flex-1 cursor-pointer rounded-3xl overflow-hidden"
           @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route)"
       >
         <media-loader
@@ -409,12 +409,7 @@ export default {
   }
 }
 .hero-auction-light-mode {
-  background-image: linear-gradient(180deg, #333333 2%, #000000 100%);
-
-  @screen lg {
-    // Change the direction of fade so it doesn't interfere with fence colors
-    background-image: linear-gradient(66deg, #333333 2%, #000000 100%);
-  }
+  background-image: transparent;
 }
 .hero-auction-dark-mode {
   background-image: linear-gradient(180deg, #000000 2%, #000000 100%);

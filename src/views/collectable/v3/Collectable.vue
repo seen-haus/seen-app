@@ -14,7 +14,7 @@
   </div>
 
   <div class="single-edition" v-bind:style="{ backgroundImage: 'url(' + getBackgroundImage(backgroundImage) + ')' }" v-else>
-    <container>
+    <!-- <container>
       <div class="flex items-center py-6 flex-col">
         <fenced-title
             v-if="title?.length < 40"
@@ -63,11 +63,30 @@
           <live-indicator :status="liveStatus"/>
         </div>
       </div>
-    </container>
+    </container> -->
 
-    <hero-gallery :mediaResources="gallerySortedMedia"/>
+    <hero-gallery 
+      :marginTop="'4rem'"
+      :marginBottom="'4rem'"
+      :backgroundColor="'#ebeef266'"
+      :mediaResources="gallerySortedMedia"
+    />
 
+    <div class="container mx-auto px-6 md:px-8 transform-horizontal-center absolute">
+      <div class="absolute light-mode-surface button shortened shadow-lifted transform-vertical-center">
+        <user-or-artist-badge
+          :creatorAccount="creatorAccount"
+          :creatorUsername="creatorUsername"
+          :creatorProfilePicture="creatorProfilePicture"
+        />
+      </div>
+      <social-sharing></social-sharing>
+    </div>
+    <div class="abstract-circles abstract-circles-1">
+      <img src="@/assets/images/abstract-circles.svg" alt="">
+    </div>
     <container>
+      
       <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-12 md:mt-0">
         <div class="left-side col-span-7 pb-6">
           <div class="text-lg description" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'" v-html="description"></div>
@@ -113,34 +132,35 @@
           <artist-card v-if="artist" class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
         </div>
 
-        <div class="right-side col-span-5">
-          <social-sharing></social-sharing>
+        <div class="right-side col-span-5 mt-15">
           <bid-card
-              :status="liveStatus"
-              :collectable="collectable"
-              :collectableVersion="collectable.version"
-              :collectableConsignmentId="collectable.consignment_id"
-              :startsAt="currentStartsAt"
-              :minimumStartsAt="currentMinimumStartsAt"
-              :endsAt="currentEndsAt"
-              :isAuction="isAuction"
-              :numberOfBids="events.length"
-              :isOpenEdition="isOpenEdition"
-              :itemsBought="itemsBought"
-              :edition="edition"
-              :edition_of="edition_of"
-              :items="items"
-              :items_of="itemsOf"
-              :price="price"
-              :priceUSD="priceUSD"
-              :progress="progress"
-              :is_sold_out="is_sold_out"
-              :is_closed="is_closed"
-              :isCollectableActive="isCollectableActive"
-              :isUpcomming="isUpcomming"
-              :nextBidPrice="nextBidPrice"
-              :claim="claim"
-              @update-state="updateCollectableState"
+            :status="liveStatus"
+            :collectable="collectable"
+            :collectableVersion="collectable.version"
+            :collectableConsignmentId="collectable.consignment_id"
+            :startsAt="currentStartsAt"
+            :minimumStartsAt="currentMinimumStartsAt"
+            :endsAt="currentEndsAt"
+            :isAuction="isAuction"
+            :numberOfBids="events.length"
+            :isOpenEdition="isOpenEdition"
+            :itemsBought="itemsBought"
+            :edition="edition"
+            :edition_of="edition_of"
+            :items="items"
+            :items_of="itemsOf"
+            :price="price"
+            :priceUSD="priceUSD"
+            :progress="progress"
+            :is_sold_out="is_sold_out"
+            :is_closed="is_closed"
+            :isCollectableActive="isCollectableActive"
+            :isUpcomming="isUpcomming"
+            :nextBidPrice="nextBidPrice"
+            :claim="claim"
+            :isReadyForClosure="isReadyForClosure"
+            :winningAddress="winningAddress"
+            @update-state="updateCollectableState"
           />
 
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
@@ -206,6 +226,7 @@ import {useStore} from "vuex";
 import FencedTitle from "@/components/FencedTitle.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
+import UserOrArtistBadge from "@/components/PillsAndTags/UserOrArtistBadge.vue";
 import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import Container from "@/components/Container.vue";
@@ -223,6 +244,8 @@ import 'glightbox/dist/css/glightbox.css';
 import NftData from "@/views/collectable/components/NftData.vue";
 import SocialSharing from "@/components/SocialSharing";
 
+import useWeb3 from "@/connectors/hooks";
+
 export default {
   name: "Collectable",
   components: {
@@ -230,6 +253,7 @@ export default {
     FencedTitle,
     Container,
     UserBadge,
+    UserOrArtistBadge,
     Tag,
     LiveIndicator,
     ArtistCard,
@@ -256,6 +280,7 @@ export default {
       buyersVisible: 3,
     });
     const store = useStore();
+    const { chainId } = useWeb3();
 
     const darkMode = computed(() => {
       return store.getters['application/darkMode']
@@ -296,6 +321,13 @@ export default {
       isAuction,
       version,
       nextBidPrice,
+      isReadyForClosure,
+      isClosed,
+      isCancelled,
+      winningAddress,
+      creatorAccount,
+      creatorProfilePicture,
+      creatorUsername,
       // Methods
       updateProgress,
       setCollectable,
@@ -322,7 +354,7 @@ export default {
     }
 
     const currentEndsAt = computed(() => {
-      return endsAt.value;
+      return new Date(endsAt.value).getTime();
     });
 
     const currentStartsAt = computed(() => {
@@ -379,7 +411,12 @@ export default {
     const viewOnOpenSea = () => {
       let nftAddress = collectable.value.nft_contract_address
       let nftTokenId = collectable.value.nft_token_id
+      console.log({nftTokenId})
       let url = `https://opensea.io/assets/${nftAddress}/${nftTokenId}`;
+      console.log({chainId: chainId.value})
+      if(Number(chainId.value) !== 1) {
+        url = `https://testnets.opensea.io/assets/${nftAddress}/${nftTokenId}`;
+      }
       window.open(url, '_blank').focus()
     }
 
@@ -444,6 +481,7 @@ export default {
       events,
       currentStartsAt,
       currentEndsAt,
+      endsAt,
       currentMinimumStartsAt,
       liveStatus,
       is_sold_out,
@@ -459,6 +497,13 @@ export default {
       backgroundImage,
       darkMode,
       titleMonospace,
+      isReadyForClosure,
+      isClosed,
+      isCancelled,
+      winningAddress,
+      creatorAccount,
+      creatorProfilePicture,
+      creatorUsername,
       // Methods
       updateProgress,
       viewOnEtherscan,
@@ -475,6 +520,10 @@ export default {
 
 
 <style lang="scss">
+.abstract-circles-1 {
+  right: 8%;
+  margin-top: 200px;
+}
 .description {
   p {
     margin-bottom: 1rem;

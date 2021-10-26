@@ -54,7 +54,8 @@
             <div v-if="processData.currentStep > 0" class="flex items-center flex-col lg:flex-row mb-8">
                 <div class="card flex-grow">
                     <!-- First step isn't part of step process, so we set currentStep in Step component to currentStep - 1 -->
-                    <Steps :stepOffset="1" :steps="steps" :currentStep="processData.currentStep - 1" :setStep="setStep"  />
+                    <Steps v-if="processData.marketType === 'primary'" :stepOffset="1" :steps="steps" :currentStep="processData.currentStep - 1" :setStep="setStep"  />
+                    <Steps v-if="processData.marketType === 'secondary'" :stepOffset="3" :steps="secondarySteps" :currentStep="processData.currentStep - 3" :setStep="setStep"  />
                 </div>
             </div>
             <div class="flex items-center flex-col lg:flex-row">
@@ -78,8 +79,11 @@
                         :setPreparedMetaData="setPreparedMetaData"
                         :setMetaDataIpfsHashData="setMetaDataIpfsHash"
                         :setNftTokenIdData="setNftTokenId"
+                        :setNftTokenAddressData="setNftTokenAddress"
                         :setSecondaryRoyaltyFeeData="setSecondaryRoyaltyFee"
                         :setNftConsignmentIdData="setNftConsignmentId"
+                        :setMarketType="setMarketType"
+                        :setSecondaryBalance="setSecondaryBalance"
                     />
                 </div>
                 <div class="flex-grow" v-if="processData.currentStep === 1">
@@ -124,11 +128,17 @@
                         :metaDataIpfsHashData="processData.metaDataIpfsHash"
                         :setNftTokenIdData="setNftTokenId"
                         :nftTokenIdData="processData.nftTokenId"
+                        :setNftTokenAddressData="setNftTokenAddress"
                         :secondaryRoyaltyFeeData="processData.secondaryRoyaltyFee"
                         :setSecondaryRoyaltyFeeData="setSecondaryRoyaltyFee"
                         :setNftConsignmentIdData="setNftConsignmentId"
                         :nftConsignmentIdData="processData.nftConsignmentId"
                         :isEscrowAgentData="processData.isEscrowAgent"
+                        :updateProgress="updateProgress"
+                        :collectableState="processData.collectableState"
+                        :latestProgressTick="processData.latestProgressTick"
+                        :timerState="processData.timerState"
+                        :liveStatus="processData.liveStatus"
                     />
                 </div>
                 <div class="flex-grow" v-if="processData.currentStep === 3">
@@ -149,17 +159,27 @@
                         :titleData="processData.title"
                         :tagData="processData.tags"
                         :unitData="processData.units"
+                        :setUnitData="setUnitData"
                         :openingTimeTypeData="processData.openingTimeType"
                         :openingTimeUnixData="processData.openingTimeUnix"
                         :setNftTokenIdData="setNftTokenId"
                         :nftTokenIdData="processData.nftTokenId"
+                        :setNftTokenAddressData="setNftTokenAddress"
+                        :nftTokenAddressData="processData.nftTokenAddress"
                         :setNftConsignmentIdData="setNftConsignmentId"
                         :nftConsignmentIdData="processData.nftConsignmentId"
                         :isMarketHandlerAssignedData="processData.isMarketHandlerAssigned"
                         :setIsMarketHandlerAssignedData="setIsMarketHandlerAssigned"
+                        :updateProgress="updateProgress"
+                        :collectableState="processData.collectableState"
+                        :latestProgressTick="processData.latestProgressTick"
+                        :timerState="processData.timerState"
+                        :liveStatus="processData.liveStatus"
+                        :marketTypeData="processData.marketType"
+                        :secondaryBalanceData="processData.secondaryBalance"
                     />
                 </div>
-                <div class="flex-grow" v-if="processData.currentStep === 4">
+                <div class="flex-grow" v-if="processData.currentStep === 4 && processData.isMinter && processData.isSeller && processData.hasCheckedRoles">
                     <container class="publishing-loader-section flex-center pb-12">
                         <div class="flex-col flex">
                             <ProgressSpinner />
@@ -186,14 +206,50 @@
                     :priceType="processData.priceType"
                     :price="processData.price"
                     :units="processData.units"
+                    :items="processData.units"
+                    :itemsOf="processData.units"
                     :tangibility="processData.tangibility"
                     :tags="processData.tags"
                     :titleText="processData.title"
-                    :creatorAccount="creatorData.account"
-                    :creatorProfilePicture="creatorData.profilePicture"
-                    :creatorUsername="creatorData.username"
+                    :creatorAccount="processData.creatorAccount || creatorData.account"
+                    :creatorProfilePicture="processData.creatorProfilePicture || creatorData.profilePicture"
+                    :creatorUsername="processData.creatorUsername || creatorData.username"
                     :mediaUrl="processData.tempMediaUrl"
+                    :updateProgress="updateProgress"
+                    :collectableState="processData.collectableState"
+                    :latestProgressTick="processData.latestProgressTick"
+                    :timerState="processData.timerState"
+                    :liveStatus="processData.liveStatus"
+                    :progress="100"
                 />
+            </div>
+            <div class="bg-white flex-center py-16">
+                <div class="flex-row">
+                    <unfenced-title
+                        class="text-black hidden lg:flex pb-6"
+                        color="fence-dark"
+                        text-align="center"
+                    >
+                        YOUR NFT IS LIVE
+                    </unfenced-title>
+                    <sub-title
+                        class="text-green-gradient clickable hidden lg:flex pt-6 pb-12"
+                        text-align="center"
+                    >
+                        {{processData.liveListingUrl}}
+                    </sub-title>
+                    <div class="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-8">
+                        <button class="button outline extended">
+                            <i class="fas fa-copy text-sm icon-left"></i>Copy
+                        </button>
+                        <button class="button outline extended">
+                            <i class="fas fa-eye text-sm icon-left"></i>View
+                        </button>
+                        <button class="button outline extended">
+                            <i class="fas fa-share-alt text-sm icon-left"></i>Share
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -227,7 +283,13 @@ import Mint from './components/Mint.vue';
 import SelfCreateListing from './components/SelfCreateListing.vue';
 import DropCardPreview from "@/components/DropCardPreview/DropCardPreview.vue";
 
-import { roleToBytes } from '@/constants';
+import {
+    COLLECTABLE_STATE,
+} from "@/constants/Collectables.js";
+
+import { TIMER_STATE } from "@/hooks/v3/useTimer.js";
+
+import { roleToBytes, marketHandlerToListingType, selfUrl } from '@/constants';
 
 export default {
     name: "SelfCreateWithRoutes",
@@ -247,7 +309,7 @@ export default {
     beforeRouteLeave (to, from, next) {
         // If the form is dirty and the user did not confirm leave,
         // prevent losing unsaved changes by canceling navigation
-        if ((((this.processData.currentStep >= 1) && (this.processData.currentStep < 4)) || (this.processData.currentStep === 4 && !this.processData.isMarketHandlerAssigned)) && this.confirmStayInDirtyForm()) {
+        if (!this.processData.skipFormNavigationCheck && (((this.processData.currentStep >= 1) && (this.processData.currentStep < 4)) || (this.processData.currentStep === 4 && !this.processData.isMarketHandlerAssigned)) && this.confirmStayInDirtyForm()) {
             next(false);
         } else {
             next();
@@ -279,6 +341,16 @@ export default {
                     helperText: 'Publish on SEEN.HAUS'
                 }
             ],
+            secondarySteps: [
+                {
+                    label: 'List',
+                    helperText: 'Create on-chain listing'
+                },
+                {
+                    label: 'Publish',
+                    helperText: 'Publish on SEEN.HAUS'
+                }
+            ],
         }
     },
     filters: {
@@ -294,7 +366,7 @@ export default {
             return !this.confirmLeave()
         },
         beforeWindowUnload(e) {
-            if (((this.processData.currentStep >= 1) && (this.processData.currentStep < 4)) && this.confirmStayInDirtyForm()) {
+            if (!this.processData.skipFormNavigationCheck && ((this.processData.currentStep >= 1) && (this.processData.currentStep < 4)) && this.confirmStayInDirtyForm()) {
                 // Cancel the event
                 e.preventDefault()
                 // Chrome requires returnValue to be set
@@ -403,6 +475,9 @@ export default {
         setNftTokenId(id) {
             this.processData.nftTokenId = id;
         },
+        setNftTokenAddress(address) {
+            this.processData.nftTokenAddress = address;
+        },
         setNftConsignmentId(id) {
             this.processData.nftConsignmentId = id;
         },
@@ -412,6 +487,12 @@ export default {
         setIsMarketHandlerAssigned(isAssigned) {
             this.processData.isMarketHandlerAssigned = isAssigned;
         },
+        setMarketType(marketType) {
+            this.processData.marketType = marketType;
+        },
+        setSecondaryBalance(balance) {
+            this.processData.secondaryBalance = balance;
+        }
     },
     async setup() {
 
@@ -437,37 +518,6 @@ export default {
         watchEffect(async () => {
             let contract = await useV3MarketClerkContractNetworkReactive();
             marketClerkContract.value = contract.state;
-        })
-
-        watchEffect(async () => {
-            let currentStepName = route.params.stepName;
-            if(currentStepName === 'publish') {
-                if(marketClerkContract.value.contract && account?.value) {
-                    let useConsignmentId = publishConsignmentId ? publishConsignmentId : processData.nftConsignmentId
-                    if(useConsignmentId === 0 || useConsignmentId) {
-                        try {
-                            await CollectablesService.publishConsignmentByConsignmentId(useConsignmentId)
-                            .then(() => {
-                                router.push({
-                                    name: "selfCreate",
-                                    params: { stepName: 'live'},
-                                });
-                            })
-                            .catch((e) => {
-                                console.log({e})
-                                let message = e?.data?.message ? parseError(e?.data?.message) : e;
-                                toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 5000});
-                            })
-                        } catch (e) {
-                            console.log({e})
-                            let message = e?.message ? parseError(e.message) : e;
-                            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 5000});
-                        }
-                    } else {
-                        toast.add({severity: 'error', summary: 'Error', detail: `Consignment ID not found`, life: 5000});
-                    }
-                }
-            }
         })
 
         const mediaInputRef = ref(null);
@@ -565,6 +615,112 @@ export default {
             isEscrowAgent: false,
             hasCheckedRoles: false,
             isMarketHandlerAssigned: false,
+            creatorAccount: false,
+            creatorProfilePicture: false,
+            creatorUsername: false,
+            liveListingUrl: false,
+            skipFormNavigationCheck: false,
+            lastCheckedAccount: false,
+            collectableState: false,
+            latestProgressTick: false,
+            timerState: false,
+            liveStatus: false,
+            secondaryBalance: false,
+            marketType: 'primary',
+        })
+
+        watchEffect(async () => {
+            let currentStepName = route.params.stepName;
+            if(currentStepName === 'publish') {
+                let useConsignmentId = publishConsignmentId ? publishConsignmentId : processData.nftConsignmentId
+                if(useConsignmentId === 0 || useConsignmentId) {
+                    try {
+                        await CollectablesService.publishConsignmentByConsignmentId(useConsignmentId)
+                        .then((response) => {
+                            let { data } = response;
+
+                            // Load the data into processData state in case it doesn't already exist
+                            // (e.g. hitting the publish link directly for whatever reason)
+
+                            let listingType = marketHandlerToListingType[data.market_handler_type]
+
+                            let priceType;
+                            if(listingType === 'auction') {
+                                priceType = 'Reserve Price';
+                            } else if(listingType === 'sale') {
+                                priceType = 'Sale Price';
+                            }
+
+                            if(data.market_type === 0) {
+
+                                let previewMedia = data.media.filter(item => item.is_preview)
+
+                                processData.listingType = listingType;
+                                processData.openingTimeUnix = new Date(data.starts_at).getTime() / 1000;
+                                processData.priceType = priceType;
+                                processData.price = data.min_bid ? data.min_bid : data.price;
+                                processData.units = data.edition_of;
+                                processData.tangibility = data.type === 'tangible_nft' ? 'nft-physical' : 'nft-digital';
+                                processData.tags = data.tags.map(item => item.name);
+                                processData.title = data.title;
+                                processData.creatorAccount = data.user.wallet ? data.user.wallet : false;
+                                processData.creatorProfilePicture =  data.user.image ? data.user.image : false;
+                                processData.creatorUsername =  data.user.username ? data.user.username : false;
+                                processData.tempMediaUrl = previewMedia?.[0]?.url;
+                                processData.skipFormNavigationCheck = true;
+                                processData.liveListingUrl = selfUrl() + 'drops/' + data.slug;
+
+                            } else if (data.market_type === 1) {
+
+                                let previewMedia = data.collectable.media.filter(item => item.is_preview)
+
+                                processData.listingType = listingType;
+                                processData.openingTimeUnix = new Date(data.starts_at).getTime() / 1000;
+                                processData.priceType = priceType;
+                                processData.price = data.min_bid ? data.min_bid : data.price;
+                                processData.units = data.edition_of;
+                                processData.tangibility = data.collectable.type === 'tangible_nft' ? 'nft-physical' : 'nft-digital';
+                                processData.tags = data.collectable.tags.map(item => item.name);
+                                processData.title = data.collectable.title;
+                                processData.creatorAccount = data.user.wallet ? data.user.wallet : false;
+                                processData.creatorProfilePicture =  data.user.image ? data.user.image : false;
+                                processData.creatorUsername =  data.user.username ? data.user.username : false;
+                                processData.tempMediaUrl = previewMedia?.[0]?.url;
+                                processData.skipFormNavigationCheck = true;
+                                processData.liveListingUrl = selfUrl() + 'drops/secondary/' + data.slug;
+
+                            }
+
+                            if(!publishConsignmentId) {
+                                router.push({
+                                    name: "selfCreate",
+                                    params: { stepName: 'live'},
+                                });
+                            } else {
+                                router.push({
+                                    name: "selfCreateWithConsignmentId",
+                                    params: { 
+                                        stepName: 'live',
+                                        consignmentId: publishConsignmentId
+                                    },
+                                });
+                            }
+                            
+                        })
+                        .catch((e) => {
+                            console.log({e})
+                            let message = e?.data?.message ? parseError(e?.data?.message) : e;
+                            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 5000});
+                        })
+                    } catch (e) {
+                        console.log({e})
+                        let message = e?.message ? parseError(e.message) : e;
+                        toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 5000});
+                    }
+                } else {
+                    toast.add({severity: 'error', summary: 'Error', detail: `Consignment ID not found`, life: 5000});
+                }
+            }
         })
 
         watchEffect(() => {
@@ -575,12 +731,52 @@ export default {
             }
         })
 
+        const updateProgress = (event) => {
+            console.log("Runs updateProgress")
+            processData.latestProgressTick = Date.now();
+        }
+
+        watchEffect(() => {
+            const now = new Date().setMilliseconds(0);
+            const start = processData.openingTimeUnix ? new Date(processData.openingTimeUnix * 1000) : null;
+            const isStartInPast = start && start.getTime() <= now;
+
+            // Leave this here, as it should trigger a recalc of this watchEffect if it changes
+            if(processData.latestProgressTick) {
+                console.log("Rechecking status")
+            }
+
+            if((processData.listingType === 'auction') && isStartInPast) {
+                processData.collectableState = COLLECTABLE_STATE.AWAITING_RESERVE;
+                processData.liveStatus = "awaiting-reserve-bid";
+                return;
+            }
+
+            if (now < start) {
+                processData.collectableState = COLLECTABLE_STATE.WAITING;
+                processData.timerState = TIMER_STATE.WAITING;
+                processData.liveStatus = "coming soon";
+                return;
+            }
+
+            if ((now >= start) && (processData.listingType === 'sale')) {
+                processData.collectableState = COLLECTABLE_STATE.IN_PROGRESS;
+                processData.timerState = TIMER_STATE.IN_PROGRESS;
+                processData.liveStatus = "live";
+                return;
+            }
+
+            processData.collectableState = COLLECTABLE_STATE.WAITING;
+            processData.timerState = COLLECTABLE_STATE.WAITING;
+            processData.liveStatus = "coming soon";
+        });
+
         const resetTemporaryImage = () => {
             temporaryMediaUrl.value = null;
         }
 
         const onMediaChange = () => {
-            temporaryMediaUrl.value = URL.createObjectURL(mediaInputRef.value.files[0])
+            temporaryMediaUrl.value = URL.createObjectURL(mediaInputRef.value.files[0]);
         }
 
         const uploadField = reactive(useField("email", "email"));
@@ -594,23 +790,30 @@ export default {
 
         watchEffect(async () => {
             // Assume no access
-            processData.hasCheckedRoles = false;
-            processData.isMinter = false;
-            processData.isSeller = false;
-            processData.isEscrowAgent = false;
-            if(accessControllerContract.value.contract && account?.value) {
-                // Check that current user has access to NFT minting & selling
-                let hasMinterRole = await accessControllerContract.value.contract.hasRole(roleToBytes["MINTER"], account?.value);
-                let hasSellerRole = await accessControllerContract.value.contract.hasRole(roleToBytes["SELLER"], account?.value);
-                let hasEscrowAgentRole = await accessControllerContract.value.contract.hasRole(roleToBytes["ESCROW_AGENT"], account?.value);
-                processData.isMinter = hasMinterRole;
-                processData.isSeller = hasSellerRole;
-                processData.isEscrowAgent = hasEscrowAgentRole;
-                processData.hasCheckedRoles = true;
+            if(account?.value && (account?.value !== processData.lastCheckedAccount)) {
+                processData.hasCheckedRoles = false;
+                processData.isMinter = false;
+                processData.isSeller = false;
+                processData.isEscrowAgent = false;
+                if(accessControllerContract.value.contract) {
+                    processData.lastCheckedAccount = account?.value;
+                    // Check that current user has access to NFT minting & selling
+                    let hasMinterRole = await accessControllerContract.value.contract.hasRole(roleToBytes["MINTER"], account?.value);
+                    let hasSellerRole = await accessControllerContract.value.contract.hasRole(roleToBytes["SELLER"], account?.value);
+                    let hasEscrowAgentRole = await accessControllerContract.value.contract.hasRole(roleToBytes["ESCROW_AGENT"], account?.value);
+                    processData.isMinter = hasMinterRole;
+                    processData.isSeller = hasSellerRole;
+                    processData.isEscrowAgent = hasEscrowAgentRole;
+                    processData.hasCheckedRoles = true;
+                }
+            } else if (!account?.value) {
+                processData.lastCheckedAccount = false;
+                processData.hasCheckedRoles = false;
+                processData.isMinter = false;
+                processData.isSeller = false;
+                processData.isEscrowAgent = false;
             }
         })
-
-        
 
         return {
             account,
@@ -626,6 +829,7 @@ export default {
             router,
             stepIndexToName,
             creatorData,
+            updateProgress,
         }
     }
 };

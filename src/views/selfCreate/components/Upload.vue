@@ -198,6 +198,7 @@ export default {
 
             if (signer) {
 
+                store.dispatch('application/openModal', 'TransactionModal')
                 let signingError = false;
                 const sig = await signer
                 .signMessage(msg)
@@ -206,6 +207,8 @@ export default {
                     signingError = true;
                     return e;
                 });
+
+                store.dispatch('application/closeModal')
 
                 if(signingError) {
                     return false;

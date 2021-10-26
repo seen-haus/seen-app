@@ -38,7 +38,7 @@ import { useV3NftContractNetworkReactive } from "@/hooks/useContract";
 export default {
     name: "ProcessRecoveryCard",
     props: {
-      consignment: Object,
+      tokenId: Number,
       setStep: Function,
       setMediaIpfsHash: Function,
       setTempMediaUrl: Function,
@@ -52,9 +52,9 @@ export default {
       setPreparedMetaData: Function,
       setMetaDataIpfsHashData: Function,
       setNftTokenIdData: Function,
+      setNftTokenAddressData: Function,
       setSecondaryRoyaltyFeeData: Function,
       setNftConsignmentIdData: Function,
-      setMarketType: Function,
     },
     methods: {
       recoverListingProcess() {
@@ -72,9 +72,9 @@ export default {
           setPreparedMetaData,
           setMetaDataIpfsHashData,
           setNftTokenIdData,
+          setNftTokenAddressData,
           setSecondaryRoyaltyFeeData,
           setNftConsignmentIdData,
-          setMarketType,
         } = this;
 
         let {
@@ -90,9 +90,12 @@ export default {
           metaDataPrepared,
           metaDataHash,
           tokenId,
+          tokenAddress,
           royaltyFee,
           consignmentId,
         } = this.processData;
+
+        console.log({tokenAddress})
 
         setTempMediaUrl(mediaUrl);
         setMediaIpfsHash(mediaIpfsHash);
@@ -106,9 +109,9 @@ export default {
         setPreparedMetaData(metaDataPrepared);
         setMetaDataIpfsHashData(metaDataHash);
         setNftTokenIdData(tokenId);
+        setNftTokenAddressData(tokenAddress);
         setSecondaryRoyaltyFeeData(royaltyFee);
         setNftConsignmentIdData(consignmentId);
-        setMarketType('primary');
 
         setStep(3);
       }
@@ -138,6 +141,7 @@ export default {
           metaDataPrepared: false,
           metaDataHash: false,
           tokenId: false,
+          tokenAddress: false,
           royaltyFee: false,
           consignmentId: false,
           hasInitialised: false,
@@ -153,9 +157,9 @@ export default {
         watchEffect(async () => {
             processData.mediaUrl = false;
             processData.hasInitialised = false;
-            const { consignment } = props;
-            let tokenId = consignment.tokenId;
+            const { tokenId, tokenAddress } = props;
             if(seenHausV3NFTContract.value.contract) {
+              // Check that current user has access to NFT minting & selling
               let tokenInfo = await seenHausV3NFTContract.value.contract.getTokenInfo(tokenId)
               // Safe to assume that [2] (the seen IPFS gateway) should work here as this component is only for SEEN.HAUS NFTs
               // If this component becomes used for more than NFTs that have their media on the SEEN.HAUS IPFS gateway
@@ -172,13 +176,14 @@ export default {
                 processData.propertyData = data.attributes;
                 processData.description = data.description;
                 processData.rights = data.rights;
-                processData.units = Number(consignment.supply);
+                // processData.units = Number(consignment.supply); TODO
                 processData.metaDataPrepared = response.data;
                 processData.metaDataHash = uriToHash(tokenInfo.uri);
                 processData.tokenId = Number(tokenId);
-                processData.consignmentId = Number(consignment.id);
+                processData.tokenAddress = tokenAddress;
+                processData.consignmentId = false;
                 processData.royaltyFee = tokenInfo.royaltyPercentage;
-                processData.creatorAccount = consignment.seller;
+                // processData.creatorAccount = consignment.seller; TODO
               })
             }
         })

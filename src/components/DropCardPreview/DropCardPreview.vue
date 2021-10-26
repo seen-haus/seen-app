@@ -27,6 +27,9 @@
                     <div class="tag-container">
                         <tag :value="tagItem" v-for="(tagItem, index) in data.tags" :key="`inline-tag-${tagItem}-${index}`" class="bg-black mr-1 text-white">{{tagItem.toUpperCase()}}</tag>
                     </div>
+                    <div class="status-container">
+                        <live-indicator v-if="liveStatus" :status="liveStatus" class="text-white ml-auto dark"/>
+                    </div>
                 </div>
                 <div class="drop-card-title mt-3 mb-3">
                     <div v-if="!titleText" class="title-placeholder-container mt-4">
@@ -43,26 +46,50 @@
                         {{data.titleText}}
                     </sub-title>
                 </div>
-                <div class="flex-align-center">
-                    <div v-if="!data.creatorAccount" class="artist-pic-placeholder mr-2 placeholder-light-grey"></div>
-                    <div v-if="data.creatorAccount" class="artist-avatar mr-2" :style="{ backgroundImage: `url(${data.creatorProfilePicture})` }">
-                        <identicon :size="34" :address="data.creatorAccount" v-if="!data.creatorProfilePicture && data.creatorAccount"/>
-                    </div>
-                    <div v-if="!data.creatorUsername && !data.creatorAccount" class="artist-name-placeholder placeholder-light-grey"></div>
-                    <sub-title
-                        v-if="data.creatorUsername || data.creatorAccount"
-                        class="text-black hidden lg:flex mb-1 mt-1"
-                        text-align="center"
-                        font-size="15px"
-                    >
-                        {{(data.creatorUsername && `@${data.creatorUsername}`) || shortenAddress(data.creatorAccount)}}
-                    </sub-title>
+                <user-or-artist-badge
+                    :creatorAccount="data.creatorAccount"
+                    :creatorUsername="data.creatorUsername"
+                    :creatorProfilePicture="data.creatorProfilePicture"
+                />
+            </div>
+            <div v-if="(listingType !== 'sale') && (data.timerState !== TIMER_STATE.IN_PROGRESS) && (collectableState !== COLLECTABLE_STATE.AWAITING_RESERVE)" class="divider-line-inactive mt-3"/>
+            <div v-if="(listingType !== 'sale') && (collectableState === COLLECTABLE_STATE.AWAITING_RESERVE)" class="divider-line-awaiting-reserve bg-progress-bar-green-vibrant mt-3"/>
+            <div 
+                v-if="(listingType !== 'sale') && ((data.timerState === TIMER_STATE.IN_PROGRESS) || (collectableState === COLLECTABLE_STATE.IN_PROGRESS)) && (collectableState !== COLLECTABLE_STATE.AWAITING_RESERVE)"
+                class="divider-line-active mt-3"
+                :class="{
+                    'bg-progress-bar-green-vibrant': ((data.endTime - new Date().setMilliseconds(0)) > 900000),
+                    'bg-progress-bar-vibrant': ((data.endTime - new Date().setMilliseconds(0)) <= 900000)
+                }"
+            >
+                <div class="bg-black mini-progress-bar" :style="`width:${progress*100}%`"/>
+            </div>
+            <div v-if="listingType === 'sale'">
+                <div v-if="
+                        data.startTime > new Date().getTime()
+                        || collectableState === COLLECTABLE_STATE.OUT_OF_STOCK 
+                        || collectableState === COLLECTABLE_STATE.CLOSED
+                    "
+                    class="divider-line-inactive mt-3"
+                />
+                <div v-if="
+                        (data.startTime < new Date().getTime())
+                        && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
+                        && collectableState !== COLLECTABLE_STATE.CLOSED
+                    " class="divider-line-active bg-progress-bar-green-vibrant mt-3">
+                    <div class="bg-black mini-progress-bar" :style="`width:${100-(progress*100)}%`"/>
                 </div>
             </div>
-            <div class="divider-line mt-3 mb-3"/>
-            <div class="drop-card-inner-padding-bottom flex">
+            <div 
+                class="drop-card-inner-padding-bottom flex pt-3"
+                :class="
+                    ((data.timerState === TIMER_STATE.IN_PROGRESS || collectableState === COLLECTABLE_STATE.IN_PROGRESS) || (listingType == 'sale' && data.startTime && (data.startTime < new Date().getTime())))
+                    && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
+                    && collectableState !== COLLECTABLE_STATE.CLOSED
+                    && 'bg-black'"
+            >
                 <div>
-                    <div v-if="!data.startTime" class="mr-6">
+                    <div v-if="!data.startTime || (listingType === 'sale' && !itemsOf)" class="mr-6">
                         <div class="timer-helper-placeholder-container">
                             <div class="placeholder-light-grey text-placeholder"></div>
                         </div>
@@ -70,14 +97,43 @@
                             <div class="placeholder-light-grey text-placeholder"/>
                         </div>
                     </div>
-                    <div class="mr-6" v-if="data.timerState !== TIMER_STATE.DONE && (data.startTime > new Date().getTime())">
+                    <div class="mr-6" v-if="collectableState !== COLLECTABLE_STATE.DONE && ((data.startTime > new Date().getTime()) || (data.endTime > new Date().getTime() || (listingType === 'sale' && (listingType === 'sale' && itemsOf))))">
                         <progress-timer
-                            v-if="data.startTime"
+                            v-if="data.startTime && (listingType !== 'sale' || (data.startTime > new Date().getTime()))"
                             ref="timerRef"
+                            :whiteText="data.timerState === TIMER_STATE.IN_PROGRESS && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK"
                             :listingType="listingType"
                             :startDate="data.startTime"
+                            :endDate="data.endTime"
+                            @onProgress="updateProgress"
                             @onTimerStateChange="updateTimerState"
                         />
+                        <div v-if="listingType === 'sale' && data.startTime && (data.startTime < new Date().getTime())">
+                            <light-typography 
+                                textAlign="left"
+                                fontSize="14px"
+                                fontWeight="700"
+                                lineHeight="16px"
+                                paddingBottom="6px"
+                                :upperCase="true"
+                            >
+                                EDITIONS LEFT
+                            </light-typography>
+                            <sub-title
+                                class="lg:flex"
+                                :class="
+                                    collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
+                                    && collectableState !== COLLECTABLE_STATE.CLOSED
+                                    && 'text-white'
+                                "
+                                text-align="left"
+                                fontSize="24px"
+                                line-height="30px"
+                                :overflowEllipsis="true"
+                            >
+                                {{items}} of {{itemsOf}}
+                            </sub-title>
+                        </div>
                     </div>
                 </div>
                 <div>
@@ -102,6 +158,12 @@
                         <img src="@/assets/icons/ethereum-icon.svg"  class="mr-2" alt="Ethereum logo">
                         <sub-title
                             class="text-black hidden lg:flex"
+                            :class="
+                                (data.timerState === TIMER_STATE.IN_PROGRESS || (listingType == 'sale' && (data.startTime < new Date().getTime())))
+                                && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
+                                && collectableState !== COLLECTABLE_STATE.CLOSED
+                                && 'text-white'
+                            "
                             text-align="left"
                             font-size="24px"
                             line-height="30px"
@@ -124,30 +186,58 @@ import Tag from "@/components/PillsAndTags/Tag.vue";
 import SubTitle from "@/components/SubTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
-import Identicon from "@/components/Identicon/Identicon";
 import ProgressTimer from "@/components/Progress/v3/ProgressTimer";
+import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
+import UserOrArtistBadge from "@/components/PillsAndTags/UserOrArtistBadge.vue";
 
 import { shortenAddress } from "@/services/utils/index";
 
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 import { TIMER_STATE } from "@/hooks/v3/useTimer.js";
+import {
+    COLLECTABLE_STATE,
+} from "@/constants/Collectables.js";
 
 export default {
     name: "DropCardPreview",
     props: {
         mediaUrl: String,
-        creatorUsername: String,
-        creatorProfilePicture: String,
+        creatorUsername: {
+            type: [String, Boolean]
+        },
+        creatorProfilePicture: {
+            type: [String, Boolean]
+        },
         creatorAccount: String,
         titleText: String,
         tags: Array,
         tangibility: String,
-        price: String,
+        price: {
+            type: [Number, Boolean]
+        },
         priceType: String,
         listingType: String,
-        startTime: String,
+        startTime: {
+            type: [String, Number]
+        },
+        endTime: {
+            type: [String, Number]
+        },
         sticky: Boolean,
         autoMargins: Boolean,
+        updateProgress: Function,
+        progress: {
+            type: [Number, Boolean]
+        },
+        items: {
+            type: [Number]
+        },
+        itemsOf: {
+            type: [Number]
+        },
+        collectableState: String,
+        timerState: [String, null],
+        liveStatus: String,
     },
     methods: {
         updateTimerState(state) {
@@ -158,13 +248,16 @@ export default {
         SubTitle,
         LightTypography,
         MediaLoader,
-        Identicon,
+        UserOrArtistBadge,
         Tag,
         ProgressTimer,
+        LiveIndicator,
     },
     setup(props) {
 
         const { formatCrypto } = useExchangeRate();
+
+        console.log({props})
         
         const data = reactive({
             mediaUrl: false,
@@ -174,6 +267,7 @@ export default {
             creatorProfilePicture: props.creatorProfilePicture,
             tags: props.tags || [],
             tangibility: props.tangibility || "",
+            timerState: props.timerState || false,
         })
 
         watchEffect(() => {
@@ -199,8 +293,14 @@ export default {
             data.price = props.price;
             data.priceType = props.priceType;
             data.startTime = props.startTime;
+            data.endTime = props.endTime;
             data.listingType = props.listingType;
-            data.timerState = TIMER_STATE.WAITING;
+            if(!data.timerState) {
+                data.timerState = TIMER_STATE.WAITING;
+            }
+            if(props.timerState) {
+                data.timerState = props.timerState;
+            }
         })
 
         return {
@@ -208,6 +308,7 @@ export default {
             shortenAddress,
             formatCrypto,
             TIMER_STATE,
+            COLLECTABLE_STATE,
         }
 
     }
@@ -217,18 +318,28 @@ export default {
 <style lang="scss" scoped>
     .drop-card-container-border {
         // This class is just here for if we ever want to add a border that can support gradients
-        height: 514px;
+        height: 504px;
         width: 338px;
         background: #FFFFFF;
-        box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.2);
+        box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.4);
         border-radius: 10px;
+        position: relative;
+        transition: all 0.2s ease-out;
+        &:hover {
+            box-shadow: 0px 6px 30px rgba(142, 152, 160, 0.6);
+            transform: translateY(-2px);
+        }
+        &:active {
+            box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.3);
+            transform: translateY(2px);
+        }
     }
     .drop-card-preview-container {
-        height: 514px;
+        height: 504px;
         width: 338px;
         background: #FFFFFF;
-        box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.2);
         border-radius: 10px;
+        overflow: hidden;
     }
     .creation-step-sticky {
         position: sticky;
@@ -240,7 +351,6 @@ export default {
     }
     .drop-card-inner-padding-bottom {
         padding: 14px;
-        padding-top: 0px;
     }
     .drop-card-media-container {
         width: 310px;
@@ -307,9 +417,27 @@ export default {
         left: 10px;
         display: flex;
     }
-    .divider-line {
+    .status-container {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+    }
+    .divider-line-inactive {
         width: 100%;
         height: 2px;
         background-color: #DFE4E9;
+    }
+    .divider-line-awaiting-reserve {
+        width: 100%;
+        height: 3px;
+    }
+    .divider-line-active {
+        height: 3px;
+    }
+    .mini-progress-bar {
+        height: 100%;
+        float: right;
+        transition: all 0.2s ease-out;
     }
 </style>

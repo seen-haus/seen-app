@@ -6,7 +6,7 @@
           class="flex justify-start items-center text-xs font-bold"
           :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
       >
-        {{ is_closed ? (isAuction ? 'AUCTION CLOSED' : 'SALE CLOSED') : 'EDITION HAS BEEN SOLD'}}
+        {{ isAuction ? 'AUCTION ENDED' : 'SALE OVER'}}
       </div>
       <div
           v-else-if="!isAuction"
@@ -34,7 +34,7 @@
           :number-of-bids="isAuction ? numberOfBids : undefined"
       />
 
-      <template v-if="isCollectableActive && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
+      <template v-if="!isUpcomming && isCollectableActive && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
         <div class="outlined-input mt-5" :class="{
           invalid: hasError || isFieldInvalid,
           'light-mode-background': darkMode,
@@ -79,7 +79,7 @@
       <button class="button opensea mt-6" v-if="!isCollectableActive && nftTokenId" @click="viewOnOpenSea">
         Opensea
       </button>
-      <template v-else-if="isCollectableActive">
+      <template v-else-if="isCollectableActive && !isUpcomming">
         <div v-if="bidDisclaimers && bidDisclaimers.length > 0 && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" class="text-gray-400 text-sm py-2">
             <p style="width: calc(100%)">
               Please note:<br/>
@@ -180,10 +180,28 @@
       <button class="button primary mt-6" v-if="claimId !== null && isOpenEdition && isCurrentAccountEntitledToDigital" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
         Claim NFT
       </button>
+      <button class="button primary mt-6" v-if="isReadyForClosure && isAuction" @click="closeAuction">
+        {{`${winningAddress}`.toLowerCase() === `${account}`.toLowerCase() ? 'Claim NFT' : 'Close Auction'}}
+      </button>
+      <button class="button primary mt-6" v-if="isReadyForClosure && !isAuction" @click="closeSale">
+        Close Sale
+      </button>
     </div>
 
     <div class="bottom-part border-t p-8" :class="darkMode ? 'dark-mode-surface-darkened black-border' : 'light-mode-surface'">
       <template v-if="!isCollectableActive">
+        <!-- <progress-timer
+            v-if="!isAwaitingReserve"
+            ref="timerRef"
+            class="text-3xl mt-2"
+            :class="darkMode ? 'dark-mode-text' : 'text-black'"
+            :isAuction="isAuction"
+            :label="null"
+            :startDate="startsAt"
+            :endDate="endsAt"
+            @onProgress="updateProgress"
+            @onTimerStateChange="updateState"
+        /> -->
         <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold" v-if="isAuction">
           AUCTION ENDED
         </div>
@@ -345,7 +363,7 @@ import {useToast} from "primevue/usetoast";
 
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
-import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
+import ProgressTimer from "@/components/Progress/v3/ProgressTimer.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import numberHelper from "@/services/utils/numbers"
 import emitter from "@/services/utils/emitter";
@@ -355,7 +373,12 @@ import useDarkMode from '@/hooks/useDarkMode';
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 import useSigner from "@/hooks/useSigner";
 import useMarketContractEvents from "@/hooks/useMarketContractEvents";
-import {useSeenNFTContract, useV2OpenEditionContract} from "@/hooks/useContract";
+import {
+  useSeenNFTContract,
+  useV2OpenEditionContract,
+  useV3AuctionEnderContractNetworkReactive,
+  useV3SaleEnderContractNetworkReactive,
+} from "@/hooks/useContract";
 
 export default {
   name: "BidCard",
@@ -392,6 +415,8 @@ export default {
     requiresRegistration: Boolean,
     bidDisclaimers: [Array],
     overrideClaimLink: String,
+    isReadyForClosure: Boolean,
+    winningAddress: [Boolean, String],
   },
   computed: {
     isAwaitingReserve: function () {
@@ -406,7 +431,7 @@ export default {
   setup(props, ctx) {
     const toast = useToast();
     const store = useStore();
-    const {account} = useWeb3();
+    const {account, chainId} = useWeb3();
 
     const price = ref(props.price);
     const isAuction = ref(props.isAuction);
@@ -423,6 +448,16 @@ export default {
     const balance = computed(() => store.getters['application/balance'].eth);
     const user = computed(() => store.getters['user/user']);
     const { darkMode } = useDarkMode();
+
+    const data = reactive({
+      endTime: false,
+    })
+
+    watchEffect(() => {
+      console.log({'props.winningAddress': props.winningAddress})
+      data.endTime = props.endsAt;
+      data.winningAddress = props.winningAddress;
+    })
 
     const form = useForm({
       initialValues: {
@@ -537,6 +572,8 @@ export default {
     const {
       bid,
       buy,
+      closeAuctionV3,
+      closeSaleV3,
       initializeContractEvents,
     } = useMarketContractEvents();
 
@@ -723,7 +760,8 @@ export default {
       currentProgress.value = event;
     };
 
-    const updateState = function () {
+    const updateState = function (state) {
+      console.log({state})
       ctx.emit('updateState');
     }
 
@@ -757,13 +795,29 @@ export default {
     const viewOnOpenSea = () => {
       let nftAddress = collectableData.value.nft_contract_address
       let nftTokenId = collectableData.value.nft_token_id
-      window.open(`https://opensea.io/assets/${nftAddress}/${nftTokenId}`, '_blank').focus()
+      let url = `https://opensea.io/assets/${nftAddress}/${nftTokenId}`;
+      if(Number(chainId.value) > 0) {
+        url = `https://testnets.opensea.io/assets/${nftAddress}/${nftTokenId}`;
+      }
+      window.open(url, '_blank').focus()
     }
 
     const viewOverrideClaimLink = () => {
       window.open(props.overrideClaimLink, '_blank').focus()
     }
 
+    const closeSale = async () => {
+      if(account?.value && ((Number(props.collectableConsignmentId) === 0) || (Number(props.collectableConsignmentId) > 0))) {
+        await closeSaleV3(props.collectableConsignmentId)
+      }
+    }
+
+    const closeAuction = async () => {
+      if(account?.value && ((Number(props.collectableConsignmentId) === 0) || (Number(props.collectableConsignmentId) > 0))) {
+        await closeAuctionV3(props.collectableConsignmentId);
+      }
+    }
+    
     const isNumber = (value) => {
       return numberHelper.isNumber(value)
     }
@@ -811,6 +865,8 @@ export default {
       nftTokenId: collectableData.value.nft_token_id,
       showNotificationButton,
       openNotificationsModal,
+      closeSale,
+      closeAuction,
     };
   },
 };

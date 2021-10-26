@@ -6,13 +6,20 @@ import {
     useV1NftContract,
     useV2AuctionContract,
     useV2OpenEditionContract,
+    useV3NftContractNetworkReactive,
+    useV3TicketerContractNetworkReactive,
+    useV3MarketClerkContractNetworkReactive,
+    useV3MarketConfigContractNetworkReactive,
     useV3AuctionRunnerContractNetworkReactive,
     useV3AuctionBuilderContractNetworkReactive,
+    useV3AuctionEnderContractNetworkReactive,
     useV3SaleRunnerContractNetworkReactive,
     useV3SaleBuilderContractNetworkReactive,
+    useV3SaleEnderContractNetworkReactive,
 } from "@/hooks/useContract";
 import {computed, ref, onBeforeUnmount} from 'vue';
-import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
+import PURCHASE_TYPES from "@/constants/PurchaseTypes.js";
+import MARKET_TYPES from "@/constants/MarketTypes.js";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 import {Web3Provider} from "@ethersproject/providers";
 import parseError from "@/services/utils/parseError";
@@ -30,15 +37,22 @@ const useMarketContractEvents = () => {
     const endsAt = ref(0);
     const startsAt = ref(0);
     const minimumStartsAt = ref(0);
+    const isReadyForClosure = ref(false);
+    const isClosed = ref(false);
+    const isCancelled = ref(false);
+    const winningAddress = ref(false);
     const incomingBidSound = require("@/assets/sounds/bid_notification.mp3");
     let contract = null;
     let builderContract = null;
+    let enderContract = null;
+    let checkClosureStatusFn = ref(false);
 
-    const isAuction = computed(() => collectable.value.purchase_type === PURCHASE_TYPE.AUCTION);
+    const isAuction = computed(() => collectable.value.purchase_type === PURCHASE_TYPES.AUCTION);
     const version = computed(() => collectable.value ? collectable.value.version : '1.0');
     const isOpenEdition = computed(() => collectable.value.is_open_edition);
 
     const createNormalizedEvent = async (contractEvent, type) => {
+        console.log({contractEvent})
         const trx = await contractEvent.getTransaction();
         const blockNumber = await contractEvent.getBlock();
         const tx = trx.hash;
@@ -143,9 +157,12 @@ const useMarketContractEvents = () => {
                     const auctionBuilderContractRaw = await useV3AuctionBuilderContractNetworkReactive();
                     builderContract = auctionBuilderContractRaw.state.contract;
 
+                    const auctionEnderContractRaw = await useV3AuctionEnderContractNetworkReactive();
+                    enderContract = auctionEnderContractRaw.state.contract;
+
                     let auction = await builderContract.getAuction(consignmentId)
                     let parsedStartTime = parseInt(auction.start);
-                    if(auction.state === 0) {
+                    if(Number(auction.state) === 0) {
                         // Auction pending (i.e. hasn't started yet)
                         collectable.value.ends_at = null
                         endsAt.value = null
@@ -158,15 +175,54 @@ const useMarketContractEvents = () => {
                         }
                     } else if(auction.duration) {
                         // Auction has started, derive ending
-                        collectable.value.ends_at = new Date((parseInt(auction.start) + parseInt(auction.duration)) * 1000)
-                        endsAt.value = new Date((parseInt(auction.start) + parseInt(auction.duration)) * 1000)
+                        winningAddress.value = auction.buyer;
+                        collectable.value.starts_at = new Date(parsedStartTime * 1000)
+                        startsAt.value = new Date(parsedStartTime * 1000)
+                        let endsAtMilliseconds = (parseInt(auction.start) + parseInt(auction.duration)) * 1000;
+                        collectable.value.ends_at = new Date(endsAtMilliseconds)
+                        endsAt.value = new Date(endsAtMilliseconds)
+                        if((endsAtMilliseconds < new Date().getTime()) && (Number(auction.state) === 1)) {
+                            isReadyForClosure.value = true;
+                        } else if(Number(auction.state) === 2) {
+                            isClosed.value = true;
+                        }
+                        if(Number(auction.outcome) === 2) {
+                            isCancelled.value = true;
+                        }
                     }
+
+                    const checkClosureStatus = async (consignmentId) => {
+                        console.log({consignmentId})
+                        let auction = await builderContract.getAuction(consignmentId)
+                        console.log({auction})
+                        let parsedStartTime = parseInt(auction.start);
+                        if(auction.duration) {
+                            // Auction has started, derive ending
+                            collectable.value.starts_at = new Date(parsedStartTime * 1000)
+                            startsAt.value = new Date(parsedStartTime * 1000)
+                            let endsAtMilliseconds = (parseInt(auction.start) + parseInt(auction.duration)) * 1000;
+                            collectable.value.ends_at = new Date(endsAtMilliseconds)
+                            endsAt.value = new Date(endsAtMilliseconds)
+                            if((endsAtMilliseconds < new Date().getTime()) && (Number(auction.state) === 1)) {
+                                isReadyForClosure.value = true;
+                            } else if(Number(auction.state) === 2) {
+                                isClosed.value = true;
+                            }
+                            if(Number(auction.outcome) === 2) {
+                                isCancelled.value = true;
+                            }
+                        }
+                    }
+
+                    checkClosureStatusFn.value = checkClosureStatus;
 
                     let filter = contract.filters.BidAccepted(consignmentId, null, null);
                     // BidAccepted(_consignmentId, auction.buyer, auction.bid);
                     await contract.on(filter, async (consignmentId, fromAddress, amount, evt) => {
                         const event = await createNormalizedEvent(evt, 'bid-v3');
                         let auction = await builderContract.getAuction(consignmentId)
+                        winningAddress.value = auction.buyer;
+                        console.log({auction})
                         let parsedStartTime = parseInt(auction.start);
                         if(auction.duration) {
                             // Auction has started, derive ending
@@ -174,6 +230,7 @@ const useMarketContractEvents = () => {
                             endsAt.value = new Date((parseInt(auction.start) + parseInt(auction.duration)) * 1000)
                             collectable.value.starts_at = new Date(parsedStartTime * 1000)
                             startsAt.value = new Date(parsedStartTime * 1000)
+                            console.log({parsedStartTime, 'collectable.value.ends_at': collectable.value.ends_at, 'endsAt.value': endsAt.value, 'collectable.value.starts_at': collectable.value.starts_at, 'startsAt.value': startsAt.value})
                             let notification = new Audio(incomingBidSound)
                             notification.addEventListener("canplaythrough", () => {
                                 notification.play();
@@ -181,6 +238,18 @@ const useMarketContractEvents = () => {
                         }
                         mergeEvents(event);
                     });
+
+                    let endFilter = enderContract.filters.AuctionEnded(consignmentId, null);
+                    await enderContract.on(endFilter, async (consignmentId, outcome, evt) => {
+                        console.log("Runs end event")
+                        isClosed.value = true;
+                        isReadyForClosure.value = false;
+                        if(Number(outcome) === 2) {
+                            isCancelled.value = true;
+                        }
+                    });
+
+                    //event AuctionEnded(uint256 indexed consignmentId, SeenTypes.Outcome indexed outcome);
 
                     const bids = await contract.queryFilter(filter);
                     bids.forEach(async (bid) => {
@@ -258,12 +327,79 @@ const useMarketContractEvents = () => {
 
                 if(version.value === 3) {
 
+                    const saleBuilderContractRaw = await useV3SaleBuilderContractNetworkReactive();
+                    builderContract = saleBuilderContractRaw.state.contract;
+
+                    const saleEnderContractRaw = await useV3SaleEnderContractNetworkReactive();
+                    enderContract = saleEnderContractRaw.state.contract;
+
+                    const marketClerkContractRaw = await useV3MarketClerkContractNetworkReactive();
+                    let marketClerkContract = marketClerkContractRaw.state.contract;
+
+                    const checkClosureStatus = async (consignmentId) => {
+                        // Recheck closure status
+                        console.log({consignmentId})
+                        let sale = await builderContract.getSale(consignmentId);
+                        console.log({sale})
+                        if(sale) {
+                            if(Number(sale.state) === 2) {
+                                isClosed.value = true;
+                            }
+                            if(Number(sale.outcome) === 2) {
+                                isCancelled.value = true;
+                            } else if (Number(sale.outcome) === 0) {
+                                // Get consignment to derive if sale is ready to be closed
+                                let consignment = await marketClerkContract.getConsignment(consignmentId);
+                                if(Number(consignment.supply) === Number(consignment.releasedSupply)) {
+                                    isReadyForClosure.value = true;
+                                } else {
+                                    if(Number(consignment.market) === MARKET_TYPES.PRIMARY) {
+                                        // Check if this is a physical
+                                        const seenV3NFTContractRaw = await useV3NftContractNetworkReactive();
+                                        const seenV3NFTContract = seenV3NFTContractRaw.state.contract;
+
+                                        let isPhysical = await seenV3NFTContract.isPhysical(consignment.tokenId);
+
+                                        if(isPhysical) {
+                                            //check if the tickets issued = supply of sale
+                                            const marketConfigContractRaw = await useV3MarketConfigContractNetworkReactive();
+                                            let marketConfigContract = marketConfigContractRaw.state.contract;
+                                            let ticketer = await marketConfigContract.getEscrowTicketer(consignmentId);
+
+                                            // Get total claims issued via tickets
+                                            const ticketerContractRaw = await useV3TicketerContractNetworkReactive(false, ticketer);
+                                            const ticketerContract = ticketerContractRaw.state.contract;
+
+                                            let ticketClaimsIssued = await ticketerContract.getTicketClaimableCount(consignment.id);
+
+                                            if(Number(ticketClaimsIssued) === Number(consignment.releasedSupply)) {
+                                                isReadyForClosure.value = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    await checkClosureStatus(consignmentId);
+                    
                     let filter = contract.filters.Purchase(consignmentId, null, null);
 
-                    await contract.on(filter, async (consignmentId, amount, fromAddress, evt) => {
+                    await contract.on(filter, async (consignmentId, fromAddress, amount, value, evt) => {
                         const event = await createNormalizedEvent(evt, 'buy-v3');
                         itemsBought.value = +(amount).toString();
                         mergeEvents(event);
+                        await checkClosureStatus(consignmentId);
+                    });
+
+                    let endFilter = enderContract.filters.SaleEnded(consignmentId, null);
+                    await enderContract.on(endFilter, async (consignmentId, outcome, evt) => {
+                        isClosed.value = true;
+                        isReadyForClosure.value = false;
+                        if(Number(outcome) === 2) {
+                            isCancelled.value = true;
+                        }
                     });
 
                     const buys = await contract.queryFilter(filter);
@@ -331,14 +467,19 @@ const useMarketContractEvents = () => {
             tx = await temporaryContract.bid({from: account.value.toString(), value: amount.toString(), gasPrice});
         }
         return tx.wait()
-            .then(() => {
-                toast.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Your bid was accepted.',
-                    life: 3000
-                });
-                return true;
+            .then((response) => {
+                if(response.status === 1) {
+                    toast.add({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'Your bid was accepted.',
+                        life: 3000
+                    });
+                    return true;
+                }else {
+                    toast.add({severity: 'error', summary: 'Error', detail: 'Transaction Reverted', life: 3000});
+                    return false;
+                }
             }).catch((e) => {
                 let message = parseError(e.message)
                 toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
@@ -394,14 +535,89 @@ const useMarketContractEvents = () => {
         }
 
         return tx.wait()
-            .then(() => {
-                toast.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'You have successfully bought the drop.',
-                    life: 3000
-                });
-                return true;
+            .then((response) => {
+                if(response.status === 1) {
+                    toast.add({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'You have successfully bought the drop.',
+                        life: 3000
+                    });
+                    return true;
+                }else {
+                    toast.add({severity: 'error', summary: 'Error', detail: 'Transaction Reverted', life: 3000});
+                    return false;
+                }
+            }).catch((e) => {
+                let message = parseError(e.message)
+                toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                return false;
+            })
+    };
+
+    const closeAuctionV3 = async (consignmentId) => {
+        if (consignmentId !== 0 && !consignmentId) return;
+
+        const auctionEnderContractRaw = await useV3AuctionEnderContractNetworkReactive(true);
+        let temporaryContract = auctionEnderContractRaw.state.contract;
+
+        const temporaryProvider = new Web3Provider(provider.value);
+        const gasPrice = await temporaryProvider.getGasPrice().catch((e) => {
+            toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 3000});
+        });
+
+        let tx = await temporaryContract.closeAuction(consignmentId, {from: account.value.toString(), gasPrice});
+        
+        return tx.wait()
+            .then((response) => {
+                if(response.status === 1) {
+                    toast.add({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'You have closed the auction.',
+                        life: 3000
+                    });
+                    isReadyForClosure.value = false;
+                    return true;
+                }else {
+                    toast.add({severity: 'error', summary: 'Error', detail: 'Transaction Reverted', life: 3000});
+                    return false;
+                }
+            }).catch((e) => {
+                let message = parseError(e.message)
+                toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                return false;
+            })
+    };
+
+    const closeSaleV3 = async (consignmentId) => {
+        if (consignmentId !== 0 && !consignmentId) return;
+
+        const saleEnderContractRaw = await useV3SaleEnderContractNetworkReactive(true);
+        let temporaryContract = saleEnderContractRaw.state.contract;
+
+        const temporaryProvider = new Web3Provider(provider.value);
+        const gasPrice = await temporaryProvider.getGasPrice().catch((e) => {
+            toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 3000});
+        });
+
+        let tx = await temporaryContract.closeSale(consignmentId, {from: account.value.toString(), gasPrice});
+        
+        return tx.wait()
+            .then((response) => {
+                if(response.status === 1) {
+                    toast.add({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'You have closed the sale.',
+                        life: 3000
+                    });
+                    isReadyForClosure.value = false;
+                    return true;
+                }else {
+                    toast.add({severity: 'error', summary: 'Error', detail: 'Transaction Reverted', life: 3000});
+                    return false;
+                }
             }).catch((e) => {
                 let message = parseError(e.message)
                 toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
@@ -416,6 +632,10 @@ const useMarketContractEvents = () => {
         if (builderContract) {
             builderContract.removeAllListeners();
         }
+        if (enderContract) {
+            console.log("ending end listener")
+            enderContract.removeAllListeners();
+        }
     });
 
     return {
@@ -425,9 +645,16 @@ const useMarketContractEvents = () => {
         endsAt,
         startsAt,
         minimumStartsAt,
+        isReadyForClosure,
+        isClosed,
+        isCancelled,
+        winningAddress,
+        checkClosureStatusFn,
         initializeContractEvents,
         bid,
         buy,
+        closeAuctionV3,
+        closeSaleV3,
     };
 }
 
