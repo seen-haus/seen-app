@@ -79,7 +79,7 @@ export default {
     const store = useStore();
 
     // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
+    store.dispatch("application/setDarkMode", true);
 
     const darkMode = computed(() => store.getters['application/darkMode']);
 

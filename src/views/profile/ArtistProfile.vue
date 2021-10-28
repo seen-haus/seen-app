@@ -106,7 +106,7 @@ export default {
     const backgroundImage = ref(false);
 
     // TODO: Make this into a DB datasource unless V3 no longer uses this
-    if(['0xmons'].indexOf(router?.currentRoute?.value?.params?.artistSlug) > -1) {
+    if(['0xmons', 'haydiroket', 'tengushee', 'desultor', 'cruelcoppinger', 'nostallergy', 'deathimself'].indexOf(router?.currentRoute?.value?.params?.artistSlug) > -1) {
       store.dispatch("application/setDarkMode", true);
       switch(router?.currentRoute?.value?.params?.artistSlug) {
         case '0xmons':
