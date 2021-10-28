@@ -155,6 +155,16 @@ export default function useContractEvents() {
                     supply.value = +(await contract.supply()).toString();
                 } else {
                     contract = useV2OpenEditionContract(contractAddress.value)
+                    let endTime = await contract.endTime()
+                    let startTime = await contract.start()
+                    if(startTime > 0) {
+                        collectable.value.starts_at = new Date(parseInt(startTime) * 1000)
+                        startsAt.value = new Date(parseInt(startTime) * 1000)
+                    }
+                    if(Number(endTime) > 0) {
+                        collectable.value.ends_at = new Date(parseInt(endTime) * 1000)
+                        endsAt.value = new Date(parseInt(endTime) * 1000)
+                    }
                     itemsBought.value = +(await contract.buyCount()).toString();
                 }
 
