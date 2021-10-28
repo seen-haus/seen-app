@@ -306,7 +306,7 @@
           <div v-if="isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
             EDITION(S) PURCHASED
           </div>
-          <div v-if="isOpenEdition" class="text-2.5xl font-bold pt-2">
+          <div v-if="isOpenEdition" :class="darkMode ? 'dark-mode-text' : 'text-black'" class="text-2.5xl font-bold pt-2">
             {{ itemsBought }}
           </div>
           <div v-if="isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold pt-4">
