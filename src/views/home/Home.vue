@@ -10,6 +10,10 @@
       :style="{ 'padding-bottom': '40%' }"
     ></div>
 
+    <container class="section-featured-auctions pt-20 lg:pt-24">
+      <img @click="navigateToCollection('halloween-2021')" style="background-color: #010101;" src="@/assets/images/halloween-2021.jpg" class="cursor-pointer p-6 lg:p-12 rounded-3xl" alt="SEEN">
+    </container>
+
     <container class="section-featured-auctions pb-24">
       <div class="flex items-center pb-12 pt-20 lg:py-24 flex-col lg:flex-row">
         <fenced-title
@@ -227,6 +231,15 @@ export default {
       }
     };
 
+    const navigateToCollection = function (slug) {
+      router.push({
+          name: 'collection',
+          params: {
+            collectionName: slug
+          }
+      });
+    }
+
     const paginatedArtists = useArtistsWithPagination();
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
 
@@ -238,6 +251,7 @@ export default {
       otherCollectables,
       listOfArtists,
       navigateToCollectable,
+      navigateToCollection,
       darkMode,
     };
   },
