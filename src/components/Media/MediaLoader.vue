@@ -295,7 +295,7 @@ export default {
 
     onMounted(() => {
       if (mediaType.value === "video") {
-        videoRef.value.addEventListener("canplaythrough", onLoadedCallback);
+        videoRef.value.addEventListener("canplay", onLoadedCallback);
         createObserver();
       }
       if (mediaType.value === "youtube") {
