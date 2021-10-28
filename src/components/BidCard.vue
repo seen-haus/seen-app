@@ -34,7 +34,7 @@
           :number-of-bids="isAuction ? numberOfBids : undefined"
       />
 
-      <template v-if="isCollectableActive && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
+      <template v-if="isCollectableActive && !isUpcomming && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
         <div class="outlined-input mt-5" :class="{ 
           invalid: hasError || isFieldInvalid,
           'light-mode-background': darkMode,
@@ -79,7 +79,7 @@
       <button class="button opensea mt-6" v-if="!isCollectableActive && nftTokenId" @click="viewOnOpenSea">
         Opensea
       </button>
-      <template v-else-if="isCollectableActive">
+      <template v-else-if="isCollectableActive && !isUpcomming">
         <div v-if="bidDisclaimers && bidDisclaimers.length > 0 && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" class="text-gray-400 text-sm py-2">
             <p style="width: calc(100%)">
               Please note:<br/>
@@ -89,14 +89,24 @@
             </p>
         </div>
         <template v-if="isOpenEdition && isCollectableActive">
-          <div class="text-gray-400 text-sm mb-4">
-            <p>
-              <strong>Please note:</strong> NFT(s) purchased in an open edition sale can only be claimed once the sale has ended. Please return to this area once the open edition has ended in order to claim your purchased NFT(s). This may take up to one hour after the timer has run out.
+          <div class="text-gray-400 flex text-sm py-2">
+            <input
+              class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
+              v-model="acceptPhysicalTermsField.value"
+              type="checkbox"
+              :placeholder="'Physical Terms'"
+            />
+            <p style="width: calc(100% - 30px)">
+              I accept that physical items associated with purchased NFTs can't be claimed after 31 days from the date of purchase. <span class="text-xs error-notice">* required</span>
             </p>
           </div>
+          <span class="error-notice">{{ acceptPhysicalTermsField.errors[0] }}</span>
         </template>
         <button class="button primary mt-1"
-                :class="{'cursor-wait disabled opacity-50': isSubmitting}"
+                :class="{
+                  'cursor-wait disabled opacity-50': isSubmitting,
+                  'disabled opacity-50': tangibility === 'tangible_nft' && !acceptPhysicalTermsField.value
+                }"
                 :disabled="isSubmitting" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
           <span v-if="!isSubmitting">{{ isAuction ? (`Place ${isAwaitingReserve ? 'reserve' : 'a'} bid`) : "Buy now" }}</span>
           <span v-else>Submitting...</span>
@@ -288,13 +298,13 @@
 
         <template v-else>
           <div v-if="!isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            EDITIONS LEFT
+            EDITION(S) LEFT
           </div>
           <div v-if="!isOpenEdition" class="text-2.5xl font-bold py-2" :class="darkMode && 'dark-mode-text'">
             {{ items }} out of {{ items_of }}
           </div>
           <div v-if="isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            EDITIONS PURCHASED
+            EDITION(S) PURCHASED
           </div>
           <div v-if="isOpenEdition" class="text-2.5xl font-bold pt-2">
             {{ itemsBought }}
@@ -417,6 +427,7 @@ export default {
 
     const showNotificationButton = computed(() => showNotificationButtonRef.value);
     const winner = computed(() => collectableData.value.winner_address);
+    const tangibility = computed(() => collectableData.value.type);
     const balance = computed(() => store.getters['application/balance'].eth);
     const darkMode = computed(() => store.getters['application/darkMode']);
     const user = computed(() => store.getters['user/user']);
@@ -435,6 +446,7 @@ export default {
     const lastNameField = reactive(useField("last name", "required|min:3"));
     const emailField = reactive(useField("email", "email"));
     const acceptTermsField = reactive(useField("terms and conditions", (val) => fieldValidatorAcceptTerms(val)));
+    const acceptPhysicalTermsField = reactive(useField("terms and conditions", (val) => fieldValidatorAcceptPhysicalTerms(val)));
 
     const isFieldInvalid = computed(() => {
       return isAuction.value ? auctionField.errors.length : saleField.errors.length
@@ -481,7 +493,7 @@ export default {
             isCurrentAccountEntitledToPhysical.value = false;
           }
         }
-      } else if(account?.value && !props.isOpenEdition && !isAuction?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
+      } else if(account?.value && !isAuction?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
         // Cover sale scenarios, show claim button when balance is positive
         let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
         let balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
@@ -490,17 +502,18 @@ export default {
         } else {
           isCurrentAccountEntitledToPhysical.value = false;
         }
-      } else if(account?.value && props.isOpenEdition && !props?.isCollectableActive) {
-        // Cover open edition claim scenarios, show claim button when balance is positive
-        let openEditionSaleContract = useV2OpenEditionContract(collectableData.value.contract_address);
-        let entitledBalanceOfCurrentAccount = await openEditionSaleContract.buyerToBuyCount(account.value);
-        console.log({entitledBalanceOfCurrentAccount})
-        if(parseInt(entitledBalanceOfCurrentAccount) > 0) {
-          isCurrentAccountEntitledToDigital.value = true;
-        } else {
-          isCurrentAccountEntitledToDigital.value = false;
-        }
       }
+      // else if(account?.value && props.isOpenEdition && !props?.isCollectableActive) {
+      //   // Cover open edition claim scenarios, show claim button when balance is positive
+      //   let openEditionSaleContract = useV2OpenEditionContract(collectableData.value.contract_address);
+      //   let entitledBalanceOfCurrentAccount = await openEditionSaleContract.buyerToBuyCount(account.value);
+      //   console.log({entitledBalanceOfCurrentAccount})
+      //   if(parseInt(entitledBalanceOfCurrentAccount) > 0) {
+      //     isCurrentAccountEntitledToDigital.value = true;
+      //   } else {
+      //     isCurrentAccountEntitledToDigital.value = false;
+      //   }
+      // }
     })
 
     const fieldValidatorAuction = (value) => {
@@ -527,6 +540,14 @@ export default {
         return true;
       } else {
         return 'Please accept the Terms and Conditions as well as the Privacy Policy to continue';
+      }
+    }
+
+    const fieldValidatorAcceptPhysicalTerms = (value) => {
+      if (value) {
+        return true;
+      } else {
+        return 'Please accept the terms regarding physical redemptions to continue';
       }
     }
 
@@ -794,6 +815,8 @@ export default {
       lastNameField,
       emailField,
       acceptTermsField,
+      acceptPhysicalTermsField,
+      tangibility,
       isFieldInvalid,
       viewOnOpenSea,
       viewOverrideClaimLink,

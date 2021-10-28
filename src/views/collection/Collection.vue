@@ -8,38 +8,9 @@
           textAlign="center"
           unshrinkable
           :closed="true"
-          ><img
-            src="@/assets/icons/icon-fire.svg"
-            class="cursor-pointer mr-2 inline-flex icon-fire -mt-1.5"
-            alt="SEEN"
-          />Drops
+          >
+          {{state.collectionName}}
         </fenced-title>
-      </div>
-
-      <div class="flex justify-start items-center">
-
-        <toggle
-          :value="filterExcludeEnded"
-          class="mr-8"
-          @onChange="handleExcludeEndedToggle($event)"
-        >
-          <span :class="darkMode ? 'dark-mode-text' : 'text-black'" class="font-bold">Exclude Ended</span>
-        </toggle>
-
-        <toggle
-          :value="filterAuctions"
-          class="mr-8"
-          @onChange="handleAuctionsToggle($event)"
-        >
-          <span :class="darkMode ? 'dark-mode-text' : 'text-black'" class="font-bold">Auctions</span>
-        </toggle>
-
-        <toggle
-          :value="filterEditions"
-          @onChange="handleEditionsToggle($event)"
-        >
-          <span :class="darkMode ? 'dark-mode-text' : 'text-black'" class="font-bold">Editions</span>
-        </toggle>
       </div>
 
       <div
@@ -75,10 +46,12 @@
 </template>
 
 <script>
-import { computed, reactive, ref } from "vue";
-import { useRouter } from "vue-router";
+import { computed, reactive, ref, watchEffect } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useMeta } from "vue-meta";
 import { useStore } from "vuex";
+
+import { slugToTitleCase } from "@/services/utils";
 
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
@@ -101,7 +74,7 @@ export default {
     QuoteCarousel,
     ArtistCard,
   },
-  setup() {
+  setup(props) {
 
     const store = useStore();
 
@@ -114,11 +87,22 @@ export default {
       title: "Drops",
     });
     const router = useRouter();
+    const route = useRoute();
+
+    const state = reactive({
+      collectionName: slugToTitleCase(route.params["collectionName"]),
+    });
+
+    watchEffect(() => {
+      if(route.params["collectionName"] !== state.collectionName) {
+        state.collectionName = slugToTitleCase(route.params["collectionName"]);
+      }
+    })
+
     const filterAuctions = ref(true);
     const filterEditions = ref(true);
-    const filterExcludeEnded = ref(false);
 
-    const paginatedCollectables = useDropsWithPagination();
+    const paginatedCollectables = useDropsWithPagination(null, 12, { collectionName: route.params["collectionName"] });
     const listOfCollectables = computed(
       () => paginatedCollectables.listOfCollectables.value
     );
@@ -141,12 +125,6 @@ export default {
       filterEditions.value = event;
       paginatedCollectables.filter(filterAuctions.value, filterEditions.value);
     }
-
-    const handleExcludeEndedToggle = (event) => {
-      filterExcludeEnded.value = event;
-      paginatedCollectables.filter(filterAuctions.value, filterEditions.value, {excludeEnded: event});
-    }
-
     const navigateToCollectable = function (slug, isSlugFullRoute) {
       if(isSlugFullRoute) {
         router.push({
@@ -161,13 +139,11 @@ export default {
     };
 
     return {
+      state,
       filterAuctions,
       filterEditions,
-      filterExcludeEnded,
-
       handleAuctionsToggle,
       handleEditionsToggle,
-      handleExcludeEndedToggle,
 
       listOfCollectables,
       hasMore,
