@@ -306,7 +306,16 @@ export default {
     const titleMonospace = ref(false);
 
     // TODO: Make this into a DB datasource unless V3 no longer uses this
-    if(['0xmons-mork'].indexOf(route.params["slug"]) > -1) {
+    if(
+      [
+      '0xmons-mork',
+      'crossover',
+      'virus',
+      'enkindle',
+      'eye-contact',
+      'face-off',
+      'nosferatus-mushroom-party',
+      ].indexOf(route.params["slug"]) > -1) {
       store.dispatch("application/setDarkMode", true);
       switch(route.params["slug"]) {
         case '0xmons-mork':
