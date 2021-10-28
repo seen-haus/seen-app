@@ -6,14 +6,14 @@ import { computed, reactive } from "vue";
 export default function useCollectablesWithPagination(purchaseType = 1) {
   const state = reactive({
     items: [null, null, null, null, null, null],
-    perPage: 6,
+    perPage: 9,
     page: 1,
     hasMore: false,
     filter: COLLECTABLE_TYPE.NONE,
   });
 
   async function load() {
-    state.perPage = 6;
+    state.perPage = 9;
     state.page = 1;
     state.hasMore = false;
 
