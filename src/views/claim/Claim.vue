@@ -351,14 +351,18 @@ export default {
               life: 10000,
             });
           })
-          .catch(() =>
-            toast.add({
-              severity: "error",
-              summary: "Error",
-              detail:
-                "Could not submit your details. Please try to enter them later.",
-              life: 3000,
-            })
+          .catch((e) => {
+              let message = e?.data?.message ? parseError(e?.data?.message) : e;
+              if(!message) {
+                message = "Could not submit your details. Please try to enter them later.";
+              }
+              toast.add({
+                severity: "error",
+                summary: "Error",
+                detail: message,
+                life: 10000,
+              })
+            }
           );
       } else {
         // toastr to login
