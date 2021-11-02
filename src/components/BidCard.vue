@@ -88,7 +88,7 @@
               </ul>
             </p>
         </div>
-        <template v-if="isOpenEdition && isCollectableActive">
+        <template v-if="isCollectableActive">
           <div class="text-gray-400 flex text-sm py-2">
             <input
               class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
