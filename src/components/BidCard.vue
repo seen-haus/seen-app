@@ -97,7 +97,7 @@
               :placeholder="'Physical Terms'"
             />
             <p style="width: calc(100% - 30px)">
-              I accept that physical items associated with purchased NFTs can't be claimed after 31 days from the date of purchase. <span class="text-xs error-notice">* required</span>
+              I accept that physical items associated with purchased NFTs are only claimable for 31 days from the date of purchase. <span class="text-xs error-notice">* required</span>
             </p>
           </div>
           <span class="error-notice">{{ acceptPhysicalTermsField.errors[0] }}</span>
