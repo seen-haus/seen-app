@@ -28,6 +28,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "collectableDropV2" */ '../views/collectable/Collectable.vue')
     },
     {
+        path: '/drops/secondary/:slug',
+        name: 'secondaryCollectableDropV3',
+        component: () => import(/* webpackChunkName: "secondaryCollectableDropV3" */ '../views/collectable/v3/SecondaryCollectable.vue')
+    },
+    {
         path: '/drops/:slug',
         name: 'collectableDropV3',
         component: () => import(/* webpackChunkName: "collectableDropV3" */ '../views/collectable/v3/Collectable.vue')

@@ -130,9 +130,6 @@
             Artist statement
           </div>
           <artist-card v-if="artist" class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
-          <div>
-            <secondary-listings :secondaryMarketListings="secondaryMarketListingsForRender" />
-          </div>
         </div>
 
         <div class="right-side col-span-5 mt-15">
@@ -237,7 +234,6 @@ import ArtistCard from "@/components/ArtistCard.vue";
 import BidCard from "@/components/BidCard.vue";
 import ListOfBuyers from "@/components/Lists/ListOfBuyers.vue";
 import HeroGallery from "@/components/Media/HeroGallery.vue";
-import SecondaryListings from "@/components/SecondaryListings.vue";
 import {CollectablesService} from "@/services/apiService";
 import {useToast} from "primevue/usetoast";
 
@@ -266,7 +262,6 @@ export default {
     HeroGallery,
     NftData,
     UnfencedTitle,
-    SecondaryListings,
   },
   methods: {
     getBackgroundImage(backgroundImage) {
@@ -283,7 +278,6 @@ export default {
       contractAddress: null,
       collectable: {},
       buyersVisible: 3,
-      secondaryMarketListings: [],
     });
     const store = useStore();
     const { chainId } = useWeb3();
@@ -334,7 +328,6 @@ export default {
       creatorAccount,
       creatorProfilePicture,
       creatorUsername,
-      secondaryMarketListings,
       // Methods
       updateProgress,
       setCollectable,
@@ -397,8 +390,6 @@ export default {
 
     const isLoading = computed(() => state.loading);
 
-    const secondaryMarketListingsForRender = computed(() => state.secondaryMarketListings);
-
     const showAdditionalInformation = computed(
         () => type.value === "tangible" || type.value === "tangible_nft"
     );
@@ -432,27 +423,20 @@ export default {
     (async function loadCollectable() {
       state.loading = true;
       const slug = route.params["slug"];
-      const {data} = await CollectablesService.show(slug);
+      const {data} = await CollectablesService.showSecondary(slug);
 
       // data.events.reverse(); // Right order
       // state.buyers.list = data.events;
+      console.log({data})
       state.loading = false;
-      state.collectable = data;
+      state.collectable = data.collectable;
       state.contractAddress = data.contract_address;
 
-      console.log({data, 'data.secondary_market_listings': data.secondary_market_listings})
+      let mergedSecondaryWithPrimary = mergePrimaryCollectableIntoSecondary(data.collectable, data);
 
-      if(data.secondary_market_listings && data.secondary_market_listings.length > 0) {
-        let secondaryMarketListings = [];
-        for(let secondaryMarketListing of data.secondary_market_listings) {
-          let mergedListing = mergePrimaryCollectableIntoSecondary(data, secondaryMarketListing);
-          console.log({mergedListing})
-          secondaryMarketListings.push(mergedListing)
-        }
-        state.secondaryMarketListings = secondaryMarketListings;
-      }
+      console.log({mergedSecondaryWithPrimary})
 
-      setCollectable(data);
+      setCollectable(mergedSecondaryWithPrimary);
       updateMeta();
     })();
 
@@ -525,7 +509,6 @@ export default {
       creatorAccount,
       creatorProfilePicture,
       creatorUsername,
-      secondaryMarketListingsForRender,
       // Methods
       updateProgress,
       viewOnEtherscan,

@@ -172,3 +172,10 @@ export function parseConsignmentRegisteredEventData(data) {
         data
     )
 }
+
+export function mergePrimaryCollectableIntoSecondary(primary, secondary) {
+    if(secondary.collectable) {
+        delete secondary.collectable;
+    }
+    return Object.assign({ ...primary }, secondary);
+}

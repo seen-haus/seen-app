@@ -12,11 +12,12 @@
         [ 
           'loading-indicator',
           (isLoading ? 'is-loading' : ''),
-          (darkMode ? 'dark-mode-surface' : 'bg-gray-100') 
+          (darkMode && !transparentBg && 'dark-mode-surface'),
+          (!darkMode && !transparentBg && 'bg-gray-100'),
         ].join(' ')
       "
     >
-      <i class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i>
+      <i v-if="isLoading" class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i>
     </div>
 
     <template v-if="mediaType === 'youtube'">
@@ -135,6 +136,10 @@ export default {
     declaredMediaType: {
       type: [String, Boolean, null],
       default: false,
+    },
+    transparentBg: {
+      type: [Boolean],
+      default: false,
     }
   },
   components: { PlayButton },
@@ -248,11 +253,12 @@ export default {
 
     function onLoadedCallback() {
       console.log({mediaType: mediaType.value})
+      isLoading.value = false;
+      console.log({isLoading})
       if (mediaType.value === "video") {
         if (!videoRef.value) return;
         //Video should now be loaded but we can add a second check
         if (videoRef.value.readyState >= 3) {
-          isLoading.value = false;
           videoRef.value.removeEventListener("loadeddata", onLoadedCallback);
           // P.S. I did not create this aspect ratio logic
           // just added a max of 100% because it breaks when it goes above that
@@ -270,7 +276,6 @@ export default {
       }
 
       if (mediaType.value === "image") {
-        isLoading.value = false;
         if (!imageRef.value) return;
         imageRef.value.removeEventListener("load", onLoadedCallback);
         // P.S. I did not create this aspect ratio logic
@@ -323,6 +328,7 @@ export default {
         isLoading.value = false;
       }
       if (mediaType.value === "image") {
+        console.log({imageRef})
         imageRef.value.addEventListener("load", onLoadedCallback);
       }
     });

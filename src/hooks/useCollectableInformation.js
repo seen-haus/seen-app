@@ -60,6 +60,16 @@ export default function useCollectableInformation(initialCollectable = {}) {
         let orderedMedia = orderBy(media.value, 'position', "asc")
         return orderedMedia[0].url || '';
     });
+    const firstMediaType = computed(() => { // Use preview image or first
+        if (!media.value) return '';
+        const found = media.value.find(v => v.is_preview);
+
+        if (found) {
+            return found?.type?.indexOf('image') > -1 ? 'image' : 'video';
+        }
+        let orderedMedia = orderBy(media.value, 'position', "asc")
+        return orderedMedia[0]?.type?.indexOf('image') > -1 ? 'image' : 'video';
+    });
     const gallerySortedMedia = computed(() => collectable.value.mediaSorted);
     const artist = computed(() => collectable.value.artist);
     const artistStatement = computed(() => collectable.value.artist_statement);
@@ -141,9 +151,13 @@ export default function useCollectableInformation(initialCollectable = {}) {
         }
     });
     const creatorAccount = computed(() => {
+        console.log({
+            'collectable.value.user': collectable.value.user,
+            'collectable.value?.artist': collectable.value?.artist
+        })
         if(collectable.value.user?.wallet) {
             return collectable.value.user.wallet;
-        } else if (collectable.value?.artist.wallet) {
+        } else if (collectable.value?.artist?.wallet) {
             return collectable.value.artist.wallet
         } else {
             return false;
@@ -166,6 +180,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
         } else {
             return false;
         }
+    })
+    const secondaryMarketListings = computed(() => {
+        return collectable.value?.secondary_market_listings || false;
     })
     
 
@@ -385,6 +402,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         type,
         media,
         firstMedia,
+        firstMediaType,
         gallerySortedMedia,
         artist,
         artistStatement,
@@ -420,6 +438,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         isClosed,
         isCancelled,
         winningAddress,
+        secondaryMarketListings,
         // Methods
         updateProgress,
         setCollectable,

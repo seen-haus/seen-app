@@ -84,6 +84,9 @@ export const CollectablesService = {
     show(slug) {
         return ApiService.get(`collectables/${slug}`);
     },
+    showSecondary(slug) {
+        return ApiService.get(`collectables/secondary/${slug}`);
+    },
     winner(contractAddress, payload) {
         return ApiService.post(`collectables/${contractAddress}/winner`, payload);
     },
