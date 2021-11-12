@@ -21,6 +21,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
         initializeContractEvents,
         supply,
         itemsBought,
+        hasRequestedVRF,
+        hasFulfilledVRF,
+        hasCommittedVRF,
         endsAt: updatedEndsAt,
         startsAt: updatedStartsAt,
         minimumStartsAt: updatedMinimumStartsAt,
@@ -109,6 +112,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     );
     const isUpcomming = computed(() => collectableState.value === COLLECTABLE_STATE.WAITING);
     const isOpenEdition = computed(() => collectable.value.is_open_edition);
+    const isVRFSale = computed(() => collectable.value.is_vrf_drop);
 
     const updateProgress = function (event) {
         progress.value = event;
@@ -231,6 +235,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
     let timeoutHandler = null;
     const enableContract = function () {
+        console.log("trying enable")
         if (collectable.value == null) return;
 
         const now = Date.now();
@@ -239,7 +244,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         endDate.setHours(endDate.getHours() + 6);
         const end = endDate.getTime();
         if(collectable.value.contract_address) {
-            if (((now >= start) && (now < end) && !is_sold_out.value) || (new Date(endsAt.value).getTime() === 0 && collectable.value.is_reserve_price_auction)) {
+            if (((now >= start) && (now < end) && !is_sold_out.value) || (collectable.value.is_vrf_drop && !collectable.value.is_closed) || (new Date(endsAt.value).getTime() === 0 && collectable.value.is_reserve_price_auction)) {
                 console.log('contract initialized');
                 initializeContractEvents(collectable.value);
             } else if (now < end && !is_sold_out.value) {
@@ -313,6 +318,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
         itemsBought,
         progress,
         isCollectableActive,
+        hasRequestedVRF,
+        hasFulfilledVRF,
+        hasCommittedVRF,
         // Static
         type,
         media,
@@ -341,6 +349,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         pillOverride,
         requiresRegistration,
         isOpenEdition,
+        isVRFSale,
         // Methods
         updateProgress,
         setCollectable,

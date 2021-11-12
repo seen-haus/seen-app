@@ -123,6 +123,10 @@
               :isAuction="isAuction"
               :numberOfBids="events.length"
               :isOpenEdition="isOpenEdition"
+              :isVRFSale="isVRFSale"
+              :hasRequestedVRF="hasRequestedVRF"
+              :hasFulfilledVRF="hasFulfilledVRF"
+              :hasCommittedVRF="hasCommittedVRF"
               :itemsBought="itemsBought"
               :edition="edition"
               :edition_of="edition_of"
@@ -270,7 +274,11 @@ export default {
       isCollectableActive,
       isUpcomming,
       isOpenEdition,
+      isVRFSale,
       itemsBought,
+      hasRequestedVRF,
+      hasFulfilledVRF,
+      hasCommittedVRF,
       // Static
       type,
       media,
@@ -463,6 +471,10 @@ export default {
       nextBidPrice,
       isOpenEdition,
       itemsBought,
+      isVRFSale,
+      hasRequestedVRF,
+      hasFulfilledVRF,
+      hasCommittedVRF,
       backgroundImage,
       darkMode,
       titleMonospace,

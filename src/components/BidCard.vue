@@ -76,8 +76,27 @@
           </p>
         </div>
       </template>
-      <button class="button opensea mt-6" v-if="!isCollectableActive && nftTokenId" @click="viewOnOpenSea">
+      <button class="button opensea mt-6" v-if="!isCollectableActive && nftTokenId && !isVRFSale" @click="viewOnOpenSea">
         Opensea
+      </button>
+      <button class="button primary mt-6" v-if="!isCollectableActive && isVRFSale && !hasRequestedVRF && !hasFulfilledVRF && !hasCommittedVRF && !isSubmittingRandomnessRequest && (itemsBought > 0)" @click="startRandomnessRequest">
+        Generate Chainlink Randomness
+      </button>
+      <button class="button disabled mt-6" v-if="!isCollectableActive && isVRFSale && (hasRequestedVRF || isSubmittingRandomnessRequest) && !hasFulfilledVRF && !hasCommittedVRF">
+        Awaiting Chainlink Response...
+      </button>
+      <span class="text-center text-gray-400 text-sm pt-2" v-if="!isCollectableActive && isVRFSale && (hasRequestedVRF || isSubmittingRandomnessRequest) && !hasFulfilledVRF && !hasCommittedVRF">This may take 5-10 minutes</span>
+      <button class="button primary mt-6" v-if="!isCollectableActive && isVRFSale && hasRequestedVRF && hasFulfilledVRF && !hasCommittedVRF && !isSubmittingRandomnessCommitment" @click="startRandomnessCommitment">
+        Commit Chainlink Randomness
+      </button>
+      <button class="button disabled mt-6" v-if="!isCollectableActive && isVRFSale && hasRequestedVRF && hasFulfilledVRF && !hasCommittedVRF && isSubmittingRandomnessCommitment">
+        Committing Chainlink Randomness...
+      </button>
+      <button class="button primary mt-6" v-if="!isCollectableActive && isVRFSale && hasRequestedVRF && hasFulfilledVRF && hasCommittedVRF && !isSubmittingClaimVRF && !isCurrentAccountEntitledToPhysical && isCurrentAccountEntitledToDigitalClaimVRF" @click="startClaimVRF">
+        Claim Tokens
+      </button>
+      <button class="button disabled primary mt-6" v-if="!isCollectableActive && isVRFSale && hasRequestedVRF && hasFulfilledVRF && hasCommittedVRF && isSubmittingClaimVRF">
+        Claiming Tokens...
       </button>
       <template v-else-if="isCollectableActive && !isUpcomming">
         <div v-if="bidDisclaimers && bidDisclaimers.length > 0 && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" class="text-gray-400 text-sm py-2">
@@ -198,8 +217,11 @@
           AUCTION ENDED
         </div>
         <div v-else>
-          <div v-if="!isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+          <div v-if="!isOpenEdition && !isVRFSale" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
             {{ is_closed ? 'CLOSED' : 'SOLD OUT (' + items_of + ' EDITIONS)'}}
+          </div>
+          <div v-if="isVRFSale" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
+            {{ is_closed ? 'CLOSED' : 'SOLD ' + itemsBought + ' EDITIONS'}}
           </div>
           <div v-if="isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
             {{ 'SOLD OUT (' + itemsBought + ' EDITIONS)' }}
@@ -309,12 +331,12 @@
           <div v-if="isOpenEdition" :class="darkMode ? 'dark-mode-text' : 'text-black'" class="text-2.5xl font-bold pt-2">
             {{ itemsBought }}
           </div>
-          <div v-if="isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold pt-4">
-            OPEN EDITION ENDS IN
+          <div v-if="isOpenEdition || isVRFSale" class="tracking-widest mr-4 text-gray-400 text-xs font-bold pt-4">
+            {{isVRFSale ? 'SALE ENDS IN' : 'OPEN EDITION ENDS IN'}}
           </div>
-          <progress-bar v-if="!isOpenEdition" :progress="progress" progressBackgroundColor="bg-gray-300" class="h-3 mt-3"/>
+          <progress-bar v-if="!isOpenEdition && !isVRFSale" :progress="progress" progressBackgroundColor="bg-gray-300" class="h-3 mt-3"/>
           <progress-timer
-              v-if="isOpenEdition"
+              v-if="isOpenEdition || isVRFSale"
               ref="timerRef"
               class="text-3xl mt-2"
               :class="darkMode ? 'dark-mode-text' : 'text-black'"
@@ -326,7 +348,7 @@
               @onTimerStateChange="updateState"
           />
           <progress-bar
-              v-if="isOpenEdition"
+              v-if="isOpenEdition || isVRFSale"
               :inversed="true"
               :progress="currentProgress"
               class="h-3 mt-3"
@@ -364,7 +386,7 @@ import useWeb3 from "@/connectors/hooks";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 import useSigner from "@/hooks/useSigner";
 import useContractEvents from "@/hooks/useContractEvents";
-import {useSeenNFTContract, useV2OpenEditionContract} from "@/hooks/useContract";
+import {useSeenNFTContract, useV2VRFSaleContract} from "@/hooks/useContract";
 
 export default {
   name: "BidCard",
@@ -380,6 +402,11 @@ export default {
 
     isOpenEdition: Boolean,
     itemsBought: Number,
+    
+    isVRFSale: Boolean,
+    hasRequestedVRF: Boolean,
+    hasFulfilledVRF: Boolean,
+    hasCommittedVRF: Boolean,
 
     edition: Number,
     edition_of: Number,
@@ -420,7 +447,11 @@ export default {
     const hasError = ref(null);
     const isRegisteredBidder = ref(false);
     const isSubmitting = ref(false);
+    const isSubmittingRandomnessRequest = ref(false);
+    const isSubmittingRandomnessCommitment = ref(false);
+    const isSubmittingClaimVRF = ref(false);
     const isCurrentAccountEntitledToPhysical = ref(false);
+    const isCurrentAccountEntitledToDigitalClaimVRF = ref(false);
     const isCurrentAccountEntitledToDigital = ref(false);
     const collectableData = ref(props.collectable);
     const showNotificationButtonRef = ref(false);
@@ -496,7 +527,16 @@ export default {
       } else if(account?.value && !isAuction?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
         // Cover sale scenarios, show claim button when balance is positive
         let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
-        let balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
+        let balanceOfCurrentAccount = 0;
+        if((collectableData.value.nft_token_id.indexOf("[") === 0) || collectableData.value.is_vrf_drop) {
+          let tokenIds = JSON.parse(collectableData.value.nft_token_id);
+          for(let tokenId of tokenIds) {
+            let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
+            balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
+          }
+        } else {
+          balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
+        }
         if(parseInt(balanceOfCurrentAccount) > 0) {
           isCurrentAccountEntitledToPhysical.value = true;
         } else {
@@ -514,6 +554,19 @@ export default {
       //     isCurrentAccountEntitledToDigital.value = false;
       //   }
       // }
+    })
+
+    watchEffect(async () => {
+      if(account?.value && !isAuction?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id && props.hasCommittedVRF) {
+        // Cover sale scenarios, show claim button when balance is positive
+        let vrfSaleContract = useV2VRFSaleContract(collectableData.value.contract_address);
+        let ticketCount = await vrfSaleContract.addressToTicketCount(account?.value);
+        if(parseInt(ticketCount) > 0) {
+          isCurrentAccountEntitledToDigitalClaimVRF.value = true;
+        } else {
+          isCurrentAccountEntitledToDigitalClaimVRF.value = false;
+        }
+      }
     })
 
     const fieldValidatorAuction = (value) => {
@@ -556,6 +609,9 @@ export default {
     const {
       bid,
       buy,
+      requestRandomness,
+      commitRandomness,
+      claimTokensSaleVRF,
       initializeContractEvents,
     } = useContractEvents();
 
@@ -671,6 +727,77 @@ export default {
       }
     };
 
+    const startRandomnessRequest = async () => {
+      try {
+        isSubmittingRandomnessRequest.value = true;
+        await requestRandomness()
+            .then(async () => {
+              isSubmittingRandomnessRequest.value = false;
+            }).catch(e => {
+              console.log({e})
+              toast.add({severity: 'error', summary: 'Error', detail: 'Error requesting randomness from Chainlink.', life: 5000});
+              isSubmittingRandomnessRequest.value = false;
+            });
+      } catch (e) {
+        isSubmittingRandomnessRequest.value = false;
+        console.error("Error requesting randomness from Chainlink", e);
+        toast.add({severity: 'error', summary: 'Error', detail: 'Error requesting randomness from Chainlink.', life: 5000});
+      }
+    };
+
+    const startRandomnessCommitment = async () => {
+      try {
+        isSubmittingRandomnessCommitment.value = true;
+        await commitRandomness()
+            .then(async () => {
+              isSubmittingRandomnessCommitment.value = false;
+            }).catch(e => {
+              console.log({e})
+              toast.add({severity: 'error', summary: 'Error', detail: 'Error committing randomness from Chainlink.', life: 5000});
+              isSubmittingRandomnessCommitment.value = false;
+            });
+      } catch (e) {
+        isSubmittingRandomnessCommitment.value = false;
+        console.error("Error requesting randomness from Chainlink", e);
+        toast.add({severity: 'error', summary: 'Error', detail: 'Error committing randomness from Chainlink.', life: 5000});
+      }
+    };
+
+    const startClaimVRF = async () => {
+      try {
+        isSubmittingClaimVRF.value = true;
+        await claimTokensSaleVRF()
+            .then(async () => {
+              isSubmittingClaimVRF.value = false;
+              if(account?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
+                // Cover sale scenarios, show claim button when balance is positive
+                let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
+                let balanceOfCurrentAccount = 0;
+                if((collectableData.value.nft_token_id.indexOf("[") === 0) || collectableData.value.is_vrf_drop) {
+                  let tokenIds = JSON.parse(collectableData.value.nft_token_id);
+                  for(let tokenId of tokenIds) {
+                    let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
+                    balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
+                  }
+                }
+                if(parseInt(balanceOfCurrentAccount) > 0) {
+                  isCurrentAccountEntitledToPhysical.value = true;
+                } else {
+                  isCurrentAccountEntitledToPhysical.value = false;
+                }
+              }
+            }).catch(e => {
+              console.log({e})
+              toast.add({severity: 'error', summary: 'Error', detail: 'Error claiming tokens.', life: 5000});
+              isSubmittingRandomnessRequest.value = false;
+            });
+      } catch (e) {
+        isSubmittingClaimVRF.value = false;
+        console.error("Error claiming VRF distributed tokens", e);
+        toast.add({severity: 'error', summary: 'Error', detail: 'Error claiming tokens.', life: 5000});
+      }
+    }
+
     const onBuy = async (event) => {
       try {
         const currentPrice = price.value;
@@ -687,7 +814,16 @@ export default {
               if(account?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
                 // Cover sale scenarios, show claim button when balance is positive
                 let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
-                let balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
+                let balanceOfCurrentAccount = 0;
+                if((collectableData.value.nft_token_id.indexOf("[") === 0) || collectableData.value.is_vrf_drop) {
+                  let tokenIds = JSON.parse(collectableData.value.nft_token_id);
+                  for(let tokenId of tokenIds) {
+                    let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
+                    balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
+                  }
+                } else {
+                  balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
+                }
                 if(parseInt(balanceOfCurrentAccount) > 0) {
                   isCurrentAccountEntitledToPhysical.value = true;
                 } else {
@@ -695,6 +831,7 @@ export default {
                 }
               }
             }).catch(e => {
+              console.log({e})
               toast.add({severity: 'error', summary: 'Error', detail: 'Error placing a buy order.', life: 3000});
               isSubmitting.value = false
             });
@@ -807,6 +944,8 @@ export default {
       currentBidValue,
       hasError,
       isSubmitting,
+      isSubmittingRandomnessRequest,
+      isSubmittingRandomnessCommitment,
       openWalletModal,
       hasEnoughFunds,
       auctionField,
@@ -828,10 +967,14 @@ export default {
       registerToBid,
       isCurrentAccountEntitledToPhysical,
       isCurrentAccountEntitledToDigital,
+      isCurrentAccountEntitledToDigitalClaimVRF,
       darkMode,
       nftTokenId: collectableData.value.nft_token_id,
       showNotificationButton,
       openNotificationsModal,
+      startRandomnessRequest,
+      startRandomnessCommitment,
+      startClaimVRF,
     };
   },
 };

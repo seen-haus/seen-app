@@ -1,7 +1,14 @@
 import useWeb3 from "@/connectors/hooks";
 import {formatEther, parseEther} from "@ethersproject/units";
 import {BigNumber} from "@ethersproject/bignumber";
-import {useV1AuctionContract, useV1NftContract, useV2AuctionContract, useV2OpenEditionContract} from "@/hooks/useContract";
+import {
+    useV1AuctionContract,
+    useV1NftContract,
+    useV2AuctionContract,
+    useV2OpenEditionContract,
+    useV2VRFSaleContract,
+    useRandomNumberConsumerContract,
+} from "@/hooks/useContract";
 import {computed, ref, onBeforeUnmount} from 'vue';
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
@@ -21,12 +28,17 @@ export default function useContractEvents() {
     const endsAt = ref(0);
     const startsAt = ref(0);
     const minimumStartsAt = ref(0);
+    const hasRequestedVRF = ref(false);
+    const hasFulfilledVRF = ref(false);
+    const hasCommittedVRF = ref(false);
     const incomingBidSound = require("@/assets/sounds/bid_notification.mp3");
     let contract = null;
+    let randomNumberConsumerContract = null;
 
     const isAuction = computed(() => collectable.value.purchase_type === PURCHASE_TYPE.AUCTION);
     const version = computed(() => collectable.value ? collectable.value.version : '1.0');
     const isOpenEdition = computed(() => collectable.value.is_open_edition);
+    const isVRFSale = computed(() => collectable.value.is_vrf_drop);
 
     const createNormalizedEvent = async (contractEvent, type) => {
         const trx = await contractEvent.getTransaction();
@@ -147,13 +159,7 @@ export default function useContractEvents() {
                 if (!contractAddress.value) {
                 return;
                 }
-                if(!isOpenEdition.value) {
-                    contract = version.value === 1
-                        ? useV1NftContract(contractAddress.value)
-                        : useV1NftContract(contractAddress.value);
-
-                    supply.value = +(await contract.supply()).toString();
-                } else {
+                if(isOpenEdition.value) {
                     contract = useV2OpenEditionContract(contractAddress.value)
                     let endTime = await contract.endTime()
                     let startTime = await contract.start()
@@ -166,6 +172,73 @@ export default function useContractEvents() {
                         endsAt.value = new Date(parseInt(endTime) * 1000)
                     }
                     itemsBought.value = +(await contract.buyCount()).toString();
+                }else if(isVRFSale.value) {
+                    contract = useV2VRFSaleContract(contractAddress.value)
+                    let endTime = await contract.end()
+                    let startTime = await contract.start()
+                    let randomnessRequestId = await contract.randomNumberRequestId();
+                    if(startTime > 0) {
+                        collectable.value.starts_at = new Date(parseInt(startTime) * 1000)
+                        startsAt.value = new Date(parseInt(startTime) * 1000)
+                    }
+                    if(Number(endTime) > 0) {
+                        collectable.value.ends_at = new Date(parseInt(endTime) * 1000)
+                        endsAt.value = new Date(parseInt(endTime) * 1000)
+                    }
+                    itemsBought.value = +(await contract.ticketId()).toString();
+
+                    // VRF events
+                    //hasRequestedVRF,hasCommittedVRF
+                    await contract.on("RequestedVRF", async () => {
+                        hasRequestedVRF.value = true;
+                        randomnessRequestId = await contract.randomNumberRequestId();
+                    });
+
+                    let randomNumberConsumerAddress = await contract.vrfProvider();
+                    randomNumberConsumerContract = useRandomNumberConsumerContract(randomNumberConsumerAddress);
+                    await randomNumberConsumerContract.on("FulfilledVRF", async (fulfilledRequestId) => {
+                        randomnessRequestId = await contract.randomNumberRequestId();
+                        if(fulfilledRequestId === randomnessRequestId) {
+                            hasRequestedVRF.value = true;
+                            hasFulfilledVRF.value = true;
+                        }
+                    });
+
+                    await contract.on("CommittedVRF", async () => {
+                        hasRequestedVRF.value = true;
+                        hasFulfilledVRF.value = true;
+                        hasCommittedVRF.value = true;
+                    });
+
+
+                    const vrfRequestedEvents = await contract.queryFilter("RequestedVRF");
+                    // There can only be one, so:
+                    for(let vrfRequestedEvent of vrfRequestedEvents) {
+
+                        hasRequestedVRF.value = true;
+
+                        randomnessRequestId = await contract.randomNumberRequestId();
+                        console.log({randomnessRequestId})
+                        let vrfFulfillmentFilter = randomNumberConsumerContract.filters.FulfilledVRF(randomnessRequestId, null);
+                        const vrfFulfilledEvents = await randomNumberConsumerContract.queryFilter(vrfFulfillmentFilter);
+                        // There can only be one, so:
+                        for(let vrfFulfilledEvent of vrfFulfilledEvents) {
+                            hasFulfilledVRF.value = true;
+
+                            const vrfCommittedEvents = await contract.queryFilter("CommittedVRF");
+                            // There can only be one, so:
+                            for(let vrfCommittedEvent of vrfCommittedEvents) {
+                                hasCommittedVRF.value = true;
+                            }
+                        }
+                    }
+                } else {
+                    contract = version.value === 1
+                        ? useV1NftContract(contractAddress.value)
+                        : useV1NftContract(contractAddress.value);
+
+                    supply.value = +(await contract.supply()).toString();
+                    
                 }
 
                 let start = await contract.start();
@@ -181,11 +254,13 @@ export default function useContractEvents() {
                     // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
                     // console.log(fromAddress, amount.toString(), evt)
                     const event = await createNormalizedEvent(evt, 'buy');
-                    if(!isOpenEdition.value) {
+                    if(isOpenEdition.value) {
+                        itemsBought.value = +(await contract.buyCount()).toString();
+                    } else if(isVRFSale.value) {
+                        itemsBought.value = +(await contract.ticketId()).toString();
+                    } else{
                         let remainingSupply = +(await contract.supply()).toString()
                         supply.value = remainingSupply;
-                    }else{
-                        itemsBought.value = +(await contract.buyCount()).toString();
                     }
                     mergeEvents(event);
                 });
@@ -280,9 +355,129 @@ export default function useContractEvents() {
             })
     };
 
+    const requestRandomness = async () => {
+        if (!contractAddress.value || !provider.value) return;
+        let vrfContract = useV2VRFSaleContract(contractAddress.value)
+
+        const temporaryProvider = new Web3Provider(provider.value);
+        const gasPrice = await temporaryProvider.getGasPrice()
+            .catch((e) => {
+                toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 3000});
+            });
+
+        let tx = await await vrfContract.initiateRandomDistribution({
+            gasPrice: gasPrice.toString(),
+            from: account.value
+        }).catch(e => {
+            let message = parseError(e.message)
+            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+        });
+
+        return tx.wait()
+            .then((response) => {
+                if(response.status === 1) {
+                    hasRequestedVRF.value = true;
+                    toast.add({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'You have successfully requested randomness from Chainlink.',
+                        life: 5000
+                    });
+                } else {
+                    toast.add({severity: 'error', summary: 'Error', detail: `Error requesting Chainlink randomness`, life: 3000});
+                }
+                return true;
+            }).catch((e) => {
+                let message = parseError(e.message)
+                toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                return false;
+            })
+    }
+
+    const commitRandomness = async () => {
+        if (!contractAddress.value || !provider.value) return;
+        let vrfContract = useV2VRFSaleContract(contractAddress.value)
+
+        const temporaryProvider = new Web3Provider(provider.value);
+        const gasPrice = await temporaryProvider.getGasPrice()
+            .catch((e) => {
+                toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 3000});
+            });
+
+        let tx = await await vrfContract.commitRandomDistribution({
+            gasPrice: gasPrice.toString(),
+            from: account.value
+        }).catch(e => {
+            let message = parseError(e.message)
+            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+        });
+
+        return tx.wait()
+            .then((response) => {
+                if(response.status === 1) {
+                    hasRequestedVRF.value = true;
+                    toast.add({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'You have successfully committed the randomness from Chainlink.',
+                        life: 5000
+                    });
+                } else {
+                    toast.add({severity: 'error', summary: 'Error', detail: `Error committing Chainlink randomness`, life: 3000});
+                }
+                return true;
+            }).catch((e) => {
+                let message = parseError(e.message)
+                toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                return false;
+            })
+    }
+
+    const claimTokensSaleVRF = async () => {
+        if (!contractAddress.value || !provider.value) return;
+        let vrfContract = useV2VRFSaleContract(contractAddress.value)
+
+        const temporaryProvider = new Web3Provider(provider.value);
+        const gasPrice = await temporaryProvider.getGasPrice()
+            .catch((e) => {
+                toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 3000});
+            });
+
+        let tx = await await vrfContract.claimAssigned({
+            gasPrice: gasPrice.toString(),
+            from: account.value
+        }).catch(e => {
+            let message = parseError(e.message)
+            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+        });
+
+        return tx.wait()
+            .then((response) => {
+                if(response.status === 1) {
+                    hasRequestedVRF.value = true;
+                    toast.add({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'You have successfully claimed your assigned tokens.',
+                        life: 5000
+                    });
+                } else {
+                    toast.add({severity: 'error', summary: 'Error', detail: `Error claiming assigned tokens`, life: 3000});
+                }
+                return true;
+            }).catch((e) => {
+                let message = parseError(e.message)
+                toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                return false;
+            })
+    }
+
     onBeforeUnmount(() => {
         if (contract) {
             contract.removeAllListeners();
+        }
+        if(randomNumberConsumerContract) {
+            randomNumberConsumerContract.removeAllListeners();
         }
     });
 
@@ -293,8 +488,14 @@ export default function useContractEvents() {
         endsAt,
         startsAt,
         minimumStartsAt,
+        hasRequestedVRF,
+        hasFulfilledVRF,
+        hasCommittedVRF,
         initializeContractEvents,
         bid,
         buy,
+        requestRandomness,
+        commitRandomness,
+        claimTokensSaleVRF,
     };
 }
