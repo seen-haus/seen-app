@@ -4,7 +4,7 @@
     <div
         class="title-text font-title lg:flex-shrink-0 flex-shrink"
         :style="{
-          'max-width': '100%',
+          'max-width': maxWidth ? maxWidth : '100%',
           'width': '100%',
           'text-align': alignment,
           'font-size': fontSize ? fontSize : '16px',
@@ -34,6 +34,7 @@ export default {
     marginBottom: String,
     paddingBottom: String,
     upperCase: Boolean,
+    maxWidth: String,
   },
   computed: {
     alignment: function () {

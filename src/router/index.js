@@ -101,7 +101,7 @@ const routes = [
     },
     {
         path: '/create',
-        name: 'selfCreateWithoutStep',
+        name: 'create',
         component: () => import(/* webpackChunkName: "SelfCreateWithoutStep" */ '../views/selfCreate/SelfCreate.vue')
     },
     {

@@ -222,6 +222,8 @@ import 'glightbox/dist/css/glightbox.css';
 import NftData from "@/views/collectable/components/NftData.vue";
 import SocialSharing from "@/components/SocialSharing";
 
+import useWeb3 from "@/connectors/hooks";
+
 export default {
   name: "Collectable",
   components: {
@@ -255,6 +257,8 @@ export default {
       buyersVisible: 3,
     });
     const store = useStore();
+
+    const { chainId } = useWeb3();
 
     const { darkMode, setDarkMode } = useDarkMode();
 
@@ -380,6 +384,9 @@ export default {
       let nftAddress = collectable.value.nft_contract_address
       let nftTokenId = collectable.value.nft_token_id
       let url = `https://opensea.io/assets/${nftAddress}/${nftTokenId}`;
+      if(Number(chainId.value) > 0) {
+        url = `https://testnets.opensea.io/assets/${nftAddress}/${nftTokenId}`;
+      }
       window.open(url, '_blank').focus()
     }
 

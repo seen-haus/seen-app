@@ -4,6 +4,25 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "uint256",
+        "name": "consignmentId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "customConsignmentFee",
+        "type": "uint16"
+      }
+    ],
+    "name": "ConsignmentFeeChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
         "internalType": "address",
         "name": "consignor",
         "type": "address"
@@ -22,6 +41,25 @@
       }
     ],
     "name": "ConsignmentMarketed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "consignmentId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "ConsignmentPendingPayoutSet",
     "type": "event"
   },
   {
@@ -85,6 +123,21 @@
             "internalType": "bool",
             "name": "released",
             "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "releasedSupply",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint16",
+            "name": "customFeePercentageBasisPoints",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint256",
+            "name": "pendingPayout",
+            "type": "uint256"
           }
         ],
         "indexed": false,
@@ -125,7 +178,7 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "consignmentId",
         "type": "uint256"
@@ -196,11 +249,45 @@
             "internalType": "bool",
             "name": "released",
             "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "releasedSupply",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint16",
+            "name": "customFeePercentageBasisPoints",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint256",
+            "name": "pendingPayout",
+            "type": "uint256"
           }
         ],
         "internalType": "struct SeenTypes.Consignment",
-        "name": "",
+        "name": "consignment",
         "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_consignmentId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getConsignor",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -227,7 +314,7 @@
         "type": "uint256"
       }
     ],
-    "name": "getSupply",
+    "name": "getUnreleasedSupply",
     "outputs": [
       {
         "internalType": "uint256",
@@ -239,27 +326,10 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_consignmentId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_account",
-        "type": "address"
-      }
-    ],
-    "name": "isConsignor",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
+    "inputs": [],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -284,27 +354,27 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "operator",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "from",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "uint256[]",
-        "name": "ids",
+        "name": "",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "values",
+        "name": "",
         "type": "uint256[]"
       },
       {
         "internalType": "bytes",
-        "name": "data",
+        "name": "",
         "type": "bytes"
       }
     ],
@@ -323,27 +393,27 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "operator",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "from",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "id",
+        "name": "",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "value",
+        "name": "",
         "type": "uint256"
       },
       {
         "internalType": "bytes",
-        "name": "data",
+        "name": "",
         "type": "bytes"
       }
     ],
@@ -362,22 +432,22 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "operator",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "from",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "",
         "type": "uint256"
       },
       {
         "internalType": "bytes",
-        "name": "data",
+        "name": "",
         "type": "bytes"
       }
     ],
@@ -473,10 +543,25 @@
             "internalType": "bool",
             "name": "released",
             "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "releasedSupply",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint16",
+            "name": "customFeePercentageBasisPoints",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint256",
+            "name": "pendingPayout",
+            "type": "uint256"
           }
         ],
         "internalType": "struct SeenTypes.Consignment",
-        "name": "",
+        "name": "consignment",
         "type": "tuple"
       }
     ],
@@ -502,6 +587,42 @@
       }
     ],
     "name": "releaseConsignment",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_consignmentId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_customFeePercentageBasisPoints",
+        "type": "uint16"
+      }
+    ],
+    "name": "setConsignmentCustomFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_consignmentId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "setConsignmentPendingPayout",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

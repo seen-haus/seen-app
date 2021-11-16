@@ -14,12 +14,16 @@ import SEEN_NFT_ABI from "@/constants/abis/SeenNFT.json"
 import DISTRIBUTION_ABI from "@/constants/abis/distributionABI.json"
 // V3
 import ACCESS_CONTROLLER_ABI from "@/constants/abis/v3/accessControllerABI.json"
-import SEEN_NFT_ABI_V3 from "@/constants/abis/v3/seenHausNFTABI"
 import SEEN_AUCTION_BUILDER_V3 from "@/constants/abis/v3/auctionBuilderABI"
 import SEEN_AUCTION_RUNNER_V3 from "@/constants/abis/v3/auctionRunnerABI"
+import SEEN_AUCTION_ENDER_V3 from "@/constants/abis/v3/auctionEnderABI"
 import SEEN_SALE_BUILDER_V3 from "@/constants/abis/v3/saleBuilderABI"
 import SEEN_SALE_RUNNER_V3 from "@/constants/abis/v3/saleRunnerABI"
+import SEEN_SALE_ENDER_V3 from "@/constants/abis/v3/saleEnderABI"
+import SEEN_NFT_ABI_V3 from "@/constants/abis/v3/seenHausNFTABI"
+import SEEN_TICKETER_ABI_V3 from "@/constants/abis/v3/ticketerABI"
 import SEEN_MARKET_CLERK_V3 from "@/constants/abis/v3/marketClerkABI"
+import SEEN_MARKET_CONFIG_V3 from "@/constants/abis/v3/marketConfigABI"
 import { 
     chainIdToAccessController,
     chainIdToSeenNFT,
@@ -89,14 +93,17 @@ export function useDistributionContract(withSignerIfPossible) {
     return useContract(contractAddress, DISTRIBUTION_ABI, withSignerIfPossible)
 }
 
-export function useAccessControllerContractNetworkReactive(withSignerIfPossible) {
-    const state = reactive({
-        contract: null,
-    });
+export const useAccessControllerContractNetworkReactive = async (withSignerIfPossible) => {
+    const state = reactive(
+        markRaw({
+            contract: null,
+        })
+    );
     const { provider } = useWeb3()
     let library = provider.value
-        ? new Web3Provider(provider.value)
-        : new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+        ? await new Web3Provider(provider.value)
+        : await new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+    await library['_networkPromise'];
     let chainId = library?._network?.chainId;
     let contractAddress = chainIdToAccessController(chainId);
     if(contractAddress) {
@@ -118,14 +125,17 @@ export function useAccessControllerContractNetworkReactive(withSignerIfPossible)
     }
 }
 
-export function useV3NftContractNetworkReactive(withSignerIfPossible) {
-    const state = reactive({
-        contract: null,
-    });
+export const useV3NftContractNetworkReactive = async (withSignerIfPossible) => {
+    const state = reactive(
+        markRaw({
+            contract: null,
+        })
+    );
     const { provider } = useWeb3()
     let library = provider.value
-        ? new Web3Provider(provider.value)
-        : new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+        ? await new Web3Provider(provider.value)
+        : await new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+    await library['_networkPromise'];
     let chainId = library?._network?.chainId;
     let contractAddress = chainIdToSeenNFT(chainId);
     if(contractAddress) {
@@ -148,9 +158,11 @@ export function useV3NftContractNetworkReactive(withSignerIfPossible) {
 }
 
 export const useV3AuctionBuilderContractNetworkReactive = async (withSignerIfPossible) => {
-    const state = reactive({
-        contract: null,
-    });
+    const state = reactive(
+        markRaw({
+            contract: null,
+        })
+    );
     const { provider } = await useWeb3()
     let library = provider.value
         ? await new Web3Provider(provider.value)
@@ -202,6 +214,38 @@ export const useV3AuctionRunnerContractNetworkReactive = async (withSignerIfPoss
         contractAddress = chainIdToMarketDiamond(chainId);
         if(contractAddress) {
             state.contract = useContract(contractAddress, SEEN_AUCTION_RUNNER_V3, withSignerIfPossible);
+        }
+    })
+    return {
+        state
+    }
+}
+
+export const useV3AuctionEnderContractNetworkReactive = async (withSignerIfPossible) => {
+    const state = reactive(
+        markRaw({
+            contract: null,
+        })
+    );
+    const { provider } = useWeb3()
+    let library = provider.value
+        ? await new Web3Provider(provider.value)
+        : await new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+    await library['_networkPromise'];
+    let chainId = library?._network?.chainId;
+    let contractAddress = chainIdToMarketDiamond(chainId);
+    if(contractAddress) {
+        state.contract = await useContract(contractAddress, SEEN_AUCTION_ENDER_V3, withSignerIfPossible);
+    }
+    watchEffect(async () => {
+        library = provider.value
+            ? await new Web3Provider(provider.value)
+            : await new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+        await library['_networkPromise'];
+        chainId = library?._network?.chainId;
+        contractAddress = chainIdToMarketDiamond(chainId);
+        if(contractAddress) {
+            state.contract = useContract(contractAddress, SEEN_AUCTION_ENDER_V3, withSignerIfPossible);
         }
     })
     return {
@@ -273,14 +317,49 @@ export const useV3SaleRunnerContractNetworkReactive = async (withSignerIfPossibl
     }
 }
 
-export function useV3MarketClerkContractNetworkReactive(withSignerIfPossible) {
-    const state = reactive({
-        contract: null,
-    });
+export const useV3SaleEnderContractNetworkReactive = async (withSignerIfPossible) => {
+    const state = reactive(
+        markRaw({
+            contract: null,
+        })
+    );
     const { provider } = useWeb3()
     let library = provider.value
-        ? new Web3Provider(provider.value)
-        : new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+        ? await new Web3Provider(provider.value)
+        : await new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+    await library['_networkPromise'];
+    let chainId = library?._network?.chainId;
+    let contractAddress = chainIdToMarketDiamond(chainId);
+    if(contractAddress) {
+        state.contract = await useContract(contractAddress, SEEN_SALE_ENDER_V3, withSignerIfPossible);
+    }
+    watchEffect(async () => {
+        library = provider.value
+            ? await new Web3Provider(provider.value)
+            : await new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+        await library['_networkPromise'];
+        chainId = library?._network?.chainId;
+        contractAddress = chainIdToMarketDiamond(chainId);
+        if(contractAddress) {
+            state.contract = useContract(contractAddress, SEEN_SALE_ENDER_V3, withSignerIfPossible);
+        }
+    })
+    return {
+        state
+    }
+}
+
+export const useV3MarketClerkContractNetworkReactive = async (withSignerIfPossible) => {
+    const state = reactive(
+        markRaw({
+            contract: null,
+        })
+    );
+    const { provider } = useWeb3()
+    let library = provider.value
+        ? await new Web3Provider(provider.value)
+        : await new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+    await library['_networkPromise'];
     let chainId = library?._network?.chainId;
     let contractAddress = chainIdToMarketDiamond(chainId);
     if(contractAddress) {
@@ -297,6 +376,64 @@ export function useV3MarketClerkContractNetworkReactive(withSignerIfPossible) {
             state.contract = useContract(contractAddress, SEEN_MARKET_CLERK_V3, withSignerIfPossible);
         }
     })
+    return {
+        state
+    }
+}
+
+export const useV3MarketConfigContractNetworkReactive = async (withSignerIfPossible) => {
+    const state = reactive(
+        markRaw({
+            contract: null,
+        })
+    );
+    const { provider } = useWeb3()
+    let library = provider.value
+        ? await new Web3Provider(provider.value)
+        : await new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+    await library['_networkPromise'];
+    let chainId = library?._network?.chainId;
+    let contractAddress = chainIdToMarketDiamond(chainId);
+    if(contractAddress) {
+        state.contract = useContract(contractAddress, SEEN_MARKET_CONFIG_V3, withSignerIfPossible);
+    }
+    watchEffect(async () => {
+        library = provider.value
+            ? await new Web3Provider(provider.value)
+            : await new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+        await library['_networkPromise'];
+        chainId = library?._network?.chainId;
+        contractAddress = chainIdToMarketDiamond(chainId);
+        if(contractAddress) {
+            state.contract = useContract(contractAddress, SEEN_MARKET_CONFIG_V3, withSignerIfPossible);
+        }
+    })
+    return {
+        state
+    }
+}
+
+export const useV3TicketerContractNetworkReactive = async (withSignerIfPossible, ticketerAddress) => {
+    const state = reactive(
+        markRaw({
+            contract: null,
+        })
+    );
+    if(ticketerAddress) {
+        const { provider } = useWeb3()
+        let library = provider.value
+            ? await new Web3Provider(provider.value)
+            : await new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+        await library['_networkPromise'];
+        state.contract = useContract(ticketerAddress, SEEN_TICKETER_ABI_V3, withSignerIfPossible);
+        watchEffect(async () => {
+            library = provider.value
+                ? await new Web3Provider(provider.value)
+                : await new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+            await library['_networkPromise'];
+            state.contract = useContract(ticketerAddress, SEEN_TICKETER_ABI_V3, withSignerIfPossible);
+        })
+    }
     return {
         state
     }

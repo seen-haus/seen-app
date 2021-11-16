@@ -144,16 +144,32 @@ export default {
       if (!tx) {
         return
       }
-      return tx
-        .wait()
-        .then(() => {
-          state.isAllowed = true
-          state.approving = false
-          toast.add({
-            severity: "success",
-            summary: "Success",
-            detail: "Approval was successful, now you can stake your seen by pressing STAKE.",
-            life: 3000
+
+      return tx.wait()
+          .then((response) => {
+            if(response.status === 1) {
+              state.isAllowed = true;
+              state.approving = false;
+              toast.add({
+                severity: 'success',
+                summary: 'Success',
+                detail: 'Approval was successful, now you can stake your seen by pressing STAKE.',
+                life: 3000
+              });
+            } else {
+              state.approving = false;
+              toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Approval was unsuccessful.',
+                life: 3000
+              });
+            }
+          }).catch((e) => {
+            let message = parseError(e.message)
+            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 6000});
+            console.error(e);
+            state.approving = false;
           })
         })
         .catch((e) => {
@@ -187,15 +203,32 @@ export default {
         state.depositing = false
         return
       }
-      return tx
-        .wait()
-        .then(() => {
-          state.number = 0
-          toast.add({
-            severity: "success",
-            summary: "Success",
-            detail: "You have successfully staked your SEEN.",
-            life: 3000
+      return tx.wait()
+          .then((response) => {
+            if(response.status === 1) {
+              state.number = 0;
+              toast.add({
+                severity: 'success',
+                summary: 'Success',
+                detail: 'You have successfully staked your SEEN.',
+                life: 3000
+              });
+              setTimeout(() => {
+                window.location.reload();
+                state.depositing = false;
+              }, 3000)
+            } else {
+              toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Staking was unsuccessful.',
+                life: 3000
+              });
+            }
+          }).catch((e) => {
+            state.depositing = false;
+            let message = parseError(e.message)
+            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 6000});
           })
           setTimeout(() => {
             window.location.reload()

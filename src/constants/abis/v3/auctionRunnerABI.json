@@ -7,25 +7,6 @@
         "internalType": "uint256",
         "name": "consignmentId",
         "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "enum SeenTypes.Outcome",
-        "name": "outcome",
-        "type": "uint8"
-      }
-    ],
-    "name": "AuctionEnded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "consignmentId",
-        "type": "uint256"
       }
     ],
     "name": "AuctionExtended",
@@ -79,7 +60,7 @@
         "type": "address"
       },
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "uint256",
         "name": "bid",
         "type": "uint256"
@@ -104,7 +85,7 @@
         "type": "address"
       },
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "uint256",
         "name": "bid",
         "type": "uint256"
@@ -207,19 +188,6 @@
         "internalType": "uint256",
         "name": "_consignmentId",
         "type": "uint256"
-      }
-    ],
-    "name": "cancelAuction",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_consignmentId",
-        "type": "uint256"
       },
       {
         "internalType": "enum SeenTypes.Audience",
@@ -228,19 +196,6 @@
       }
     ],
     "name": "changeAuctionAudience",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_consignmentId",
-        "type": "uint256"
-      }
-    ],
-    "name": "closeAuction",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -4,7 +4,7 @@ let globalTimer = null;
 let globalTimerListeners = [];
 
 function globalTimerTick() {
-    globalTimerListeners.forEach(callbackfn => callbackfn(Date.now()));
+    globalTimerListeners.forEach(callbackfn => callbackfn(new Date().setMilliseconds(0)));
 }
 
 function addListener(listener) {
@@ -62,12 +62,9 @@ export default function useTimer(callback) {
 
     function tick(now) {
         // Needs recalculation every tick because of ability to add more time
-        console.log('Ticks')
         let duration;
         let progress;
         let progressLeft;
-
-        console.log({now, 'state.startDate': state.startDate, 'state.endDate': state.endDate})
 
         if (now < state.startDate) {
             duration = state.startDate - now;
@@ -89,9 +86,12 @@ export default function useTimer(callback) {
             progress = duration - progressLeft;
         }
 
-        console.log({progressLeft})
+        console.log({'state.endDate': state.endDate})
+
+        console.log({progressLeft, progress, duration, now, 'state.startDate': state.startDate})
         
-        state.percentage = +(progress / duration).toFixed(2);
+        state.percentage = +(progress / duration).toFixed(4);
+        console.log({progressLeft})
         if (progressLeft <= 0 || (state.isAwaitingReserve && new Date().getTime() > state.startDate)) {
             timerState.value = TIMER_STATE.DONE;
             if(state.isAwaitingReserve) {
@@ -175,10 +175,18 @@ export default function useTimer(callback) {
     // Formatter
     function formatter(time) {
         const total = 0 | (time / 1000);
-        const seconds = Math.floor((total) % 60);
-        const minutes = Math.floor((total / 60) % 60);
+        let seconds = Math.floor((total) % 60);
+        let minutes = Math.floor((total / 60) % 60);
         const hours = Math.floor((total / (60 * 60)) % 24);
         const days = Math.floor(total / (60 * 60 * 24));
+
+        if(seconds < 10) {
+            seconds = `0${seconds}`
+        }
+
+        if(minutes < 10) {
+            minutes = `0${minutes}`
+        }
 
         if (days > 0 || hours > 24) {
             return `${days}d ${hours}h ${minutes}m`;

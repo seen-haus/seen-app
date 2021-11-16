@@ -10,12 +10,56 @@
       },
       {
         "indexed": true,
+        "internalType": "enum SeenTypes.Outcome",
+        "name": "outcome",
+        "type": "uint8"
+      }
+    ],
+    "name": "AuctionEnded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "consignmentId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
         "internalType": "enum SeenTypes.Audience",
         "name": "audience",
         "type": "uint8"
       }
     ],
     "name": "AudienceChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "consignmentId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "buyer",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "bid",
+        "type": "uint256"
+      }
+    ],
+    "name": "CanceledAuctionBidReturned",
     "type": "event"
   },
   {
@@ -80,37 +124,6 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "buyer",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "Purchase",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "consignmentId",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
         "name": "recipient",
         "type": "address"
       },
@@ -122,19 +135,6 @@
       }
     ],
     "name": "RoyaltyDisbursed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "consignmentId",
-        "type": "uint256"
-      }
-    ],
-    "name": "SaleStarted",
     "type": "event"
   },
   {
@@ -186,32 +186,9 @@
         "internalType": "uint256",
         "name": "_consignmentId",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
       }
     ],
-    "name": "buy",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_consignmentId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "enum SeenTypes.Audience",
-        "name": "_audience",
-        "type": "uint8"
-      }
-    ],
-    "name": "changeSaleAudience",
+    "name": "cancelAuction",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -224,7 +201,7 @@
         "type": "uint256"
       }
     ],
-    "name": "claimPendingPayout",
+    "name": "closeAuction",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

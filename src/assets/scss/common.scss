@@ -72,11 +72,47 @@
 }
 
 .bg-progress-bar-vibrant {
-  background-image: linear-gradient( 78.1deg,  rgba(177,14,236,1) 5.5%, rgba(255,19,15,1) 92.8% );
+  background-image: linear-gradient( 78.1deg, rgba(255,19,15,1) 5.5%, rgba(177,14,236,1) 92.8% );
 }
 
 .bg-green-progress-bar {
   background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgba(4,159,108,1) 0%, rgb(0, 224, 0) 90.1% );
+}
+
+.bg-progress-bar-blue {
+  background-image: linear-gradient( 78.1deg,  rgb(14, 92, 236) 5.5%, rgb(0, 89, 255) 92.8% );
+}
+
+.bg-progress-bar-green-vibrant {
+  background-image: radial-gradient(circle farthest-corner at 10% 20%, #3fff00 0%, #00cd00 90.1%);
+}
+
+.bg-progress-bar-green-gradient {
+  background-image: radial-gradient(circle farthest-corner at 10% 20%, #11998E 0%, #38EF7D 90.1%);
+}
+
+.absolute {
+  position: absolute;
+}
+
+.transform-horizontal-center {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.transform-vertical-center {
+  transform: translateY(-50%);
+}
+
+.text-green-gradient {
+  background: -webkit-linear-gradient(0deg, #11998e 1.74%, #38ef7d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #26c785;
+}
+
+.overflow-auto {
+  overflow: auto;
 }
 
 .bg-dark-blue {
@@ -322,6 +358,15 @@
   position: absolute;
   width: 100%;
   height: 100%;
+}
+
+.self-align-absolute-item {
+  transform: translateX(-50%);
+  left: 50%;
+}
+
+.max-width-none {
+  max-width: none;
 }
 
 @keyframes p-progress-spinner-color {

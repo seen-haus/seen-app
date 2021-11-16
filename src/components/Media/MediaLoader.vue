@@ -69,10 +69,10 @@
     </template>
 
     <template v-if="mediaType === 'image'">
-      <div class="absolute-full-width-and-height">
+      <div class="absolute-full-width-and-height overflow-hidden">
         <img
           ref="imageRef"
-          class="image absolute mx-auto h-full"
+          class="image absolute mx-auto h-full self-align-absolute-item max-width-none"
           :src="src"
           alt=""
           :style="`max-height: 100%;`"
@@ -131,6 +131,10 @@ export default {
     ignoreAspectRatioPadding: {
       type: Boolean,
       default: false,
+    },
+    declaredMediaType: {
+      type: [String, Boolean, null],
+      default: false,
     }
   },
   components: { PlayButton },
@@ -151,6 +155,9 @@ export default {
 
     const isPaused = computed(() => state.paused);
     const mediaType = computed(() => {
+      if(props.declaredMediaType) {
+        return props.declaredMediaType;
+      }
       if (overrideMediaType.value) {
         return overrideMediaType.value;
       }
@@ -240,6 +247,7 @@ export default {
     });
 
     function onLoadedCallback() {
+      console.log({mediaType: mediaType.value})
       if (mediaType.value === "video") {
         if (!videoRef.value) return;
         //Video should now be loaded but we can add a second check
@@ -305,8 +313,9 @@ export default {
     }
 
     onMounted(() => {
+      console.log({mediaType: mediaType.value})
       if (mediaType.value === "video") {
-        videoRef.value.addEventListener("canplaythrough", onLoadedCallback);
+        videoRef.value.addEventListener("canplay", onLoadedCallback);
         createObserver();
       }
       if (mediaType.value === "youtube") {
