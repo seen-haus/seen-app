@@ -1,17 +1,9 @@
 <template>
   <div class="stake-or-withdraw-card rounded-lg overflow-hidden shadow-lifted flex-1 flex bg-white">
     <div class="p-8 flex-1">
-      <div class="text-4xl font-title font-bold mb-6">
-        Distribution Pool
-      </div>
+      <div class="text-4xl font-title font-bold mb-6">Distribution Pool</div>
 
-      <button
-        class="button primary w-full text-xs"
-        @click="openWalletModal"
-        v-if="!account"
-      >
-        Connect Wallet
-      </button>
+      <button class="button primary w-full text-xs" @click="openWalletModal" v-if="!account">Connect Wallet</button>
       <button
         class="button primary w-full text-base font-bold"
         :class="{
@@ -23,13 +15,10 @@
       >
         {{ distributing ? "Distributing..." : "Distribute" }}
       </button>
-      <div
-        class="text-sm text-gray-400 my-2"
-        v-if="latestDistributionDate && latestDistributorUsernameOrAddress"
-      >
+      <div class="text-sm text-gray-400 my-2" v-if="latestDistributionDate && latestDistributorUsernameOrAddress">
         <a :href="latestDistributionTransactionEtherscanUrl" target="_blank">
           Last distributed
-          {{ 
+          {{
             latestDistributionDate.toLocaleString(undefined, {
               weekday: "short",
               month: "long",
@@ -38,34 +27,21 @@
               hour: "2-digit",
               minute: "2-digit"
             })
-          }}{{
-            " by " + latestDistributorUsernameOrAddress
-          }}
+          }}{{ " by " + latestDistributorUsernameOrAddress }}
         </a>
       </div>
     </div>
     <div class="bg-background-gray py-7 px-10 text-gray-400 text-2xs flex-1 flex flex-col">
       <div class="flex-1 text-xs font-bold uppercase mb-5">
         Distribution pool balance
-        <i
-          class="fas fa-info-circle"
-          v-tooltip="{ text: 'Staking pool balance' }"
-        ></i>
+        <i class="fas fa-info-circle" v-tooltip="{text: 'Staking pool balance'}"></i>
       </div>
       <div class="flex-1 mb-5 content-center text-2xl font-bold">
-        <img
-          src="@/assets/icons/icon--ethereum.svg"
-          class="mr-2 fill-current text-purple-700 inline"
-          alt="Ether"
-          s
-        />
+        <img src="@/assets/icons/icon--ethereum.svg" class="mr-2 fill-current text-purple-700 inline" alt="Ether" />
         {{ formatCrypto(distributionBalance).substr(0, 8) }}
       </div>
 
-      <div class="flex-1 text-sm font-medium">
-        Clicking "Distribute" will swap the balance of Ether in the Distribution
-        pool for SEEN and transfer it to the staking pool.
-      </div>
+      <div class="flex-1 text-sm font-medium">Clicking "Distribute" will swap the balance of Ether in the Distribution pool for SEEN and transfer it to the staking pool.</div>
     </div>
   </div>
 </template>
@@ -83,6 +59,7 @@ import parseError from "@/services/utils/parseError";
 import {UserService} from "@/services/apiService";
 import {shortenAddress} from "@/services/utils/index";
 import {getEtherscanLink} from "@/services/utils";
+import {formatEther} from "@ethersproject/units";
 
 export default {
   name: "DistributionCard",
@@ -92,9 +69,9 @@ export default {
     const {account, provider} = useWeb3();
     const {formatCrypto} = useExchangeRate();
     const {getDistributionEvents} = useDistributionContractEvents();
-    
+
     const distributing = ref(false);
-    const distributionBalance = ref(0.0);
+    const distributionBalance = ref("0.0");
     const distributionEnabled = computed(() => distributionBalance.value > 0);
     const latestDistributorUsernameOrAddress = ref(null);
     const latestDistributionDate = ref(null);
@@ -105,20 +82,17 @@ export default {
         return;
       }
 
-      const distributionAddress =
-        process.env.VUE_APP_DISTRIBUTION_CONTRACT_ADDRESS;
+      const distributionAddress = process.env.VUE_APP_DISTRIBUTION_CONTRACT_ADDRESS;
 
       const temporaryProvider = new Web3Provider(provider.value);
-      const balance = await temporaryProvider.getBalance(
-        distributionAddress
-      );
+      const balance = await temporaryProvider.getBalance(distributionAddress);
 
       if (!balance) {
         return;
       }
 
-      distributionBalance.value = balance.toNumber();
-    }
+      distributionBalance.value = formatEther(balance.toString());
+    };
 
     const loadLatestDistribution = async () => {
       const events = await getDistributionEvents();
@@ -130,10 +104,7 @@ export default {
       for (const event of events) {
         const transaction = await event.getTransaction();
 
-        if (
-          !latestDistributionBlockNumber ||
-          transaction.blockNumber > latestDistributionBlockNumber
-        ) {
+        if (!latestDistributionBlockNumber || transaction.blockNumber > latestDistributionBlockNumber) {
           latestDistributionBlockNumber = transaction.blockNumber;
           latestDistributionTransaction = transaction;
           latestDistributionEvent = event;
@@ -144,20 +115,13 @@ export default {
         return;
       }
 
-      const latestDistributionBlock = await latestDistributionEvent.getBlock(
-        latestDistributionBlockNumber
-      );
+      const latestDistributionBlock = await latestDistributionEvent.getBlock(latestDistributionBlockNumber);
+      const distributorData = UserService.get(latestDistributionTransaction.from.toLowerCase());
 
-      const distributorData = UserService.get(
-        latestDistributionTransaction.from.toLowerCase()
-      );
-
-      latestDistributionDate.value = new Date(
-        latestDistributionBlock.timestamp * 1000
-      );
+      latestDistributionDate.value = new Date(latestDistributionBlock.timestamp * 1000);
       latestDistributorUsernameOrAddress.value = distributorData?.data?.user?.username || shortenAddress(latestDistributionTransaction.from);
-      latestDistributionTransactionEtherscanUrl.value = getEtherscanLink(latestDistributionTransaction.chainId, latestDistributionTransaction.hash, 'transaction')
-    }
+      latestDistributionTransactionEtherscanUrl.value = getEtherscanLink(latestDistributionTransaction.chainId, latestDistributionTransaction.hash, "transaction");
+    };
 
     const distribute = async () => {
       if (distributing.value || !distributionEnabled.value) {
@@ -177,7 +141,7 @@ export default {
       });
 
       const contract = useDistributionContract(true);
-      const tx = await contract.swap({ gasPrice }).catch(e => {
+      const tx = await contract.swap({gasPrice}).catch((e) => {
         distributing.value = false;
 
         toast.add({
@@ -211,7 +175,7 @@ export default {
 
           distributing.value = false;
         })
-        .catch(e => {
+        .catch((e) => {
           distributing.value = false;
 
           toast.add({
