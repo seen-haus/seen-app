@@ -1,6 +1,6 @@
 <template>
   <div class="stake-or-withdraw-card rounded-lg overflow-hidden shadow-lifted flex-1 flex bg-white">
-    <div class="p-8 flex-1">
+    <div class="p-8 px-10 flex-1">
       <div class="text-4xl font-title font-bold mb-6">Distribution Pool</div>
 
       <button class="button primary w-full text-xs" @click="openWalletModal" v-if="!account">Connect Wallet</button>

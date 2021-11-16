@@ -1,7 +1,7 @@
 <template>
   <div class="relative">
-    <Chart v-if="shareOfThePool" type="doughnut" :data="chartData" :options="chartOptions" />
-    <div class="chart-staked absolute text-center">
+    <Chart ref="primeChart" v-if="shareOfThePool" type="doughnut" :data="chartData" :options="chartOptions" />
+    <div v-if="shareOfThePool" class="chart-staked absolute text-center">
       <span class="text-2xl font-black">{{ formatCrypto(shareOfThePool, true) }}%</span>
       <br />
       <span class="text-gray-400 text-xs font-bold uppercase">staked</span>
@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import {toRefs, ref} from "vue"
+import {watchEffect, ref} from "vue"
 import BigNumber from "bignumber.js"
 import useExchangeRate from "@/hooks/useExchangeRate"
 
@@ -21,10 +21,10 @@ export default {
     shareOfThePool: BigNumber
   },
   setup(props) {
-    const {shareOfThePool} = toRefs(props)
     const gradientOfChart = ref(null)
     const widthOfChart = ref(0)
     const heightOfChart = ref(0)
+    const primeChart = ref()
 
     const {formatCrypto} = useExchangeRate()
 
@@ -46,13 +46,17 @@ export default {
       return gradientOfChart.value
     }
 
-    const chartData = {
+    let chartData = {
       datasets: [
         {
-          data: [shareOfThePool.value + 1, 100 - shareOfThePool.value - 1],
+          data: [100 - props.shareOfThePool, props.shareOfThePool],
           hoverOffset: 4,
           backgroundColor: function (context) {
+            console.log({context})
             if (context.dataIndex === 0) {
+              return "#38EF7D"
+            }
+            if (context.dataIndex === 1) {
               return "blue"
             }
 
@@ -69,6 +73,19 @@ export default {
       ]
     }
 
+    watchEffect(() => {
+      if(props.shareOfThePool) {
+        if(props.shareOfThePool > 0) {
+          chartData.datasets[0].data = [100 - props.shareOfThePool, props.shareOfThePool];
+        } else {
+          chartData.datasets[0].data = [100];
+        }
+        if(primeChart.value) {
+          primeChart.value.reinit()
+        }
+      }
+    })
+
     const chartOptions = {
       cutout: 95,
       rotation: 85,
@@ -82,7 +99,8 @@ export default {
     return {
       chartData,
       chartOptions,
-      formatCrypto
+      formatCrypto,
+      primeChart
     }
   }
 }
@@ -90,8 +108,9 @@ export default {
 
 <style lang="scss" scoped>
 .chart-staked {
-  right: -5rem;
-  top: calc(50% - 5rem);
+  transform: translateX(-50%)translateY(-50%);
+  left: 50%;
+  top: calc(50% + 5px);
   background-color: #fff;
   border-radius: 1000px;
   width: 8rem;
