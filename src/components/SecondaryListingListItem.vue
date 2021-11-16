@@ -1,6 +1,7 @@
 <template>
   <secondary-market-listing-preview
     class="clickable"
+    @click="navigateToSecondaryListing(collectable.slug, collectable.version)"
     :autoMargins="true"
     :listingType="listingType"
     :startTime="getStartsAt"
@@ -27,6 +28,7 @@
 
 <script lang="ts">
 import {ref, watchEffect, computed} from "vue";
+import { useRouter } from "vue-router";
 import BigNumber from "bignumber.js";
 
 import SecondaryMarketListingPreview from "@/components/SecondaryMarketListingPreview/SecondaryMarketListingPreview.vue";
@@ -103,6 +105,8 @@ export default {
     // console.log('ProductCard', props.collectable);
     const mediaRef = ref(null);
     const timerRef = ref(null);
+
+    const router = useRouter();
 
     const titleMonospace = ref(false);
 
@@ -193,6 +197,15 @@ export default {
       overridePriceEth = responseEth.toNumber();
     })
 
+    const navigateToSecondaryListing = function (slug, version) {
+      if (version === 3) {
+        router.push({
+          name: "secondaryCollectableDropV3",
+          params: { slug: slug },
+        });
+      }
+    };
+
     return {
       autoplay,
       timerRef,
@@ -244,6 +257,7 @@ export default {
       pillOverride,
       darkMode,
       collectableActiveTextColor,
+      navigateToSecondaryListing,
     };
   },
 };

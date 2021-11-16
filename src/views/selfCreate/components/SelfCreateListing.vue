@@ -625,14 +625,20 @@ export default {
                         //     uint256 _perTxCap,
                         //     Audience _audience
                         // )
-                        tx = await useListingContract.createPrimarySale(props.nftConsignmentIdData, props.openingTimeUnixData, priceWei, props.unitData, audience);
+                        if(props.marketTypeData === 'secondary') {
+                            tx = await useListingContract.createSecondarySale(account?.value, props.nftTokenAddressData, props.nftTokenIdData, props.openingTimeUnixData, props.unitData, priceWei, props.unitData, audience);
+                        } else {
+                            tx = await useListingContract.createPrimarySale(props.nftConsignmentIdData, props.openingTimeUnixData, priceWei, props.unitData, audience);
+                        }
                     }
                     store.dispatch('application/setPendingTransactionHash', tx.hash)
                     tx.wait()
                         .then((response) => {
                             if(response.status === 1) {
-                                const consignmentId = Number(response.events[3].args.consignmentId);
-                                props.setNftConsignmentIdData(consignmentId);
+                                if(props.marketTypeData === 'secondary') {
+                                    const consignmentId = Number(response.events[3].args.consignmentId);
+                                    props.setNftConsignmentIdData(consignmentId);
+                                }
                                 toast.add({
                                     severity: 'success',
                                     summary: 'Success',
@@ -647,7 +653,8 @@ export default {
                                 throw new Error('Transaction Reverted');
                             }
                         }).catch((e) => {
-                            let message = parseError(e.message)
+                            let message = e?.message ? parseError(e.message) : e;
+                            console.error({error: e})
                             props.setIsMarketHandlerAssignedData(false);
                             toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
                             store.dispatch('application/closeModal')
@@ -655,6 +662,7 @@ export default {
                         })
                 } catch (e) {
                     let message = e?.message ? parseError(e.message) : e;
+                    console.error({error: e})
                     props.setIsMarketHandlerAssignedData(false);
                     toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
                     store.dispatch('application/closeModal')

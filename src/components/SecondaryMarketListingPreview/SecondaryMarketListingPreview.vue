@@ -8,21 +8,6 @@
     >
         <div class="drop-card-preview-container">
             <div class="drop-card-inner-padding-top">
-                <div class="drop-card-title mt-3 mb-3">
-                    <div v-if="!titleText" class="title-placeholder-container mt-4">
-                        <div class="placeholder-light-grey text-placeholder"></div>
-                    </div>
-                    <sub-title
-                        v-if="titleText"
-                        class="text-black hidden lg:flex"
-                        text-align="left"
-                        font-size="24px"
-                        line-height="30px"
-                        :overflowEllipsis="true"
-                    >
-                        {{data.titleText}}
-                    </sub-title>
-                </div>
                 <user-or-artist-badge
                     :creatorAccount="data.creatorAccount"
                     :creatorUsername="data.creatorUsername"

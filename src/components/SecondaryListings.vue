@@ -1,5 +1,5 @@
 <template>
-  <div v-for="secondaryMarketListing in secondaryMarketListings" :key="secondaryMarketListing.id">
+  <div v-for="(secondaryMarketListing) in secondaryMarketListings" :key="secondaryMarketListing.id">
     <secondary-listing-list-item :collectable="secondaryMarketListing" />
   </div>
 </template>

@@ -130,7 +130,10 @@
             Artist statement
           </div>
           <artist-card v-if="artist" class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
-          <div>
+          <div v-if="secondaryMarketListingsForRender?.length > 0" class="text-3xl font-title font-bold text-center mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
+            Secondary Market Listings
+          </div>
+          <div class="grid lg:grid-cols-2 grid-cols-1 gap-5">
             <secondary-listings :secondaryMarketListings="secondaryMarketListingsForRender" />
           </div>
         </div>

@@ -20,8 +20,11 @@
             >
               Mint and list a new NFT onto the SEEN.HAUS primary market
             </light-typography>
-            <button :disabled="invalid" @click="createNew" :class="'primary'" class="button mt-4 w-full">
-                CREATE NEW
+            <button v-if="isMinter" :disabled="invalid" @click="createNew" :class="'primary'" class="button mt-4 w-full">
+              CREATE NEW
+            </button>
+            <button v-if="!isMinter" :disabled="invalid" @click="requestAccess" :class="'primary'" class="button mt-4 w-full">
+              REQUEST ACCESS
             </button>
         </label>
       </div>
@@ -151,6 +154,9 @@ export default {
       setNftConsignmentIdData: Function,
       setMarketType: Function,
       setSecondaryBalance: Function,
+      setShowAccessRequestForm: Function,
+      isMinter: Boolean,
+      isSeller: Boolean,
     },
     methods: {
 
@@ -201,9 +207,14 @@ export default {
         props.setStep(1);
       }
 
+      const requestAccess = () => {
+       props.setShowAccessRequestForm(true);
+      }
+
       return {
         createNew,
         recoveryList,
+        requestAccess,
         listOfCollectables,
         showExistingNftsModal,
         isLoadingListOfCollectables,

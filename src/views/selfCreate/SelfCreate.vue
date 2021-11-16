@@ -37,14 +37,14 @@
             </div>
         </container>
     </div>
-    <div v-if="!processData.isMinter && !processData.isSeller && processData.hasCheckedRoles">
+    <div v-if="processData.showAccessRequestForm && processData.hasCheckedRoles">
         <container class="role-checking-loader-section flex-center pb-12">
             <div class="flex-col flex">
                 <AccessRequestForm />
             </div>
         </container>
     </div>
-    <div v-if="processData.isMinter && processData.isSeller && processData.hasCheckedRoles">
+    <div v-if="processData.hasCheckedRoles && !processData.showAccessRequestForm">
         <container class="pb-12" v-if="processData.currentStep < 5">
             <unfenced-title
                 class="text-black hidden lg:flex pb-6 pt-12"
@@ -84,6 +84,9 @@
                         :setNftConsignmentIdData="setNftConsignmentId"
                         :setMarketType="setMarketType"
                         :setSecondaryBalance="setSecondaryBalance"
+                        :setShowAccessRequestForm="setShowAccessRequestForm"
+                        :isMinter="processData.isMinter"
+                        :isSeller="processData.isSeller"
                     />
                 </div>
                 <div class="flex-grow" v-if="processData.currentStep === 1">
@@ -139,6 +142,8 @@
                         :latestProgressTick="processData.latestProgressTick"
                         :timerState="processData.timerState"
                         :liveStatus="processData.liveStatus"
+                        :isMinter="processData.isMinter"
+                        :isSeller="processData.isSeller"
                     />
                 </div>
                 <div class="flex-grow" v-if="processData.currentStep === 3">
@@ -177,9 +182,11 @@
                         :liveStatus="processData.liveStatus"
                         :marketTypeData="processData.marketType"
                         :secondaryBalanceData="processData.secondaryBalance"
+                        :isMinter="processData.isMinter"
+                        :isSeller="processData.isSeller"
                     />
                 </div>
-                <div class="flex-grow" v-if="processData.currentStep === 4 && processData.isMinter && processData.isSeller && processData.hasCheckedRoles">
+                <div class="flex-grow" v-if="processData.currentStep === 4 && processData.hasCheckedRoles">
                     <container class="publishing-loader-section flex-center pb-12">
                         <div class="flex-col flex">
                             <ProgressSpinner />
@@ -492,6 +499,9 @@ export default {
         },
         setSecondaryBalance(balance) {
             this.processData.secondaryBalance = balance;
+        },
+        setShowAccessRequestForm(status) {
+            this.processData.showAccessRequestForm = status;
         }
     },
     async setup() {
@@ -627,6 +637,7 @@ export default {
             liveStatus: false,
             secondaryBalance: false,
             marketType: 'primary',
+            showAccessRequestForm: false,
         })
 
         watchEffect(async () => {
@@ -805,6 +816,7 @@ export default {
                     processData.isSeller = hasSellerRole;
                     processData.isEscrowAgent = hasEscrowAgentRole;
                     processData.hasCheckedRoles = true;
+                    processData.showAccessRequestForm = false;
                 }
             } else if (!account?.value) {
                 processData.lastCheckedAccount = false;
