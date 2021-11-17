@@ -15,7 +15,7 @@
       >
         {{ distributing ? "Distributing..." : "Distribute" }}
       </button>
-      <div class="text-sm text-gray-400 my-2" v-if="latestDistributionDate && latestDistributorUsernameOrAddress">
+      <div class="text-sm text-gray-400 mt-6" v-if="latestDistributionDate && latestDistributorUsernameOrAddress">
         <a :href="latestDistributionTransactionEtherscanUrl" target="_blank">
           Last distributed
           {{
@@ -38,7 +38,7 @@
       </div>
       <div class="flex-1 mb-5 content-center text-2xl font-bold">
         <img src="@/assets/icons/icon--ethereum.svg" class="mr-2 fill-current text-purple-700 inline" alt="Ether" />
-        {{ formatCrypto(distributionBalance).substr(0, 8) }}
+        {{ formatCrypto(distributionBalance).substr(0, 8) }} ETH
       </div>
 
       <div class="flex-1 text-sm font-medium">Clicking "Distribute" will swap the balance of Ether in the Distribution pool for SEEN and transfer it to the staking pool.</div>
@@ -52,8 +52,7 @@ import {useStore} from "vuex";
 import {Web3Provider} from "@ethersproject/providers";
 import {useToast} from "primevue/usetoast";
 import useWeb3 from "@/connectors/hooks";
-import {useDistributionContract} from "@/hooks/useContract";
-import useDistributionContractEvents from "@/hooks/useDistributionContractEvents";
+import {useDistributionContractNetworkReactive} from "@/hooks/useContract";
 import useExchangeRate from "@/hooks/useExchangeRate";
 import parseError from "@/services/utils/parseError";
 import {UserService} from "@/services/apiService";
@@ -68,7 +67,6 @@ export default {
     const store = useStore();
     const {account, provider} = useWeb3();
     const {formatCrypto} = useExchangeRate();
-    const {getDistributionEvents} = useDistributionContractEvents();
 
     const distributing = ref(false);
     const distributionBalance = ref("0.0");
@@ -76,13 +74,15 @@ export default {
     const latestDistributorUsernameOrAddress = ref(null);
     const latestDistributionDate = ref(null);
     const latestDistributionTransactionEtherscanUrl = ref(null);
+    const distributionPoolContract = ref({});
 
     const loadLatestDistributionBalance = async () => {
-      if (!provider?.value) {
+
+      if (!provider?.value || !distributionPoolContract?.value?.contract?.address) {
         return;
       }
 
-      const distributionAddress = process.env.VUE_APP_DISTRIBUTION_CONTRACT_ADDRESS;
+      const distributionAddress = distributionPoolContract.value.contract.address;
 
       const temporaryProvider = new Web3Provider(provider.value);
       const balance = await temporaryProvider.getBalance(distributionAddress);
@@ -94,37 +94,45 @@ export default {
       distributionBalance.value = formatEther(balance.toString());
     };
 
+    watchEffect(async () => {
+        let contract = await useDistributionContractNetworkReactive();
+        distributionPoolContract.value = contract.state;
+    })
+
     const loadLatestDistribution = async () => {
-      const events = await getDistributionEvents();
+      if(distributionPoolContract.value) {
 
-      let latestDistributionBlockNumber = null;
-      let latestDistributionTransaction = null;
-      let latestDistributionEvent = null;
+        let events = await distributionPoolContract.value.contract.queryFilter("SwapForMinimum");
 
-      for (const event of events) {
-        const transaction = await event.getTransaction();
+        let latestDistributionBlockNumber = null;
+        let latestDistributionTransaction = null;
+        let latestDistributionEvent = null;
 
-        if (!latestDistributionBlockNumber || transaction.blockNumber > latestDistributionBlockNumber) {
-          latestDistributionBlockNumber = transaction.blockNumber;
-          latestDistributionTransaction = transaction;
-          latestDistributionEvent = event;
+        for (const event of events) {
+          const transaction = await event.getTransaction();
+
+          if (!latestDistributionBlockNumber || transaction.blockNumber > latestDistributionBlockNumber) {
+            latestDistributionBlockNumber = transaction.blockNumber;
+            latestDistributionTransaction = transaction;
+            latestDistributionEvent = event;
+          }
         }
+
+        if (!latestDistributionBlockNumber) {
+          return;
+        }
+
+        const latestDistributionBlock = await latestDistributionEvent.getBlock(latestDistributionBlockNumber);
+        const distributorData = UserService.get(latestDistributionTransaction.from.toLowerCase());
+
+        latestDistributionDate.value = new Date(latestDistributionBlock.timestamp * 1000);
+        latestDistributorUsernameOrAddress.value = distributorData?.data?.user?.username || shortenAddress(latestDistributionTransaction.from);
+        latestDistributionTransactionEtherscanUrl.value = getEtherscanLink(latestDistributionTransaction.chainId, latestDistributionTransaction.hash, "transaction");
       }
-
-      if (!latestDistributionBlockNumber) {
-        return;
-      }
-
-      const latestDistributionBlock = await latestDistributionEvent.getBlock(latestDistributionBlockNumber);
-      const distributorData = UserService.get(latestDistributionTransaction.from.toLowerCase());
-
-      latestDistributionDate.value = new Date(latestDistributionBlock.timestamp * 1000);
-      latestDistributorUsernameOrAddress.value = distributorData?.data?.user?.username || shortenAddress(latestDistributionTransaction.from);
-      latestDistributionTransactionEtherscanUrl.value = getEtherscanLink(latestDistributionTransaction.chainId, latestDistributionTransaction.hash, "transaction");
     };
 
     const distribute = async () => {
-      if (distributing.value || !distributionEnabled.value) {
+      if (distributing.value || !distributionEnabled.value || !distributionPoolContract?.value?.contract) {
         return;
       }
 
@@ -140,8 +148,7 @@ export default {
         });
       });
 
-      const contract = useDistributionContract(true);
-      const tx = await contract.swap({gasPrice}).catch((e) => {
+      const tx = await distributionPoolContract.value.contract.swap({gasPrice}).catch((e) => {
         distributing.value = false;
 
         toast.add({
@@ -192,7 +199,7 @@ export default {
     };
 
     watchEffect(() => {
-      if (!provider?.value) {
+      if (!provider?.value && !distributionPoolContract?.value?.contract) {
         return;
       }
 

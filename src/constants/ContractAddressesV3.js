@@ -33,3 +33,15 @@ export const chainIdToMarketDiamond = (chainId = false) => {
         }
     }
 }
+
+export const chainIdToDistributionPool = (chainId = false) => {
+    if(chainId) {
+        // Cast to number
+        let useChainId = Number(chainId);
+        if(useChainId === 1) {
+            return '0x1c436a02ea4C17522E656f730537D68f71fab92c';
+        } else if(useChainId === 4) {
+            return null;
+        }
+    }
+}

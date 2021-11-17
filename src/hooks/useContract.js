@@ -28,6 +28,7 @@ import {
     chainIdToAccessController,
     chainIdToSeenNFT,
     chainIdToMarketDiamond,
+    chainIdToDistributionPool,
 } from '@/constants/ContractAddressesV3.js'
 import {Web3Provider, WebSocketProvider} from "@ethersproject/providers"
 
@@ -87,10 +88,36 @@ export function useClaimContract(contractAddress, withSignerIfPossible) {
     return useContract(contractAddress, CLAIM_ABI, withSignerIfPossible);
 }
 
-export function useDistributionContract(withSignerIfPossible) {
-    const contractAddress = process.env.VUE_APP_DISTRIBUTION_CONTRACT_ADDRESS
-
-    return useContract(contractAddress, DISTRIBUTION_ABI, withSignerIfPossible)
+export const useDistributionContractNetworkReactive = async (withSignerIfPossible) => {
+    const state = reactive(
+        markRaw({
+            contract: null,
+        })
+    );
+    const { provider } = useWeb3()
+    let library = provider.value
+        ? await new Web3Provider(provider.value)
+        : await new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+    await library['_networkPromise'];
+    let chainId = library?._network?.chainId;
+    let contractAddress = chainIdToDistributionPool(chainId);
+    if(contractAddress) {
+        state.contract = useContract(contractAddress, DISTRIBUTION_ABI, withSignerIfPossible);
+    }
+    watchEffect(async () => {
+        library = provider.value
+            ? await new Web3Provider(provider.value)
+            : await new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+        await library['_networkPromise'];
+        chainId = library?._network?.chainId;
+        contractAddress = chainIdToDistributionPool(chainId);
+        if(contractAddress) {
+            state.contract = useContract(contractAddress, DISTRIBUTION_ABI, withSignerIfPossible);
+        }
+    })
+    return {
+        state
+    }
 }
 
 export const useAccessControllerContractNetworkReactive = async (withSignerIfPossible) => {

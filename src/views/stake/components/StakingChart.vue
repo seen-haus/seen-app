@@ -75,12 +75,19 @@ export default {
 
     watchEffect(() => {
       if(props.shareOfThePool) {
+        let triggerUpdate = false;
         if(props.shareOfThePool > 0) {
-          chartData.datasets[0].data = [100 - props.shareOfThePool, props.shareOfThePool];
+          if(JSON.stringify([100 - props.shareOfThePool, props.shareOfThePool]) !== JSON.stringify(chartData.datasets[0].data)) {
+            chartData.datasets[0].data = [100 - props.shareOfThePool, props.shareOfThePool];
+            triggerUpdate = true;
+          }
         } else {
-          chartData.datasets[0].data = [100];
+          if(JSON.stringify([100]) !== JSON.stringify(chartData.datasets[0].data)) {
+            chartData.datasets[0].data = [100];
+            triggerUpdate = true;
+          }
         }
-        if(primeChart.value) {
+        if(primeChart.value && triggerUpdate) {
           primeChart.value.reinit()
         }
       }
