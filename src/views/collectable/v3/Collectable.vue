@@ -85,7 +85,23 @@
     <div class="abstract-circles abstract-circles-1">
       <img src="@/assets/images/abstract-circles.svg" alt="">
     </div>
-    <container>
+    <container v-if="showSecondaryMarket" class="mb-8">
+      <sub-title
+        class="secondary-market-listing-back-button light-mode-text-washed disable-text-transform clickable lg:flex mb-1 mt-2 sm:mt-14"
+        text-align="left"
+        font-size="16px"
+        @click="() => setShowSecondaryMarket(false)"
+      >
+          <i class="fas fa-chevron-left mr-1"></i>Back To Primary Market Listing
+      </sub-title>
+      <div v-if="secondaryMarketListingsForRender?.length > 0" class="text-3xl font-title font-bold text-center mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
+        Secondary Market Listings
+      </div>
+      <div class="sm:mt-16">
+        <secondary-listings :secondaryMarketListings="secondaryMarketListingsForRender" />
+      </div>
+    </container>
+    <container v-if="!showSecondaryMarket">
       
       <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-12 md:mt-0">
         <div class="left-side col-span-7 pb-6">
@@ -130,14 +146,7 @@
             Artist statement
           </div>
           <artist-card v-if="artist" class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
-          <div v-if="secondaryMarketListingsForRender?.length > 0" class="text-3xl font-title font-bold text-center mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
-            Secondary Market Listings
-          </div>
-          <div class="grid lg:grid-cols-2 grid-cols-1 gap-5">
-            <secondary-listings :secondaryMarketListings="secondaryMarketListingsForRender" />
-          </div>
         </div>
-
         <div class="right-side col-span-5 mt-15">
           <bid-card
             :status="liveStatus"
@@ -168,7 +177,12 @@
             :winningAddress="winningAddress"
             @update-state="updateCollectableState"
           />
-
+          <div v-if="secondaryMarketListingsForRender?.length > 0" class="text-3xl font-title font-bold text-center mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
+            Secondary Market
+          </div>
+          <button v-if="secondaryMarketListingsForRender?.length > 0" @click="() => setShowSecondaryMarket(true)" class="button w-full primary mb-4">
+            View Secondary Listings
+          </button>
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
             {{ isAuction ? "Recent bids" : "Recent buys" }}
           </div>
@@ -229,6 +243,7 @@ import {useRoute} from "vue-router";
 import {useMeta} from "vue-meta";
 import {useStore} from "vuex";
 
+import SubTitle from "@/components/SubTitle.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
@@ -270,6 +285,7 @@ export default {
     NftData,
     UnfencedTitle,
     SecondaryListings,
+    SubTitle,
   },
   methods: {
     getBackgroundImage(backgroundImage) {
@@ -287,6 +303,7 @@ export default {
       collectable: {},
       buyersVisible: 3,
       secondaryMarketListings: [],
+      showSecondaryMarket: false,
     });
     const store = useStore();
     const { chainId } = useWeb3();
@@ -294,6 +311,10 @@ export default {
     const darkMode = computed(() => {
       return store.getters['application/darkMode']
     });
+
+    const setShowSecondaryMarket = (status) => {
+      state.showSecondaryMarket = status;
+    }
 
     const {
       collectable,
@@ -399,7 +420,7 @@ export default {
     });
 
     const isLoading = computed(() => state.loading);
-
+    const showSecondaryMarket = computed(() => state.showSecondaryMarket);
     const secondaryMarketListingsForRender = computed(() => state.secondaryMarketListings);
 
     const showAdditionalInformation = computed(
@@ -538,6 +559,8 @@ export default {
       updateCollectableState,
       claim,
       pillOverride,
+      showSecondaryMarket,
+      setShowSecondaryMarket,
     };
   },
 };

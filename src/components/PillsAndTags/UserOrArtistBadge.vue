@@ -20,6 +20,8 @@
 <script>
 import {computed, reactive} from 'vue';
 import { useRouter } from "vue-router";
+
+import { shortenAddress } from "@/services/utils/index";
 import Identicon from "@/components/Identicon/Identicon";
 import SubTitle from "@/components/SubTitle.vue";
 
@@ -65,6 +67,7 @@ export default {
             typeStyles,
             navigateToArtist,
             data,
+            shortenAddress,
         };
     }
 }

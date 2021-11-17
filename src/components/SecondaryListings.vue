@@ -1,6 +1,8 @@
 <template>
-  <div v-for="(secondaryMarketListing) in secondaryMarketListings" :key="secondaryMarketListing.id">
-    <secondary-listing-list-item :collectable="secondaryMarketListing" />
+  <div class="grid grid-cols-1 gap-5" :class="{'lg:grid-cols-1': secondaryMarketListings.length === 1, 'lg:grid-cols-2': secondaryMarketListings.length === 2, 'md:grid-cols-2 xl:grid-cols-3': secondaryMarketListings.length > 2}">
+    <div v-for="(secondaryMarketListing) in secondaryMarketListings" :key="secondaryMarketListing.id">
+      <secondary-listing-list-item :collectable="secondaryMarketListing" />
+    </div>
   </div>
 </template>
 

@@ -50,7 +50,7 @@
                     && collectableState !== COLLECTABLE_STATE.CLOSED
                     && 'bg-black'"
             >
-                <div class="secondary-listing-media-preview">
+                <div class="secondary-listing-media-preview mr-4">
                   <media-loader
                     :key="data.mediaUrl"
                     v-if="data.mediaUrl"
