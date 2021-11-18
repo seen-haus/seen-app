@@ -4,7 +4,7 @@
     <div v-if="shareOfThePool" class="chart-staked absolute text-center">
       <span class="text-2xl font-black">{{ formatCrypto(shareOfThePool, true) }}%</span>
       <br />
-      <span class="text-gray-400 text-xs font-bold uppercase">staked</span>
+      <span class="text-gray-400 text-xs font-bold uppercase">share</span>
     </div>
   </div>
 </template>
