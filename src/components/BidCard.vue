@@ -95,7 +95,7 @@
       <button class="button primary mt-6" v-if="!isCollectableActive && isVRFSale && hasRequestedVRF && hasFulfilledVRF && hasCommittedVRF && !isSubmittingClaimVRF && !isCurrentAccountEntitledToPhysical && isCurrentAccountEntitledToDigitalClaimVRF" @click="startClaimVRF">
         Claim Tokens
       </button>
-      <button class="button disabled primary mt-6" v-if="!isCollectableActive && isVRFSale && hasRequestedVRF && hasFulfilledVRF && hasCommittedVRF && isSubmittingClaimVRF">
+      <button class="button disabled mt-6" v-if="!isCollectableActive && isVRFSale && hasRequestedVRF && hasFulfilledVRF && hasCommittedVRF && isSubmittingClaimVRF">
         Claiming Tokens...
       </button>
       <template v-else-if="isCollectableActive && !isUpcomming">
@@ -120,11 +120,25 @@
             </p>
           </div>
           <span class="error-notice">{{ acceptPhysicalTermsField.errors[0] }}</span>
+          <div v-if="isVRFSale">
+            <div class="text-gray-400 flex text-sm py-2">
+              <input
+                class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
+                v-model="acceptVRFTermsField.value"
+                type="checkbox"
+                :placeholder="'Physical Terms'"
+              />
+              <p style="width: calc(100% - 30px)">
+                I understand that I will need to come back to this page once the sale has ended in order to claim my NFT (randomness is generated once the sale ends). <span class="text-xs error-notice">* required</span>
+              </p>
+            </div>
+            <span class="error-notice">{{ acceptVRFTermsField.errors[0] }}</span>
+          </div>
         </template>
         <button class="button primary mt-1"
                 :class="{
                   'cursor-wait disabled opacity-50': isSubmitting,
-                  'disabled opacity-50': tangibility === 'tangible_nft' && !acceptPhysicalTermsField.value
+                  'disabled opacity-50': (tangibility === 'tangible_nft' && !acceptPhysicalTermsField.value) || (isVRFSale && !acceptVRFTermsField.value)
                 }"
                 :disabled="isSubmitting" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
           <span v-if="!isSubmitting">{{ isAuction ? (`Place ${isAwaitingReserve ? 'reserve' : 'a'} bid`) : "Buy now" }}</span>
@@ -477,7 +491,8 @@ export default {
     const lastNameField = reactive(useField("last name", "required|min:3"));
     const emailField = reactive(useField("email", "email"));
     const acceptTermsField = reactive(useField("terms and conditions", (val) => fieldValidatorAcceptTerms(val)));
-    const acceptPhysicalTermsField = reactive(useField("terms and conditions", (val) => fieldValidatorAcceptPhysicalTerms(val)));
+    const acceptPhysicalTermsField = reactive(useField("physical terms and conditions", (val) => fieldValidatorAcceptPhysicalTerms(val)));
+    const acceptVRFTermsField = reactive(useField("vrf terms and conditions", (val) => fieldValidatorAcceptVRFTerms(val)));
 
     const isFieldInvalid = computed(() => {
       return isAuction.value ? auctionField.errors.length : saleField.errors.length
@@ -601,6 +616,14 @@ export default {
         return true;
       } else {
         return 'Please accept the terms regarding physical redemptions to continue';
+      }
+    }
+
+    const fieldValidatorAcceptVRFTerms = (value) => {
+      if (value) {
+        return true;
+      } else {
+        return 'Please accept the terms regarding randomised sales to continue';
       }
     }
 
@@ -789,7 +812,7 @@ export default {
             }).catch(e => {
               console.log({e})
               toast.add({severity: 'error', summary: 'Error', detail: 'Error claiming tokens.', life: 5000});
-              isSubmittingRandomnessRequest.value = false;
+              isSubmittingClaimVRF.value = false;
             });
       } catch (e) {
         isSubmittingClaimVRF.value = false;
@@ -946,6 +969,7 @@ export default {
       isSubmitting,
       isSubmittingRandomnessRequest,
       isSubmittingRandomnessCommitment,
+      isSubmittingClaimVRF,
       openWalletModal,
       hasEnoughFunds,
       auctionField,
@@ -955,6 +979,7 @@ export default {
       emailField,
       acceptTermsField,
       acceptPhysicalTermsField,
+      acceptVRFTermsField,
       tangibility,
       isFieldInvalid,
       viewOnOpenSea,
