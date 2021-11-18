@@ -11,17 +11,6 @@
         </fenced-title>
       </div>
 
-      <h2 class="subtitle">Founding Members</h2>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <template
-          v-for="member in foundingMembers"
-          :key="member && member.name"
-        >
-          <team-member-card :teamMember="member" headerColor="bg-black" />
-        </template>
-      </div>
-
       <h2 class="subtitle">Core Contributors</h2>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -70,7 +59,7 @@ import FencedTitle from "@/components/FencedTitle.vue";
 
 import TeamMemberCard from "./components/TeamMemberCard.vue";
 
-const foundingMembers = [
+const coreContributors = [
   {
     avatar: require("@/assets/images/team/Jigglybuff69.jpg"),
     name: "Jigglybuff69",
@@ -84,9 +73,9 @@ const foundingMembers = [
     ],
   },
   {
-    avatar: require("@/assets/images/team/Jiigsaw01.jpg"),
+    avatar: require("@/assets/images/team/Jiigsaw01.png"),
     name: "Jiigsaw01",
-    title: "Operations and Comms",
+    title: "Comms & Partnerships",
     socials: [
       {
         url: "https://twitter.com/jiigsaw01",
@@ -96,73 +85,9 @@ const foundingMembers = [
     ],
   },
   {
-    avatar: require("@/assets/images/team/Buddyart00.jpg"),
-    name: "Buddyart00",
-    title: "Creative Director",
-    socials: [
-      {
-        url: "https://twitter.com/buddyart00",
-        type: "twitter",
-        handle: "Buddyart00",
-      },
-      { url: "https://www.buddyart00.com", type: "webpage" },
-    ],
-  },
-  {
-    avatar: require("@/assets/images/team/CryptoSamurai.jpg"),
-    name: "CryptoSamurai",
-    title: "Fullstack Developer",
-    socials: [
-      {
-        url: "https://twitter.com/CryptoSamurai",
-        type: "twitter",
-        handle: "CryptoSamurai",
-      },
-    ],
-  },
-  {
-    avatar: require("@/assets/images/team/Bluekirbyfi.jpg"),
-    name: "Bluekirbyfi",
-    title: "Marketing",
-    socials: [
-      {
-        url: "https://twitter.com/bluekirbyfi",
-        type: "twitter",
-        handle: "Bluekirbyfi",
-      },
-    ],
-  },
-  {
-    avatar: require("@/assets/images/team/Eyeofsauron.jpg"),
-    name: "Eyeofsauron",
-    title: "Solidity Dev",
-    socials: [
-      {
-        url: "https://twitter.com/EyeOfSauronSeen",
-        type: "twitter",
-        handle: "EyeOfSauronSeen",
-      },
-    ],
-  },
-];
-
-const coreContributors = [
-  {
-    avatar: require("@/assets/images/team/Atmanbay.jpg"),
-    name: "Atmanbay",
-    title: "Lead Solidity Dev",
-    socials: [
-      {
-        url: "https://twitter.com/atmanbay",
-        type: "twitter",
-        handle: "atmanbay",
-      },
-    ],
-  },
-  {
-    avatar: require("@/assets/images/team/Laserbach.jpg"),
+    avatar: require("@/assets/images/team/Laserbach.jpeg"),
     name: "Laserbach",
-    title: "Head of Marketing",
+    title: "Ops & Strategy",
     socials: [
       {
         url: "https://twitter.com/Laserbacher",
@@ -172,14 +97,55 @@ const coreContributors = [
     ],
   },
   {
-    avatar: require("@/assets/images/team/Lostboyfi.jpg"),
-    name: "Lostboyfi",
-    title: "Operations Specialist",
+    avatar: require("@/assets/images/team/Jaywelsh.jpg"),
+    name: "JayWelsh",
+    title: "Fullstack Developer",
     socials: [
       {
-        url: "https://twitter.com/lostboyfi",
+        url: "https://twitter.com/JayBWelsh",
         type: "twitter",
-        handle: "lostboyfi",
+        handle: "JayBWelsh",
+      },
+    ],
+  },
+  {
+    avatar: require("@/assets/images/team/Doublewordscore.jpeg"),
+    name: "Doublewordscore",
+    title: "Comms & Content",
+    socials: [
+      {
+        url: "https://twitter.com/doublew0rdscore",
+        type: "twitter",
+        handle: "doublew0rdscore",
+      },
+    ],
+  },
+  {
+    avatar: require("@/assets/images/team/Desulator.jpg"),
+    name: "desultor",
+    title: "Artist Recruitment & UI/UX",
+    socials: [
+      {
+        url: "https://twitter.com/_desultor_",
+        type: "twitter",
+        handle: "_desultor_",
+      },
+      {
+        url: "https://www.instagram.com/_desultor_/",
+        type: "instagram",
+        handle: "_desultor_",
+      },
+    ],
+  },
+  {
+    avatar: require("@/assets/images/team/n3xus.jpg"),
+    name: "n3xus",
+    title: "Community & Marketing Support",
+    socials: [
+      {
+        url: "https://twitter.com/Nexus3th",
+        type: "twitter",
+        handle: "Nexus3th",
       },
     ],
   },
@@ -226,6 +192,22 @@ const advisors = [
 
 const communityContributors = [
   {
+    avatar: require("@/assets/images/team/SEM.jpg"),
+    name: "SEM",
+    title: "Fullstack Developer",
+    socials: [
+      { url: "https://twitter.com/0xSEM", type: "twitter", handle: "0xSEM" },
+    ],
+  },
+  {
+    avatar: require("@/assets/images/team/liquidfruit.jpg"),
+    name: "Liquid Fruit",
+    title: "Fullstack Developer",
+    socials: [
+      { url: "https://twitter.com/liqfruit", type: "twitter", handle: "liqfruit" },
+    ],
+  },
+  {
     avatar: require("@/assets/images/team/Shillusmaximus.jpg"),
     name: "Shillusmaximus",
     title: "Chief of Memes",
@@ -254,55 +236,6 @@ const communityContributors = [
       },
     ],
   },
-  {
-    avatar: require("@/assets/images/team/Doublewordscore.jpg"),
-    name: "Doublewordscore",
-    title: "Content Creator",
-    socials: [
-      {
-        url: "https://twitter.com/doublew0rdscore",
-        type: "twitter",
-        handle: "doublew0rdscore",
-      },
-    ],
-  },
-  {
-    avatar: require("@/assets/images/team/Desulator.jpg"),
-    name: "desultor",
-    title: "UI/UX Consultant",
-    socials: [
-      {
-        url: "https://twitter.com/_desultor_",
-        type: "twitter",
-        handle: "_desultor_",
-      },
-      {
-        url: "https://www.instagram.com/_desultor_/",
-        type: "instagram",
-        handle: "_desultor_",
-      },
-    ],
-  },
-  {
-    avatar: require("@/assets/images/team/Jaywelsh.jpg"),
-    name: "Jaywelsh",
-    title: "Backend Consultant",
-    socials: [
-      {
-        url: "https://twitter.com/JayBWelsh",
-        type: "twitter",
-        handle: "JayBWelsh",
-      },
-    ],
-  },
-  {
-    avatar: require("@/assets/images/team/SEM.jpg"),
-    name: "SEM",
-    title: "Backend Consultant",
-    socials: [
-      { url: "https://twitter.com/0xSEM", type: "twitter", handle: "0xSEM" },
-    ],
-  },
 ];
 
 const multisig = [
@@ -328,7 +261,7 @@ const multisig = [
     ],
   },
   {
-    avatar: require("@/assets/images/team/Laserbach.jpg"),
+    avatar: require("@/assets/images/team/Laserbach.jpeg"),
     name: "Laserbach",
     title: "Signee",
     socials: [
@@ -352,7 +285,7 @@ const multisig = [
     ],
   },
   {
-    avatar: require("@/assets/images/team/Jiigsaw01.jpg"),
+    avatar: require("@/assets/images/team/Jiigsaw01.png"),
     name: "Jiigsaw01",
     title: "Signee",
     socials: [
@@ -405,7 +338,6 @@ export default {
     store.dispatch("application/setDarkMode", false);
 
     return {
-      foundingMembers,
       coreContributors,
       advisors,
       communityContributors,
