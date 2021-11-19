@@ -177,11 +177,10 @@ export default function useContractEvents() {
                     let endTime = await contract.end()
                     let startTime = await contract.start()
                     let randomnessRequestId = await contract.randomNumberRequestId();
-                    // TODO uncomment below start time override, only needs to be commented for 30 minutes from the time of this commit
-                    // if(startTime > 0) {
-                    //     collectable.value.starts_at = new Date(parseInt(startTime) * 1000)
-                    //     startsAt.value = new Date(parseInt(startTime) * 1000)
-                    // }
+                    if(startTime > 0) {
+                        collectable.value.starts_at = new Date(parseInt(startTime) * 1000)
+                        startsAt.value = new Date(parseInt(startTime) * 1000)
+                    }
                     if(Number(endTime) > 0) {
                         collectable.value.ends_at = new Date(parseInt(endTime) * 1000)
                         endsAt.value = new Date(parseInt(endTime) * 1000)
