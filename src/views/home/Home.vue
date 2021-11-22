@@ -10,21 +10,35 @@
       :style="{ 'padding-bottom': '40%' }"
     ></div>
 
+    <container class="section-featured-auctions pt-20">
+      <div class="grid grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-10">
+        <div class="flex-center flex-col">
+          <icon-square icon="paint-and-brush.svg"></icon-square>
+          <sub-title fontSize="24px" class="mt-2">The future of art collecting</sub-title>
+          <light-typography maxWidth="250px" class="mt-2">Browse and build your collection of the world’s most cutting-edge digital art</light-typography>
+        </div>
+        <div class="flex-center flex-col">
+          <icon-square icon="royalties.svg"></icon-square>
+          <sub-title fontSize="24px" class="mt-2">Pioneering art market royalties</sub-title>
+          <light-typography maxWidth="280px" class="mt-2">Artists receive royalties for secondary sales of their artworks on any EIP-2981 compliant marketplaces – forever</light-typography>
+        </div>
+        <div class="flex-center flex-col">
+          <icon-square icon="infinity.svg"></icon-square>
+          <sub-title fontSize="24px" class="mt-2">Built for longevity</sub-title>
+          <light-typography maxWidth="250px" class="mt-2">All transactions happen on-chain, creating a tamper-proof record of each artwork’s history</light-typography>
+        </div>
+      </div>
+    </container>
+
     <container class="section-featured-auctions pb-24">
-      <div class="flex items-center pb-12 pt-20 lg:py-24 flex-col lg:flex-row">
-        <fenced-title
-          class="flex-grow mr-0 md:mb-6 lg:mb-0 lg:mr-6 lg:hidden self-stretch"
-          color="fence-light"
-          textAlign="center"
-          :closed="false"
-          > Featured Drops</fenced-title
-        >
-        <fenced-title
+      <div class="flex items-center pb-12 pt-20 lg:pt-24 flex-col lg:flex-row">
+        <img src="@/assets/icons/orange-flame.svg" class="mr-2"/>
+        <common-title
           class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
           color="fence-light"
           textAlign="left"
           :closed="false"
-          > Featured Drops</fenced-title
+          >Live</common-title
         >
         <router-link to="drops" class="hidden lg:block">
           <button :class="darkMode ? 'light' : 'dark'" class="button flex-shrink-0">
@@ -150,8 +164,12 @@ import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
 
 import Container from "@/components/Container.vue";
+import SubTitle from "@/components/SubTitle.vue";
+import LightTypography from "@/components/LightTypography.vue";
+import IconSquare from "@/components/IconSquare.vue";
 import ProductCard from "@/components/ProductCard.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
+import CommonTitle from "@/components/CommonTitle.vue";
 import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 import HeroAuction from "./components/HeroAuction.vue";
@@ -166,10 +184,14 @@ export default {
     HeroAuction,
     Container,
     FencedTitle,
+    CommonTitle,
     ProductCard,
     HowToVideo,
     QuoteCarousel,
     ArtistCard,
+    SubTitle,
+    LightTypography,
+    IconSquare,
   },
   setup() {
     const { meta } = useMeta({
