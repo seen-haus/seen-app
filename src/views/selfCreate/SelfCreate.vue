@@ -266,7 +266,6 @@
 <script>
 
 import { ref, reactive, computed, watchEffect } from "vue";
-import { useField, useForm } from "vee-validate";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 
@@ -536,12 +535,6 @@ export default {
 
         const useTemporaryMediaUrl = computed(() => temporaryMediaUrl.value);
 
-        const uploadForm = useForm({
-            initialValues: {
-                nftFile: ""
-            },
-        });
-
         const creatorData = ref({
             account: false,
             profilePicture: false,
@@ -790,8 +783,6 @@ export default {
             temporaryMediaUrl.value = URL.createObjectURL(mediaInputRef.value.files[0]);
         }
 
-        const uploadField = reactive(useField("email", "email"));
-
         const accessControllerContract = ref({});
 
         watchEffect(async () => {
@@ -830,8 +821,6 @@ export default {
         return {
             account,
             openWalletModal,
-            uploadForm,
-            uploadField,
             mediaInputRef,
             temporaryMediaUrl,
             useTemporaryMediaUrl,
