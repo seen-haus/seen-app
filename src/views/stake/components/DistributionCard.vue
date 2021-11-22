@@ -62,7 +62,10 @@ import {formatEther} from "@ethersproject/units";
 
 export default {
   name: "DistributionCard",
-  setup() {
+  props: {
+    onDistributed: async () => {},
+  },
+  setup(props) {
     const toast = useToast();
     const store = useStore();
     const {account, provider} = useWeb3();
@@ -132,6 +135,9 @@ export default {
     };
 
     const distribute = async () => {
+      if (props.onDistributed) {
+        props.onDistributed();
+      }
       if (distributing.value || !distributionEnabled.value || !distributionPoolContract?.value?.contract) {
         return;
       }
@@ -181,6 +187,10 @@ export default {
           await loadLatestDistributionBalance();
 
           distributing.value = false;
+
+          if (props.onDistributed) {
+            await props.onDistributed();
+          }  
         })
         .catch((e) => {
           distributing.value = false;
