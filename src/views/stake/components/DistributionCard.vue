@@ -1,5 +1,5 @@
 <template>
-  <div class="stake-or-withdraw-card rounded-lg overflow-hidden shadow-lifted flex-1 flex bg-white">
+  <div class="stake-or-withdraw-card rounded-lg overflow-hidden shadow-lifted flex-1 flex bg-white flex-col md:flex-row">
     <div class="p-8 px-10 flex-1">
       <div class="text-4xl font-title font-bold mb-6">Distribution Pool</div>
 
