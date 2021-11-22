@@ -126,7 +126,10 @@ export const ArtistService = {
     },
     show(slug) {
         return ApiService.get(`artists/${slug}`);
-    }
+    },
+    requestAccessToSelfCreate(payload) {
+        return ApiService.post(`artists/self-create/requests`, payload);
+    },
 };
 
 export const ExchangeRateService = {
