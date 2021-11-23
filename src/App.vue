@@ -9,6 +9,7 @@
     <!--  Modals -->
     <wallet-modal />
     <notifications-modal />
+    <network-modal/>
     <transaction-modal />
     <!--  Modals END -->
     <mobile-menu/>
@@ -43,6 +44,7 @@ import useDarkMode from '@/hooks/useDarkMode';
 import Web3Provider from "@/connector/Web3Provider";
 import WalletModal from "@/components/WalletModal/WalletModal";
 import NotificationsModal from "@/components/NotificationsModal/NotificationsModal";
+import NetworkModal from "@/components/NetworkModal/NetworkModal";
 import TransactionModal from "@/components/TransactionModal/TransactionModal";
 import MobileMenu from "@/components/Menu/MobileMenu";
 import AppHeader from "@/components/AppHeader";
@@ -60,6 +62,7 @@ export default {
     MobileMenu,
     WalletModal,
     NotificationsModal,
+    NetworkModal,
     TransactionModal,
     Web3Provider,
     WinnerInfo,
