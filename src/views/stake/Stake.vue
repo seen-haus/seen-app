@@ -107,20 +107,20 @@
       <div class="grid grid-cols-1 gap-12 justify-between my-12">
         <unfenced-title class="text-black hidden" textAlign="left">How to Stake <span class="text-gradient">SEEN?</span></unfenced-title>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-10">
-          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12">
+        <div class="grid grid-cols-12 gap-10">
+          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12 lg:col-span-6 xl:col-span-3">
             <span class="text-white bg-black font-black p-6 rounded-lg text-3xl number-square">1</span>
             <span class="font-medium text-gray-400">Deposit your SEEN</span>
           </span>
-          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12">
+          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12 lg:col-span-6 xl:col-span-3">
             <span class="text-white bg-black font-black p-6 rounded-lg text-3xl number-square">2</span>
             <span class="font-medium text-gray-400">Receive xSEEN in return</span>
           </span>
-          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12">
+          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12 lg:col-span-6 xl:col-span-3">
             <span class="text-white bg-black font-black p-6 rounded-lg text-3xl number-square">3</span>
             <span class="font-medium text-gray-400">Start earning a portion of protocol fees</span>
           </span>
-          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12">
+          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12 lg:col-span-6 xl:col-span-3">
             <span class="text-white bg-black font-black p-6 rounded-lg text-3xl number-square">4</span>
             <span class="font-medium text-gray-400">Redeem SEEN rewards by clicking withdraw*</span>
           </span>
