@@ -63,6 +63,9 @@ import parseError from "@/services/utils/parseError"
 
 export default {
   name: "StakeOrWithdrawCard",
+  props: {
+    onStaked: async () => {},
+  },
   setup(context, props) {
     const {formatCrypto} = useExchangeRate()
 
@@ -197,7 +200,7 @@ export default {
         return
       }
       return tx.wait()
-        .then((response) => {
+        .then(async (response) => {
           if(response.status === 1) {
             state.number = 0;
             toast.add({
@@ -217,6 +220,10 @@ export default {
               detail: 'Staking was unsuccessful.',
               life: 3000
             });
+
+            if (props.onStaked) {
+              await props.onStaked()
+            }
           }
         }).catch((e) => {
           state.depositing = false;
@@ -256,13 +263,17 @@ export default {
 
       return tx
         .wait()
-        .then(() => {
+        .then(async () => {
           state.number.value = 0
           toast.add({severity: "success", summary: "Success", detail: "Your withdraw was successful.", life: 3000})
           setTimeout(() => {
             state.withdrawing = false
             window.location.reload()
           }, 3000)
+
+          if (props.onStaked) {
+            await props.onStaked()
+          }
         })
         .catch((e) => {
           console.error(e)
