@@ -1,6 +1,6 @@
 <template>
     <modal :visible="isModalOpen" class="rounded-lg">
-        <modal-header class="rounded-t-lg font-title text-red-600">{{ title }}</modal-header>
+        <modal-header class="rounded-t-lg font-title">{{ title }}</modal-header>
         <modal-content class="rounded-b-lg">{{ message }}</modal-content>
         <footer>
             <button @click="disconnectFunction" class="button w-full bottom-0 p-4 cursor-pointer">Disconnect</button>
