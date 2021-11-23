@@ -74,28 +74,22 @@ export default {
     }
 
     watchEffect(() => {
-      if(!props.shareOfThePool) {
-        return;
-      }
-
-      if (!primeChart.value) {
-        return;
-      }
-
-      let triggerUpdate = false;
-      if(props.shareOfThePool > 0) {
-        if(JSON.stringify([100 - props.shareOfThePool, props.shareOfThePool]) !== JSON.stringify(chartData.datasets[0].data)) {
-          chartData.datasets[0].data = [100 - props.shareOfThePool, props.shareOfThePool];
-          triggerUpdate = true;
+      if(props.shareOfThePool) {
+        let triggerUpdate = false;
+        if(props.shareOfThePool > 0) {
+          if(JSON.stringify([100 - props.shareOfThePool, props.shareOfThePool]) !== JSON.stringify(chartData.datasets[0].data)) {
+            chartData.datasets[0].data = [100 - props.shareOfThePool, props.shareOfThePool];
+            triggerUpdate = true;
+          }
+        } else {
+          if(JSON.stringify([100]) !== JSON.stringify(chartData.datasets[0].data)) {
+            chartData.datasets[0].data = [100];
+            triggerUpdate = true;
+          }
         }
-      } else {
-        if(JSON.stringify([100]) !== JSON.stringify(chartData.datasets[0].data)) {
-          chartData.datasets[0].data = [100];
-          triggerUpdate = true;
+        if(primeChart.value && triggerUpdate) {
+          primeChart.value.reinit()
         }
-      }
-      if(primeChart.value && triggerUpdate) {
-        primeChart.value.reinit()
       }
     })
 

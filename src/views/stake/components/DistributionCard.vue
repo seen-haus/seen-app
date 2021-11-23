@@ -1,5 +1,5 @@
 <template>
-  <div class="stake-or-withdraw-card rounded-lg overflow-hidden shadow-lifted flex-1 flex bg-white flex-col md:flex-row">
+  <div class="stake-or-withdraw-card rounded-lg overflow-hidden shadow-lifted flex-1 flex bg-white">
     <div class="p-8 px-10 flex-1">
       <div class="text-4xl font-title font-bold mb-6">Distribution Pool</div>
 
@@ -62,10 +62,7 @@ import {formatEther} from "@ethersproject/units";
 
 export default {
   name: "DistributionCard",
-  props: {
-    onDistributed: async () => {},
-  },
-  setup(props) {
+  setup() {
     const toast = useToast();
     const store = useStore();
     const {account, provider} = useWeb3();
@@ -135,9 +132,6 @@ export default {
     };
 
     const distribute = async () => {
-      if (props.onDistributed) {
-        props.onDistributed();
-      }
       if (distributing.value || !distributionEnabled.value || !distributionPoolContract?.value?.contract) {
         return;
       }
@@ -187,10 +181,6 @@ export default {
           await loadLatestDistributionBalance();
 
           distributing.value = false;
-
-          if (props.onDistributed) {
-            await props.onDistributed();
-          }  
         })
         .catch((e) => {
           distributing.value = false;

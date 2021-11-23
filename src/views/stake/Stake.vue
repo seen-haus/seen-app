@@ -97,11 +97,11 @@
       </div>
 
       <div class="cards flex flex-col xl:flex-row">
-        <stake-or-withdraw-card :amount="seenBalance" :state="state" :onStaked="initialize" class="mr-0 mb-12 xl:mb-0 xl:mr-12" type-of="stake" />
-        <stake-or-withdraw-card :amount="seenBalance" :state="state" :onStaked="initialize" type-of="withdraw" />
+        <stake-or-withdraw-card :amount="seenBalance" :state="state" class="mr-0 mb-12 xl:mb-0 xl:mr-12" type-of="stake" />
+        <stake-or-withdraw-card :amount="seenBalance" :state="state" type-of="withdraw" />
       </div>
       <div class="cards flex flex-col xl:flex-row">
-        <distribution-card :onDistributed="initialize" />
+        <distribution-card />
       </div>
 
       <div class="grid grid-cols-1 gap-12 justify-between my-12">
@@ -195,7 +195,6 @@ export default {
         state.shareOfThePool = share.multipliedBy(100)
         const stakedSeenIncludingReward = BigNumber(state.xSeenToSeenRatio).multipliedBy(state.xSeenBalance)
         state.seenIncludingReward = stakedSeenIncludingReward.toString()
-
       }
     })
 
@@ -204,22 +203,6 @@ export default {
         return
       }
 
-      await initialize();
-    })
-
-    const totalStakedUsd = computed(() => {
-      return convertSeenToUSDAndFormat(state.totalStaked)
-    })
-
-    const feesEarned = computed(() => {
-      if (!state.shareOfThePool) {
-        return 0
-      }
-      const contractEthBalance = new BigNumber(state.totalStaked).multipliedBy(state.shareOfThePool.dividedBy(100))
-      return contractEthBalance
-    })
-
-    const initialize = async () => {
       const contract = useSEENContract()
       let balance = await contract.balanceOf(process.env.VUE_APP_XSEEN_CONTRACT_ADDRESS)
       state.totalStaked = formatEther(balance.toString())
@@ -235,7 +218,19 @@ export default {
 
       const cb = await library.getBalance(process.env.VUE_APP_SEEN_CONTRACT_ADDRESS)
       state.contractEthBalance = formatEther(cb.toString())
-    }
+    })
+
+    const totalStakedUsd = computed(() => {
+      return convertSeenToUSDAndFormat(state.totalStaked)
+    })
+
+    const feesEarned = computed(() => {
+      if (!state.shareOfThePool) {
+        return 0
+      }
+      const contractEthBalance = new BigNumber(state.totalStaked).multipliedBy(state.shareOfThePool.dividedBy(100))
+      return contractEthBalance
+    })
 
     return {
       formatCrypto,
@@ -243,8 +238,7 @@ export default {
       seenBalance,
       state,
       totalStakedUsd,
-      feesEarned,
-      initialize,
+      feesEarned
     }
   }
 }
