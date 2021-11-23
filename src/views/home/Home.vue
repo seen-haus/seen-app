@@ -19,7 +19,7 @@
         </div>
         <div class="flex-center flex-col">
           <icon-square icon="royalties.svg"></icon-square>
-          <sub-title fontSize="24px" class="mt-2">Pioneering art market royalties</sub-title>
+          <sub-title fontSize="24px" class="mt-2">Pioneering royalties</sub-title>
           <light-typography maxWidth="280px" class="mt-2">Artists receive royalties for secondary sales of their artworks on any EIP-2981 compliant marketplaces – forever</light-typography>
         </div>
         <div class="flex-center flex-col">
