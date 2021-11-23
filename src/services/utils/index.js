@@ -179,3 +179,17 @@ export function mergePrimaryCollectableIntoSecondary(primary, secondary) {
     }
     return Object.assign({ ...primary }, secondary);
 }
+
+export function slugToTitleCase(slug = false) {
+    if(slug) {
+        let words = slug.split('-');
+
+        for (let i = 0; i < words.length; i++) {
+            let word = words[i];
+            words[i] = word.charAt(0).toUpperCase() + word.slice(1);
+        }
+
+        return words.join(' ');
+    }
+    return false;
+}

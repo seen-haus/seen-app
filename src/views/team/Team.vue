@@ -61,11 +61,11 @@
           </div>
           <div class="mr-12 inline-block">
             <light-typography 
-              @click="setSelectedType('founders')"
+              @click="setSelectedType('community')"
               class="clickable"
-              :class="data?.selectedType === 'founders' ? 'active-selection' : null"
+              :class="data?.selectedType === 'community' ? 'active-selection' : null"
             >
-              Founders
+              Community Contributors
             </light-typography>
           </div>
       </div>
@@ -109,12 +109,12 @@
         </div>
       </div>
 
-      <div v-if="isActiveSelection(['all', 'founders'])">
-        <h2 class="subtitle">Founders</h2>
+      <div v-if="isActiveSelection(['all', 'community'])">
+        <h2 class="subtitle">Community Contributors</h2>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-12">
           <template
-            v-for="member in founders"
+            v-for="member in communityContributors"
             :key="member && member.name"
           >
             <team-member-card :teamMember="member" headerColor="bg-gray-300" />
@@ -135,7 +135,7 @@ import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import TeamMemberCard from "./components/TeamMemberCard.vue";
 import LightTypography from "@/components/LightTypography.vue";
 
-import { coreContributors, advisors, multisig, founders } from "./data.js";
+import { coreContributors, advisors, multisig, communityContributors } from "./data.js";
 
 export default {
   name: "Team",
@@ -161,7 +161,7 @@ export default {
     })
 
     return {
-      founders,
+      communityContributors,
       coreContributors,
       advisors,
       multisig,

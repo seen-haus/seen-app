@@ -29,6 +29,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
         isClosed,
         isCancelled,
         winningAddress,
+        hasRequestedVRF,
+        hasFulfilledVRF,
+        hasCommittedVRF,
         endsAt: updatedEndsAt,
         startsAt: updatedStartsAt,
         minimumStartsAt: updatedMinimumStartsAt,
@@ -185,6 +188,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         return collectable.value?.secondary_market_listings || false;
     })
     
+    const isVRFSale = computed(() => collectable.value.is_vrf_drop);
 
     const updateProgress = function (event) {
         progress.value = event;
@@ -313,6 +317,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
     let timeoutHandler = null;
     const enableContract = function () {
+        console.log("trying enable")
         if (collectable.value == null) return;
 
         const now = Date.now();
@@ -320,19 +325,22 @@ export default function useCollectableInformation(initialCollectable = {}) {
         let endDate = new Date(endsAt.value);
         endDate.setHours(endDate.getHours() + 6);
         const end = endDate.getTime();
-        if (
-            ((now >= start) && (now < end) && !is_sold_out.value) ||
-            (new Date(endsAt.value).getTime() === 0 && collectable.value.is_reserve_price_auction) ||
-            (isAuction.value && !collectable.value.winner_address) ||
-            ((collectable.value.version === 3) && (collectable.value.market_handler_type === MARKET_HANDLER_TYPES.SALE) && !collectable.value.is_closed)
-        ) {
-            console.log('contract initialized');
-            initializeContractEvents(collectable.value);
-        } else if ((now < end || !endsAt.value) && !is_sold_out.value) {
-            timeoutHandler = setTimeout(() => {
-                console.log('starting soon');
+        if(collectable.value.contract_address) {
+            if (
+                ((now >= start) && (now < end) && !is_sold_out.value) ||
+                (collectable.value.is_vrf_drop && !collectable.value.is_closed) ||
+                (new Date(endsAt.value).getTime() === 0 && collectable.value.is_reserve_price_auction) ||
+                (isAuction.value && !collectable.value.winner_address) ||
+                ((collectable.value.version === 3) && (collectable.value.market_handler_type === MARKET_HANDLER_TYPES.SALE) && !collectable.value.is_closed)
+            ) {
+                console.log('contract initialized');
                 initializeContractEvents(collectable.value);
-            }, start - now);
+            } else if ((now < end || !endsAt.value) && !is_sold_out.value) {
+                timeoutHandler = setTimeout(() => {
+                    console.log('starting soon');
+                        initializeContractEvents(collectable.value);
+                    }, start - now);
+            }
         }
     };
 
@@ -398,6 +406,9 @@ export default function useCollectableInformation(initialCollectable = {}) {
         itemsBought,
         progress,
         isCollectableActive,
+        hasRequestedVRF,
+        hasFulfilledVRF,
+        hasCommittedVRF,
         // Static
         type,
         media,
@@ -439,6 +450,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         isCancelled,
         winningAddress,
         secondaryMarketListings,
+        isVRFSale,
         // Methods
         updateProgress,
         setCollectable,

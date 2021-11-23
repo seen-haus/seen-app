@@ -30,6 +30,8 @@ import {
     chainIdToMarketDiamond,
     chainIdToDistributionPool,
 } from '@/constants/ContractAddressesV3.js'
+import VRF_SALE_V2_ABI from "@/constants/abis/vrfSaleV2ABI.json"
+import RANDOMNESS_CONSUMER_VRF_ABI from "@/constants/abis/randomnessConsumerVRFABI.json"
 import {Web3Provider, WebSocketProvider} from "@ethersproject/providers"
 
 function useContract(address, ABI, withSignerIfPossible = true) {
@@ -60,6 +62,14 @@ export function useV2AuctionContract(contract, withSignerIfPossible) {
 
 export function useV2OpenEditionContract(contract, withSignerIfPossible) {
     return useContract(contract, OPEN_EDITION_V2_ABI, withSignerIfPossible)
+}
+
+export function useV2VRFSaleContract(contract, withSignerIfPossible) {
+    return useContract(contract, VRF_SALE_V2_ABI, withSignerIfPossible)
+}
+
+export function useRandomNumberConsumerContract(contract, withSignerIfPossible) {
+    return useContract(contract, RANDOMNESS_CONSUMER_VRF_ABI, withSignerIfPossible)
 }
 
 export function useV1NftContract(contract, withSignerIfPossible) {

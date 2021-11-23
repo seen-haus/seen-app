@@ -2,8 +2,28 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_hausAddress",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "_startTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_endTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
         "type": "uint256"
       },
       {
@@ -12,23 +32,18 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint8",
-        "name": "_hausFeePercentage",
-        "type": "uint8"
+        "internalType": "uint256",
+        "name": "_limitPerOrder",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_stakingRewardPercentageBasisPoints",
+        "type": "uint256"
       },
       {
         "internalType": "address",
-        "name": "_sellerAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_hausAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_controllerAddress",
+        "name": "_stakingSwapContract",
         "type": "address"
       }
     ],
@@ -81,25 +96,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "buyerToBuyCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "controller",
     "outputs": [
@@ -127,42 +123,10 @@
   },
   {
     "inputs": [],
-    "name": "ended",
+    "name": "hausAddress",
     "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
       {
         "internalType": "address",
-        "name": "_buyer",
-        "type": "address"
-      }
-    ],
-    "name": "getBuyerQuantity",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "haus",
-    "outputs": [
-      {
-        "internalType": "address payable",
         "name": "",
         "type": "address"
       }
@@ -172,7 +136,7 @@
   },
   {
     "inputs": [],
-    "name": "hausFeePercentage",
+    "name": "id",
     "outputs": [
       {
         "internalType": "uint256",
@@ -198,6 +162,71 @@
   },
   {
     "inputs": [],
+    "name": "limitPerOrder",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nft",
+    "outputs": [
+      {
+        "internalType": "contract IERC1155",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "onERC1155Received",
+    "outputs": [
+      {
+        "internalType": "bytes4",
+        "name": "",
+        "type": "bytes4"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "price",
     "outputs": [
       {
@@ -211,10 +240,56 @@
   },
   {
     "inputs": [],
-    "name": "seller",
+    "name": "pull",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setTokenAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "setTokenId",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakingRewardPercentageBasisPoints",
     "outputs": [
       {
-        "internalType": "address payable",
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakingSwapContract",
+    "outputs": [
+      {
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -223,21 +298,21 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "start",
+    "outputs": [
       {
-        "internalType": "bool",
-        "name": "setting",
-        "type": "bool"
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
-    "name": "setEnded",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "start",
+    "name": "supply",
     "outputs": [
       {
         "internalType": "uint256",

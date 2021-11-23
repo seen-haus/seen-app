@@ -95,7 +95,7 @@ export default function useTimer(callback) {
                 state.value = 'Auction Ended';
             }
             endTimer();
-        } else if(progressLeft > 1000000000) {
+        } else if(progressLeft > 10000000000) {
             timerState.value = TIMER_STATE.DONE;
             state.value = 'Loading...'; // In case there is an issue fetching times (rather than show a very incorrect time)
             endTimer();
@@ -154,8 +154,10 @@ export default function useTimer(callback) {
         }
         let newEndDate = state.endDate + (endSeconds * 1000);
         let newStartDate = state.startDate + (startSeconds * 1000);
-        if(state.endDate !== newEndDate || state.startDate !== newStartDate) {
-            startTimer({startDate: newStartDate, endDate: newEndDate, isAwaitingReserve});
+        if(newEndDate && newStartDate) {
+            if(state.endDate !== newEndDate || state.startDate !== newStartDate) {
+                startTimer({startDate: newStartDate, endDate: newEndDate, isAwaitingReserve});
+            }
         }
     }
 

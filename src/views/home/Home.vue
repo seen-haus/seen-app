@@ -208,6 +208,15 @@ export default {
       }
     };
 
+    const navigateToCollection = function (slug) {
+      router.push({
+          name: 'collection',
+          params: {
+            collectionName: slug
+          }
+      });
+    }
+
     const paginatedArtists = useArtistsWithPagination();
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
 
@@ -218,6 +227,7 @@ export default {
       listOfNonHeroCollectables,
       listOfArtists,
       navigateToCollectable,
+      navigateToCollection,
       darkMode,
     };
   },

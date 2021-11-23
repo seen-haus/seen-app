@@ -338,6 +338,16 @@ export default {
           .then(() => {
             let message =
               "Your artwork will be delivered within 3 - 4 weeks, keep in mind it may take longer due to COVID restrictions in certain countries";
+            if(claim?.value?.collectable?.is_slug_full_route && claim?.value?.collectable?.slug) {
+              router.push({
+                name: claim?.value?.collectable?.slug,
+              });
+            } else {
+              router.push({
+                name: "collectableAuction",
+                params: { slug: claim?.value?.collectable?.slug },
+              });
+            }
             toast.add({
               severity: "success",
               summary: "Success",
@@ -345,14 +355,30 @@ export default {
               life: 10000,
             });
           })
-          .catch(() =>
-            toast.add({
-              severity: "error",
-              summary: "Error",
-              detail:
-                "Could not submit your details. Please try to enter them later.",
-              life: 3000,
-            })
+          .catch((e) => {
+              let message = e?.data?.message ? parseError(e?.data?.message) : e;
+              if(!message) {
+                message = "Could not submit your details. Please try to enter them later.";
+              }
+              if(message.indexOf('already submitted a claim') > -1) {
+                if(claim?.value?.collectable?.is_slug_full_route && claim?.value?.collectable?.slug) {
+                  router.push({
+                    name: claim?.value?.collectable?.slug,
+                  });
+                } else {
+                  router.push({
+                    name: "collectableAuction",
+                    params: { slug: claim?.value?.collectable?.slug },
+                  });
+                }
+              }
+              toast.add({
+                severity: "error",
+                summary: "Error",
+                detail: message,
+                life: 10000,
+              })
+            }
           );
       } else {
         // toastr to login
