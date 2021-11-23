@@ -28,7 +28,7 @@ export default {
     },
     setup() {
         const store = useStore();
-        const {deactivate, activate, chainId} = useWeb3();
+        const {account, deactivate, chainId} = useWeb3();
 
         const modalName = "NetworkModal";
 
@@ -64,6 +64,10 @@ export default {
 
         watchEffect(() => {
             if (!chainId?.value) {
+                return;
+            }
+
+            if (!account?.value) {
                 return;
             }
 
