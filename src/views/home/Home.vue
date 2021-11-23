@@ -31,7 +31,7 @@
     </container>
 
     <container class="section-featured-auctions pb-24">
-      <div class="flex items-center pb-12 pt-20 lg:pt-24 flex-col lg:flex-row">
+      <div class="flex items-center pt-20 lg:pt-24 flex-col lg:flex-row">
         <img src="@/assets/icons/orange-flame.svg" class="mr-2"/>
         <common-title
           class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
@@ -48,48 +48,23 @@
       </div>
 
       <div
-        class="auction-list-big grid grid-cols-1 md:grid-cols-2 mb-22 gap-10"
+        class="auction-list-big grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
       >
         <template
-          v-for="collectable in featuredCollectables"
+          v-for="collectable in listOfNonHeroCollectables"
           :key="collectable && collectable.id"
         >
-          <product-card
+          <product-card-v3
             v-if="collectable != null"
             :collectable="collectable"
             @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
           />
           <div
             v-else
-            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
+            class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
             :style="{ 'padding-bottom': '120%' }"
           ></div>
         </template>
-        <!-- <product-card />
-        <product-card /> -->
-      </div>
-
-      <div
-        class="auction-list-big grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
-      >
-        <template
-          v-for="collectable in otherCollectables"
-          :key="collectable && collectable.id"
-        >
-          <product-card
-            v-if="collectable != null"
-            :collectable="collectable"
-            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
-          />
-          <div
-            v-else
-            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
-            :style="{ 'padding-bottom': '120%' }"
-          ></div>
-        </template>
-        <!-- <product-card />
-        <product-card />
-        <product-card /> -->
       </div>
 
       <router-link to="drops">
@@ -167,7 +142,7 @@ import Container from "@/components/Container.vue";
 import SubTitle from "@/components/SubTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
 import IconSquare from "@/components/IconSquare.vue";
-import ProductCard from "@/components/ProductCard.vue";
+import ProductCardV3 from "@/components/ProductCardV3.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import CommonTitle from "@/components/CommonTitle.vue";
 import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
@@ -176,6 +151,7 @@ import HeroAuction from "./components/HeroAuction.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
 import useDarkMode from "@/hooks/useDarkMode";
 import useCollectablesWithPagination from "@/hooks/useCollectablesWithPagination.js";
+import useHeroCollectable from "@/hooks/useHeroCollectable.js";
 import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
 
 export default {
@@ -185,7 +161,7 @@ export default {
     Container,
     FencedTitle,
     CommonTitle,
-    ProductCard,
+    ProductCardV3,
     HowToVideo,
     QuoteCarousel,
     ArtistCard,
@@ -200,30 +176,17 @@ export default {
     const router = useRouter();
     const { darkMode } = useDarkMode();
 
-    const paginatedCollectables = useCollectablesWithPagination( 0);
-    const listOfCollectables = computed(
-      () => paginatedCollectables.listOfCollectables.value
-    );
+    const heroCollectableApi = useHeroCollectable();
+    const heroCollectable = computed(() => heroCollectableApi?.heroCollectable?.value);
+    
+    const paginatedCollectables = useCollectablesWithPagination(0, 7); // Use 7 in case one of them is the hero listing
 
     const listOfNonHeroCollectables = computed(
-      () => paginatedCollectables.listOfCollectables.value.filter(item =>  item && !item.featured_drop)
-    );
-
-    const heroCollectable = computed(() => listOfCollectables.value.filter(item =>  item && item.featured_drop)[0] || listOfCollectables.value[0]);
-    const featuredCollectables = computed(() =>
-      [listOfNonHeroCollectables.value[0], listOfNonHeroCollectables.value[1]].filter(
-        (i) => i !== undefined
-      )
-    );
-    const otherCollectables = computed(() =>
-      [
-        listOfNonHeroCollectables.value[2],
-        listOfNonHeroCollectables.value[3],
-        listOfNonHeroCollectables.value[4],
-      ].filter((i) => i !== undefined)
+      () => paginatedCollectables.listOfCollectables.value.filter(item =>  item && !item.featured_drop).slice(0,6) // Limit to 6 items
     );
 
     paginatedCollectables.load();
+    heroCollectableApi.load();
 
     const navigateToCollectable = function (slug, isSlugFullRoute, version) {
       if(isSlugFullRoute) {
@@ -252,8 +215,7 @@ export default {
 
     return {
       heroCollectable,
-      featuredCollectables,
-      otherCollectables,
+      listOfNonHeroCollectables,
       listOfArtists,
       navigateToCollectable,
       darkMode,
