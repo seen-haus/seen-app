@@ -318,6 +318,7 @@ const multisig = [
         type: "twitter",
         handle: "andy8052",
       },
+      { url: "https://fractional.art/", type: "website" },
     ],
   },
 ];
