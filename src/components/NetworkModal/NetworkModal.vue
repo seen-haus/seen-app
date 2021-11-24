@@ -1,10 +1,10 @@
 <template>
     <modal :visible="isModalOpen" class="rounded-lg">
-        <modal-header class="rounded-t-lg font-title">{{ title }}</modal-header>
+        <modal-header
+            class="rounded-t-lg font-title"
+            :additionalDismissFunctionality="disconnectFunction"
+        >{{ title }}</modal-header>
         <modal-content class="rounded-b-lg">{{ message }}</modal-content>
-        <footer>
-            <button @click="disconnectFunction" class="button w-full bottom-0 p-4 cursor-pointer">Disconnect</button>
-        </footer>
     </modal>
 </template>
 
@@ -39,7 +39,7 @@ export default {
         };
 
         const title = "Wrong Network";
-        const message = "You're on the wrong network. Switch to the Ethereum Mainnet network or disconnect your wallet.";
+        const message = "The network you are connected to may cause issues loading certain data on this website. Please either switch to the Ethereum Mainnet or dismiss this modal to disconnect your wallet.";
         const isModalOpen = computed(() => store.getters["application/openModal"] === modalName);
 
         const openModal = () => {
