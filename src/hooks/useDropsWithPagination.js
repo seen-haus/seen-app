@@ -56,6 +56,9 @@ export default function useDropsWithPagination(
       if(state.additionalFiltrationOptions?.excludeEnded) {
         filtrationOptions.excludeEnded = state.additionalFiltrationOptions.excludeEnded;
       }
+      if(state.additionalFiltrationOptions?.excludeLive) {
+        filtrationOptions.excludeLive = state.additionalFiltrationOptions.excludeLive;
+      }
     }
 
     const { data, metadata } = await CollectablesService.list(
@@ -133,6 +136,9 @@ export default function useDropsWithPagination(
       }
       if(state.additionalFiltrationOptions?.excludeEnded) {
         filtrationOptions.excludeEnded = state.additionalFiltrationOptions.excludeEnded;
+      }
+      if(state.additionalFiltrationOptions?.excludeLive) {
+        filtrationOptions.excludeLive = state.additionalFiltrationOptions.excludeLive;
       }
     }
 

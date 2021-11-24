@@ -128,7 +128,6 @@
 
 <script>
 import { reactive } from "vue";
-import { useStore } from "vuex";
 
 import Container from "@/components/Container.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
