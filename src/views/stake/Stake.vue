@@ -185,6 +185,24 @@ export default {
       return store.getters["application/balance"].seen
     })
 
+    const initialize = async () => {
+      const contract = useSEENContract()
+      let balance = await contract.balanceOf(process.env.VUE_APP_XSEEN_CONTRACT_ADDRESS)
+      state.totalStaked = formatEther(balance.toString())
+
+      const stakeContract = useStakingContract()
+      let totalSupplyxSeen = await stakeContract.totalSupply()
+      state.totalxSeenSupply = formatEther(totalSupplyxSeen.toString())
+
+      const xSeenToSeenConversionRate = BigNumber(BigNumber(balance.toString())).dividedBy(totalSupplyxSeen.toString())
+      state.xSeenToSeenRatio = xSeenToSeenConversionRate.toString()
+
+      const library = provider.value ? new Web3Provider(provider.value) : new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
+
+      const cb = await library.getBalance(process.env.VUE_APP_SEEN_CONTRACT_ADDRESS)
+      state.contractEthBalance = formatEther(cb.toString())
+    }
+
     watchEffect(async () => {
       if (account.value && state.totalxSeenSupply && state.totalStaked && state.xSeenToSeenRatio) {
         const stakeContract = useStakingContract()
@@ -218,24 +236,6 @@ export default {
       const contractEthBalance = new BigNumber(state.totalStaked).multipliedBy(state.shareOfThePool.dividedBy(100))
       return contractEthBalance
     })
-
-    const initialize = async () => {
-      const contract = useSEENContract()
-      let balance = await contract.balanceOf(process.env.VUE_APP_XSEEN_CONTRACT_ADDRESS)
-      state.totalStaked = formatEther(balance.toString())
-
-      const stakeContract = useStakingContract()
-      let totalSupplyxSeen = await stakeContract.totalSupply()
-      state.totalxSeenSupply = formatEther(totalSupplyxSeen.toString())
-
-      const xSeenToSeenConversionRate = BigNumber(BigNumber(balance.toString())).dividedBy(totalSupplyxSeen.toString())
-      state.xSeenToSeenRatio = xSeenToSeenConversionRate.toString()
-
-      const library = provider.value ? new Web3Provider(provider.value) : new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
-
-      const cb = await library.getBalance(process.env.VUE_APP_SEEN_CONTRACT_ADDRESS)
-      state.contractEthBalance = formatEther(cb.toString())
-    }
 
     return {
       formatCrypto,
