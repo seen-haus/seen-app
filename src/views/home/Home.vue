@@ -66,12 +66,6 @@
           ></div>
         </template>
       </div>
-
-      <router-link to="drops">
-        <button :class="darkMode ? 'light' : 'dark'" class="button mt-20 mx-auto w-full md:w-96">
-          View All Drops
-        </button>
-      </router-link>
     </container>
 
     <container class="section-featured-auctions">
@@ -118,12 +112,6 @@
           ></div>
         </template>
       </div>
-
-      <router-link to="drops">
-        <button :class="darkMode ? 'light' : 'dark'" class="button mt-20 mx-auto w-full md:w-96">
-          View All Drops
-        </button>
-      </router-link>
     </container>
 
     <!-- <div :class="darkMode ? 'dark-mode-background' : 'bg-background-gray'" class="learn-how-to border-t border-b">
@@ -182,12 +170,6 @@
           ></div>
         </template>
       </div>
-
-      <router-link to="creators">
-        <button :class="darkMode ? 'light' : 'dark'" class="button mt-20 mx-auto w-full md:w-96">
-          View All Creators
-        </button>
-      </router-link>
     </container>
   </div>
 </template>
