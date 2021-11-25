@@ -78,7 +78,7 @@
     </container>
 
     <container class="section-featured-auctions">
-      <div class="flex items-center pt-20 lg:pt-24 flex-col lg:flex-row">
+      <div class="flex items-center pt-16 lg:pt-16 flex-col lg:flex-row">
         <img src="@/assets/icons/paint-palette.svg" class="mr-2"/>
         <common-title
           class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
@@ -222,7 +222,7 @@ export default {
     const heroCollectableApi = useHeroCollectable();
     const heroCollectable = computed(() => heroCollectableApi?.heroCollectable?.value);
     
-    const paginatedLiveCollectables = useDropsWithPagination(null, 7, {excludeEnded: true}); // Use 7 in case one of them is the hero listing
+    const paginatedLiveCollectables = useDropsWithPagination(null, 7, {excludeEnded: true, excludeComingSoon: true}); // Use 7 in case one of them is the hero listing
     const paginatedEndedCollectables = useDropsWithPagination(null, 7, {excludeLive: true}); // Use 7 in case one of them is the hero listing
 
     const listOfLiveCollectables = computed(

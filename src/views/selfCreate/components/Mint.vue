@@ -486,7 +486,7 @@ export default {
 
         let maxLengths = {
             title: 30,
-            description: 500,
+            description: 1000,
             units: 5,
             tags: 25, // Max text length of combined tags
             properties: 10, // 10 properties max, not a limit per text value
@@ -760,7 +760,8 @@ export default {
                 if(data.selectedType === 'nft-digital') {
                     store.dispatch('application/openModal', 'TransactionModal')
                     try {
-                        let tx = await seenNFTContract.value.contract.mintDigital(unitField?.value, account?.value, `ipfs://${props.metaDataIpfsHashData}`, props.secondaryRoyaltyFeeData);
+                        let royaltyFeeToBasisPoints = (props.secondaryRoyaltyFeeData.toFixed(2) * 100).toFixed(0)
+                        let tx = await seenNFTContract.value.contract.mintDigital(unitField?.value, account?.value, `ipfs://${props.metaDataIpfsHashData}`, royaltyFeeToBasisPoints);
                         store.dispatch('application/setPendingTransactionHash', tx.hash)
                         tx.wait()
                             .then((response) => {

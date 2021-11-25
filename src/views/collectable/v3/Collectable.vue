@@ -103,8 +103,14 @@
     </container>
     <container v-if="!showSecondaryMarket">
       
-      <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-12 md:mt-0">
+      <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-6">
         <div class="left-side col-span-7 pb-6">
+          <sub-title
+            class="text-black hidden lg:flex pb-5"
+            textAlign="left"
+          >
+            {{title}}
+          </sub-title>
           <div class="text-lg description" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'" v-html="description"></div>
           <template v-if="showAdditionalInformation">
             <!--            <div class="rounded-container flex items-center mt-12">-->
@@ -129,7 +135,7 @@
               </div>
             </div>
 
-            <div class="rounded-container flex items-center mt-6" :class="darkMode && 'dark-mode-surface no-border'" v-if="!isAuction">
+            <!-- <div class="rounded-container flex items-center mt-6" :class="darkMode && 'dark-mode-surface no-border'" v-if="!isAuction">
               <i
                   class="fas fa-trash-alt text-3xl icon-right mr-6"
                   :class="darkMode ? 'dark-mode-text' : 'text-gray-500'"
@@ -139,7 +145,7 @@
                 Once your item is shipped your information will be deleted from
                 our registry.
               </div>
-            </div>
+            </div> -->
           </template>
 
           <div v-if="artist" class="text-4xl font-title font-bold mt-14 mb-6" :class="darkMode && 'dark-mode-text'">
@@ -573,6 +579,7 @@ export default {
   margin-top: 200px;
 }
 .description {
+  white-space: pre-line;
   p {
     margin-bottom: 1rem;
   }
