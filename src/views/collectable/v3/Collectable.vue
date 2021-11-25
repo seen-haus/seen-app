@@ -111,7 +111,7 @@
           >
             {{title}}
           </sub-title>
-          <div class="text-lg description" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'" v-html="description"></div>
+          <light-typography class="description" textAlign="left" fontSize="18px">{{description}}</light-typography>
           <template v-if="showAdditionalInformation">
             <!--            <div class="rounded-container flex items-center mt-12">-->
             <!--              <i-->
@@ -250,6 +250,7 @@ import {useMeta} from "vue-meta";
 import {useStore} from "vuex";
 
 import SubTitle from "@/components/SubTitle.vue";
+import LightTypography from "@/components/LightTypography.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
@@ -279,6 +280,7 @@ export default {
   components: {
     SocialSharing,
     FencedTitle,
+    LightTypography,
     Container,
     UserBadge,
     UserOrArtistBadge,

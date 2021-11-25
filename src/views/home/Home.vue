@@ -10,7 +10,13 @@
       :style="{ 'padding-bottom': '40%' }"
     ></div>
 
-    <container class="section-featured-auctions pt-20">
+    <container class="section-featured-auctions relative pt-20">
+      <div class="abstract-circles" :style="{
+          'left': '-274px',
+          'top': '77px'
+        }">
+        <img src="@/assets/images/abstract-circles.svg" alt="">
+      </div>
       <div class="grid grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-10">
         <div class="flex-center flex-col">
           <icon-square icon="paint-and-brush.svg"></icon-square>
