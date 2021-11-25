@@ -72,7 +72,7 @@
         </div>
 
         <div class="timer pt-2">
-          <progress-bar
+          <!-- <progress-bar
               :inversed="isAuction || isOpenEdition"
               class="h-3"
               :class="{'': progress === 1}"
@@ -86,7 +86,7 @@
                   : 'bg-primary'
                 : 'bg-primary'
             "
-          />
+          /> -->
 
           <template v-if="isAuction">
             <div
@@ -140,11 +140,11 @@
             <div
                 v-else
                 class="text-sm font-bold mt-2"
-                :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
+                :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
             >
               {{
                 isCollectableActive
-                    ? `${items} out of ${itemsOf}`
+                    ? `${items} out of ${itemsOf} editions left`
                     : is_sold_out
                     ? "Sold Out"
                     : "Ended"
