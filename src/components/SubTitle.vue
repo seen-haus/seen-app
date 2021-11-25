@@ -14,6 +14,7 @@
           ...(titleMonospace && {'font-family': 'monospace'}),
           ...(lineHeight && {'line-height': lineHeight}),
           ...(upperCase && {'text-transform': 'uppercase'}),
+          ...(color && {'color': color}),
           ...(overflowEllipsis && {
             'text-overflow': 'ellipsis',
             'overflow': 'hidden',
@@ -39,6 +40,7 @@ export default {
     lineHeight: String,
     overflowEllipsis: Boolean,
     upperCase: Boolean,
+    color: String,
   },
   computed: {
     alignment: function () {

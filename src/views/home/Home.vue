@@ -10,7 +10,13 @@
       :style="{ 'padding-bottom': '40%' }"
     ></div>
 
-    <container class="section-featured-auctions pt-20">
+    <container class="section-featured-auctions relative pt-20">
+      <div class="abstract-circles" :style="{
+          'left': '-274px',
+          'top': '77px'
+        }">
+        <img src="@/assets/images/abstract-circles.svg" alt="">
+      </div>
       <div class="grid grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-10">
         <div class="flex-center flex-col">
           <icon-square icon="paint-and-brush.svg"></icon-square>
@@ -19,7 +25,7 @@
         </div>
         <div class="flex-center flex-col">
           <icon-square icon="royalties.svg"></icon-square>
-          <sub-title fontSize="24px" class="mt-2">Pioneering art market royalties</sub-title>
+          <sub-title fontSize="24px" class="mt-2">Pioneering royalties</sub-title>
           <light-typography maxWidth="280px" class="mt-2">Artists receive royalties for secondary sales of their artworks on any EIP-2981 compliant marketplaces – forever</light-typography>
         </div>
         <div class="flex-center flex-col">
@@ -30,8 +36,8 @@
       </div>
     </container>
 
-    <container class="section-featured-auctions pb-24">
-      <div class="flex items-center pb-12 pt-20 lg:pt-24 flex-col lg:flex-row">
+    <container class="section-featured-auctions pb-12">
+      <div class="flex items-center pt-20 lg:pt-24 flex-col lg:flex-row">
         <img src="@/assets/icons/orange-flame.svg" class="mr-2"/>
         <common-title
           class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
@@ -48,58 +54,73 @@
       </div>
 
       <div
-        class="auction-list-big grid grid-cols-1 md:grid-cols-2 mb-22 gap-10"
+        class="auction-list-big grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
       >
         <template
-          v-for="collectable in featuredCollectables"
+          v-for="collectable in listOfLiveCollectables"
           :key="collectable && collectable.id"
         >
-          <product-card
+          <product-card-v3
             v-if="collectable != null"
             :collectable="collectable"
             @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
           />
           <div
             v-else
-            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
+            class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
             :style="{ 'padding-bottom': '120%' }"
           ></div>
         </template>
-        <!-- <product-card />
-        <product-card /> -->
+      </div>
+    </container>
+
+    <container class="section-featured-auctions">
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 gap-10 mt-9"
+      >
+        <pane-link image="state-of-seen.jpeg" title="State of SEEN" link="https://seen-haus.medium.com/" :isExternalLink="true"/>
+        <pane-link image="discord.jpeg" title="Discord Community" link="https://discord.com/invite/dad8J4f" :isExternalLink="true"/>
+      </div>
+    </container>
+
+    <container class="section-featured-auctions">
+      <div class="flex items-center pt-16 lg:pt-16 flex-col lg:flex-row">
+        <img src="@/assets/icons/paint-palette.svg" class="mr-2"/>
+        <common-title
+          class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
+          color="fence-light"
+          textAlign="left"
+          :closed="false"
+          >Featured</common-title>
+        <router-link to="drops" class="hidden lg:block">
+          <button :class="darkMode ? 'light' : 'dark'" class="button flex-shrink-0">
+            View All Drops <i class="fas fa-arrow-right ml-3 icon-right"></i>
+          </button>
+        </router-link>
       </div>
 
       <div
-        class="auction-list-big grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
+        class="auction-list-big grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
       >
         <template
-          v-for="collectable in otherCollectables"
+          v-for="collectable in listOfEndedCollectables"
           :key="collectable && collectable.id"
         >
-          <product-card
+          <product-card-v3
             v-if="collectable != null"
             :collectable="collectable"
             @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
           />
           <div
             v-else
-            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
+            class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
             :style="{ 'padding-bottom': '120%' }"
           ></div>
         </template>
-        <!-- <product-card />
-        <product-card />
-        <product-card /> -->
       </div>
-
-      <router-link to="drops">
-        <button :class="darkMode ? 'light' : 'dark'" class="button mt-20 mx-auto w-full md:w-96">
-          View All Drops
-        </button>
-      </router-link>
     </container>
 
-    <div :class="darkMode ? 'dark-mode-background' : 'bg-background-gray'" class="learn-how-to border-t border-b">
+    <!-- <div :class="darkMode ? 'dark-mode-background' : 'bg-background-gray'" class="learn-how-to border-t border-b">
       <container class="py-24 pb-56 mb-8">
         <fenced-title
           class="flex-grow mr-0 mb-8 self-stretch"
@@ -127,18 +148,25 @@
       <container class="flex justify-center">
         <quote-carousel class="centered-quote" />
       </container>
-    </div>
+    </div> -->
 
-    <container class="meet-artists -mt-12 pb-32">
-      <fenced-title
-        class="flex-grow mr-0 mb-8 self-stretch"
-        color="fence-gray"
-        textAlign="center"
-        :closed="true"
-        >Creators
-      </fenced-title>
+    <container class="meet-artists pb-32">
+      <div class="flex items-center pt-20 lg:pt-24 flex-col lg:flex-row">
+        <img src="@/assets/icons/trending.svg" class="mr-2"/>
+        <common-title
+          class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
+          color="fence-light"
+          textAlign="left"
+          :closed="false"
+          >Creators</common-title>
+        <router-link to="creators" class="hidden lg:block">
+          <button :class="darkMode ? 'light' : 'dark'" class="button flex-shrink-0">
+            View All Creators <i class="fas fa-arrow-right ml-3 icon-right"></i>
+          </button>
+        </router-link>
+      </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9">
         <template v-for="artist in listOfArtists" :key="artist && artist.id">
           <artist-card v-if="artist != null" :artist="artist" />
           <div
@@ -148,12 +176,6 @@
           ></div>
         </template>
       </div>
-
-      <router-link to="creators">
-        <button :class="darkMode ? 'light' : 'dark'" class="button mt-20 mx-auto w-full md:w-96">
-          View All Creators
-        </button>
-      </router-link>
     </container>
   </div>
 </template>
@@ -167,15 +189,17 @@ import Container from "@/components/Container.vue";
 import SubTitle from "@/components/SubTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
 import IconSquare from "@/components/IconSquare.vue";
-import ProductCard from "@/components/ProductCard.vue";
+import ProductCardV3 from "@/components/ProductCardV3.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import CommonTitle from "@/components/CommonTitle.vue";
 import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 import HeroAuction from "./components/HeroAuction.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
+import PaneLink from "@/components/PaneLink.vue";
 import useDarkMode from "@/hooks/useDarkMode";
-import useCollectablesWithPagination from "@/hooks/useCollectablesWithPagination.js";
+import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
+import useHeroCollectable from "@/hooks/useHeroCollectable.js";
 import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
 
 export default {
@@ -185,13 +209,14 @@ export default {
     Container,
     FencedTitle,
     CommonTitle,
-    ProductCard,
+    ProductCardV3,
     HowToVideo,
     QuoteCarousel,
     ArtistCard,
     SubTitle,
     LightTypography,
     IconSquare,
+    PaneLink,
   },
   setup() {
     const { meta } = useMeta({
@@ -200,30 +225,27 @@ export default {
     const router = useRouter();
     const { darkMode } = useDarkMode();
 
-    const paginatedCollectables = useCollectablesWithPagination( 0);
-    const listOfCollectables = computed(
-      () => paginatedCollectables.listOfCollectables.value
+    const heroCollectableApi = useHeroCollectable();
+    const heroCollectable = computed(() => heroCollectableApi?.heroCollectable?.value);
+    
+    const paginatedLiveCollectables = useDropsWithPagination(null, 7, {excludeEnded: true, excludeComingSoon: true}); // Use 7 in case one of them is the hero listing
+    const paginatedEndedCollectables = useDropsWithPagination(null, 7, {excludeLive: true}); // Use 7 in case one of them is the hero listing
+
+    const listOfLiveCollectables = computed(
+      // Uncomment if hero should be excluded from live list
+      // () => paginatedCollectables.listOfCollectables.value.filter(item =>  item && !item.featured_drop).slice(0,6) // Limit to 6 items
+      () => paginatedLiveCollectables.listOfCollectables.value.slice(0,6) // Limit to 6 items
     );
 
-    const listOfNonHeroCollectables = computed(
-      () => paginatedCollectables.listOfCollectables.value.filter(item =>  item && !item.featured_drop)
+    const listOfEndedCollectables = computed(
+      // Uncomment if hero should be excluded from ended list
+      // () => paginatedCollectables.listOfCollectables.value.filter(item =>  item && !item.featured_drop).slice(0,6) // Limit to 6 items
+      () => paginatedEndedCollectables.listOfCollectables.value.slice(0,6) // Limit to 6 items
     );
 
-    const heroCollectable = computed(() => listOfCollectables.value.filter(item =>  item && item.featured_drop)[0] || listOfCollectables.value[0]);
-    const featuredCollectables = computed(() =>
-      [listOfNonHeroCollectables.value[0], listOfNonHeroCollectables.value[1]].filter(
-        (i) => i !== undefined
-      )
-    );
-    const otherCollectables = computed(() =>
-      [
-        listOfNonHeroCollectables.value[2],
-        listOfNonHeroCollectables.value[3],
-        listOfNonHeroCollectables.value[4],
-      ].filter((i) => i !== undefined)
-    );
-
-    paginatedCollectables.load();
+    paginatedLiveCollectables.load();
+    paginatedEndedCollectables.load();
+    heroCollectableApi.load();
 
     const navigateToCollectable = function (slug, isSlugFullRoute, version) {
       if(isSlugFullRoute) {
@@ -245,6 +267,15 @@ export default {
       }
     };
 
+    const navigateToCollection = function (slug) {
+      router.push({
+          name: 'collection',
+          params: {
+            collectionName: slug
+          }
+      });
+    }
+
     const paginatedArtists = useArtistsWithPagination();
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
 
@@ -252,10 +283,11 @@ export default {
 
     return {
       heroCollectable,
-      featuredCollectables,
-      otherCollectables,
+      listOfLiveCollectables,
+      listOfEndedCollectables,
       listOfArtists,
       navigateToCollectable,
+      navigateToCollection,
       darkMode,
     };
   },

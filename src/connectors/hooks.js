@@ -22,4 +22,3 @@ export default function useWeb3() {
         connecting,
     }
 }
-

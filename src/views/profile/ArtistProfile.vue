@@ -109,7 +109,7 @@ export default {
 
     const backgroundImage = ref(false);
 
-    const darkModeEnabled = ['0xmons'].indexOf(router?.currentRoute?.value?.params?.artistSlug) > -1;
+    const darkModeEnabled = ['0xmons', 'haydiroket', 'tengushee', 'desultor', 'cruelcoppinger', 'nostallergy', 'deathimself'].indexOf(router?.currentRoute?.value?.params?.artistSlug) > -1
     setDarkMode(darkModeEnabled);
     
     // TODO: Make this into a DB datasource unless V3 no longer uses this

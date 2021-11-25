@@ -81,6 +81,9 @@ export const CollectablesService = {
         // serialize
         return ApiService.query('collectables', {...pagination, ...filter});
     },
+    hero() {
+        return ApiService.query('hero');
+    },
     show(slug) {
         return ApiService.get(`collectables/${slug}`);
     },

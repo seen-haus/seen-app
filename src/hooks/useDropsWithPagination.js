@@ -7,8 +7,7 @@ import { computed, reactive } from "vue";
 export default function useDropsWithPagination(
   artistId = null,
   perPage = 12,
-  includeIsHiddenFromDropList = false,
-  bundleChildId = false
+  initAdditionalFiltrationOptions = {}
 ) {
   const state = reactive({
     items: [null, null, null, null, null, null],
@@ -17,7 +16,7 @@ export default function useDropsWithPagination(
     hasMore: false,
     filter: PURCHASE_TYPE.BOTH,
     artistId,
-    includeIsHiddenFromDropList: includeIsHiddenFromDropList,
+    additionalFiltrationOptions: initAdditionalFiltrationOptions
   });
 
   async function load() {
@@ -43,11 +42,26 @@ export default function useDropsWithPagination(
     if (artistId != null) {
       filtrationOptions.artistId = artistId;
     }
-    if (includeIsHiddenFromDropList !== false) {
-      filtrationOptions.includeIsHiddenFromDropList = true;
-    }
-    if(bundleChildId !== false){
-      filtrationOptions.bundleChildId = bundleChildId;
+
+    if(state.additionalFiltrationOptions) {
+      if (state.additionalFiltrationOptions?.includeIsHiddenFromDropList) {
+        filtrationOptions.includeIsHiddenFromDropList = true;
+      }
+      if(state.additionalFiltrationOptions?.bundleChildId){
+        filtrationOptions.bundleChildId = state.additionalFiltrationOptions.bundleChildId;
+      }
+      if(state.additionalFiltrationOptions?.collectionName) {
+        filtrationOptions.collectionName = state.additionalFiltrationOptions.collectionName;
+      }
+      if(state.additionalFiltrationOptions?.excludeEnded) {
+        filtrationOptions.excludeEnded = state.additionalFiltrationOptions.excludeEnded;
+      }
+      if(state.additionalFiltrationOptions?.excludeLive) {
+        filtrationOptions.excludeLive = state.additionalFiltrationOptions.excludeLive;
+      }
+      if(state.additionalFiltrationOptions?.excludeComingSoon) {
+        filtrationOptions.excludeComingSoon = state.additionalFiltrationOptions.excludeComingSoon;
+      }
     }
 
     const { data, metadata } = await CollectablesService.list(
@@ -113,8 +127,25 @@ export default function useDropsWithPagination(
     if (artistId != null) {
       filtrationOptions.artistId = artistId;
     }
-    if (includeIsHiddenFromDropList !== false) {
-      filtrationOptions.includeIsHiddenFromDropList = true;
+    if(state.additionalFiltrationOptions) {
+      if (state.additionalFiltrationOptions?.includeIsHiddenFromDropList) {
+        filtrationOptions.includeIsHiddenFromDropList = true;
+      }
+      if(state.additionalFiltrationOptions?.bundleChildId){
+        filtrationOptions.bundleChildId = state.additionalFiltrationOptions.bundleChildId;
+      }
+      if(state.additionalFiltrationOptions?.collectionName) {
+        filtrationOptions.collectionName = state.additionalFiltrationOptions.collectionName;
+      }
+      if(state.additionalFiltrationOptions?.excludeEnded) {
+        filtrationOptions.excludeEnded = state.additionalFiltrationOptions.excludeEnded;
+      }
+      if(state.additionalFiltrationOptions?.excludeLive) {
+        filtrationOptions.excludeLive = state.additionalFiltrationOptions.excludeLive;
+      }
+      if(state.additionalFiltrationOptions?.excludeComingSoon) {
+        filtrationOptions.excludeComingSoon = state.additionalFiltrationOptions.excludeComingSoon;
+      }
     }
 
     const { data, metadata } = await CollectablesService.list(
@@ -132,8 +163,9 @@ export default function useDropsWithPagination(
       metadata.pagination.totalPages !== state.page;
   }
 
-  function filter(filterAuctions, filterEditions) {
+  function filter(filterAuctions, filterEditions, additionalFiltrationOptions) {
     state.filter = getFilter(filterAuctions, filterEditions);
+    state.additionalFiltrationOptions = {...state.additionalFiltrationOptions, ...additionalFiltrationOptions};
     load();
   }
 

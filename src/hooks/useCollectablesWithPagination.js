@@ -3,17 +3,17 @@ import { COLLECTABLE_TYPE } from "@/constants/Collectables.js";
 import { computed, reactive } from "vue";
 
 
-export default function useCollectablesWithPagination(purchaseType = 1) {
+export default function useCollectablesWithPagination(purchaseType = 1, perPage = 6) {
   const state = reactive({
     items: [null, null, null, null, null, null],
-    perPage: 6,
+    perPage: perPage,
     page: 1,
     hasMore: false,
     filter: COLLECTABLE_TYPE.NONE,
   });
 
   async function load() {
-    state.perPage = 6;
+    state.perPage = perPage;
     state.page = 1;
     state.hasMore = false;
 

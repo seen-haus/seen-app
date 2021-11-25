@@ -124,6 +124,10 @@
               :isAuction="isAuction"
               :numberOfBids="events.length"
               :isOpenEdition="isOpenEdition"
+              :isVRFSale="isVRFSale"
+              :hasRequestedVRF="hasRequestedVRF"
+              :hasFulfilledVRF="hasFulfilledVRF"
+              :hasCommittedVRF="hasCommittedVRF"
               :itemsBought="itemsBought"
               :edition="edition"
               :edition_of="edition_of"
@@ -273,7 +277,11 @@ export default {
       isCollectableActive,
       isUpcomming,
       isOpenEdition,
+      isVRFSale,
       itemsBought,
+      hasRequestedVRF,
+      hasFulfilledVRF,
+      hasCommittedVRF,
       // Static
       type,
       media,
@@ -308,7 +316,16 @@ export default {
     const backgroundImage = ref(false);
     const titleMonospace = ref(false);
 
-    const darkModeEnabled = ['0xmons-mork'].indexOf(route.params["slug"]) > -1;
+    const darkModeEnabled = [
+      '0xmons-mork',
+      'crossover',
+      'virus',
+      'enkindle',
+      'eye-contact',
+      'face-off',
+      'nosferatus-mushroom-party',
+    ].indexOf(route.params["slug"]) > -1;
+    
     setDarkMode(darkModeEnabled);
 
     onUnmounted(() => {
@@ -463,6 +480,10 @@ export default {
       nextBidPrice,
       isOpenEdition,
       itemsBought,
+      isVRFSale,
+      hasRequestedVRF,
+      hasFulfilledVRF,
+      hasCommittedVRF,
       backgroundImage,
       darkMode,
       titleMonospace,
@@ -483,6 +504,7 @@ export default {
 
 <style lang="scss">
 .description {
+  word-break: break-word;
   p {
     margin-bottom: 1rem;
   }

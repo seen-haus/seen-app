@@ -33,8 +33,7 @@
             text-align="center"
             :titleMonospace="titleMonospace"
             :closed="true"
-        ><span class="flex-shrink-0">{{ title }}</span></fenced-title
-        >
+        ><span class="flex-shrink-0">{{ title }}</span></fenced-title>
 
         <unfenced-title
             class="text-black hidden lg:flex"
@@ -45,18 +44,20 @@
         ><span class="flex-shrink-0">{{ title }}</span></unfenced-title>
 
         <div class="flex lg:justify-start items-center mt-2 justify-center">
-          <user-badge
-              type="dark"
-              v-if="artist"
-              :url="artist.avatar"
-              :username="pillOverride ? pillOverride : artist.name"
-              :artistSlug="artist.slug"
-          />
-          <live-indicator :status="liveStatus" class="text-white ml-4"/>
+          <div class="light-mode-surface button shortened shadow-lifted">
+            <user-or-artist-badge
+              :creatorAccount="creatorAccount"
+              :creatorUsername="creatorUsername"
+              :creatorProfilePicture="creatorProfilePicture"
+            />
+          </div>
+          <live-indicator :status="liveStatus" class="text-black ml-4"/>
         </div>
 
-        <div class="auction-action flex items-center pt-14">
-          <button class="button light mr-7" @click="navigateToCollectable">
+        <light-typography textAlign="left" class="mt-6 collectable-description">{{description}}</light-typography>
+
+        <div class="auction-action flex items-center pt-6">
+          <button class="button primary dark mr-7" @click="navigateToCollectable">
             {{ isUpcomming && !collectable.contract_address ? "Preview" : (isAuction ? "View Auction" : "View Drop") }} <i class="fas fa-arrow-right ml-3 icon-right"></i>
           </button>
 
@@ -64,27 +65,28 @@
               size="md"
               type="Ether"
               v-if="!shouldHidePrice"
-              :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
+              :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
               :price="price"
               :priceUSD="isAuction ? priceUSD : priceUSDSold"
           />
         </div>
 
-        <div class="timer pt-12">
-          <progress-bar
+        <div class="timer pt-2">
+          <!-- <progress-bar
               :inversed="isAuction || isOpenEdition"
               class="h-3"
+              :class="{'': progress === 1}"
               progressBackgroundColor="bg-fence-dark"
               :endDate="currentEndsAt"
               :progress="progress"
               :colorClass="
               isCollectableActive && !isAwaitingReserve
                 ? isUpcomming
-                  ? 'bg-white'
+                  ? 'bg-primary'
                   : 'bg-primary'
-                : 'bg-white'
+                : 'bg-primary'
             "
-          />
+          /> -->
 
           <template v-if="isAuction">
             <div
@@ -97,7 +99,7 @@
                 v-if="!is_sold_out && !isAwaitingReserve"
                 ref="timerRef"
                 class="text-black text-sm mt-2"
-                :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
+                :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
                 :startDate="getStartsAt"
                 :endDate="currentEndsAt"
                 :isAuction="isAuction"
@@ -117,7 +119,7 @@
                 v-if="(isUpcomming || isOpenEdition) && isCollectableActive"
                 ref="timerRef"
                 class="text-black text-sm mt-2"
-                :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
+                :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
                 :startDate="getStartsAt"
                 :endDate="currentEndsAt"
                 :isAuction="isAuction"
@@ -138,11 +140,11 @@
             <div
                 v-else
                 class="text-sm font-bold mt-2"
-                :class="isCollectableActive ? 'text-white' : 'text-gray-400'"
+                :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
             >
               {{
                 isCollectableActive
-                    ? `${items} out of ${itemsOf}`
+                    ? `${items} out of ${itemsOf} editions left`
                     : is_sold_out
                     ? "Sold Out"
                     : "Ended"
@@ -166,7 +168,7 @@ import {computed, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import { useStore } from "vuex";
 
-import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
+import UserOrArtistBadge from "@/components/PillsAndTags/UserOrArtistBadge.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
@@ -175,6 +177,7 @@ import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
+import LightTypography from "@/components/LightTypography.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
 import useDarkMode from "@/hooks/useDarkMode";
@@ -182,7 +185,7 @@ import useDarkMode from "@/hooks/useDarkMode";
 export default {
   name: "HeroAuction",
   components: {
-    UserBadge,
+    UserOrArtistBadge,
     Tag,
     PriceDisplay,
     ProgressBar,
@@ -192,6 +195,7 @@ export default {
     FencedTitle,
     UnfencedTitle,
     MediaLoader,
+    LightTypography,
   },
   props: {
     collectable: Object,
@@ -232,7 +236,11 @@ export default {
       // media,
       firstMedia,
       artist,
+      creatorAccount,
+      creatorProfilePicture,
+      creatorUsername,
       title,
+      description,
       startsAt,
       endsAt,
       liveStatus,
@@ -345,7 +353,11 @@ export default {
       type,
       firstMedia,
       artist,
+      creatorAccount,
+      creatorProfilePicture,
+      creatorUsername,
       title,
+      description,
       startsAt,
       endsAt,
       liveStatus,
@@ -400,6 +412,21 @@ export default {
       @apply font-title mr-4 text-black flex-shrink-0 font-bold;
       max-width: 80%;
       font-size: 46px;
+    }
+  }
+
+  .collectable-description {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    @supports (-webkit-line-clamp: 3) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: initial;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
     }
   }
 

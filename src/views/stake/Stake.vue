@@ -97,30 +97,30 @@
       </div>
 
       <div class="cards flex flex-col xl:flex-row">
-        <stake-or-withdraw-card :amount="seenBalance" :state="state" class="mr-0 mb-12 xl:mb-0 xl:mr-12" type-of="stake" />
-        <stake-or-withdraw-card :amount="seenBalance" :state="state" type-of="withdraw" />
+        <stake-or-withdraw-card :amount="seenBalance" :state="state" :onStaked="initialize" class="mr-0 mb-12 xl:mb-0 xl:mr-12" type-of="stake" />
+        <stake-or-withdraw-card :amount="seenBalance" :state="state" :onStaked="initialize" type-of="withdraw" />
       </div>
       <div class="cards flex flex-col xl:flex-row">
-        <distribution-card />
+        <distribution-card :onDistributed="initialize" />
       </div>
 
       <div class="grid grid-cols-1 gap-12 justify-between my-12">
         <unfenced-title class="text-black hidden" textAlign="left">How to Stake <span class="text-gradient">SEEN?</span></unfenced-title>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-10">
-          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12">
+        <div class="grid grid-cols-12 gap-10">
+          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12 lg:col-span-6 xl:col-span-3">
             <span class="text-white bg-black font-black p-6 rounded-lg text-3xl number-square">1</span>
             <span class="font-medium text-gray-400">Deposit your SEEN</span>
           </span>
-          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12">
+          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12 lg:col-span-6 xl:col-span-3">
             <span class="text-white bg-black font-black p-6 rounded-lg text-3xl number-square">2</span>
             <span class="font-medium text-gray-400">Receive xSEEN in return</span>
           </span>
-          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12">
+          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12 lg:col-span-6 xl:col-span-3">
             <span class="text-white bg-black font-black p-6 rounded-lg text-3xl number-square">3</span>
             <span class="font-medium text-gray-400">Start earning a portion of protocol fees</span>
           </span>
-          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12">
+          <span class="bg-white rounded-lg shadow-lifted p-8 text-center items-center flex flex-col gap-4 col-span-12 lg:col-span-6 xl:col-span-3">
             <span class="text-white bg-black font-black p-6 rounded-lg text-3xl number-square">4</span>
             <span class="font-medium text-gray-400">Redeem SEEN rewards by clicking withdraw*</span>
           </span>
@@ -185,24 +185,7 @@ export default {
       return store.getters["application/balance"].seen
     })
 
-    watchEffect(async () => {
-      if (account.value && state.totalxSeenSupply && state.totalStaked && state.xSeenToSeenRatio) {
-        const stakeContract = useStakingContract()
-        let balanceOf = await stakeContract.balanceOf(account.value)
-        balanceOf = formatEther(balanceOf.toString())
-        state.xSeenBalance = BigNumber(balanceOf)
-        let share = BigNumber(balanceOf).dividedBy(state.totalxSeenSupply)
-        state.shareOfThePool = share.multipliedBy(100)
-        const stakedSeenIncludingReward = BigNumber(state.xSeenToSeenRatio).multipliedBy(state.xSeenBalance)
-        state.seenIncludingReward = stakedSeenIncludingReward.toString()
-      }
-    })
-
-    watchEffect(async () => {
-      if (!provider?.value) {
-        return
-      }
-
+    const initialize = async () => {
       const contract = useSEENContract()
       let balance = await contract.balanceOf(process.env.VUE_APP_XSEEN_CONTRACT_ADDRESS)
       state.totalStaked = formatEther(balance.toString())
@@ -218,6 +201,28 @@ export default {
 
       const cb = await library.getBalance(process.env.VUE_APP_SEEN_CONTRACT_ADDRESS)
       state.contractEthBalance = formatEther(cb.toString())
+    }
+
+    watchEffect(async () => {
+      if (account.value && state.totalxSeenSupply && state.totalStaked && state.xSeenToSeenRatio) {
+        const stakeContract = useStakingContract()
+        let balanceOf = await stakeContract.balanceOf(account.value)
+        balanceOf = formatEther(balanceOf.toString())
+        state.xSeenBalance = BigNumber(balanceOf)
+        let share = BigNumber(balanceOf).dividedBy(state.totalxSeenSupply)
+        state.shareOfThePool = share.multipliedBy(100)
+        const stakedSeenIncludingReward = BigNumber(state.xSeenToSeenRatio).multipliedBy(state.xSeenBalance)
+        state.seenIncludingReward = stakedSeenIncludingReward.toString()
+
+      }
+    })
+
+    watchEffect(async () => {
+      if (!provider?.value) {
+        return
+      }
+
+      await initialize();
     })
 
     const totalStakedUsd = computed(() => {
@@ -238,7 +243,8 @@ export default {
       seenBalance,
       state,
       totalStakedUsd,
-      feesEarned
+      feesEarned,
+      initialize,
     }
   }
 }

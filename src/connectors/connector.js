@@ -4,7 +4,7 @@ import {
 import {reactive} from 'vue'
 import {ConnectorEvent} from "./types"
 import {SUPPORTED_WALLETS} from "./constants"
-
+import {DEFAULT_CHAIN_ID} from "@/constants/ChainIds";
 
 
 const state = reactive({
@@ -93,9 +93,13 @@ const update = (payload) => {
 const eagerConnect = () => {
     injected
         .isAuthorized()
-        .then(isAuthorized => {
+        .then(async (isAuthorized) => {
             if (isAuthorized) {
-                activate(SUPPORTED_WALLETS.METAMASK.connector)
+                let chainId = await injected.getChainId();
+                // Only autoconnect to wallet if it is on the default network
+                if(chainId && Number(chainId) === DEFAULT_CHAIN_ID) {
+                    activate(SUPPORTED_WALLETS.METAMASK.connector)
+                }
             }
         });
 }

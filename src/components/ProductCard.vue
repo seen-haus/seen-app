@@ -109,7 +109,7 @@
           <progress-timer
               ref="timerRef"
               class="text-black text-sm mt-2"
-              :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
+              :class="isCollectableActive ? collectableActiveTextColor : 'text-gray-400'"
               :startDate="getStartsAt"
               :endDate="getEndsAt"
               @onProgress="updateProgress"
@@ -281,7 +281,7 @@ export default {
 
     const { darkMode } = useDarkMode();
 
-    const collectableActiveTextColor = computed(() => darkMode.value ? 'dark-mode-text' : collectableActiveTextColor);
+    const collectableActiveTextColor = computed(() => darkMode.value ? 'dark-mode-text' : 'text-black');
 
     const handleHover = function (toState) {
       if (autoplay) return; // On autoplay we dont handle hover
