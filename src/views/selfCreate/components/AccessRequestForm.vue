@@ -1,9 +1,9 @@
 <template>
-  <div class="flex w-full mt-8">
+  <div class="flex w-full flex-center mt-8">
       <div class="abstract-circles abstract-circles-request">
         <img src="@/assets/images/abstract-circles.svg" alt="" />
       </div>
-    <div class="access-request-form-container" v-if="!hasSubmittedRequest || !submissionSuccessful">
+    <div class="mint-access-request-form-container" v-if="!hasSubmittedRequest || !submissionSuccessful">
       <sub-title
         class="
           light-back-button
@@ -349,7 +349,7 @@ export default {
 <style lang="scss" scoped>
 .mint-access-request-form-container {
   max-width: 800px;
-  margin-right: 20px;
+  min-width: 50%;
   position: relative;
 }
 
@@ -371,14 +371,11 @@ export default {
 }
 
 .icon-prefix-input-container input {
-  padding-left: 11%;
+  padding-left: 40px;
 }
 
 .abstract-circles-request {
   top: 100px;
-  @screen lg {
-    left: 27%;
-  }
 }
 
 .light-back-button {

@@ -39,7 +39,7 @@
     </div>
     <div v-if="processData.showAccessRequestForm && processData.hasCheckedRoles">
         <container class="role-checking-loader-section flex-center pb-12">
-            <div class="flex-col flex">
+            <div class="flex-col w-full flex flex-center">
                 <AccessRequestForm />
             </div>
         </container>
