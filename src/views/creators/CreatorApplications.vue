@@ -12,7 +12,7 @@
       </div>
       <div class="flex-center">
         <div>
-          <img src="@/assets/images/paint-kit-dynamic-color.png" class="creator-application-image mb-8" alt="Creator Application Icon">
+          <img src="@/assets/images/paint-kit-dynamic-color.png" class="creator-application-image mb-6" alt="Creator Application Icon">
           <a href="https://hrrbhng6xw2.typeform.com/to/qRjFeDbt" class="w-full" target="_blank" rel="noopener noreferrer">
             <button class="w-full cursor-pointer primary button mt-3 md:mt-0 mb-3">
               V3 Self-Minting Whitelist Application
