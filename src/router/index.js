@@ -105,7 +105,12 @@ const routes = [
         component: () => import(/* webpackChunkName: "notifications" */ '../views/notifications/Notifications.vue')
     },
     {
-        path: '/creator/apply',
+        path: '/creator/apply', // This is here because there was a graphic made with a typo in it, use /creators/apply for routing within app
+        name: 'creatorApplicationsTypo',
+        component: () => import(/* webpackChunkName: "creatorApplicationsTypo" */ '../views/creators/CreatorApplications.vue')
+    },
+    {
+        path: '/creators/apply',
         name: 'creatorApplications',
         component: () => import(/* webpackChunkName: "creatorApplications" */ '../views/creators/CreatorApplications.vue')
     }
