@@ -104,6 +104,11 @@ const routes = [
         name: 'notifications',
         component: () => import(/* webpackChunkName: "notifications" */ '../views/notifications/Notifications.vue')
     },
+    {
+        path: '/creators/apply',
+        name: 'creatorApplications',
+        component: () => import(/* webpackChunkName: "creatorApplications" */ '../views/creators/CreatorApplications.vue')
+    }
 ]
 
 const router = createRouter({
