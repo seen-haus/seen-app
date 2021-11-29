@@ -130,5 +130,8 @@ export default {
 <style lang="scss" scoped>
 .router-wrap {
   min-height: calc(100vh - 298px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 </style>
