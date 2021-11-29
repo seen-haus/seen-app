@@ -64,12 +64,23 @@ export default {
 
 <style lang="scss" scoped>
   .icon-square {
-   background-color: black;
-   overflow: hidden;
-   width: 100%;
-   height: 230px;
-   position: relative;
+    background-color: black;
+    overflow: hidden;
+    width: 100%;
+    height: 230px;
+    position: relative;
+    box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.4);
+    transition: all 0.2s ease-out;
+    &:hover {
+      box-shadow: 0px 6px 30px rgba(142, 152, 160, 0.6);
+      transform: translateY(-2px);
+    }
+    &:active {
+      box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.3);
+      transform: translateY(2px);
+    }
   }
+
   .pointer {
     cursor: pointer;
   }
