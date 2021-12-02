@@ -32,7 +32,7 @@
         text-align="center"
         font-size="16px"
       >
-        To mint on seen.haus you must be an approved artist.<br />You may
+        To mint on seen.haus you must be an approved creator.<br />You may
         complete the following to be considered
       </light-typography>
       <div class="mt-6">
@@ -40,6 +40,23 @@
             @submit="onSubmit"
             class="font-semibold uppercase text-md text-black"
           >
+            <div class="fc mb-6">
+              <div class="flex-space-between">
+                <label class="disabled" for="wallet">Wallet Address</label>
+              </div>
+              <div class="icon-prefix-input-container">
+                <input
+                  type="text"
+                  id="wallet"
+                  class="w-full outlined-input disabled mt-2 wallet-input-background"
+                  placeholder="Your connected wallet address"
+                  :class="walletField.errors[0] && 'invalid-outline'"
+                  v-model="walletField.value"
+                />
+                <i class="mx-4 fa fa-wallet"></i>
+                <span class="error-notice">{{ walletField.errors[0] }}</span>
+              </div>
+            </div>
             <div class="fc mb-6">
               <div class="flex-space-between">
                 <label for="name">Name</label>
@@ -54,7 +71,7 @@
                   {{ maxLengths.name }}
                 </label>
               </div>
-              <div>
+              <div class="icon-prefix-input-container">
                 <input
                   type="text"
                   id="name"
@@ -63,6 +80,7 @@
                   :class="nameField.errors[0] && 'invalid-outline'"
                   v-model="nameField.value"
                 />
+                <i class="mx-4 far fa-user"></i>
                 <span class="error-notice">{{ nameField.errors[0] }}</span>
               </div>
             </div>
@@ -209,7 +227,7 @@
         text-align="center"
         font-size="16px"
       >
-        Our team manually curates creators and<br/>will reach out by instagram if you are selected
+        Our team manually curates creators and<br/>will reach out if you are selected
       </light-typography>
     </div>
   </div>
@@ -242,8 +260,11 @@ export default {
     });
     const toast = useToast();
 
+    const {account} = useWeb3();
+
     const { handleSubmit } = useForm({
       initialValues: {
+        wallet: account.value ? account.value : "",
         name: "",
         email: "",
         twitter: "",
@@ -255,8 +276,6 @@ export default {
     const isSubmittingRef = ref(false);
     const hasSubmittedRequest = ref(false);
     const submissionSuccessful = ref(false);
-
-    const {account} = useWeb3();
 
     const hasOneOfRequiredSocials = (values) => {
       if(values?.website && values?.website?.length > 0){
@@ -314,6 +333,9 @@ export default {
       website: 150,
     };
 
+    const walletField = reactive(
+      useField("wallet", `required`)
+    );
     const nameField = reactive(
       useField("name", `required|min:1|max:${maxLengths.name}`)
     );
@@ -331,6 +353,7 @@ export default {
     );
 
     return {
+      walletField,
       nameField,
       emailField,
       twitterField, 
@@ -376,6 +399,10 @@ export default {
 
 .abstract-circles-request {
   top: 100px;
+}
+
+.wallet-input-background {
+  background-color: #f5f5f5;
 }
 
 .light-back-button {
