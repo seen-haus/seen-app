@@ -18,13 +18,13 @@
           }"
           @click="$router.push({name: 'profileWithAddress', params: {userAddress: buyer.wallet_address}})"
         >
-          <icon v-if="!buyer.image"
+          <icon v-if="!buyer.avatar_image"
               :size="40"
               :wallet-address="buyer.wallet_address"
               class="mr-6 hidden sm:block"
           />
 
-          <div v-if="buyer.image" class="profile-avatar buyer-profile-photo mr-6" :style="{ backgroundImage: `url(${buyer?.image})` }"></div>
+          <div v-if="buyer.avatar_image" class="profile-avatar buyer-profile-photo mr-6" :style="{ backgroundImage: `url(${buyer?.avatar_image})` }"></div>
 
           <div class="flex flex-col flex-grow">
             <div class="address tracking-widest" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'">
@@ -86,7 +86,7 @@ export default {
       .reverse()
       .map(v => {
         const ud = extendedUserData.value[v.wallet_address.toLowerCase()];
-        return {...v, username: ud && ud.username, image: ud && ud.image}
+        return {...v, username: ud && ud.username, avatar_image: ud && ud.avatar_image}
       })
     );
     const showCount = ref(3);
@@ -113,7 +113,7 @@ export default {
 
       UserService.getExtendedUserData(payload).then(res => {
         extendedUserData.value = res.data.reduce((p, v) => {
-          p[v.walletAddress.toLowerCase()] = {username: v.username, image: v.image};
+          p[v.walletAddress.toLowerCase()] = {username: v.username, avatar_image: v.avatar_image};
           return p;
         }, {});
       }).catch(e => {

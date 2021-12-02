@@ -439,8 +439,8 @@ export default {
                 } else {
                     creatorData.value.account = false;
                 }
-                if(userStoreData?.image?.length > 0) {
-                    creatorData.value.profilePicture = userStoreData.image;
+                if(userStoreData?.avatar_image?.length > 0) {
+                    creatorData.value.profilePicture = userStoreData.avatar_image;
                 } else {
                     creatorData.value.profilePicture = false;
                 }

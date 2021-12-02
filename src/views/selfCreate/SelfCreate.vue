@@ -556,8 +556,8 @@ export default {
                 } else {
                     creatorData.value.account = false;
                 }
-                if(userStoreData?.image?.length > 0) {
-                    creatorData.value.profilePicture = userStoreData.image;
+                if(userStoreData?.avatar_image?.length > 0) {
+                    creatorData.value.profilePicture = userStoreData.avatar_image;
                 } else {
                     creatorData.value.profilePicture = false;
                 }
@@ -668,7 +668,7 @@ export default {
                                 processData.tags = data.tags.map(item => item.name);
                                 processData.title = data.title;
                                 processData.creatorAccount = data.user.wallet ? data.user.wallet : false;
-                                processData.creatorProfilePicture =  data.user.image ? data.user.image : false;
+                                processData.creatorProfilePicture =  data.user.avatar_image ? data.user.avatar_image : false;
                                 processData.creatorUsername =  data.user.username ? data.user.username : false;
                                 processData.tempMediaUrl = previewMedia?.[0]?.url;
                                 processData.skipFormNavigationCheck = true;
@@ -687,7 +687,7 @@ export default {
                                 processData.tags = data.collectable.tags.map(item => item.name);
                                 processData.title = data.collectable.title;
                                 processData.creatorAccount = data.user.wallet ? data.user.wallet : false;
-                                processData.creatorProfilePicture =  data.user.image ? data.user.image : false;
+                                processData.creatorProfilePicture =  data.user.avatar_image ? data.user.avatar_image : false;
                                 processData.creatorUsername =  data.user.username ? data.user.username : false;
                                 processData.tempMediaUrl = previewMedia?.[0]?.url;
                                 processData.skipFormNavigationCheck = true;

@@ -167,8 +167,8 @@ export default function useCollectableInformation(initialCollectable = {}) {
         }
     })
     const creatorProfilePicture = computed(() => {
-        if(collectable.value.user?.image) {
-            return collectable.value.user.image;
+        if(collectable.value.user?.avatar_image) {
+            return collectable.value.user.avatar_image;
         } else if (collectable.value.artist?.avatar) {
             return collectable.value.artist.avatar
         } else {

@@ -193,8 +193,8 @@ export default {
                 } else {
                   processData.creatorUsername = false;
                 }
-                if(userStoreData?.image?.length > 0) {
-                  processData.creatorProfilePicture = userStoreData.image;
+                if(userStoreData?.avatar_image?.length > 0) {
+                  processData.creatorProfilePicture = userStoreData.avatar_image;
                 } else {
                   processData.creatorProfilePicture = false;
                 }

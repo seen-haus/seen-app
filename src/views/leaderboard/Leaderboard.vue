@@ -98,7 +98,7 @@ export default {
 
     const extendedUsers = computed(() => [...state.users].map(v => {
         const ud = extendedUserData.value[v.wallet_address.toLowerCase()];
-        return {...v, username: ud && ud.username, image: ud && ud.image}
+        return {...v, username: ud && ud.username, avatar_image: ud && ud.avatar_image}
       })
     );
 
@@ -119,7 +119,7 @@ export default {
 
       UserService.getExtendedUserData(payload).then(res => {
         extendedUserData.value = res.data.reduce((p, v) => {
-          p[v.walletAddress.toLowerCase()] = {username: v.username, image: v.image};
+          p[v.walletAddress.toLowerCase()] = {username: v.username, avatar_image: v.avatar_image};
           return p;
         }, {});
       }).catch(e => {

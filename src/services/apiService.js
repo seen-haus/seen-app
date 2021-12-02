@@ -68,6 +68,9 @@ export const UserService = {
     avatar(payload) {
         return ApiService.post(`users/avatars/`, payload);
     },
+    banner(payload) {
+        return ApiService.post(`users/banners/`, payload);
+    },
 };
 
 export const LeaderboardService = {

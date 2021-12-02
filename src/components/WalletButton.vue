@@ -9,8 +9,8 @@
     <div @click="toggle" class="pr-4 md:pr-0">
       <div v-if="account" class="wallet-button-container">
         <button class="cursor-pointer button primary flex items-center wallet">
-          <div class="profile-avatar wallet-button-avatar" :style="{ backgroundImage: `url(${userLocal?.image})` }">
-            <identicon :size="32" :address="account" v-if="!userLocal?.image"/>
+          <div class="profile-avatar wallet-button-avatar" :style="{ backgroundImage: `url(${userLocal?.avatar_image})` }">
+            <identicon :size="32" :address="account" v-if="!userLocal?.avatar_image"/>
           </div>
           <div class="ml-2 flex flex-col items-start disable-text-transform">
             <span class="addressText" v-if="!userLocal?.username">{{ shortenAddress(account) }}</span>
