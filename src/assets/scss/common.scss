@@ -111,12 +111,23 @@
   color: #26c785;
 }
 
+.white-text-outline {
+  text-shadow: -1px 1px 2px #FFF,
+				  1px 1px 2px #FFF,
+				  1px -1px 0 #FFF,
+				  -1px -1px 0 #FFF;
+}
+
 .overflow-auto {
   overflow: auto;
 }
 
 .bg-dark-blue {
   background-color: #0071D9;
+}
+
+.render-line-breaks {
+  white-space: pre-line;
 }
 
 .active-green-icon {
@@ -128,6 +139,21 @@
   border-width: 0 !important;
 }
 
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus {
+  box-shadow: none;
+}
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  color: #000000;
+}
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  border-color: #36ec7d;
+}
+
+.p-tabview .p-tabview-nav li {
+  text-transform: uppercase;
+}
 
 .error-notice {
   @apply font-normal text-red-500 text-xs mt-2;

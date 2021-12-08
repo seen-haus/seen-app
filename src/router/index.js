@@ -80,7 +80,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "collectors" */ '../views/leaderboard/Leaderboard.vue')
     },
     {
-        path: '/profile/:userAddress',
+        path: '/profile/:userAddressOrUsername',
         name: 'profileWithAddress',
         component: () => import(/* webpackChunkName: "profileWithAddress" */ '../views/profile/Profile.vue')
     },

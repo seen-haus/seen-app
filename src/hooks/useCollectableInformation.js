@@ -154,16 +154,21 @@ export default function useCollectableInformation(initialCollectable = {}) {
         }
     });
     const creatorAccount = computed(() => {
-        console.log({
-            'collectable.value.user': collectable.value.user,
-            'collectable.value?.artist': collectable.value?.artist
-        })
         if(collectable.value.user?.wallet) {
             return collectable.value.user.wallet;
         } else if (collectable.value?.artist?.wallet) {
             return collectable.value.artist.wallet
         } else {
             return false;
+        }
+    })
+    const creatorType = computed(() => {
+        if(collectable.value.user?.wallet) {
+            return 'user';
+        } else if (collectable.value?.artist?.wallet) {
+            return 'artist';
+        } else {
+            return null;
         }
     })
     const creatorProfilePicture = computed(() => {
@@ -444,6 +449,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         creatorAccount,
         creatorProfilePicture,
         creatorUsername,
+        creatorType,
         listingType,
         isReadyForClosure,
         isClosed,

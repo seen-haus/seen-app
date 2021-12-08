@@ -108,7 +108,7 @@
             </p>
         </div>
         <template v-if="isCollectableActive">
-          <div class="text-gray-400 flex text-sm py-2">
+          <div class="text-gray-400 flex text-sm py-2" v-if="tangibility === 'tangible_nft'">
             <input
               class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
               v-model="acceptPhysicalTermsField.value"
@@ -581,9 +581,8 @@ export default {
         // Cover sale scenarios, show claim button when balance is positive
         let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
         let balanceOfCurrentAccount = 0;
-        if((collectableData.value.nft_token_id.indexOf("[") === 0) || collectableData.value.is_vrf_drop) {
-          let tokenIds = JSON.parse(collectableData.value.nft_token_id);
-          for(let tokenId of tokenIds) {
+        if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
+          for(let tokenId of collectableData.value.nft_token_id) {
             let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
             balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
           }
@@ -836,9 +835,8 @@ export default {
                 // Cover sale scenarios, show claim button when balance is positive
                 let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
                 let balanceOfCurrentAccount = 0;
-                if((collectableData.value.nft_token_id.indexOf("[") === 0) || collectableData.value.is_vrf_drop) {
-                  let tokenIds = JSON.parse(collectableData.value.nft_token_id);
-                  for(let tokenId of tokenIds) {
+                if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
+                  for(let tokenId of collectableData.value.nft_token_id) {
                     let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
                     balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
                   }
@@ -878,9 +876,8 @@ export default {
                 // Cover sale scenarios, show claim button when balance is positive
                 let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
                 let balanceOfCurrentAccount = 0;
-                if((collectableData.value.nft_token_id.indexOf("[") === 0) || collectableData.value.is_vrf_drop) {
-                  let tokenIds = JSON.parse(collectableData.value.nft_token_id);
-                  for(let tokenId of tokenIds) {
+                if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
+                  for(let tokenId of collectableData.value.nft_token_id) {
                     let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
                     balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
                   }

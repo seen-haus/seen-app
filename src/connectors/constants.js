@@ -59,6 +59,8 @@ export const SUPPORTED_WALLETS = {
 
 export const twitterRegx = /(?:http:\/\/)?(?:www\.)?twitter\.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[\w-]*\/)*([\w-]*)/;
 
+export const instagramRegx = /(?:http:\/\/)?(?:www\.)?instagram\.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[\w-]*\/)*([\w-]*)/;
+
 const invalidUrl = 'Website url is not valid';
 export const isValidHttpUrl = (string, optional = true) => {
     let url;

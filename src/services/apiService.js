@@ -207,18 +207,27 @@ export const OpenSeaAPIService = {
     async getProfileEntriesV3(chainId, owner, limit = 6, offset = 0) {
 
         const openSeaBaseAPI = useOpenSeaBaseAPI(chainId);
-        const openSeaCollection = useOpenSeaCollectionV3(chainId);
+        const openSeaCollections = useOpenSeaCollectionV3(chainId);
 
-        let v3NftContract = await useV3NftContractNetworkReactive(true);
+        let mayHaveMore = false;
 
-        const url = `${openSeaBaseAPI}assets?owner=${owner}&collection=${openSeaCollection}&limit=${limit}&offset=${offset}`;
-        const data = await $axios.get(url);
+        let groupedAssets = [];
+        
+        for(let openSeaCollection of openSeaCollections) {
 
-        console.log({data})
+            const url = `${openSeaBaseAPI}assets?owner=${owner}&collection=${openSeaCollection}&limit=${limit}&offset=${offset}`;
+            const collectionData = await $axios.get(url);
 
-        if (!data) return [];
+            if(collectionData?.assets?.length > 0) {
+                groupedAssets = [...groupedAssets, ...collectionData?.assets]
+                if(collectionData.assets.length === limit) {
+                    mayHaveMore = true;
+                }
+            }
 
-        const assets = data.assets;
+        }
+
+        const assets = groupedAssets;
 
         if (!assets.length) {
             return [];
@@ -237,25 +246,37 @@ export const OpenSeaAPIService = {
         const collectables = await ApiService.post('collectables/mapWithTokenContractAddress', {tokenContractAddressesToIds});
         const mapped = [];
 
+        let v3NftContract = await useV3NftContractNetworkReactive(true);
+
         for(let asset of assets) {
-            const match = collectables.data.find(c => c.nft_token_id === asset.token_id);
-            let tokenBalance = await v3NftContract.state.contract.balanceOf(owner, match.nft_token_id);
-            let previewMedia = match.media?.length > 0 ? match.media.filter(media => media.is_preview).map(item => item.url)[0] : false;
+            const match = collectables.data.find(c => {
+                if(!Array.isArray(c.nft_token_id) && parseInt(c.nft_token_id) === parseInt(asset.token_id)) {
+                    return true;
+                } else if (Array.isArray(c.nft_token_id) && (c.nft_token_id.indexOf(parseInt(asset.token_id)) > -1)) {
+                    return true;
+                }
+            });
             if (match) {
+                let tokenBalance = await v3NftContract.state.contract.balanceOf(owner, match.nft_token_id);
                 mapped.push({
                     data: {
-                        title: match.title,
-                        token_id: match.nft_token_id,
-                        token_address: match.nft_contract_address,
-                        image: previewMedia,
-                        tags: match.tags.map(tag => tag.name),
-                        openSeaPreviewImage: asset.image_url,
+                        ...match,
                         balance: Number(tokenBalance),
                     },
                 });
             }
         }
 
-        return mapped;
+        // Remove duplicates that could arise from multiples being owned of a multitoken drop
+        let consolidatedData = [];
+        let idTracker = [];
+        for(let item of mapped) {
+            if(idTracker.indexOf(item.data.id) === -1) {
+                consolidatedData.push(item);
+                idTracker.push(item.data.id);
+            }
+        }
+
+        return [consolidatedData, mayHaveMore];
     }
 };

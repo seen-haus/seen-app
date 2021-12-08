@@ -50,6 +50,7 @@
                     :creatorAccount="data.creatorAccount"
                     :creatorUsername="data.creatorUsername"
                     :creatorProfilePicture="data.creatorProfilePicture"
+                    :creatorType="data.creatorType"
                 />
             </div>
             <div v-if="(listingType !== 'sale') && (data.timerState !== TIMER_STATE.IN_PROGRESS) && (collectableState !== COLLECTABLE_STATE.AWAITING_RESERVE)" class="divider-line-inactive mt-3"/>
@@ -209,6 +210,7 @@ export default {
             type: [String, Boolean]
         },
         creatorAccount: String,
+        creatorType: String,
         titleText: String,
         tags: Array,
         tangibility: String,
@@ -265,6 +267,7 @@ export default {
             creatorAccount: props.creatorAccount,
             creatorUsername: props.creatorUsername,
             creatorProfilePicture: props.creatorProfilePicture,
+            creatorType: props.creatorType,
             tags: props.tags || [],
             tangibility: props.tangibility || "",
             timerState: props.timerState || false,
@@ -286,6 +289,7 @@ export default {
         watchEffect(() => {
             data.titleText = props.titleText;
             data.creatorAccount = props.creatorAccount;
+            data.creatorType = props.creatorType;
             data.creatorUsername = props.creatorUsername;
             data.creatorProfilePicture = props.creatorProfilePicture;
             data.tags = props.tags;

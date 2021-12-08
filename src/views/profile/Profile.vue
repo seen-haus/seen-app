@@ -1,116 +1,176 @@
 <template>
   <div class="profile">
-    <div
-      class="profile-background"
-      :style="{ backgroundImage: `url(${user.picture})` }"
-      v-if="user && user.picture"
-    ></div>
     <container class="relative">
-      <div v-if="isUserFound">
-        <div :class="user ? 'avatar' : 'no-avatar'">
-          <div
-            v-if="hasUserData"
-            class="bg-background-gray rounded-full w-full h-full flex justify-center items-center overflow-hidden"
-          >
-            <div class="pt-1 profile-avatar" :style="{ backgroundImage: `url(${user?.avatar_image})` }">
-              <identicon :size="100" :address="user?.wallet" v-if="user && !user.avatar_image" class="flex justify-center"/>
+      <div v-if="isUserFound || profileState.loading">
+        <edit-profile :class="user ? 'mt-8 w-full' : 'mb-8'"
+          :userData="user"
+          v-if="!profileState.loading"
+        ></edit-profile>
+        <div
+          class="profile-background rounded-xl mt-8"
+          :style="{ backgroundImage: `url(${user && getBackgroundImage(user?.banner_image)})` }"
+          v-if="user || profileState.loading"
+        ></div>
+        <div class="content-zone">
+          <div class="left-sidebar">
+            <div class="sticky-bio mb-12">
+              <div :class="'avatar'">
+                <div
+                  v-if="hasUserData"
+                  class="bg-background-gray rounded-full w-full h-full flex justify-center items-center overflow-hidden"
+                >
+                  <div class="profile-avatar" :style="{ backgroundImage: `url(${user?.avatar_image})` }">
+                    <identicon :size="232" :address="user?.wallet" v-if="user && !user.avatar_image" class="flex justify-center"/>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-4 flex flex-wrap items-center" :class="user ? 'justify-between' : 'justify-center'">
+                <div class="flex justify-start flex-wrap flex-col" v-if="user">
+                  <p class="font-bold text-3xl mr-4">{{ user ? user.username : 'New Profile' }}</p>
+                  <div class="wallet-address-badge rounded-20px flex justify-between items-center">
+                    <copy-helper
+                      v-if="hasUserData"
+                      :toCopy="user.wallet"
+                      :isIconSuffix="true"
+                      :text="cropWithExtension(user.wallet, 20)"
+                    />
+                  </div>
+                  <div class="text-xs text-gray-400 mt-2">
+                    <div v-if="socials">
+                      <social-line
+                        class="my-1"
+                        :social="social"
+                        :isVertical="false"
+                        :iconOnly="true"
+                        v-for="social in socials"
+                        :key="social.url"
+                      />
+                    </div>
+                    <div v-else>User has no socials yet</div>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-2 flex render-line-breaks bio-description-zone" v-if="user">
+                <div>
+                  {{
+                    user?.description ? user.description : "User has no description."
+                  }}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="mt-4 flex flex-wrap items-center" :class="user ? 'justify-between' : 'justify-center'">
-          <div class="flex justify-start flex-wrap" v-if="user">
-            <p class="font-bold text-3xl mr-4">{{ user ? user.username : 'New Profile' }}</p>
-            <div class="wallet-address-badge rounded-20px flex justify-between items-center">
-              <i class="fas fa-volleyball-ball text-lg"></i>
-              <copy-helper
-                v-if="hasUserData"
-                :toCopy="user.wallet"
-                :isIconSuffix="true"
-                :text="cropWithExtension(user.wallet, 20)"
-              />
-            </div>
+          <div class="right-content-area">
+            <TabView class="tab-container" v-model:activeIndex="activeTabIndex">
+              <TabPanel header="Collected">
+                <div v-if="user && listOfCollectables && listOfCollectables.length > 0">
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 my-8">
+                    <template
+                      v-for="collectable in listOfCollectables"
+                      :key="collectable && collectable.data.id"
+                    >
+                      <template v-if="collectable != null">
+                        <product-card-v3
+                          v-if="collectable != null"
+                          :collectable="collectable.data"
+                          @click="navigateToCollectable(collectable.data.slug, collectable.data.is_slug_full_route, collectable.data.version)"
+                        />
+                      </template>
+                      <div
+                        v-else
+                        class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
+                        :style="{ 'padding-bottom': '120%' }"
+                      ></div>
+                    </template>
+                  </div>
+                  <div class="flex justify-center w-full" v-if="listOfCollectables && listOfCollectables.length > 0 && hasMore">
+                    <button
+                      class="button dark mb-12 mt-8 mx-auto w-full md:w-96"
+                      @click="handleLoadMore"
+                    >
+                      Load More
+                    </button>
+                  </div>
+                </div>
+                <div v-else-if="collectablesReactive.loading">
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 my-8">
+                    <div
+                      class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
+                      :style="{ 'padding-bottom': '120%' }"
+                    ></div>
+                    <div
+                      class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
+                      :style="{ 'padding-bottom': '120%' }"
+                    ></div>
+                  </div>
+                </div>
+                <div v-else class="text-xl text-center py-8 no-collectable-zone">
+                  User has not collected any SEEN collectables yet.
+                </div>
+              </TabPanel>
+              <TabPanel header="Created">
+                <div v-if="user && creationsReactive?.listOfCreations && creationsReactive.listOfCreations.length > 0 && !creationsReactive.loading">
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 my-8">
+                    <template
+                      v-for="collectable in creationsReactive.listOfCreations"
+                      :key="collectable && collectable.id"
+                    >
+                      <template v-if="collectable != null">
+                        <product-card-v3
+                          v-if="collectable != null"
+                          :collectable="collectable"
+                          @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
+                        />
+                      </template>
+                      <div
+                        v-else
+                        class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
+                        :style="{ 'padding-bottom': '120%' }"
+                      ></div>
+                    </template>
+                  </div>
+                  <div class="flex justify-center w-full" v-if="creationsReactive?.hasMoreCreations">
+                    <button
+                      class="button dark mb-12 mt-8 mx-auto w-full md:w-96"
+                      @click="handleLoadMoreCreations"
+                    >
+                      Load More
+                    </button>
+                  </div>
+                </div>
+                <div v-else-if="creationsReactive.loading">
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 my-8">
+                    <div
+                      class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
+                      :style="{ 'padding-bottom': '120%' }"
+                    ></div>
+                    <div
+                      class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
+                      :style="{ 'padding-bottom': '120%' }"
+                    ></div>
+                  </div>
+                </div>
+                <div v-else class="text-xl text-center py-8 no-collectable-zone">
+                  User has no SEEN creations yet.
+                </div>
+              </TabPanel>
+            </TabView>
           </div>
-          <edit-profile :class="user ? '' : 'mb-8'"
-            :userData="user"
-          ></edit-profile>
-        </div>
-        <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-8" v-if="user">
-          <div>
-            {{
-              user?.description ? user.description : "User has no description."
-            }}
-          </div>
-          <div class="text-xs text-gray-400">
-            <div v-if="socials">
-              <social-line
-                class="my-1"
-                :social="social"
-                :isVertical="true"
-                v-for="social in socials"
-                :key="social.url"
-              />
-            </div>
-            <div v-else>User has no socials yet</div>
-          </div>
-        </div>
-        <fenced-title
-          class="flex-grow mr-0 mb-2 self-stretch"
-          color="fence-gray"
-          textAlign="center"
-          :closed="true"
-          >Collection</fenced-title
-        >
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 my-8" v-if="user && listOfCollectables && listOfCollectables.length > 0">
-          <template
-            v-for="collectable in listOfCollectables"
-            :key="collectable && collectable.data.id"
-          >
-            <template v-if="collectable != null">
-              <gift-product-card
-                v-if="collectable.asGift"
-                :collectable="collectable.data"
-              />
-              <product-card
-                v-else
-                :collectable="collectable.data"
-                @click="
-                  navigateToCollectable(collectable.data.slug, collectable.data.is_slug_full_route, collectable.data.version)
-                "
-              />
-            </template>
-            <div
-              v-else
-              class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
-              :style="{ 'padding-bottom': '120%' }"
-            ></div>
-          </template>
-
-        </div>
-        <div v-else class="text-xl text-center py-8 mb-12">
-          User has no collectables yet.
         </div>
       </div>
       <not-found v-else />
-      <div class="flex justify-center" v-if="listOfCollectables && listOfCollectables.length > 0 && hasMore">
-        <button
-          class="button dark mb-12 mx-auto w-full md:w-96"
-          @click="handleLoadMore"
-        >
-          Load More
-        </button>
-      </div>
     </container>
   </div>
 </template>
 
 <script>
-import { ref, computed, watchEffect } from "vue";
+import { ref, computed, watchEffect, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
 import useWeb3 from "@/connectors/hooks";
 
 import { UserService } from "@/services/apiService";
-import useUsersCollectionWithPagination from "@/hooks/useUsersCollectionWithPagination.js";
+import useUsersCollectionWithPagination from "@/hooks/v3/useUsersCollectionWithPaginationV3.js";
+import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
 
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
@@ -122,7 +182,9 @@ import NotFound from "@/components/Common/NotFound"
 import {useStore} from "vuex";
 
 import ProductCard from "@/components/ProductCard.vue";
+import ProductCardV3 from "@/components/ProductCardV3.vue";
 import GiftProductCard from "@/views/profile/components/GiftProductCard.vue";
+import { DEFAULT_CHAIN_ID } from "@/constants/ChainIds";
 
 export default {
   name: "Profile",
@@ -135,6 +197,7 @@ export default {
     Identicon,
     NotFound,
     ProductCard,
+    ProductCardV3,
     GiftProductCard,
   },
   methods: {
@@ -149,6 +212,14 @@ export default {
         text.substring(txtLength - txtLengthHalf + 2, txtLength).trim()
       ); //Return the string
     },
+    getBackgroundImage(backgroundImage) {
+      if(!backgroundImage) {
+        // Default background image
+        return require('./../../assets/images/default_banner_1.jpeg');
+      } else {
+        return backgroundImage;
+      }
+    }
   },
   async setup() {
     const { meta } = useMeta({
@@ -157,32 +228,44 @@ export default {
     const store = useStore()
     const router = useRouter();
     const route = useRoute();
-    const { account } = useWeb3();
+    const { account, chainId } = useWeb3();
     const assets = ref([]);
+    const activeTabIndex = ref(0);
 
-    const isOwnProfile = computed(() => (account.value === route.params.userAddress) || !route.params.userAddress);
-    const address = route.params.userAddress
-      ? route.params.userAddress
+    const isOwnProfile = computed(() => (account.value === route.params.userAddressOrUsername) || !route.params.userAddressOrUsername);
+    const address = route.params.userAddressOrUsername
+      ? route.params.userAddressOrUsername
       : account.value;
 
     let data = ref(null);
     const user = computed(() => isOwnProfile.value ? store.getters['user/user'] : data.value);
     const userLocal = computed(() => store.getters['user/user']);
     const collection = useUsersCollectionWithPagination();
-    watchEffect(() => {
-      if (isOwnProfile.value && userLocal.value && userLocal.value.wallet) {
-        collection.setAddress(userLocal.value.wallet);
+
+    const profileState = reactive({
+      loading: true,
+    });
+
+    const collectablesReactive = reactive({
+      loading: true,
+    })
+
+    watchEffect(async () => {
+      if (route.params.userAddressOrUsername && DEFAULT_CHAIN_ID) {
+        profileState.loading = true;
+        const res = await UserService.get(route.params.userAddressOrUsername);
+        profileState.loading = false;
+        if (!res.data) return;
+        data.value = res.data.user;
+        collection.setAddress(res?.data?.user?.wallet);
+        collection.setChainId(DEFAULT_CHAIN_ID);
         collection.load();
       }
     })
 
-    if (address && !isOwnProfile.value) {
-      const res = await UserService.get(address);
-      if (!res.data) return;
-      data.value = res.data.user;
-      collection.setAddress(address);
-      collection.load();
-    }
+    watchEffect(() => {
+      collectablesReactive.loading = collection.loading;
+    })
 
     const isUserFound = computed(() => {
       console.log((!!user.value) || (isOwnProfile.value && account.value));
@@ -195,6 +278,7 @@ export default {
       user.value && user.value.socials
         ? [
             { type: "twitter", url: user.value.socials.twitter },
+            { type: "instagram", url: user.value.socials.instagram },
             { type: "website", url: user.value.socials.website },
           ]
         : null
@@ -230,38 +314,110 @@ export default {
 
     const hasMore = computed(() => collection.hasMore.value);
 
+    const creationsReactive = reactive({
+      listOfCollectables: [],
+      hasMoreCreations: false,
+      loading: true,
+    })
+
+    const previousState = reactive({
+      lastUserId: null
+    });
+
+    let paginatedCreations;
+    watchEffect(async () => {
+      if(user?.value?.id || user?.value?.id === 0) {
+        // If it is the first fetch of collectables OR if the user ID has changed, start a fresh fetch of creations
+        if(!paginatedCreations?.listOfCollectables?.value || user?.value?.id !== previousState.lastUserId) {
+          paginatedCreations = useDropsWithPagination(6, {userId: user?.value?.id});
+          previousState.lastUserId = user?.value?.id;
+          creationsReactive.loading = true;
+          await paginatedCreations.load();
+          creationsReactive.loading = false;
+        }
+        creationsReactive.listOfCreations = paginatedCreations.listOfCollectables.value;
+        creationsReactive.hasMoreCreations = paginatedCreations.hasMore.value;
+      }
+      if(creationsReactive.listOfCreations?.length > 0) {
+        // If user has creations, set the creations tab to active
+        activeTabIndex.value = 1;
+      } else {
+        // else use the collected tab
+        activeTabIndex.value = 0;
+      }
+    });
+
+    const handleLoadMoreCreations = async () => {
+      paginatedCreations.loadMore();
+    };
+
     return {
       user,
       isUserFound,
       hasUserData,
+      profileState,
       socials,
       assets,
+      collectablesReactive,
       listOfCollectables,
+      creationsReactive,
       hasMore,
       handleLoadMore,
+      handleLoadMoreCreations,
       navigateToCollectable,
       userLocal,
+      activeTabIndex,
     };
   },
 };
 </script>
 
 <style scoped lang="scss">
+.no-collectable-zone {
+  height: 568px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .avatar {
-  @apply w-30 h-30 p-1 rounded-full -mt-15 bg-white inline-flex justify-center items-center;
-  border: solid 1px #e6e6e6;
+  @apply w-60 h-60 p-1 rounded-full -mt-30 bg-white inline-flex justify-center items-center;
+  left: 35px;
+  position: relative;
+  box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.4);
 }
 .wallet-address-badge {
-  @apply pr-3.5 py-1 pl-2 w-66 font-address;
-  box-shadow: 0 1px 15px 0 rgba(0, 0, 0, 0.15);
+  @apply py-1 w-66 font-address;
 }
 .profile-background {
-  height: 235px;
+  height: 300px;
   width: 100%;
   background-size: cover;
   background-position: center;
+  background-color: whitesmoke;
+  box-shadow: 0px 6px 10px rgba(142, 152, 160, 0.4);
 }
 .no-avatar {
   @apply h-10;
+}
+.left-sidebar {
+  @apply pr-6;
+  width: 360px;
+}
+.right-content-area {
+  width: calc(100% - 360px);
+}
+.content-zone {
+  display: flex;
+}
+.tab-container {
+  @apply mt-4;
+}
+.sticky-bio {
+  position: sticky;
+  top: 150px;
+}
+.bio-description-zone {
+  max-height: calc(100vh - 420px);
+  overflow-y: auto;
 }
 </style>

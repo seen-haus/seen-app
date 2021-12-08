@@ -71,7 +71,7 @@
             </button>
           </span>
           <div class="mx-8 h-0.5 bg-background-gray"></div>
-          <router-link :to="{ name: 'profile'}">
+          <router-link :to="{ name: 'profileWithAddress', params: { userAddressOrUsername: userLocal?.username ? userLocal.username : account }}">
             <button class="button dropdown-btn" @click="close">
               <i class="gray far fa-clone cursor-pointer mr-2" alt="SEEN"></i> My Collection
             </button>

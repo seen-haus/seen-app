@@ -31,7 +31,7 @@ export const useOpenSeaBaseAPI = (chainId = 1) => {
 
 export const useOpenSeaCollectionV3 = (chainId = 1) => {
 	if(Number(chainId) === 4) {
-		return 'unidentified-contract-tc3us6vc5g';
+		return ['unidentified-contract-tc3us6vc5g', 'seen-haus-v2'];
 	}
-	return '';
+	return ['seen-haus'];
 }

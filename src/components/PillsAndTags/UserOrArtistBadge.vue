@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-align-center">
+    <div class="flex-align-center" @click="navigateToArtistOrUser">
         <div v-if="!data.creatorAccount && !data.creatorProfilePicture" class="artist-pic-placeholder mr-2 placeholder-light-grey"></div>
         <div v-if="data.creatorAccount || data.creatorProfilePicture" class="artist-avatar mr-2" :style="{ backgroundImage: `url(${data.creatorProfilePicture})` }">
             <identicon :size="34" :address="data.creatorAccount" v-if="!data.creatorProfilePicture && data.creatorAccount"/>
@@ -37,6 +37,9 @@ export default {
       creatorProfilePicture: {
         type: String
       },
+      creatorType: {
+        type: String
+      },
     },
     components: {
       Identicon,
@@ -55,17 +58,24 @@ export default {
         ? 'text-black bg-white'
         : 'text-white bg-hero-gray');
 
-        const navigateToArtist = (e) => {
+        const navigateToArtistOrUser = (e) => {
             e.stopImmediatePropagation();
-            router.push({
-                name: "artistProfile",
-                params: { artistSlug: props.artistSlug },
-            });
+            if(props.creatorType == 'artist') {
+                router.push({
+                    name: "artistProfile",
+                    params: { artistSlug: props.creatorUsername },
+                });
+            } else {
+                router.push({
+                    name: "profileWithAddress",
+                    params: { userAddressOrUsername: props.creatorUsername },
+                });
+            }
         };
 
         return {
             typeStyles,
-            navigateToArtist,
+            navigateToArtistOrUser,
             data,
             shortenAddress,
         };

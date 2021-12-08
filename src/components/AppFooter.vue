@@ -28,7 +28,7 @@
             <div>
               <p class="text-grey-9 font-bold text-xl mb-6">Support</p>
               <div class="font-bold text-md leading-loose">
-                <router-link :to="{ name: 'profile'}" class="block">
+                <router-link :to="{ name: 'profileWithAddress', params: { userAddressOrUsername: userLocal?.username ? userLocal.username : account }}" class="block">
                   Account
                 </router-link>
                 <router-link :to="{ name: 'about'}" class="block">
@@ -97,14 +97,23 @@
 </template>
 
 <script>
+import {computed} from 'vue'
 import Container from "@/components/Container";
 import GradientOutlineButton from "@/components/GradientOutlineButton";
+import {useStore} from "vuex"
 
 export default {
   name: 'AppFooter',
   components: {
     Container,
     GradientOutlineButton
+  },
+  setup() {
+    const store = useStore();
+    const userLocal = computed(() => store.getters['user/user']);
+    return {
+      userLocal,
+    }
   }
 }
 </script>

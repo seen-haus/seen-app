@@ -1,6 +1,12 @@
 <template>
-  <a class="mr-8 cursor-pointer" :class="isVertical ? 'w-full block' : 'inline'" :href="social.url" target="_blank" v-if="getSocialText(social)">
-    <i :class="'mr-2 text-sm ' + getSocialIcon(social)"></i>{{ getSocialText(social) }}
+  <a class="cursor-pointer" 
+    :class="{
+      'w-full block': isVertical,
+      'inline': !isVertical,
+      'mr-8': !iconOnly
+    }" :href="social.url" target="_blank" v-if="getSocialText(social)"
+  >
+    <i :class="'mr-2 text-lg ' + getSocialIcon(social)"></i>{{ iconOnly ? `` : getSocialText(social) }}
   </a>
 </template>
 
@@ -10,6 +16,10 @@ export default {
   props: {
     social: Object,
     isVertical: {
+      type: Boolean,
+      default: false
+    },
+    iconOnly: {
       type: Boolean,
       default: false
     }

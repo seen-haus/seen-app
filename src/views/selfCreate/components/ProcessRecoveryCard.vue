@@ -13,6 +13,7 @@
       :tags="processData.tags"
       :titleText="processData.titleText"
       :creatorAccount="processData.creatorAccount"
+      creatorType="user"
       :creatorProfilePicture="processData.creatorProfilePicture"
       :creatorUsername="processData.creatorUsername"
       :mediaUrl="processData.mediaUrl"

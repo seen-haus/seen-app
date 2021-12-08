@@ -1,6 +1,8 @@
 import {createApp} from 'vue';
 import ProgressSpinner from 'primevue/progressspinner';
 import Slider from 'primevue/slider';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
 import {defineRule} from 'vee-validate';
 import {required, email, min, max, min_value, max_value, integer} from '@vee-validate/rules';
 import ToastService from 'primevue/toastservice';
@@ -50,4 +52,6 @@ app.component("Slider", Slider)
 app.component("Toast", Toast)
 app.component("Dialog", Dialog)
 app.component("Chart", Chart)
+app.component("TabView", TabView)
+app.component("TabPanel", TabPanel)
 app.mount('#app');

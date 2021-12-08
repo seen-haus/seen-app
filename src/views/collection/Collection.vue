@@ -102,7 +102,7 @@ export default {
     const filterAuctions = ref(true);
     const filterEditions = ref(true);
 
-    const paginatedCollectables = useDropsWithPagination(null, 12, { collectionName: route.params["collectionName"] });
+    const paginatedCollectables = useDropsWithPagination(12, { collectionName: route.params["collectionName"] });
     const listOfCollectables = computed(
       () => paginatedCollectables.listOfCollectables.value
     );

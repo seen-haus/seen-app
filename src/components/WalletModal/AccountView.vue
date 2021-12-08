@@ -49,6 +49,11 @@
           <span class="error-notice">{{ twitterField.errors[0] }}</span>
         </div>
         <div class="fc mb-4">
+          <label for="profile-instagram">Instagram</label>
+          <input type="text" id="profile-instagram" class="w-full outlined-input mt-2" v-model="instagramField.value" />
+          <span class="error-notice">{{ instagramField.errors[0] }}</span>
+        </div>
+        <div class="fc mb-4">
           <label for="profile-website">Website</label>
           <input type="text" id="profile-website" class="w-full outlined-input mt-2" v-model="websiteField.value" />
           <span class="error-notice">{{ websiteField.errors[0] }}</span>
@@ -95,7 +100,7 @@ import { useField, useForm } from "vee-validate";
 import { UserService } from "@/services/apiService"
 import useSigner from "@/hooks/useSigner";
 import { useToast } from "primevue/usetoast";
-import {twitterRegx, isValidHttpUrl} from '@/connectors/constants'
+import {twitterRegx, instagramRegx, isValidHttpUrl} from '@/connectors/constants'
 
 export default {
   name: "AccountView",
@@ -120,6 +125,7 @@ export default {
       initialValues: {
         username: (user.value && user.value.username) ? user.value.username : "",
         twitter: (user.value && user.value.socials) ? user.value.socials.twitter : "",
+        instagram: (user.value && user.value.socials) ? user.value.socials.instagram : "",
         website: (user.value && user.value.socials) ? user.value.socials.website : "",
         description: (user.value && user.value.description) ? user.value.description : "",
       },
@@ -189,6 +195,11 @@ export default {
       if (!url) return true;
       return (res && res[1]) ? true : 'This is not a valid twitter address';
     }));
+    const instagramField = reactive(useField("instagram", url => {
+      const res = instagramRegx.exec(url);
+      if (!url) return true;
+      return (res && res[1]) ? true : 'This is not a valid instagram username';
+    }));
     const websiteField = reactive(useField("website", isValidHttpUrl));
     const descriptionField = reactive(useField("description"));
 
@@ -235,6 +246,7 @@ export default {
       getEtherscanLink,
       usernameField,
       twitterField,
+      instagramField,
       websiteField,
       descriptionField,
       onSubmit,

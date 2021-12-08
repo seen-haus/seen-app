@@ -228,8 +228,8 @@ export default {
     const heroCollectableApi = useHeroCollectable();
     const heroCollectable = computed(() => heroCollectableApi?.heroCollectable?.value);
     
-    const paginatedLiveCollectables = useDropsWithPagination(null, 7, {excludeEnded: true, excludeComingSoon: true}); // Use 7 in case one of them is the hero listing
-    const paginatedEndedCollectables = useDropsWithPagination(null, 7, {excludeLive: true}); // Use 7 in case one of them is the hero listing
+    const paginatedLiveCollectables = useDropsWithPagination(7, {excludeEnded: true, excludeComingSoon: true}); // Use 7 in case one of them is the hero listing
+    const paginatedEndedCollectables = useDropsWithPagination(7, {excludeLive: true}); // Use 7 in case one of them is the hero listing
 
     const listOfLiveCollectables = computed(
       // Uncomment if hero should be excluded from live list

@@ -190,6 +190,7 @@
                 :tags="tagData"
                 :titleText="titleData"
                 :creatorAccount="creatorData.account"
+                creatorType="user"
                 :creatorProfilePicture="creatorData.profilePicture"
                 :creatorUsername="creatorData.username"
                 :mediaUrl="mediaUrl"

@@ -78,6 +78,7 @@
           :creatorAccount="creatorAccount"
           :creatorUsername="creatorUsername"
           :creatorProfilePicture="creatorProfilePicture"
+          :creatorType="creatorType"
         />
       </div>
       <social-sharing></social-sharing>
@@ -328,6 +329,7 @@ export default {
       creatorAccount,
       creatorProfilePicture,
       creatorUsername,
+      creatorType,
       // Methods
       updateProgress,
       setCollectable,
@@ -509,6 +511,7 @@ export default {
       creatorAccount,
       creatorProfilePicture,
       creatorUsername,
+      creatorType,
       // Methods
       updateProgress,
       viewOnEtherscan,

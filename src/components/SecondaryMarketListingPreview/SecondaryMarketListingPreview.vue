@@ -12,6 +12,7 @@
                     :creatorAccount="data.creatorAccount"
                     :creatorUsername="data.creatorUsername"
                     :creatorProfilePicture="data.creatorProfilePicture"
+                    :creatorType="data.creatorType"
                 />
             </div>
             <div v-if="(listingType !== 'sale') && (data.timerState !== TIMER_STATE.IN_PROGRESS) && (collectableState !== COLLECTABLE_STATE.AWAITING_RESERVE)" class="divider-line-inactive mt-3"/>
@@ -245,6 +246,7 @@ export default {
             creatorAccount: props.creatorAccount,
             creatorUsername: props.creatorUsername,
             creatorProfilePicture: props.creatorProfilePicture,
+            creatorType: props.creatorType,
             tags: props.tags || [],
             tangibility: props.tangibility || "",
             timerState: props.timerState || false,
@@ -268,6 +270,7 @@ export default {
             data.creatorAccount = props.creatorAccount;
             data.creatorUsername = props.creatorUsername;
             data.creatorProfilePicture = props.creatorProfilePicture;
+            data.creatorType = props.creatorType;
             data.tags = props.tags;
             data.tangibility = props.tangibility;
             data.price = props.price;

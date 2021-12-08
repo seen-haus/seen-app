@@ -16,13 +16,9 @@
             'pt-2': index === 0, // First item
             'pb-2': (index === showCount - 1) || (index === list.length - 1) // Last item
           }"
-          @click="$router.push({name: 'profileWithAddress', params: {userAddress: buyer.wallet_address}})"
+          @click="$router.push({name: 'profileWithAddress', params: {userAddressOrUsername: buyer.username ? buyer.username : buyer.wallet_address}})"
         >
-          <icon v-if="!buyer.avatar_image"
-              :size="40"
-              :wallet-address="buyer.wallet_address"
-              class="mr-6 hidden sm:block"
-          />
+          <identicon v-if="!buyer.avatar_image" :size="40" class="mr-6 hidden sm:block"/>
 
           <div v-if="buyer.avatar_image" class="profile-avatar buyer-profile-photo mr-6" :style="{ backgroundImage: `url(${buyer?.avatar_image})` }"></div>
 
@@ -65,11 +61,11 @@ import {format} from 'timeago.js';
 import { UserService } from "@/services/apiService"
 import {shortenAddress, getDaysAgo} from "@/services/utils/index";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
-import Icon from "@/components/Common/Icon.vue";
+import Identicon from "@/components/Identicon/Identicon";
 
 export default {
   name: "ListOfBuyers",
-  components: {PriceDisplay, Icon},
+  components: {PriceDisplay, Identicon},
   props: {
     list: Array,
     isAuction: {

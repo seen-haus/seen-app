@@ -5,7 +5,6 @@ import { computed, reactive } from "vue";
 
 
 export default function useDropsWithPagination(
-  artistId = null,
   perPage = 12,
   initAdditionalFiltrationOptions = {}
 ) {
@@ -15,7 +14,6 @@ export default function useDropsWithPagination(
     page: 1,
     hasMore: false,
     filter: PURCHASE_TYPE.BOTH,
-    artistId,
     additionalFiltrationOptions: initAdditionalFiltrationOptions
   });
 
@@ -39,11 +37,14 @@ export default function useDropsWithPagination(
     };
 
     const filtrationOptions = { purchaseType: state.filter };
-    if (artistId != null) {
-      filtrationOptions.artistId = artistId;
-    }
 
     if(state.additionalFiltrationOptions) {
+      if (state.additionalFiltrationOptions.artistId != null) {
+        filtrationOptions.artistId = state.additionalFiltrationOptions.artistId;
+      }
+      if (state.additionalFiltrationOptions.userId != null) {
+        filtrationOptions.userId = state.additionalFiltrationOptions.userId;
+      }
       if (state.additionalFiltrationOptions?.includeIsHiddenFromDropList) {
         filtrationOptions.includeIsHiddenFromDropList = true;
       }
@@ -100,6 +101,8 @@ export default function useDropsWithPagination(
     //   mockData = [mockAuction];
     // }
 
+    console.log({data})
+
     state.items = data;
     state.hasMore =
       metadata.pagination.totalPages > state.page;
@@ -124,10 +127,13 @@ export default function useDropsWithPagination(
     ];
 
     const filtrationOptions = { purchaseType: state.filter };
-    if (artistId != null) {
-      filtrationOptions.artistId = artistId;
-    }
     if(state.additionalFiltrationOptions) {
+      if (state.additionalFiltrationOptions.artistId != null) {
+        filtrationOptions.artistId = state.additionalFiltrationOptions.artistId;
+      }
+      if (state.additionalFiltrationOptions.userId != null) {
+        filtrationOptions.userId = state.additionalFiltrationOptions.userId;
+      }
       if (state.additionalFiltrationOptions?.includeIsHiddenFromDropList) {
         filtrationOptions.includeIsHiddenFromDropList = true;
       }

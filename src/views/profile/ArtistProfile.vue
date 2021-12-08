@@ -125,7 +125,7 @@ export default {
     const artist = ref(data);
     meta.title = artist.value.name;
 
-    const paginatedCollectables = useDropsWithPagination(artist.value.id, 48);
+    const paginatedCollectables = useDropsWithPagination(48, {artistId: artist.value.id});
     await paginatedCollectables.load();
     const hasMore = computed(() => paginatedCollectables.hasMore.value);
     const handleLoadMore = async () => {

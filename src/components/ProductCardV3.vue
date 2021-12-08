@@ -14,6 +14,7 @@
     :creatorAccount="creatorAccount"
     :creatorProfilePicture="creatorProfilePicture"
     :creatorUsername="creatorUsername"
+    :creatorType="creatorType"
     :mediaUrl="firstMedia"
     :updateProgress="updateProgress"
     :progress="progress"
@@ -166,6 +167,7 @@ export default {
       creatorAccount,
       creatorProfilePicture,
       creatorUsername,
+      creatorType,
     } = useCollectableInformation(props.collectable);
 
     const addTime = function () {
@@ -242,6 +244,7 @@ export default {
       creatorAccount,
       creatorProfilePicture,
       creatorUsername,
+      creatorType,
       titleMonospace,
       listingType,
       // Methods

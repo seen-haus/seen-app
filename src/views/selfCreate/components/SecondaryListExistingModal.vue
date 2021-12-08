@@ -4,15 +4,15 @@
       <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         <nft-card-preview
           v-for="collectable in listOfCollectables"
-          :key="`${collectable.data.token_address}:${collectable.data.token_id}`"
+          :key="`${collectable.data.nft_contract_address}:${collectable.data.nft_token_id}`"
           :autoMargins="true"
-          :mediaUrl="collectable.data.openSeaPreviewImage?.length > 0 ? collectable.data.openSeaPreviewImage : collectable.data.image"
+          :mediaUrl="usePreviewImage(collectable?.data)"
           :title="collectable.data.title"
           :titleText="collectable.data.title"
           :tags="collectable.data.tags"
-          :tokenId="collectable.data.token_id"
+          :tokenId="collectable.data.nft_token_id"
           :balance="collectable.data.balance"
-          :tokenAddress="collectable.data.token_address"
+          :tokenAddress="collectable.data.nft_contract_address"
           :setStep="setStep"
           :setMediaIpfsHash="setMediaIpfsHash"
           :setTempMediaUrl="setTempMediaUrl"
@@ -80,6 +80,9 @@ export default {
       this.setProperties(this.propertySlots);
       emitter.emit("closeNftMintPropertiesModal");
     },
+    usePreviewImage(listing) {
+      return listing.media?.length > 0 ? listing.media.filter(media => media.is_preview).map(item => item.url)[0] : false;
+    }
   },
   setup(props) {
     const { darkMode } = useDarkMode();

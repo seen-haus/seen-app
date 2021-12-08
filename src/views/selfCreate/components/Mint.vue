@@ -282,6 +282,7 @@
                 :creatorAccount="creatorData.account"
                 :creatorProfilePicture="creatorData.profilePicture"
                 :creatorUsername="creatorData.username"
+                creatorType="user"
                 :mediaUrl="mediaUrl"
                 :collectableState="collectableState"
                 :updateProgress="updateProgress"

@@ -30,10 +30,10 @@ export default function useUsersCollectionWithPaginationV3(address = null, chain
         state.items = [];
 
         try {
-            const data = await OpenSeaAPIService.getProfileEntriesV3(state.chainId, state.address, state.limit, state.offset);
+            const [data, mayHaveMore] = await OpenSeaAPIService.getProfileEntriesV3(state.chainId, state.address, state.limit, state.offset);
             state.loading = false;
             state.items = data;
-            state.hasMore = data.length === state.limit;
+            state.hasMore = data.length === state.limit || mayHaveMore;
         } catch (e) {
             state.loading = false;
             state.error = e;
@@ -51,7 +51,7 @@ export default function useUsersCollectionWithPaginationV3(address = null, chain
         ];
 
         try {
-            const data = await OpenSeaAPIService.getProfileEntriesV3(state.chainId, state.address, state.limit, state.offset);
+            const [data, mayHaveMore] = await OpenSeaAPIService.getProfileEntriesV3(state.chainId, state.address, state.limit, state.offset);
 
             state.loading = false;
 
@@ -60,7 +60,7 @@ export default function useUsersCollectionWithPaginationV3(address = null, chain
                 ...data,
             ];
 
-            state.hasMore = data.length === 6;
+            state.hasMore = data.length === state.limit || mayHaveMore;
         } catch (e) {
             state.loading = false;
             console.log(e)

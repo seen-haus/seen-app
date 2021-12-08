@@ -15,6 +15,7 @@
       :creatorAccount="processData.creatorAccount"
       :creatorProfilePicture="processData.creatorProfilePicture"
       :creatorUsername="processData.creatorUsername"
+      creatorType="user"
       :mediaUrl="processData.mediaUrl"
     />
   </div>
