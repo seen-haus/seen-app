@@ -10,9 +10,9 @@
             <gradient-outline-button class="footer-button"></gradient-outline-button>
           </div>
         </div>
-          <div class="links grid-cols-3 grid row-start-1 lg:row-auto mb-12 lg:mb-0 sm:mt-12">
-            <div>
-              <p class="offerings text-grey-9 font-bold text-xl mb-6">Offerings</p>
+          <div class="links lg:mb-0 sm:mt-12">
+            <div class="first-link-column">
+              <p class="text-grey-9 font-bold text-xl mb-3">Offerings</p>
               <div class="font-bold text-md leading-loose">
                 <router-link :to="{ name: 'drops'}" class="block">
                   <span class="font-bold">Drops</span>
@@ -25,8 +25,8 @@
                 </router-link>
               </div>
             </div>
-            <div>
-              <p class="support text-grey-9 font-bold text-xl mb-6">Support</p>
+            <div class="inner-link-column">
+              <p class="text-grey-9 font-bold text-xl mb-3">Support</p>
               <div class="font-bold text-md leading-loose">
                 <router-link :to="{ name: 'profile'}" class="block">
                   Account
@@ -46,8 +46,8 @@
                 </router-link> -->
               </div>
             </div>
-            <div>
-              <p class="community text-grey-9 font-bold text-xl mb-6">Community</p>
+            <div class="last-link-column">
+              <p class="text-grey-9 font-bold text-xl mb-3">Community</p>
               <div>
                 <div class="flex">
                   <div class="icon text-grey-9">
@@ -140,7 +140,7 @@ export default {
 <style lang="scss" scoped>
 
 .footer-background {
-  background-color: #EBEEF2
+  background-color: #EBEEF2;
 }
 
 .footer-border {
@@ -149,39 +149,43 @@ export default {
 
 .links {
   @screen sm {
-    justify-items: left;
-    margin-top: 0px
+    margin-top: 0px;
+    display: flex;
+    justify-content: space-between;
   }
   @screen md {
-    justify-items: left;
-    margin-top: 10px
+    margin-top: 10px;
   }
   @screen lg {
-    justify-items: flex-end;
+    @apply pl-12;
     margin-top: 0px;
   }
+  @screen xl {
+    @apply pl-24;
+  }
 }
-
-@media screen and (max-width: 350px) {
-  .links {
-      display: block;
+.first-link-column {
+  @apply mt-4 mb-3;
+  @screen sm {
+    @apply mt-0 mb-0;
   }
-  .offerings {
-    margin-bottom: 10px
+}
+.inner-link-column {
+  @apply mt-6 mb-3;
+  @screen sm {
+    @apply mt-0 mb-0;
   }
-  .support {
-    margin-top: 20px;
-    margin-bottom: 10px
-  }
-  .community {
-    margin-top: 20px;
-    margin-bottom: 10px
+}
+.last-link-column {
+  @apply mt-6;
+  @screen sm {
+    @apply mt-0;
   }
 }
 
 .footer-button {
   @screen md {
-    white-space: nowrap
+    white-space: nowrap;
   }
 }
 
@@ -191,6 +195,6 @@ export default {
 
 .icon {
   width: 23px;
-  text-align: center
+  text-align: center;
 }
 </style>
