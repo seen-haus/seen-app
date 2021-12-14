@@ -2,6 +2,8 @@ const ethers = require('ethers');
 const keccak256 = ethers.utils.keccak256;
 const toUtf8Bytes = ethers.utils.toUtf8Bytes;
 
+import {CHAIN_ID_ETHEREUM_MAINNET, CHAIN_ID_ETHEREUM_RINKEBY} from "@/constants/ChainIds";
+
 export const roleToBytes = {
 	"SELLER": keccak256(toUtf8Bytes("SELLER")),
 	"MINTER": keccak256(toUtf8Bytes("MINTER")),
@@ -22,15 +24,15 @@ export const selfUrl = () => {
 	}
 }
 
-export const useOpenSeaBaseAPI = (chainId = 1) => {
-	if(Number(chainId) === 4) {
+export const useOpenSeaBaseAPI = (chainId = CHAIN_ID_ETHEREUM_MAINNET) => {
+	if(Number(chainId) === CHAIN_ID_ETHEREUM_RINKEBY) {
 		return 'https://testnets-api.opensea.io/api/v1/';
 	}
 	return 'https://api.opensea.io/api/v1/';
 }
 
-export const useOpenSeaCollectionV3 = (chainId = 1) => {
-	if(Number(chainId) === 4) {
+export const useOpenSeaCollectionV3 = (chainId = CHAIN_ID_ETHEREUM_MAINNET) => {
+	if(Number(chainId) === CHAIN_ID_ETHEREUM_RINKEBY) {
 		return ['unidentified-contract-tc3us6vc5g', 'seen-haus-v2'];
 	}
 	return ['seen-haus'];

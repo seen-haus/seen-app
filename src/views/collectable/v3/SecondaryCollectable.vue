@@ -246,6 +246,7 @@ import NftData from "@/views/collectable/components/NftData.vue";
 import SocialSharing from "@/components/SocialSharing";
 
 import useWeb3 from "@/connectors/hooks";
+import {CHAIN_ID_ETHEREUM_MAINNET} from "@/constants/ChainIds";
 
 export default {
   name: "Collectable",
@@ -416,7 +417,7 @@ export default {
       console.log({nftTokenId})
       let url = `https://opensea.io/assets/${nftAddress}/${nftTokenId}`;
       console.log({chainId: chainId.value})
-      if(Number(chainId.value) !== 1) {
+      if(Number(chainId.value) !== CHAIN_ID_ETHEREUM_MAINNET) {
         url = `https://testnets.opensea.io/assets/${nftAddress}/${nftTokenId}`;
       }
       window.open(url, '_blank').focus()
