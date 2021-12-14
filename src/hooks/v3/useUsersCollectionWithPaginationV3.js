@@ -3,7 +3,7 @@ import {computed, reactive} from "vue";
 
 export default function useUsersCollectionWithPaginationV3(address = null, chainId = null) {
     const state = reactive({
-        items: [],
+        items: [null, null, null, null, null, null],
         limit: 6,
         offset: 0,
         hasMore: false,
