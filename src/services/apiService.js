@@ -230,7 +230,7 @@ export const OpenSeaAPIService = {
         const assets = groupedAssets;
 
         if (!assets.length) {
-            return [];
+            return [[], false];
         }
 
         const tokenContractAddressesToIds = {};
