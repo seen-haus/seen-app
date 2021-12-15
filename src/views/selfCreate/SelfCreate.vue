@@ -247,10 +247,10 @@
                         {{processData.liveListingUrl}}
                     </sub-title>
                     <div class="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-8">
-                        <button class="button outline extended">
+                        <button class="button outline extended" @click="copyLiveListingUrlToClipboard">
                             <i class="fas fa-copy text-sm icon-left"></i>Copy
                         </button>
-                        <button class="button outline extended">
+                        <button class="button outline extended" @click="navigateToLiveListingUrl">
                             <i class="fas fa-eye text-sm icon-left"></i>View
                         </button>
                         <button class="button outline extended">
@@ -297,6 +297,7 @@ import {
 import { TIMER_STATE } from "@/hooks/v3/useTimer.js";
 
 import { roleToBytes, marketHandlerToListingType, selfUrl } from '@/constants';
+import useCopyClipboard from "@/hooks/useCopyClipboard";
 
 export default {
     name: "SelfCreateWithRoutes",
@@ -505,7 +506,7 @@ export default {
         }
     },
     async setup() {
-
+        const {staticCopy} = useCopyClipboard();
         const store = useStore();
 
         const openWalletModal = () => {
@@ -634,6 +635,20 @@ export default {
             showAccessRequestForm: false,
         })
 
+        const copyLiveListingUrlToClipboard = () => {
+            if (processData?.liveListingUrl) {
+              staticCopy(processData.liveListingUrl)
+            }
+        }
+
+        const navigateToLiveListingUrl = () => {
+          if (!processData?.liveListingUrl) {
+            return;
+          }
+
+          window.open(processData.liveListingUrl, '_blank');
+        }
+
         watchEffect(async () => {
             let currentStepName = route.params.stepName;
             if(currentStepName === 'publish') {
@@ -693,7 +708,6 @@ export default {
                                 processData.tempMediaUrl = previewMedia?.[0]?.url;
                                 processData.skipFormNavigationCheck = true;
                                 processData.liveListingUrl = selfUrl() + 'drops/secondary/' + data.slug;
-
                             }
 
                             if(!publishConsignmentId) {
@@ -832,6 +846,8 @@ export default {
             stepIndexToName,
             creatorData,
             updateProgress,
+            copyLiveListingUrlToClipboard,
+            navigateToLiveListingUrl,
         }
     }
 };
