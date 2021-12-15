@@ -1,6 +1,7 @@
 import AbstractConnector from "@/connectors/abstract-connector";
+import {CHAIN_ID_ETHEREUM_MAINNET} from "@/constants/ChainIds";
 
-const CHAIN_ID = 1
+const CHAIN_ID = CHAIN_ID_ETHEREUM_MAINNET
 
 // const __DEV__ = !window.appIsInProductionMode;
 
