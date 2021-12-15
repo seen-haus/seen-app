@@ -6,13 +6,13 @@
           <p class="text-xl font-bold mb-1">Be the first to to hear about upcoming drops!</p>
           <p class="color-white opacity-50 text-md">Join our newsletter TODAY!</p>
           <div class="w-full py-4 md:inline-flex">
-            <input type="text" class="mr-3 text-black w-full h-12 text-md pl-4 rounded inline-flex flex-grow" placeholder="Your e-mail">
+            <input type="text" class="mr-3 text-black w-full h-12 text-md pl-4 mb-2 rounded inline-flex flex-grow" placeholder="Your e-mail">
             <gradient-outline-button class="footer-button"></gradient-outline-button>
           </div>
         </div>
-          <div class="links grid-cols-3 grid row-start-1 lg:row-auto mb-12 lg:mb-0 sm:mt-12">
-            <div>
-              <p class="text-grey-9 font-bold text-xl mb-6">Offerings</p>
+          <div class="links lg:mb-0 sm:mt-12">
+            <div class="first-link-column">
+              <p class="text-grey-9 font-bold text-xl mb-3">Offerings</p>
               <div class="font-bold text-md leading-loose">
                 <router-link :to="{ name: 'drops'}" class="block">
                   <span class="font-bold">Drops</span>
@@ -25,8 +25,8 @@
                 </router-link>
               </div>
             </div>
-            <div>
-              <p class="text-grey-9 font-bold text-xl mb-6">Support</p>
+            <div class="inner-link-column">
+              <p class="text-grey-9 font-bold text-xl mb-3">Support</p>
               <div class="font-bold text-md leading-loose">
                 <router-link :to="{ name: 'profileWithAddress', params: { userAddressOrUsername: userLocal?.username ? userLocal.username : account }}" class="block">
                   Account
@@ -46,29 +46,57 @@
                 </router-link> -->
               </div>
             </div>
-            <div>
-              <p class="text-grey-9 font-bold text-xl mb-6">Community</p>
-              <div class="font-bold text-md leading-loose">
-                <a href="https://t.me/seenhaus"
-                  target="_blank"
-                  class="block">
-                  Telegram
-                </a>
-                <a href="https://discord.com/invite/dad8J4f"
-                  target="_blank"
-                  class="block">
-                  Discord
-                </a>
-                <a href="https://www.instagram.com/seen.haus/"
-                  target="_blank"
-                  class="block">
-                  Instagram
-                </a>
-                <a href="https://twitter.com/seen_haus"
-                  target="_blank"
-                  class="block">
-                  Twitter
-                </a>
+            <div class="last-link-column">
+              <p class="text-grey-9 font-bold text-xl mb-3">Community</p>
+              <div>
+                <div class="flex">
+                  <div class="icon text-grey-9">
+                    <i class="fab fa-telegram text-lg"></i>
+                  </div>
+                  <div class="font-bold text-md ml-2 leading-loose">
+                    <a href="https://t.me/seenhaus"
+                      target="_blank"
+                      class="block">
+                      Telegram
+                    </a>
+                  </div>
+                </div>
+                <div class="flex">
+                  <div class="icon text-grey-9">
+                    <i class="fab fa-discord text-lg"></i>
+                  </div>
+                  <div class="font-bold text-md ml-2 leading-loose">
+                    <a href="https://discord.com/invite/dad8J4f"
+                      target="_blank"
+                      class="block">
+                      Discord
+                    </a>
+                  </div>
+                </div>
+                <div class="flex">
+                  <div class="icon text-grey-9">
+                    <i class="fab fa-instagram-square text-lg"></i>
+                  </div>
+                  <div class="font-bold text-md ml-2 leading-loose">
+                    <a href="https://www.instagram.com/seen.haus/"
+                      target="_blank"
+                      class="block">
+                      Instagram
+                    </a>
+                  </div>
+                </div>
+                <div class="flex">
+                  <div class="icon text-grey-9">
+                    <i class="fab fa-twitter text-lg"></i>
+                  </div>
+                  <div class="font-bold text-md ml-2 leading-loose">
+                    <a href="https://twitter.com/seen_haus"
+                      target="_blank"
+                      class="block">
+                      Twitter
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -120,18 +148,8 @@ export default {
 
 <style lang="scss" scoped>
 
-.footer-background{
+.footer-background {
   background-color: #EBEEF2;
-
-  @screen sm {
-    padding: 1px;
-  }
-  @screen md {
-    padding: 6px;
-  }
-  @screen lg {
-    padding: 24px;
-  }
 }
 
 .footer-border {
@@ -140,31 +158,43 @@ export default {
 
 .links {
   @screen sm {
-    justify-items: left;
-    margin-top: 20px;
+    margin-top: 0px;
+    display: flex;
+    justify-content: space-between;
   }
   @screen md {
-    justify-items: left;
-    margin-top: 20px;
+    margin-top: 10px;
   }
   @screen lg {
-    justify-items: flex-end;
+    @apply pl-12;
     margin-top: 0px;
+  }
+  @screen xl {
+    @apply pl-24;
+  }
+}
+.first-link-column {
+  @apply mt-4 mb-3;
+  @screen sm {
+    @apply mt-0 mb-0;
+  }
+}
+.inner-link-column {
+  @apply mt-6 mb-3;
+  @screen sm {
+    @apply mt-0 mb-0;
+  }
+}
+.last-link-column {
+  @apply mt-6;
+  @screen sm {
+    @apply mt-0;
   }
 }
 
 .footer-button {
-  @screen sm {
-    padding-bottom: 35px;
-    padding-top: 10px
-  }
   @screen md {
-    padding-bottom: 0px;
-    padding-top: 0px
-  }
-  @screen lg {
-    padding-bottom: 0px;
-    padding-top: 0px
+    white-space: nowrap;
   }
 }
 
@@ -172,4 +202,8 @@ export default {
   height: 39px;
 }
 
+.icon {
+  width: 23px;
+  text-align: center;
+}
 </style>
