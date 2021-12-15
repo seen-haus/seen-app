@@ -50,6 +50,7 @@
               :creatorUsername="creatorUsername"
               :creatorProfilePicture="creatorProfilePicture"
               :creatorType="creatorType"
+              :creatorSlug="creatorSlug"
             />
           </div>
           <live-indicator :status="liveStatus" class="text-black ml-4"/>
@@ -241,6 +242,7 @@ export default {
       creatorProfilePicture,
       creatorUsername,
       creatorType,
+      creatorSlug,
       title,
       description,
       startsAt,
@@ -359,6 +361,7 @@ export default {
       creatorProfilePicture,
       creatorUsername,
       creatorType,
+      creatorSlug,
       title,
       description,
       startsAt,

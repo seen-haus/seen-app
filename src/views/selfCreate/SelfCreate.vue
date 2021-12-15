@@ -221,6 +221,7 @@
                     :creatorAccount="processData.creatorAccount || creatorData.account"
                     :creatorProfilePicture="processData.creatorProfilePicture || creatorData.profilePicture"
                     :creatorUsername="processData.creatorUsername || creatorData.username"
+                    :creatorSlug="processData.creatorUsername || creatorData.username"
                     creatorType="user"
                     :mediaUrl="processData.tempMediaUrl"
                     :updateProgress="updateProgress"

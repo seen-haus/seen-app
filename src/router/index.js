@@ -55,8 +55,8 @@ const routes = [
     },
     {
         path: '/creators/:artistSlug',
-        name: 'artistProfile',
-        component: () => import(/* webpackChunkName: "artistProfile" */ '../views/profile/ArtistProfile.vue')
+        name: 'legacyArtistProfile',
+        component: () => import(/* webpackChunkName: "legacyArtistProfile" */ '../views/profile/LegacyArtistProfile.vue')
     },
     {
         path: '/creators',

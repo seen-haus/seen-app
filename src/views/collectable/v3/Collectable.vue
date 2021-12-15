@@ -73,12 +73,16 @@
     />
 
     <div class="container mx-auto px-6 md:px-8 transform-horizontal-center absolute">
-      <div class="absolute light-mode-surface button shortened shadow-lifted transform-vertical-center">
+      <div class="absolute light-mode-surface disable-padding button shortened shadow-lifted transform-vertical-center">
         <user-or-artist-badge
           :creatorAccount="creatorAccount"
           :creatorUsername="creatorUsername"
           :creatorProfilePicture="creatorProfilePicture"
           :creatorType="creatorType"
+          :creatorSlug="creatorSlug"
+          padding="0px 1rem"
+          height="100%"
+          width="100%"
         />
       </div>
       <social-sharing></social-sharing>
@@ -368,6 +372,7 @@ export default {
       creatorProfilePicture,
       creatorUsername,
       creatorType,
+      creatorSlug,
       secondaryMarketListings,
       // Methods
       updateProgress,
@@ -560,6 +565,7 @@ export default {
       creatorProfilePicture,
       creatorUsername,
       creatorType,
+      creatorSlug,
       secondaryMarketListingsForRender,
       // Methods
       updateProgress,

@@ -13,6 +13,7 @@
                     :creatorUsername="data.creatorUsername"
                     :creatorProfilePicture="data.creatorProfilePicture"
                     :creatorType="data.creatorType"
+                    :creatorSlug="data.creatorSlug"
                 />
             </div>
             <div v-if="(listingType !== 'sale') && (data.timerState !== TIMER_STATE.IN_PROGRESS) && (collectableState !== COLLECTABLE_STATE.AWAITING_RESERVE)" class="divider-line-inactive mt-3"/>
@@ -186,6 +187,12 @@ export default {
         creatorUsername: {
             type: [String, Boolean]
         },
+        creatorType: {
+            type: [String, Boolean]
+        },
+        creatorSlug: {
+            type: [String, Boolean]
+        },
         creatorProfilePicture: {
             type: [String, Boolean]
         },
@@ -247,6 +254,7 @@ export default {
             creatorUsername: props.creatorUsername,
             creatorProfilePicture: props.creatorProfilePicture,
             creatorType: props.creatorType,
+            creatorSlug: props.creatorSlug,
             tags: props.tags || [],
             tangibility: props.tangibility || "",
             timerState: props.timerState || false,
@@ -271,6 +279,7 @@ export default {
             data.creatorUsername = props.creatorUsername;
             data.creatorProfilePicture = props.creatorProfilePicture;
             data.creatorType = props.creatorType;
+            data.creatorSlug = props.creatorSlug;
             data.tags = props.tags;
             data.tangibility = props.tangibility;
             data.price = props.price;

@@ -81,7 +81,7 @@ import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
 import ProductCard from "@/components/ProductCard.vue";
 
 export default {
-  name: "ArtistProfile",
+  name: "legacyArtistProfile",
   components: { FencedTitle, Container, SocialLine, ProductCard },
   methods: {
     cropWithExtension: function(text, maxCharacters) {

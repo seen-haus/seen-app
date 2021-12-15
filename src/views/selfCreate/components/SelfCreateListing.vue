@@ -191,6 +191,7 @@
                 :titleText="titleData"
                 :creatorAccount="creatorData.account"
                 creatorType="user"
+                :creatorSlug="creatorData.username"
                 :creatorProfilePicture="creatorData.profilePicture"
                 :creatorUsername="creatorData.username"
                 :mediaUrl="mediaUrl"

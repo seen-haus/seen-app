@@ -18,7 +18,7 @@
           }"
           @click="$router.push({name: 'profileWithAddress', params: {userAddressOrUsername: buyer.username ? buyer.username : buyer.wallet_address}})"
         >
-          <identicon v-if="!buyer.avatar_image" :size="40" class="mr-6 hidden sm:block"/>
+          <identicon v-if="!buyer.avatar_image && buyer.wallet_address" :address="buyer.wallet_address" :size="40" class="mr-6 hidden sm:block"/>
 
           <div v-if="buyer.avatar_image" class="profile-avatar buyer-profile-photo mr-6" :style="{ backgroundImage: `url(${buyer?.avatar_image})` }"></div>
 

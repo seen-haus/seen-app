@@ -15,10 +15,13 @@
         class="rounded-full border-white border-3 left-6 -top-12.5 w-25 h-25 avatar"
       />
 
-      <div class="flex items-center mt-6">
-        <div class="text-title font-bold text-2.5xl ellipsis  mr-4" :class="darkMode && 'dark-mode-text'">
+      <div class="flex items-center mt-4">
+        <div class="text-title font-bold text-xl ellipsis  mr-4" :class="darkMode && 'dark-mode-text'">
           {{ artist.name }}
         </div>
+      </div>
+
+      <div class="flex items-center mt-2">
         <tag 
           class="bg-fence-light text-gray-400 font-semibold flex-shrink-0" 
           :class="{
@@ -33,6 +36,23 @@
               : ""
           }}</tag
         >
+        <div class="text-xs text-gray-400 mt-2">
+          <div v-if="socials">
+            <social-line
+              class="my-1"
+              :social="social"
+              :isVertical="false"
+              :iconOnly="true"
+              v-for="social in socials"
+              :key="social.url"
+            />
+          </div>
+          <div v-else>User has no socials yet</div>
+        </div>
+      </div>
+
+       <div class="flex items-center mt-2">
+        
       </div>
 
       <div
@@ -93,7 +113,7 @@ export default {
 
     const navigateToArtist = () => {
       router.push({
-        name: "artistProfile",
+        name: "legacyArtistProfile",
         params: { artistSlug: artist.value.slug },
       });
     };
@@ -120,7 +140,7 @@ export default {
   z-index: 4;
 }
 .top-bar {
-    height: 187px;
+    height: 162px;
     width: 100%;
     position: relative;
     overflow:hidden;

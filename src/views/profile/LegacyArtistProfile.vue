@@ -1,23 +1,19 @@
 <template>
   <div class="profile">
     <container class="relative">
-      <div v-if="isUserFound || profileState.loading">
-        <edit-profile :class="user ? 'mt-8 w-full' : 'mb-8'"
-          :userData="user"
-          v-if="!profileState.loading"
-        ></edit-profile>
+      <div v-if="isArtistFound || profileState.loading">
         <div
           class="profile-background rounded-xl mt-8"
-          :style="{ backgroundImage: `url(${user && getBackgroundImage(user?.banner_image)})` }"
-          v-if="user || profileState.loading"
+          :style="{ backgroundImage: `url(${artist && getBackgroundImage(artist?.header_image)})` }"
+          v-if="artist || profileState.loading"
         ></div>
         <div :class="'avatar-mobile'">
           <div
-            v-if="hasUserData"
+            v-if="hasArtistData"
             class="bg-background-gray rounded-full w-full h-full flex justify-center items-center overflow-hidden"
           >
-            <div class="profile-avatar" :style="{ backgroundImage: `url(${user?.avatar_image})` }">
-              <identicon :size="232" :address="user?.wallet" v-if="user && !user.avatar_image" class="flex justify-center"/>
+            <div class="profile-avatar" :style="{ backgroundImage: `url(${artist?.avatar})` }">
+              
             </div>
           </div>
         </div>
@@ -26,25 +22,17 @@
             <div class="sticky-bio mb-6 xl:mb-12">
               <div :class="'avatar-desktop hidden xl:inline-flex'">
                 <div
-                  v-if="hasUserData"
+                  v-if="hasArtistData"
                   class="bg-background-gray rounded-full w-full h-full flex justify-center items-center overflow-hidden"
                 >
-                  <div class="profile-avatar" :style="{ backgroundImage: `url(${user?.avatar_image})` }">
-                    <identicon :size="232" :address="user?.wallet" v-if="user && !user.avatar_image" class="flex justify-center"/>
+                  <div class="profile-avatar" :style="{ backgroundImage: `url(${artist?.avatar})` }">
+
                   </div>
                 </div>
               </div>
-              <div class="mt-4 flex flex-wrap items-center" :class="user ? 'justify-between' : 'justify-center'">
-                <div class="flex justify-start flex-wrap flex-col" v-if="user">
-                  <p class="font-bold text-3xl mr-4">{{ user ? user.username : 'New Profile' }}</p>
-                  <div class="wallet-address-badge rounded-20px flex justify-between items-center">
-                    <copy-helper
-                      v-if="hasUserData"
-                      :toCopy="user.wallet"
-                      :isIconSuffix="true"
-                      :text="cropWithExtension(user.wallet, 20)"
-                    />
-                  </div>
+              <div class="mt-4 flex flex-wrap items-center" :class="artist ? 'justify-between' : 'justify-center'">
+                <div class="flex justify-start flex-wrap flex-col" v-if="artist">
+                  <p class="font-bold text-3xl mr-4">{{ artist ? artist.name : 'New Profile' }}</p>
                   <div class="text-xs text-gray-400 mt-2">
                     <div v-if="socials">
                       <social-line
@@ -56,14 +44,14 @@
                         :key="social.url"
                       />
                     </div>
-                    <div v-else>User has no socials yet</div>
+                    <div v-else>Artist has no socials yet</div>
                   </div>
                 </div>
               </div>
-              <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-2 flex render-line-breaks bio-description-zone" v-if="user">
+              <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-2 flex render-line-breaks bio-description-zone" v-if="artist">
                 <div>
                   {{
-                    user?.description ? user.description : "User has no description."
+                    artist?.bio ? artist.bio : "Artist has no description."
                   }}
                 </div>
               </div>
@@ -71,54 +59,8 @@
           </div>
           <div class="right-content-area">
             <TabView class="tab-container -mx-6 md:mx-0" v-model:activeIndex="activeTabIndex">
-              <TabPanel header="Collected">
-                <div v-if="user && listOfCollectables && listOfCollectables.length > 0">
-                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 my-8">
-                    <template
-                      v-for="collectable in listOfCollectables"
-                      :key="collectable && collectable.data.id"
-                    >
-                      <template v-if="collectable != null">
-                        <product-card-v3
-                          v-if="collectable != null"
-                          :collectable="collectable.data"
-                          @click="navigateToCollectable(collectable.data.slug, collectable.data.is_slug_full_route, collectable.data.version)"
-                        />
-                      </template>
-                      <div
-                        v-else
-                        class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
-                        :style="{ 'padding-bottom': '120%' }"
-                      ></div>
-                    </template>
-                  </div>
-                  <div class="flex justify-center w-full" v-if="listOfCollectables && listOfCollectables.length > 0 && hasMore">
-                    <button
-                      class="button dark mb-12 mt-8 mx-auto w-full md:w-96"
-                      @click="handleLoadMore"
-                    >
-                      Load More
-                    </button>
-                  </div>
-                </div>
-                <div v-else-if="collectablesReactive.loading">
-                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 my-8">
-                    <div
-                      class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
-                      :style="{ 'padding-bottom': '120%' }"
-                    ></div>
-                    <div
-                      class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
-                      :style="{ 'padding-bottom': '120%' }"
-                    ></div>
-                  </div>
-                </div>
-                <div v-else class="text-xl text-center py-8 no-collectable-zone">
-                  User has not collected any SEEN collectables yet.
-                </div>
-              </TabPanel>
               <TabPanel header="Created">
-                <div v-if="user && creationsReactive?.listOfCreations && creationsReactive.listOfCreations.length > 0 && !creationsReactive.loading">
+                <div v-if="artist && creationsReactive?.listOfCreations && creationsReactive.listOfCreations.length > 0 && !creationsReactive.loading">
                   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 my-8">
                     <template
                       v-for="collectable in creationsReactive.listOfCreations"
@@ -160,7 +102,7 @@
                   </div>
                 </div>
                 <div v-else class="text-xl text-center py-8 no-collectable-zone">
-                  User has no SEEN creations yet.
+                  Artist has no SEEN creations yet.
                 </div>
               </TabPanel>
             </TabView>
@@ -178,8 +120,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
 import useWeb3 from "@/connectors/hooks";
 
-import { UserService } from "@/services/apiService";
-import useUsersCollectionWithPagination from "@/hooks/v3/useUsersCollectionWithPaginationV3.js";
+import { ArtistService } from "@/services/apiService";
 import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
 
 import FencedTitle from "@/components/FencedTitle.vue";
@@ -233,71 +174,41 @@ export default {
   },
   async setup() {
     const { meta } = useMeta({
-      title: "Profile",
+      title: "Artist Profile",
     });
-    const store = useStore()
     const router = useRouter();
-    const route = useRoute();
-    const { account, chainId } = useWeb3();
     const assets = ref([]);
     const activeTabIndex = ref(0);
 
-    const isOwnProfile = computed(() => (account.value === route.params.userAddressOrUsername) || !route.params.userAddressOrUsername);
-    const address = route.params.userAddressOrUsername
-      ? route.params.userAddressOrUsername
-      : account.value;
-
     let data = ref(null);
-    const user = computed(() => isOwnProfile.value ? store.getters['user/user'] : data.value);
-    const userLocal = computed(() => store.getters['user/user']);
-    const collection = useUsersCollectionWithPagination();
+    const artist = computed(() => data.value ? data.value : false);
 
     const profileState = reactive({
       loading: true,
     });
 
-    const collectablesReactive = reactive({
-      loading: true,
-    })
-
     watchEffect(async () => {
-      if (route.params.userAddressOrUsername && DEFAULT_CHAIN_ID) {
+      if (router.currentRoute.value.params.artistSlug && DEFAULT_CHAIN_ID) {
         profileState.loading = true;
-        const res = await UserService.get(route.params.userAddressOrUsername);
+        const res = await ArtistService.show(router.currentRoute.value.params.artistSlug);
         profileState.loading = false;
         if (!res.data) return;
-        meta.title = res.data.user.username;
-        data.value = res.data.user;
-        collection.setAddress(res?.data?.user?.wallet);
-        collection.setChainId(DEFAULT_CHAIN_ID);
-        collection.load();
+        meta.title = res.data.name;
+        data.value = res.data;
       }
     })
 
-    watchEffect(() => {
-      collectablesReactive.loading = collection.loading;
-    })
-
-    const isUserFound = computed(() => {
-      console.log((!!user.value) || (isOwnProfile.value && account.value));
-      return (!!user.value && user?.value?.wallet) || (isOwnProfile.value && account.value);
+    const isArtistFound = computed(() => {
+      return (!!artist.value && artist?.value?.slug);
     });
 
-    const hasUserData = computed(() => !!user.value && user?.value?.wallet);
+    const hasArtistData = computed(() => !!artist.value && artist?.value?.slug);
 
     const socials = computed(() =>
-      user.value && user.value.socials
-        ? [
-            { type: "twitter", url: user.value.socials.twitter },
-            { type: "instagram", url: user.value.socials.instagram },
-            { type: "website", url: user.value.socials.website },
-          ]
+      artist.value && artist.value.socials
+        ? artist.value.socials
         : null
     );
-
-    const handleLoadMore = async () => {
-      collection.loadMore();
-    };
 
     const navigateToCollectable = function (slug, isSlugFullRoute, version) {
       if(isSlugFullRoute) {
@@ -319,12 +230,6 @@ export default {
       }
     };
 
-    const listOfCollectables = computed(
-      () => collection.listOfCollectables.value
-    );
-
-    const hasMore = computed(() => collection.hasMore.value);
-
     const creationsReactive = reactive({
       listOfCollectables: [],
       hasMoreCreations: false,
@@ -332,29 +237,22 @@ export default {
     })
 
     const previousState = reactive({
-      lastUserId: null
+      lastArtistId: null
     });
 
     let paginatedCreations;
     watchEffect(async () => {
-      if(user?.value?.id || user?.value?.id === 0) {
-        // If it is the first fetch of collectables OR if the user ID has changed, start a fresh fetch of creations
-        if(!paginatedCreations?.listOfCollectables?.value || user?.value?.id !== previousState.lastUserId) {
-          paginatedCreations = useDropsWithPagination(6, {userId: user?.value?.id});
-          previousState.lastUserId = user?.value?.id;
+      if(artist?.value?.id || artist?.value?.id === 0) {
+        // If it is the first fetch of collectables OR if the artist ID has changed, start a fresh fetch of creations
+        if(!paginatedCreations?.listOfCollectables?.value || artist?.value?.id !== previousState.lastArtistId) {
+          paginatedCreations = useDropsWithPagination(6, {artistId: artist?.value?.id});
+          previousState.lastArtistId = artist?.value?.id;
           creationsReactive.loading = true;
           await paginatedCreations.load();
           creationsReactive.loading = false;
         }
         creationsReactive.listOfCreations = paginatedCreations.listOfCollectables.value;
         creationsReactive.hasMoreCreations = paginatedCreations.hasMore.value;
-      }
-      if(creationsReactive.listOfCreations?.length > 0) {
-        // If user has creations, set the creations tab to active
-        activeTabIndex.value = 1;
-      } else {
-        // else use the collected tab
-        activeTabIndex.value = 0;
       }
     });
 
@@ -363,20 +261,15 @@ export default {
     };
 
     return {
-      user,
-      isUserFound,
-      hasUserData,
+      artist,
+      isArtistFound,
+      hasArtistData,
       profileState,
       socials,
       assets,
-      collectablesReactive,
-      listOfCollectables,
       creationsReactive,
-      hasMore,
-      handleLoadMore,
       handleLoadMoreCreations,
       navigateToCollectable,
-      userLocal,
       activeTabIndex,
     };
   },

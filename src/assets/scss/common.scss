@@ -191,6 +191,13 @@
 .p-overlaypanel:before, .p-overlaypanel:after {
   display: none;
 }
+.right-content-area > .p-tabview > .p-tabview-panels {
+  padding: 0.5rem;
+}
+
+.disable-padding {
+  padding: 0!important;
+}
 
 .profile-avatar {
   height: 100%;

@@ -46,12 +46,16 @@
                         {{data.titleText}}
                     </sub-title>
                 </div>
-                <user-or-artist-badge
-                    :creatorAccount="data.creatorAccount"
-                    :creatorUsername="data.creatorUsername"
-                    :creatorProfilePicture="data.creatorProfilePicture"
-                    :creatorType="data.creatorType"
-                />
+                <div class="flex">
+                    <user-or-artist-badge
+                        :creatorAccount="data.creatorAccount"
+                        :creatorUsername="data.creatorUsername"
+                        :creatorSlug="data.creatorSlug"
+                        :creatorProfilePicture="data.creatorProfilePicture"
+                        :creatorType="data.creatorType"
+                        :disableLinkGrow="true"
+                    />
+                </div>
             </div>
             <div v-if="(listingType !== 'sale') && (data.timerState !== TIMER_STATE.IN_PROGRESS) && (collectableState !== COLLECTABLE_STATE.AWAITING_RESERVE)" class="divider-line-inactive mt-3"/>
             <div v-if="(listingType !== 'sale') && (collectableState === COLLECTABLE_STATE.AWAITING_RESERVE)" class="divider-line-awaiting-reserve bg-progress-bar-green-vibrant mt-3"/>
@@ -210,6 +214,7 @@ export default {
             type: [String, Boolean]
         },
         creatorAccount: String,
+        creatorSlug: String,
         creatorType: String,
         titleText: String,
         tags: Array,
@@ -268,6 +273,7 @@ export default {
             creatorUsername: props.creatorUsername,
             creatorProfilePicture: props.creatorProfilePicture,
             creatorType: props.creatorType,
+            creatorSlug: props.creatorSlug,
             tags: props.tags || [],
             tangibility: props.tangibility || "",
             timerState: props.timerState || false,
@@ -290,6 +296,7 @@ export default {
             data.titleText = props.titleText;
             data.creatorAccount = props.creatorAccount;
             data.creatorType = props.creatorType;
+            data.creatorSlug = props.creatorSlug;
             data.creatorUsername = props.creatorUsername;
             data.creatorProfilePicture = props.creatorProfilePicture;
             data.tags = props.tags;
@@ -322,6 +329,7 @@ export default {
 <style lang="scss" scoped>
     .drop-card-container-border {
         // This class is just here for if we ever want to add a border that can support gradients
+        max-width: 100%;
         height: 504px;
         width: 338px;
         background: #FFFFFF;
@@ -339,6 +347,7 @@ export default {
         }
     }
     .drop-card-preview-container {
+        max-width: 100%;
         height: 504px;
         width: 338px;
         background: #FFFFFF;
@@ -350,6 +359,7 @@ export default {
         top: 20px;
     }
     .drop-card-inner-padding-top {
+        max-width: 100%;
         padding: 14px;
         padding-bottom: 0px;
     }
@@ -357,6 +367,7 @@ export default {
         padding: 14px;
     }
     .drop-card-media-container {
+        max-width: 100%;
         width: 310px;
         height: 310px;
         border-radius: 6px;

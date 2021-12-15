@@ -1,5 +1,14 @@
 <template>
-    <div class="flex-align-center" @click="navigateToArtistOrUser">
+    <div
+        class="flex-align-center"
+        :style="{
+          ...(padding && {'padding': padding}),
+          ...(width && {'width': width}),
+          ...(height && {'height': height}),
+        }"
+        :class="{'disable-grow': disableLinkGrow}" 
+        @click="navigateToArtistOrUser"
+    >
         <div v-if="!data.creatorAccount && !data.creatorProfilePicture" class="artist-pic-placeholder mr-2 placeholder-light-grey"></div>
         <div v-if="data.creatorAccount || data.creatorProfilePicture" class="artist-avatar mr-2" :style="{ backgroundImage: `url(${data.creatorProfilePicture})` }">
             <identicon :size="34" :address="data.creatorAccount" v-if="!data.creatorProfilePicture && data.creatorAccount"/>
@@ -18,7 +27,7 @@
 
 
 <script>
-import {computed, reactive} from 'vue';
+import { computed, reactive } from 'vue';
 import { useRouter } from "vue-router";
 
 import { shortenAddress } from "@/services/utils/index";
@@ -40,6 +49,25 @@ export default {
       creatorType: {
         type: String
       },
+      creatorSlug: {
+        type: String
+      },
+      disableLinkGrow: {
+        type: Boolean,
+        default: false,
+      },
+      padding: {
+        type: [String, Boolean],
+        default: false,
+      },
+      height: {
+        type: [String, Boolean],
+        default: false,
+      },
+      width: {
+        type: [String, Boolean],
+        default: false, 
+      }
     },
     components: {
       Identicon,
@@ -62,13 +90,13 @@ export default {
             e.stopImmediatePropagation();
             if(props.creatorType == 'artist') {
                 router.push({
-                    name: "artistProfile",
-                    params: { artistSlug: props.creatorUsername },
+                    name: "legacyArtistProfile",
+                    params: { artistSlug: props.creatorSlug },
                 });
             } else {
                 router.push({
                     name: "profileWithAddress",
-                    params: { userAddressOrUsername: props.creatorUsername },
+                    params: { userAddressOrUsername: props.creatorSlug },
                 });
             }
         };
@@ -99,5 +127,8 @@ export default {
         height: 34px;
         border-radius: 2rem;
         background-size: cover;
+    }
+    .disable-grow {
+        flex-grow: 0;
     }
 </style>

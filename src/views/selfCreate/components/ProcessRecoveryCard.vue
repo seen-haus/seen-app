@@ -14,6 +14,7 @@
       :titleText="processData.titleText"
       :creatorAccount="processData.creatorAccount"
       creatorType="user"
+      :creatorSlug="processData.creatorUsername"
       :creatorProfilePicture="processData.creatorProfilePicture"
       :creatorUsername="processData.creatorUsername"
       :mediaUrl="processData.mediaUrl"

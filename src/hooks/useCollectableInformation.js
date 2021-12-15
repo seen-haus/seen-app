@@ -165,7 +165,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const creatorType = computed(() => {
         if(collectable.value.user?.wallet) {
             return 'user';
-        } else if (collectable.value?.artist?.wallet) {
+        } else if (collectable.value?.artist?.slug) {
             return 'artist';
         } else {
             return null;
@@ -185,6 +185,15 @@ export default function useCollectableInformation(initialCollectable = {}) {
             return collectable.value.user.username;
         } else if (collectable.value.artist?.name) {
             return collectable.value.artist.name
+        } else {
+            return false;
+        }
+    })
+    const creatorSlug = computed(() => {
+        if(collectable.value.user?.username) {
+            return collectable.value.user.username;
+        } else if (collectable.value.artist?.slug) {
+            return collectable.value.artist.slug
         } else {
             return false;
         }
@@ -450,6 +459,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         creatorProfilePicture,
         creatorUsername,
         creatorType,
+        creatorSlug,
         listingType,
         isReadyForClosure,
         isClosed,

@@ -66,7 +66,7 @@ export default {
 
     const navigateToArtist = (artistSlug) => {
         router.push({
-            name: "artistProfile",
+            name: "legacyArtistProfile",
             params: { artistSlug: artistSlug },
         });
     };
