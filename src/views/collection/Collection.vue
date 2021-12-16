@@ -49,7 +49,6 @@
 import { computed, reactive, ref, watchEffect } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useMeta } from "vue-meta";
-import { useStore } from "vuex";
 
 import { slugToTitleCase } from "@/services/utils";
 
@@ -62,6 +61,7 @@ import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 
 import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
+import useDarkMode from '@/hooks/useDarkMode';
 
 export default {
   name: "Drops",
@@ -75,13 +75,7 @@ export default {
     ArtistCard,
   },
   setup(props) {
-
-    const store = useStore();
-
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", true);
-
-    const darkMode = computed(() => store.getters['application/darkMode']);
+    const { darkMode } = useDarkMode();
 
     const { meta } = useMeta({
       title: "Drops",

@@ -247,12 +247,10 @@
   </div>
 </template>
 
-
 <script>
-import {computed, onBeforeUnmount, reactive, ref, watchEffect} from "vue";
+import {computed, onBeforeUnmount, onUnmounted, reactive, ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import {useMeta} from "vue-meta";
-import {useStore} from "vuex";
 
 import SubTitle from "@/components/SubTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
@@ -279,6 +277,7 @@ import NftData from "@/views/collectable/components/NftData.vue";
 import SocialSharing from "@/components/SocialSharing";
 
 import useWeb3 from "@/connectors/hooks";
+import useDarkMode from '@/hooks/useDarkMode';
 
 export default {
   name: "Collectable",
@@ -318,12 +317,8 @@ export default {
       secondaryMarketListings: [],
       showSecondaryMarket: false,
     });
-    const store = useStore();
     const { chainId } = useWeb3();
-
-    const darkMode = computed(() => {
-      return store.getters['application/darkMode']
-    });
+    const { darkMode, setDarkMode } = useDarkMode();
 
     const setShowSecondaryMarket = (status) => {
       state.showSecondaryMarket = status;
@@ -387,17 +382,18 @@ export default {
 
     // TODO: Make this into a DB datasource unless V3 no longer uses this
     if(['0xmons-mork'].indexOf(route.params["slug"]) > -1) {
-      store.dispatch("application/setDarkMode", true);
+      setDarkMode(true);
       switch(route.params["slug"]) {
         case '0xmons-mork':
           backgroundImage.value = '0xmons-tile.png';
           titleMonospace.value = true;
           break;
       }
-    } else {
-      // Disable dark mode until dark mode is supported across website
-      store.dispatch("application/setDarkMode", false);
     }
+
+    onUnmounted(() => {
+      setDarkMode(false);
+    })
 
     const currentEndsAt = computed(() => {
       return new Date(endsAt.value).getTime();
