@@ -4,7 +4,7 @@
     <div :class="darkMode ? [headerClasses, 'text-white', 'dark-mode-section'].join(' ') : [headerClasses, 'transparent-border-section'].join(' ')">
       <container>
         <header>
-          <div class="flex items-center flex-wrap justify-between">
+          <div class="flex items-center flex-wrap justify-between header-size">
             <router-link to="/">
               <div id="logo" class="flex items-center" style="width:100%; max-width: 208px">
                 <img :class="!darkMode && 'hidden'" src="@/assets/images/seen-logo-white.svg" class="mr-4" alt="">
@@ -12,7 +12,7 @@
               </div>
             </router-link>
             <div class="items-center hidden lg:flex lg:flex-grow justify-between">
-              <desktop-menu class="flex justify-center flex-1"/>
+              <desktop-menu class="flex justify-center flex-1 header-desktop flex-center-vertical"/>
               <wallet-button/>
             </div>
             <nav class="lg:hidden">
@@ -53,7 +53,7 @@ export default {
   },
   computed: {
     headerClasses() {
-      return this.$route.fullPath.match('/profile') ? 'py-0.5 header-borders' : 'py-0.5 header-borders';
+      return this.$route.fullPath.match('/profile') ? 'header-borders' : 'header-borders';
     }
   }
 }
@@ -77,4 +77,11 @@ export default {
   }
 }
 
+.header-size {
+  height: 89px;
+}
+
+.header-desktop {
+  height: 88px;
+}
 </style>

@@ -4,24 +4,25 @@
         <router-link v-if="typeof item.url === 'string'"
             :to="{ name: item.url }"
             v-slot="{ isActive }"
-            class="routing-link mr-8 xl:mr-12 opacity-50 hover:opacity-100"
+            class="routing-link mr-4 xl:mr-6 opacity-50 hover:opacity-100"
         >
-        <img  v-if="item.icon != null"
-            :src="require('@/assets/icons/' + item.icon)"
-            :class="isActive 
-              ? darkMode
-                  ? 'active-green-icon icon-fire-dark-mode'
-                  : 'active-green-icon icon-fire-light-mode' 
-              : darkMode
-                  ? 'icon-fire-dark-mode'
-                  : 'icon-fire-light-mode' 
-            "
-            class="cursor-pointer mr-2 inline-flex"
-        />
-        <span
-            class="font-bold py-0.5"
-            :class="{ active: isActive }"
-        >{{ item.title }}</span>
+          <img  v-if="item.icon != null"
+              :src="require('@/assets/icons/' + item.icon)"
+              :class="isActive 
+                ? darkMode
+                    ? 'active-green-icon icon-fire-dark-mode'
+                    : 'active-green-icon icon-fire-light-mode' 
+                : darkMode
+                    ? 'icon-fire-dark-mode'
+                    : 'icon-fire-light-mode' 
+              "
+              class="cursor-pointer mr-2 inline-flex"
+          />
+          <span
+              class="router-link-text font-bold py-0.5 px-4"
+          >{{ item.title }}</span>
+          <div v-if="isActive" class="link-bar link-active-gradient-bar"></div>
+          <div v-if="!isActive" class="link-bar link-inactive-transparent-bar"></div>
         </router-link>
 
         <span v-else>
@@ -96,7 +97,10 @@ export default {
 
 <style scoped lang="scss">
 .routing-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  height: 100%;
 }
 
 .icon-fire-light-mode {
@@ -139,10 +143,27 @@ export default {
 
 .router-link-active {
   opacity: 1;
+}
 
-  .active {
-    border-bottom-width: 3px;
-  }
+.router-link-text {
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.link-bar {
+  margin-top: auto;
+  width: 100%;
+  height: 4px;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+}
+
+.link-active-gradient-bar {
+  background-image: linear-gradient(to right, #11998E , #38EF7D);
+}
+
+.link-inactive-transparent-bar {
+  background-color: transparent;
 }
 
 </style>

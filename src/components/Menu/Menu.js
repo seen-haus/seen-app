@@ -6,33 +6,19 @@ export default {
                     {
                         title: 'Drops',
                         url: 'drops',
-                        icon: 'icon-fire.svg'
                     },
                     {
                         title: 'Creators',
                         url: 'artists'
                     },
                     {
-                        title: 'Stake',
+                        title: 'Staking',
                         url: 'stake',
                     },
                     {
                         title: 'Create',
                         url: 'create',
                     },
-                    {
-                        title: 'Press',
-                        url: [
-                            {
-                                title: 'Podcasts',
-                                url: 'https://anchor.fm/seenhaus'
-                            },
-                            {
-                                title: 'Newsletters',
-                                url: 'https://seen-haus.medium.com/'
-                            }
-                        ]
-                    }
                 ],
                 mobileOnlyItems: [
                     {
