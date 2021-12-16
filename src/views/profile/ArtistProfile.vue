@@ -103,15 +103,24 @@ export default {
     const router = useRouter();
     const { darkMode, setDarkMode } = useDarkMode();
 
+    const darkModeEnabled = [
+      '0xmons',
+      'haydiroket',
+      'tengushee',
+      'desultor',
+      'cruelcoppinger',
+      'nostallergy',
+      'deathimself'
+    ].indexOf(router?.currentRoute?.value?.params?.artistSlug) > -1
+
+    setDarkMode(darkModeEnabled);
+    
     onUnmounted(() => {
       setDarkMode(false);
     })
 
     const backgroundImage = ref(false);
 
-    const darkModeEnabled = ['0xmons', 'haydiroket', 'tengushee', 'desultor', 'cruelcoppinger', 'nostallergy', 'deathimself'].indexOf(router?.currentRoute?.value?.params?.artistSlug) > -1
-    setDarkMode(darkModeEnabled);
-    
     // TODO: Make this into a DB datasource unless V3 no longer uses this
     if (darkModeEnabled) {
       switch(router?.currentRoute?.value?.params?.artistSlug) {

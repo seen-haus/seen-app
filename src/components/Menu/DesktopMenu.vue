@@ -74,19 +74,14 @@
 </template>
 
 <script>
-
-import { computed } from "vue";
-import {useStore} from "vuex";
-
-import Menu from "@/components/Menu/Menu.js";
+import useDarkMode from '@/hooks/useDarkMode';
+import Menu from "@/components/Menu/Menu";
 
 export default {
     name: "DesktopMenu",
     setup() {
-      const store = useStore();
-      const darkMode = computed(() => {
-        return store.getters['application/darkMode']
-      });
+      const { darkMode } = useDarkMode();
+
       return {
         darkMode
       };

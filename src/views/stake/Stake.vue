@@ -166,9 +166,6 @@ export default {
 
     const store = useStore()
 
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false)
-
     const state = reactive({
       shareOfThePool: 0,
       totalStaked: 0,
