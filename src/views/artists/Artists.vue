@@ -1,14 +1,17 @@
 <template>
   <div>
     <container class="section-featured-artists pb-24">
-      <div class="flex items-center py-6 flex-col lg:flex-row">
-        <fenced-title
-          class="flex-grow mr-0 mb-2 self-stretch"
-          color="fence-gray"
-          textAlign="center"
-          :closed="true"
-          >Creators
-        </fenced-title>
+      <div class="flex items-center pb-6 flex-col lg:flex-row">
+        <div class="abstract-circles abstract-circles-creators">
+          <img src="@/assets/images/abstract-circles.svg" alt="">
+        </div>
+        <unfenced-title
+          class="text-black hidden lg:flex pb-4 pt-12"
+          color="fence-dark"
+          text-align="left"
+        >
+          Creators
+        </unfenced-title>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
         <template
@@ -39,6 +42,7 @@ import useDarkMode from "@/hooks/useDarkMode";
 import ArtistCard from "@/components/ArtistCard.vue";
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
+import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
 
 export default {
@@ -46,6 +50,7 @@ export default {
   components: {
     Container,
     FencedTitle,
+    UnfencedTitle,
     ArtistCard,
   },
   setup() {
@@ -82,5 +87,11 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  .abstract-circles-creators {
+    top: 100px;
+    @screen lg {
+      right: 35px;
+    }
+  }
 </style>

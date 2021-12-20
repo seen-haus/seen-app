@@ -1,6 +1,6 @@
 <template>
   <div class="spotlight">
-    <container class="py-6 mb-52">
+    <container class="pb-6 mb-52">
       <fenced-title
         class="flex-grow mr-0 mb-2 self-stretch"
         color="fence-gray"

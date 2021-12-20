@@ -1,22 +1,63 @@
 <template>
   <div>
     <container class="section-featured-auctions pb-24">
-      <div class="flex items-center py-6 flex-col lg:flex-row">
-        <fenced-title
-          class="flex-grow mr-0 mb-2 self-stretch"
-          color="fence-gray"
-          textAlign="center"
-          unshrinkable
-          :closed="true"
-          ><img
-            src="@/assets/icons/icon-fire.svg"
-            class="cursor-pointer mr-2 inline-flex icon-fire -mt-1.5"
-            alt="SEEN"
-          />Drops
-        </fenced-title>
+      <div class="flex items-center pb-4 flex-col lg:flex-row">
+        <div class="abstract-circles abstract-circles-drops">
+          <img src="@/assets/images/abstract-circles.svg" alt="">
+        </div>
+        <unfenced-title
+          class="text-black hidden lg:flex pt-12"
+          color="fence-dark"
+          text-align="left"
+        >
+          Drops
+        </unfenced-title>
+      </div>
+      
+      <div class="flex flex-wrap justify-start items-center">
+        <button 
+          @click="setQuickFilter('all')"
+          :class="{
+            'dark': quickFilter === 'all',
+            'bg-white': quickFilter !== 'all',
+          }"
+          class="button light-shadow quick-filter-button mr-4 mb-4"
+        >
+            <img src="@/assets/icons/trending.svg" class="mr-3"/>All
+        </button>
+        <button 
+          @click="setQuickFilter('live')"
+          :class="{
+            'dark': quickFilter === 'live',
+            'bg-white': quickFilter !== 'live',
+          }"
+          class="button light-shadow bg-white quick-filter-button mr-4 mb-4"
+        >
+            <img src="@/assets/icons/orange-flame.svg" class="mr-3"/>Live
+        </button>
+        <button 
+          @click="setQuickFilter('reserve-not-met')"
+          :class="{
+            'dark': quickFilter === 'reserve-not-met',
+            'bg-white': quickFilter !== 'reserve-not-met',
+          }"
+          class="button light-shadow bg-white quick-filter-button mr-4 mb-4"
+        >
+            <img src="@/assets/icons/hotel-bell.svg" class="mr-3"/>Reserve not met
+        </button>
+        <button 
+          @click="setQuickFilter('sold')"
+          :class="{
+            'dark': quickFilter === 'sold',
+            'bg-white': quickFilter !== 'sold',
+          }"
+          class="button light-shadow bg-white quick-filter-button mb-4"
+        >
+            <img src="@/assets/icons/gavel.svg" class="mr-3"/>Sold
+        </button>
       </div>
 
-      <div class="flex justify-start items-center">
+      <!-- <div class="flex justify-start items-center">
 
         <toggle
           :value="filterExcludeEnded"
@@ -40,10 +81,10 @@
         >
           <span :class="darkMode ? 'dark-mode-text' : 'text-black'" class="font-bold">Editions</span>
         </toggle>
-      </div>
+      </div> -->
 
       <div
-        class="auction-list-big grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
+        class="auction-list-big grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-5"
       >
         <template
           v-for="collectable in listOfCollectables"
@@ -88,6 +129,7 @@ import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
 import ProductCardV3 from "@/components/ProductCardV3.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
+import UnfencedTitle from "@/components/FencedTitle.vue";
 import Toggle from "@/components/Inputs/Toggle.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
 import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
@@ -100,6 +142,7 @@ export default {
   components: {
     Container,
     FencedTitle,
+    UnfencedTitle,
     ProductCard,
     ProductCardV3,
     Toggle,
@@ -117,6 +160,7 @@ export default {
     const filterAuctions = ref(true);
     const filterEditions = ref(true);
     const filterExcludeEnded = ref(false);
+    const quickFilter = ref('all');
 
     const paginatedCollectables = useDropsWithPagination();
     const listOfCollectables = computed(
@@ -147,6 +191,19 @@ export default {
       paginatedCollectables.filter(filterAuctions.value, filterEditions.value, {excludeEnded: event});
     }
 
+    const setQuickFilter = (alias) => {
+      quickFilter.value = alias;
+      if(alias === 'all') {
+        paginatedCollectables.filter(true, true);
+      } else if(alias === 'live') {
+        paginatedCollectables.filter(true, true, {excludeEnded: true});
+      } else if(alias === 'reserve-not-met') {
+        // paginatedCollectables.filter(true, true, {excludeEnded: true});
+      } else if(alias === 'sold') {
+        // paginatedCollectables.filter(true, true, {excludeEnded: true});
+      }
+    }
+
     const navigateToCollectable = function (slug, isSlugFullRoute, version) {
       if(isSlugFullRoute) {
         router.push({
@@ -175,6 +232,9 @@ export default {
       handleAuctionsToggle,
       handleEditionsToggle,
       handleExcludeEndedToggle,
+      
+      quickFilter,
+      setQuickFilter,
 
       listOfCollectables,
       hasMore,
@@ -187,5 +247,17 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  .abstract-circles-drops {
+    top: 100px;
+    @screen lg {
+      right: 35px;
+    }
+  }
+  .quick-filter-button {
+    transition: all 500ms ease-in-out;
+    img {
+      height: 20px;
+    }
+  }
 </style>

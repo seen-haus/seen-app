@@ -1,7 +1,7 @@
 <template>
   <div class="faqs">
     <container class="section-featured-auctions pb-12">
-      <div class="flex items-center py-6 flex-col lg:flex-row">
+      <div class="flex items-center pb-6 flex-col lg:flex-row">
         <unfenced-title
           class="text-black hidden lg:flex pb-1 pt-12"
           color="fence-dark"

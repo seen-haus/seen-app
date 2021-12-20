@@ -1,7 +1,7 @@
 <template>
   <div class="team">
     <container class="section-featured-artists pb-24">
-      <div class="flex items-center py-6 flex-col lg:flex-row">
+      <div class="flex items-center pb-6 flex-col lg:flex-row">
         <div class="abstract-circles abstract-circles-team">
           <img src="@/assets/images/abstract-circles.svg" alt="">
         </div>

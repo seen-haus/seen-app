@@ -171,7 +171,7 @@ export default function useDropsWithPagination(
 
   function filter(filterAuctions, filterEditions, additionalFiltrationOptions) {
     state.filter = getFilter(filterAuctions, filterEditions);
-    state.additionalFiltrationOptions = {...state.additionalFiltrationOptions, ...additionalFiltrationOptions};
+    state.additionalFiltrationOptions = {...additionalFiltrationOptions};
     load();
   }
 
