@@ -16,6 +16,14 @@ export default {
                         title: 'Stake',
                         url: 'stake',
                     },
+                ],
+                mobileOnlyItems: [
+                    {
+                        title: 'Notifications',
+                        url: 'notifications'
+                    },
+                ],
+                desktopOnlyItems: [
                     {
                         title: 'Gallery',
                         url: [
@@ -42,12 +50,6 @@ export default {
                             }
                         ]
                     }
-                ],
-                mobileOnlyItems: [
-                    {
-                        title: 'Notifications',
-                        url: 'notifications'
-                    },
                 ]
         }
     }

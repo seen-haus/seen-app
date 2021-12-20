@@ -1,6 +1,6 @@
 <template>
   <nav v-if="menu">
-      <template v-for="(item, index) in menu" :key="item && item.title">
+      <template v-for="(item, index) in [...menu, ...desktopOnlyItems]" :key="item && item.title">
         <router-link v-if="typeof item.url === 'string'"
             :to="{ name: item.url }"
             v-slot="{ isActive }"

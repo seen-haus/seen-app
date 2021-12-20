@@ -10,7 +10,7 @@
       </div>
       <button class="text-sm mb-8" @click="openUploadWindow"><i class="fas fa-pencil-alt"></i> Change Avatar</button>
     </div>
-    <div class="flex justify-between items-center mb-4 my-8">
+    <div class="block md:flex justify-between items-center mb-4 my-8">
       <div>
         <div class="text-xs font-bold mb-3 uppercase">Connected with {{ name }}</div>
         <div class="flex">
