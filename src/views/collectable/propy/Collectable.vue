@@ -102,7 +102,7 @@
               @update-state="updateCollectableState"
           />
 
-          <div v-if="collectable.nft_contract_address && collectable.nft_token_id" class="text-3xl font-title font-bold text-center mb-6 mt-12">
+          <div v-if="collectable.nft_contract_address && collectable.nft_token_id" class="text-3xl font-title font-bold mb-6 mt-12">
             {{ isAuction ? "Recent bids" : "Recent buys" }}
           </div>
           <list-of-buyers v-if="collectable.nft_contract_address && collectable.nft_token_id" :list="events" :isAuction="isAuction"/>
