@@ -1,31 +1,36 @@
-import { watchEffect } from 'vue';
-import {useStore} from "vuex"
+import { watchEffect, ref } from 'vue';
 import { UserService } from "@/services/apiService"
 import useWeb3 from "@/connectors/hooks"
 
+const user = ref(null);
+
 export default function useUser() {
-  const store = useStore();
-  const {account} = useWeb3();
+    const { account } = useWeb3();
 
-  const fetchUser = async () => {
-    try {
-      const {data} = await UserService.get(account.value);
-      store.dispatch('user/setUser', data ? data.user : {is_not_registered: true});
-      // Clear locally stored email preferences when switching users
-      store.dispatch('user/setUserEmailPreferences', null);
-    } catch (err) {
-      return;
+    const loadUser = async () => {
+        try {
+            const { data } = await UserService.get(account.value);
+
+            setUser(data?.user || { is_not_registered: true })
+        } catch (err) {
+          return;
+        }
     }
-    
-  }
 
-  watchEffect(() => {
-    if (account.value) {
-      fetchUser();
+    const setUser = (userData) => {
+        user.value = userData || null;
     }
-  })
 
-  return {
-    fetchUser
-  };
+    watchEffect(() => {
+        if (account.value) {
+            loadUser();
+        } else {
+            setUser(null)
+        }
+    })
+
+    return {
+        user,
+        setUser,
+    };
 }

@@ -207,8 +207,8 @@
 
 <script>
 
-import { ref, reactive, computed, watchEffect } from "vue";
-import {useField, useForm} from "vee-validate";
+import { ref, reactive, watchEffect } from "vue";
+import {useField} from "vee-validate";
 import {useStore} from "vuex";
 
 import { useToast } from "primevue/usetoast";
@@ -224,6 +224,7 @@ import DropCardPreview from "@/components/DropCardPreview/DropCardPreview.vue";
 
 import parseError from "@/services/utils/parseError";
 import useWeb3 from "@/connectors/hooks"
+import useUser from "@/hooks/useUser";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 
 import {
@@ -337,10 +338,9 @@ export default {
     setup(props) {
 
         const store = useStore();
+        const { user } = useUser();
         const { formatCurrency, ethereum } = useExchangeRate();
         const toast = useToast();
-        
-        const userLocal = computed(() => store.getters['user/user']);
 
         const creatorData = ref({
             account: false,
@@ -354,19 +354,19 @@ export default {
         })
 
         watchEffect(() => {
-            let userStoreData = store.getters['user/user'];
+            const userStoreData = user.value;
             if(userStoreData) {
-                if(userStoreData?.username?.length > 0) {
+                if(userStoreData.username?.length > 0) {
                     creatorData.value.username = userStoreData.username;
                 } else {
                     creatorData.value.username = false;
                 }
-                if(userStoreData?.wallet?.length > 0) {
+                if(userStoreData.wallet?.length > 0) {
                     creatorData.value.account = userStoreData.wallet;
                 } else {
                     creatorData.value.account = false;
                 }
-                if(userStoreData?.avatar_image?.length > 0) {
+                if(userStoreData.avatar_image?.length > 0) {
                     creatorData.value.profilePicture = userStoreData.avatar_image;
                 } else {
                     creatorData.value.profilePicture = false;
