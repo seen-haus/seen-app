@@ -2,22 +2,22 @@
   <div class="profile">
     <container class="relative">
       <div v-if="isUserFound || profileState.loading">
-        <edit-profile :class="user ? 'mt-8 w-full' : 'mb-8'"
-          :userData="user"
+        <edit-profile :class="profileUser ? 'mt-8 w-full' : 'mb-8'"
+          :userData="profileUser"
           v-if="!profileState.loading"
         ></edit-profile>
         <div
           class="profile-background rounded-xl mt-8"
-          :style="{ backgroundImage: `url(${user && getBackgroundImage(user?.banner_image)})` }"
-          v-if="user || profileState.loading"
+          :style="{ backgroundImage: `url(${profileUser && getBackgroundImage(profileUser?.banner_image)})` }"
+          v-if="profileUser || profileState.loading"
         ></div>
         <div :class="'avatar-mobile'">
           <div
             v-if="hasUserData"
             class="bg-background-gray rounded-full w-full h-full flex justify-center items-center overflow-hidden"
           >
-            <div class="profile-avatar" :style="{ backgroundImage: `url(${user?.avatar_image})` }">
-              <identicon :size="232" :address="user?.wallet" v-if="user && !user.avatar_image" class="flex justify-center"/>
+            <div class="profile-avatar" :style="{ backgroundImage: `url(${profileUser?.avatar_image})` }">
+              <identicon :size="232" :address="profileUser?.wallet" v-if="profileUser && !profileUser.avatar_image" class="flex justify-center"/>
             </div>
           </div>
         </div>
@@ -29,20 +29,20 @@
                   v-if="hasUserData"
                   class="bg-background-gray rounded-full w-full h-full flex justify-center items-center overflow-hidden"
                 >
-                  <div class="profile-avatar" :style="{ backgroundImage: `url(${user?.avatar_image})` }">
-                    <identicon :size="232" :address="user?.wallet" v-if="user && !user.avatar_image" class="flex justify-center"/>
+                  <div class="profile-avatar" :style="{ backgroundImage: `url(${profileUser?.avatar_image})` }">
+                    <identicon :size="232" :address="profileUser?.wallet" v-if="profileUser && !profileUser.avatar_image" class="flex justify-center"/>
                   </div>
                 </div>
               </div>
-              <div class="mt-4 flex flex-wrap items-center" :class="user ? 'justify-between' : 'justify-center'">
-                <div class="flex justify-start flex-wrap flex-col" v-if="user">
-                  <p class="font-bold text-3xl mr-4">{{ user ? user.username : 'New Profile' }}</p>
+              <div class="mt-4 flex flex-wrap items-center" :class="profileUser ? 'justify-between' : 'justify-center'">
+                <div class="flex justify-start flex-wrap flex-col" v-if="profileUser">
+                  <p class="font-bold text-3xl mr-4">{{ profileUser ? profileUser.username : 'New Profile' }}</p>
                   <div class="wallet-address-badge rounded-20px flex justify-between items-center">
                     <copy-helper
                       v-if="hasUserData"
-                      :toCopy="user.wallet"
+                      :toCopy="profileUser.wallet"
                       :isIconSuffix="true"
-                      :text="cropWithExtension(user.wallet, 20)"
+                      :text="cropWithExtension(profileUser.wallet, 20)"
                     />
                   </div>
                   <div class="text-xs text-gray-400 mt-2">
@@ -60,10 +60,10 @@
                   </div>
                 </div>
               </div>
-              <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-2 flex render-line-breaks bio-description-zone" v-if="user">
+              <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-2 flex render-line-breaks bio-description-zone" v-if="profileUser">
                 <div>
                   {{
-                    user?.description ? user.description : "User has no description."
+                    profileUser?.description ? profileUser.description : "User has no description."
                   }}
                 </div>
               </div>
@@ -72,7 +72,7 @@
           <div class="right-content-area">
             <TabView class="tab-container -mx-6 md:mx-0" v-model:activeIndex="activeTabIndex">
               <TabPanel header="Collected">
-                <div v-if="user && listOfCollectables && listOfCollectables.length > 0">
+                <div v-if="profileUser && listOfCollectables && listOfCollectables.length > 0">
                   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 my-8">
                     <template
                       v-for="collectable in listOfCollectables"
@@ -118,7 +118,7 @@
                 </div>
               </TabPanel>
               <TabPanel header="Created">
-                <div v-if="user && creationsReactive?.listOfCreations && creationsReactive.listOfCreations.length > 0 && !creationsReactive.loading">
+                <div v-if="profileUser && creationsReactive?.listOfCreations && creationsReactive.listOfCreations.length > 0 && !creationsReactive.loading">
                   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 my-8">
                     <template
                       v-for="collectable in creationsReactive.listOfCreations"
@@ -177,6 +177,7 @@ import { ref, computed, watchEffect, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
 import useWeb3 from "@/connectors/hooks";
+import useUser from "@/hooks/useUser";
 
 import { UserService } from "@/services/apiService";
 import useUsersCollectionWithPagination from "@/hooks/v3/useUsersCollectionWithPaginationV3.js";
@@ -189,7 +190,6 @@ import EditProfile from "@/components/EditProfile.vue";
 import SocialLine from "@/components/PillsAndTags/SocialLine.vue";
 import Identicon from "@/components/Identicon/Identicon";
 import NotFound from "@/components/Common/NotFound"
-import {useStore} from "vuex";
 
 import ProductCard from "@/components/ProductCard.vue";
 import ProductCardV3 from "@/components/ProductCardV3.vue";
@@ -235,12 +235,12 @@ export default {
     const { meta } = useMeta({
       title: "Profile",
     });
-    const store = useStore()
     const router = useRouter();
     const route = useRoute();
-    const { account, chainId } = useWeb3();
+    const { account } = useWeb3();
     const assets = ref([]);
     const activeTabIndex = ref(0);
+    const { user } = useUser();
 
     const isOwnProfile = computed(() => (account.value === route.params.userAddressOrUsername) || !route.params.userAddressOrUsername);
     const address = route.params.userAddressOrUsername
@@ -248,8 +248,7 @@ export default {
       : account.value;
 
     let data = ref(null);
-    const user = computed(() => isOwnProfile.value ? store.getters['user/user'] : data.value);
-    const userLocal = computed(() => store.getters['user/user']);
+    const profileUser = computed(() => isOwnProfile.value ? user.value : data.value);
     const collection = useUsersCollectionWithPagination();
 
     const profileState = reactive({
@@ -279,18 +278,18 @@ export default {
     })
 
     const isUserFound = computed(() => {
-      console.log((!!user.value) || (isOwnProfile.value && account.value));
-      return (!!user.value && user?.value?.wallet) || (isOwnProfile.value && account.value);
+      console.log((!!profileUser.value) || (isOwnProfile.value && account.value));
+      return (!!profileUser.value && profileUser.value?.wallet) || (isOwnProfile.value && account.value);
     });
 
-    const hasUserData = computed(() => !!user.value && user?.value?.wallet);
+    const hasUserData = computed(() => !!profileUser.value && profileUser.value?.wallet);
 
     const socials = computed(() =>
-      user.value && user.value.socials
+      profileUser.value && profileUser.value.socials
         ? [
-            { type: "twitter", url: user.value.socials.twitter },
-            { type: "instagram", url: user.value.socials.instagram },
-            { type: "website", url: user.value.socials.website },
+            { type: "twitter", url: profileUser.value.socials.twitter },
+            { type: "instagram", url: profileUser.value.socials.instagram },
+            { type: "website", url: profileUser.value.socials.website },
           ]
         : null
     );
@@ -337,11 +336,11 @@ export default {
 
     let paginatedCreations;
     watchEffect(async () => {
-      if(user?.value?.id || user?.value?.id === 0) {
+      if(profileUser.value?.id || profileUser.value?.id === 0) {
         // If it is the first fetch of collectables OR if the user ID has changed, start a fresh fetch of creations
-        if(!paginatedCreations?.listOfCollectables?.value || user?.value?.id !== previousState.lastUserId) {
-          paginatedCreations = useDropsWithPagination(6, {userId: user?.value?.id});
-          previousState.lastUserId = user?.value?.id;
+        if(!paginatedCreations?.listOfCollectables?.value || profileUser.value?.id !== previousState.lastUserId) {
+          paginatedCreations = useDropsWithPagination(6, {userId: profileUser.value?.id});
+          previousState.lastUserId = profileUser.value?.id;
           creationsReactive.loading = true;
           await paginatedCreations.load();
           creationsReactive.loading = false;
@@ -363,7 +362,7 @@ export default {
     };
 
     return {
-      user,
+      profileUser,
       isUserFound,
       hasUserData,
       profileState,
@@ -376,7 +375,6 @@ export default {
       handleLoadMore,
       handleLoadMoreCreations,
       navigateToCollectable,
-      userLocal,
       activeTabIndex,
     };
   },

@@ -28,7 +28,7 @@
             <div class="inner-link-column">
               <p class="text-grey-9 font-bold text-xl mb-3">Support</p>
               <div class="font-bold text-md leading-loose">
-                <router-link :to="{ name: 'profileWithAddress', params: { userAddressOrUsername: userLocal?.username ? userLocal.username : account }}" class="block">
+                <router-link v-if="user?.username || account" :to="{ name: 'profileWithAddress', params: { userAddressOrUsername: user?.username || account }}" class="block">
                   Account
                 </router-link>
                 <router-link :to="{ name: 'about'}" class="block">
@@ -106,7 +106,7 @@
   <div class="footer-background text-white footer-border py-4">
     <container>
       <div class="flex justify-between">
-        <p class="text-grey-9 text-sm">© Seen.haus 2021, All rights reserved.</p>
+        <p class="text-grey-9 text-sm">© seen.haus 2021, All rights reserved.</p>
         <div>
           <!--           <a href="#"-->
           <!--            target="_blank"-->
@@ -125,10 +125,10 @@
 </template>
 
 <script>
-import {computed} from 'vue'
 import Container from "@/components/Container";
 import GradientOutlineButton from "@/components/GradientOutlineButton";
-import {useStore} from "vuex"
+import useUser from "@/hooks/useUser";
+import useWeb3 from "@/connectors/hooks";
 
 export default {
   name: 'AppFooter',
@@ -137,10 +137,12 @@ export default {
     GradientOutlineButton
   },
   setup() {
-    const store = useStore();
-    const userLocal = computed(() => store.getters['user/user']);
+    const { user } = useUser();
+    const { account } = useWeb3();
+
     return {
-      userLocal,
+      user,
+      account,
     }
   }
 }

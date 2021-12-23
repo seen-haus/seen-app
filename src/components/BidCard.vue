@@ -415,6 +415,7 @@ import numberHelper from "@/services/utils/numbers"
 import emitter from "@/services/utils/emitter";
 import { BidRegistrationService } from "@/services/apiService"
 import useWeb3 from "@/connectors/hooks";
+import useUser from "@/hooks/useUser";
 import useDarkMode from '@/hooks/useDarkMode';
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 import useSigner from "@/hooks/useSigner";
@@ -503,7 +504,7 @@ export default {
     const winner = computed(() => collectableData.value.winner_address);
     const tangibility = computed(() => collectableData.value.type);
     const balance = computed(() => store.getters['application/balance'].eth);
-    const user = computed(() => store.getters['user/user']);
+    const { user } = useUser();
     const { darkMode } = useDarkMode();
 
     const data = reactive({
@@ -911,7 +912,7 @@ export default {
                 if(response) {
                   auctionField.resetField(null)
                   showNotificationButtonRef.value = true;
-                  if((user?.value?.email === false || (!user?.value?.email && account?.value)) && !localStorage.getItem(`hasDismissedNotificationModal-${account?.value}`)) {
+                  if((user.value?.email === false || (!user.value?.email && account?.value)) && !localStorage.getItem(`hasDismissedNotificationModal-${account?.value}`)) {
                     openNotificationsModal(true);
                   }
                 }

@@ -18,6 +18,7 @@ import ModalHeader from "@/components/Modal/Header";
 import ModalContent from "@/components/Modal/Content";
 import {DEFAULT_CHAIN_ID} from "@/constants/ChainIds";
 import useWeb3 from "@/connectors/hooks";
+import useUser from "@/hooks/useUser";
 
 export default {
     name: "NetworkModal",
@@ -29,12 +30,13 @@ export default {
     setup() {
         const store = useStore();
         const {account, deactivate, chainId} = useWeb3();
+        const { setUser } = useUser();
 
         const modalName = "NetworkModal";
 
         const disconnectFunction = () => {
             store.dispatch("application/closeModal");
-            store.dispatch("user/setUser", null);
+            setUser(null);
             deactivate();
         };
 

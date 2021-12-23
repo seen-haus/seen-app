@@ -104,6 +104,7 @@ import InputSwitch from 'primevue/inputswitch';
 
 import useWeb3 from "@/connectors/hooks";
 import useSigner from "@/hooks/useSigner";
+import useUser from "@/hooks/useUser";
 import {clean} from "@/services/utils/index";
 import { UserService } from "@/services/apiService"
 
@@ -128,14 +129,14 @@ export default {
     const isSubmittingRef = ref(false);
 
     const title = 'Notification Manager';
-    const user = computed(() => store.getters['user/user']);
+    const { user, setUser } = useUser();
     const userEmailPreferences = computed(() => store.getters['user/userEmailPreferences']);
     const editMode = computed(() => editModeRef.value);
     const isSubmitting = computed(() => isSubmittingRef.value);
 
     const form = useForm({
       initialValues: {
-        email: user?.value?.email ? "******************" : "",
+        email: user.value?.email ? "******************" : "",
         global_disable: false,
         outbid: true,
         claim_page_go_live: true,
@@ -152,14 +153,14 @@ export default {
         let { resetField: resetGlobalDisableField } = globalDisableField;
         let { resetField: resetOutbidField } = outbidField;
         let { resetField: resetClaimPageGoLiveField } = claimPageGoLiveField;
-        console.log({'user?.value': user?.value, 'user?.value?.email': user?.value?.email, 'emailField?.resetValue': emailField?.resetValue, emailField, resetField})
+        console.log({'user.value': user.value, 'user.value?.email': user.value?.email, 'emailField?.resetValue': emailField?.resetValue, emailField, resetField})
         if(resetField) {
-            if(user?.value?.email === true) {
+            if(user.value?.email === true) {
                 editModeRef.value = false;
                 resetField({
                     value: "******************"
                 });
-            } else if(!user?.value?.email && account?.value && user?.value?.is_not_registered) {
+            } else if(!user.value?.email && account?.value && user.value?.is_not_registered) {
                 editModeRef.value = true;
                 resetField({
                     value: "",
@@ -173,12 +174,12 @@ export default {
                 resetClaimPageGoLiveField({
                     value: true
                 });
-            } else if(user?.value?.email) {
+            } else if(user.value?.email) {
                 editModeRef.value = true;
                 resetField({
-                    value: user?.value?.email
+                    value: user.value?.email
                 });
-            } else if(user?.value?.email === false) {
+            } else if(user.value?.email === false) {
                 if(!userEmailPreferences?.value) {
                     editModeRef.value = false;
                 }
@@ -232,7 +233,7 @@ export default {
             UserService.deleteEmailAddress(account.value, {signature, msg})
               .then(res => {
                     console.log({res})
-                    store.dispatch('user/setUser', res.data.user);
+                    setUser(res.data.user);
                     editModeRef.value = true;
                     toast.add({severity:'info', summary:'Success', detail:'Email address successfully deleted.', life: 5000});
               })
@@ -258,7 +259,7 @@ export default {
             UserService.getEmailAddressAndPreferences(account.value, {signature, msg})
               .then(res => {
                     console.log({res})
-                    store.dispatch('user/setUser', res.data.user);
+                    setUser(res.data.user);
                     store.dispatch('user/setUserEmailPreferences', res.data.email_preferences);
                     editModeRef.value = true;
                     toast.add({severity:'info', summary:'Success', detail:'Email address & preferences successfully fetched.', life: 3000});
@@ -288,7 +289,7 @@ export default {
         values = clean(values);
         UserService.updateEmailAddressAndPreferences(account.value, {...values, signature, msg})
           .then(res => {
-            store.dispatch('user/setUser', res.data.user);
+            setUser(res.data.user);
             store.dispatch('user/setUserEmailPreferences', res.data.email_preferences);
             isSubmittingRef.value = false;
             toast.add({severity:'info', summary:'Success', detail:'Your email address & preferences have been updated.', life: 5000});
