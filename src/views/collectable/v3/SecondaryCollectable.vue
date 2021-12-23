@@ -165,7 +165,7 @@
             @update-state="updateCollectableState"
           />
 
-          <div class="text-3xl font-title font-bold text-center mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
+          <div class="text-3xl font-title font-bold  mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
             {{ isAuction ? "Recent bids" : "Recent buys" }}
           </div>
           <list-of-buyers class="mb-12" :list="events" :isAuction="isAuction"/>
@@ -183,7 +183,7 @@
             </div>
           </template>
 
-          <div class="text-3xl font-title font-bold text-center mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
+          <div class="text-3xl font-title font-bold mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
             Proof of Authenticity
           </div>
 
