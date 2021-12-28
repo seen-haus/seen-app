@@ -198,9 +198,9 @@ export default {
       } else if(alias === 'live') {
         paginatedCollectables.filter(true, true, {excludeEnded: true});
       } else if(alias === 'reserve-not-met') {
-        // paginatedCollectables.filter(true, true, {excludeEnded: true});
+        paginatedCollectables.filter(true, true, {awaitingReserveBid: true});
       } else if(alias === 'sold') {
-        // paginatedCollectables.filter(true, true, {excludeEnded: true});
+        paginatedCollectables.filter(true, true, {soldOut: true});
       }
     }
 

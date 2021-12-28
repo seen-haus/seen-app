@@ -63,6 +63,12 @@ export default function useDropsWithPagination(
       if(state.additionalFiltrationOptions?.excludeComingSoon) {
         filtrationOptions.excludeComingSoon = state.additionalFiltrationOptions.excludeComingSoon;
       }
+      if(state.additionalFiltrationOptions?.awaitingReserveBid) {
+        filtrationOptions.awaitingReserveBid = state.additionalFiltrationOptions.awaitingReserveBid;
+      }
+      if(state.additionalFiltrationOptions?.soldOut) {
+        filtrationOptions.soldOut = state.additionalFiltrationOptions.soldOut;
+      }
     }
 
     const { data, metadata } = await CollectablesService.list(
@@ -151,6 +157,12 @@ export default function useDropsWithPagination(
       }
       if(state.additionalFiltrationOptions?.excludeComingSoon) {
         filtrationOptions.excludeComingSoon = state.additionalFiltrationOptions.excludeComingSoon;
+      }
+      if(state.additionalFiltrationOptions?.awaitingReserveBid) {
+        filtrationOptions.awaitingReserveBid = state.additionalFiltrationOptions.awaitingReserveBid;
+      }
+      if(state.additionalFiltrationOptions?.soldOut) {
+        filtrationOptions.soldOut = state.additionalFiltrationOptions.soldOut;
       }
     }
 
