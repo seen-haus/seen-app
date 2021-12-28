@@ -60,6 +60,7 @@ import UserOrArtistBadge from "@/components/PillsAndTags/UserOrArtistBadge.vue";
 import { shortenAddress } from "@/services/utils/index";
 
 import {useStore} from "vuex";
+import useUser from "@/hooks/useUser";
 
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 
@@ -133,6 +134,7 @@ export default {
         })
 
         const store = useStore();
+        const { user } = useUser();
 
         const processData = reactive({
           creatorAccount: false,
@@ -150,15 +152,14 @@ export default {
         watchEffect(() => {
             // If the logic here is changed (i.e. how it calculates the creator username/image)
             // Make sure to check if anything needs change in ProcessRecoveryCard.vue
-            let userStoreData = store.getters['user/user'];
-            if(userStoreData) {
-                if(userStoreData?.username?.length > 0) {
-                  processData.creatorUsername = userStoreData.username;
+            if (user.value) {
+                if(user.value.username?.length > 0) {
+                  processData.creatorUsername = user.value.username;
                 } else {
                   processData.creatorUsername = false;
                 }
-                if(userStoreData?.avatar_image?.length > 0) {
-                  processData.creatorProfilePicture = userStoreData.avatar_image;
+                if(user.value.avatar_image?.length > 0) {
+                  processData.creatorProfilePicture = user.value.avatar_image;
                 } else {
                   processData.creatorProfilePicture = false;
                 }

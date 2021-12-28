@@ -25,7 +25,6 @@
 <script>
 
 import { reactive, watchEffect, ref } from "vue";
-import {useStore} from "vuex";
 import axios from "axios";
 
 import SubTitle from "@/components/SubTitle.vue";
@@ -124,8 +123,7 @@ export default {
       DropCardPreview,
     },
     setup(props) {
-
-        const store = useStore();
+        const { user } = useUser();
 
         const processData = reactive({
           listingType: false,
@@ -193,14 +191,14 @@ export default {
         watchEffect(() => {
             // If the logic here is changed (i.e. how it calculates the creator username/image)
             // Make sure to check if anything needs change in ProcessRecoveryCard.vue
-            let userStoreData = store.getters['user/user'];
+            const userStoreData = user.value;
             if(userStoreData) {
-                if(userStoreData?.username?.length > 0) {
+                if(userStoreData.username?.length > 0) {
                   processData.creatorUsername = userStoreData.username;
                 } else {
                   processData.creatorUsername = false;
                 }
-                if(userStoreData?.avatar_image?.length > 0) {
+                if(userStoreData.avatar_image?.length > 0) {
                   processData.creatorProfilePicture = userStoreData.avatar_image;
                 } else {
                   processData.creatorProfilePicture = false;

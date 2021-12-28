@@ -279,6 +279,7 @@ import SubTitle from "@/components/SubTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
 import Steps from "@/components/Steps/Steps.vue";
 import useWeb3 from "@/connectors/hooks";
+import useUser from "@/hooks/useUser";
 import { useAccessControllerContractNetworkReactive, useV3MarketClerkContractNetworkReactive } from '@/hooks/useContract.js';
 
 import { CollectablesService } from "@/services/apiService";
@@ -509,6 +510,7 @@ export default {
     async setup() {
         const {staticCopy} = useCopyClipboard();
         const store = useStore();
+        const { user } = useUser();
 
         const openWalletModal = () => {
             store.dispatch('application/openModal', 'WalletModalConnectOnly')
@@ -547,24 +549,24 @@ export default {
         const { account } = useWeb3();
 
         watchEffect(() => {
-            let userStoreData = store.getters['user/user'];
+            const userStoreData = user.value;
             if(userStoreData) {
-                if(userStoreData?.username?.length > 0) {
+                if(userStoreData.username?.length > 0) {
                     creatorData.value.username = userStoreData.username;
                 } else {
                     creatorData.value.username = false;
                 }
-                if(userStoreData?.wallet?.length > 0) {
+                if(userStoreData.wallet?.length > 0) {
                     creatorData.value.account = userStoreData.wallet;
                 } else {
                     creatorData.value.account = false;
                 }
-                if(userStoreData?.avatar_image?.length > 0) {
+                if(userStoreData.avatar_image?.length > 0) {
                     creatorData.value.profilePicture = userStoreData.avatar_image;
                 } else {
                     creatorData.value.profilePicture = false;
                 }
-            } else if(account) {
+            } else if(account.value) {
                 creatorData.value.profilePicture = false;
                 creatorData.value.username = false;
                 creatorData.value.account = account.value;

@@ -89,13 +89,14 @@
 <script>
 
 import useWeb3 from "@/connectors/hooks";
+import useUser from "@/hooks/useUser";
 import {SUPPORTED_WALLETS} from "@/connectors/constants";
 import Identicon from "@/components/Identicon/Identicon";
 import {shortenAddress, getEtherscanLink, clean} from "@/services/utils/index";
 import CopyHelper from "@/components/CopyHelper/CopyHelper";
 import {useStore} from "vuex";
 
-import {reactive, computed, ref} from 'vue';
+import {reactive, ref} from 'vue';
 import { useField, useForm } from "vee-validate";
 import { UserService } from "@/services/apiService"
 import useSigner from "@/hooks/useSigner";
@@ -108,7 +109,7 @@ export default {
   setup(props, {emit}) {
     const {chainId, account, connector} = useWeb3();
     const store = useStore()
-    const user = computed(() => store.getters['user/user']);
+    const { user, setUser } = useUser();
     const toast = useToast();
     const temporaryAvatarImageUrl = ref('');
     const temporaryBannerImageUrl = ref('');
@@ -222,7 +223,7 @@ export default {
         values = clean(values);
         UserService.update(account.value, {...values, sig})
           .then(res => {
-            store.dispatch('user/setUser', res.data.user);
+            setUser(res.data.user);
             toast.add({severity:'info', summary:'Success', detail:'Your profile has been updated.', life: 3000});
             store.dispatch('application/closeModal');
             temporaryAvatarImageUrl.value = '';

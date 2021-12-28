@@ -282,7 +282,7 @@
                 :creatorAccount="creatorData.account"
                 :creatorProfilePicture="creatorData.profilePicture"
                 :creatorUsername="creatorData.username"
-                :creatorSlug="processData.creatorUsername || creatorData.username"
+                :creatorSlug="creatorData.username"
                 creatorType="user"
                 :mediaUrl="mediaUrl"
                 :collectableState="collectableState"
@@ -297,7 +297,7 @@
 
 <script>
 
-import { ref, reactive, computed, watchEffect } from "vue";
+import { ref, reactive, watchEffect } from "vue";
 import {useField, useForm} from "vee-validate";
 import {useStore} from "vuex"
 
@@ -312,6 +312,7 @@ import DropCardPreview from "@/components/DropCardPreview/DropCardPreview.vue";
 
 import { countryList } from "@/connectors/constants";
 import useWeb3 from "@/connectors/hooks";
+import useUser from "@/hooks/useUser";
 
 import useSigner from "@/hooks/useSigner";
 import { useV3NftContractNetworkReactive } from '@/hooks/useContract.js';
@@ -411,8 +412,7 @@ export default {
 
         const store = useStore();
         const toast = useToast();
-        
-        const userLocal = computed(() => store.getters['user/user']);
+        const { user } = useUser();
 
         const creatorData = ref({
             account: false,
@@ -429,19 +429,19 @@ export default {
         watchEffect(() => {
             // If the logic here is changed (i.e. how it calculates the creator username/image)
             // Make sure to check if anything needs change in ProcessRecoveryCard.vue
-            let userStoreData = store.getters['user/user'];
+            const userStoreData = user.value;
             if(userStoreData) {
-                if(userStoreData?.username?.length > 0) {
+                if(userStoreData.username?.length > 0) {
                     creatorData.value.username = userStoreData.username;
                 } else {
                     creatorData.value.username = false;
                 }
-                if(userStoreData?.wallet?.length > 0) {
+                if(userStoreData.wallet?.length > 0) {
                     creatorData.value.account = userStoreData.wallet;
                 } else {
                     creatorData.value.account = false;
                 }
-                if(userStoreData?.avatar_image?.length > 0) {
+                if(userStoreData.avatar_image?.length > 0) {
                     creatorData.value.profilePicture = userStoreData.avatar_image;
                 } else {
                     creatorData.value.profilePicture = false;

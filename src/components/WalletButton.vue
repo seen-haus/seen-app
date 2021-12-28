@@ -9,12 +9,12 @@
     <div @click="toggle" class="pr-4 md:pr-0">
       <div v-if="account" class="wallet-button-container">
         <button class="cursor-pointer button primary flex items-center wallet">
-          <div class="profile-avatar wallet-button-avatar" :style="{ backgroundImage: `url(${userLocal?.avatar_image})` }">
-            <identicon :size="32" :address="account" v-if="!userLocal?.avatar_image"/>
+          <div class="profile-avatar wallet-button-avatar" :style="{ backgroundImage: `url(${user?.avatar_image})` }">
+            <identicon :size="32" :address="account" v-if="!user?.avatar_image"/>
           </div>
           <div class="ml-2 flex flex-col items-start disable-text-transform">
-            <span class="addressText" v-if="!userLocal?.username">{{ shortenAddress(account) }}</span>
-            <span class="usernameText" v-if="userLocal?.username">{{ userLocal.username }}</span>
+            <span class="addressText" v-if="!user?.username">{{ shortenAddress(account) }}</span>
+            <span class="usernameText" v-if="user?.username">{{ user.username }}</span>
             <span class="block balanceText">{{ balanceFormatted ? balanceFormatted.substring(0, 8) : 'Fetching balance' }} ETH</span>
           </div>
           <div class="mr-4 ml-4 ml-md-12">
@@ -71,7 +71,7 @@
             </button>
           </span>
           <div class="mx-8 h-0.5 bg-background-gray"></div>
-          <router-link :to="{ name: 'profileWithAddress', params: { userAddressOrUsername: userLocal?.username ? userLocal.username : account }}">
+          <router-link v-if="user?.username || account" :to="{ name: 'profileWithAddress', params: { userAddressOrUsername: user?.username || account }}">
             <button class="button dropdown-btn" @click="close">
               <i class="gray far fa-clone cursor-pointer mr-2" alt="SEEN"></i> My Collection
             </button>
@@ -88,6 +88,7 @@
 
 <script>
 import useWeb3 from "@/connectors/hooks"
+import useUser from "@/hooks/useUser";
 import {useStore} from "vuex"
 import Identicon from "@/components/Identicon/Identicon"
 import {shortenAddress} from "@/services/utils/index"
@@ -134,7 +135,7 @@ export default {
       }
     })
 
-    const userLocal = computed(() => store.getters['user/user']);
+    const { user, setUser } = useUser();
 
     let isOpen = ref(false);
     const openWalletModal = () => {
@@ -149,7 +150,7 @@ export default {
     };
     const handleDisconnect = () => {
       close();
-      store.dispatch('user/setUser', null);
+      setUser(null);
       deactivate();
     };
 
@@ -212,7 +213,7 @@ export default {
       toggle,
       close,
       op,
-      userLocal,
+      user,
     }
   }
 }
