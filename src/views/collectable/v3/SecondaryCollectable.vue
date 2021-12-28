@@ -170,6 +170,10 @@
           </div>
           <list-of-buyers class="mb-12" :list="events" :isAuction="isAuction"/>
 
+          <button v-if="state.primaryCollectable" @click="() => navigateToPrimaryMarketListing(state.primaryCollectable.slug)" class="button w-full primary mb-4">
+            View Primary Listing
+          </button>
+
           <template v-if="isAuction">
             <button class="button dark w-full" :class="darkMode && 'dark-mode-outline'" @click="openModal('video', 'https://www.youtube.com/watch?v=1G5caDyf-kA')">
               <i
@@ -221,7 +225,7 @@
 
 <script>
 import {computed, onBeforeUnmount, onUnmounted, reactive, ref, watchEffect} from "vue";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useMeta} from "vue-meta";
 
 import FencedTitle from "@/components/FencedTitle.vue";
@@ -276,10 +280,12 @@ export default {
   setup() {
     const toast = useToast();
     const route = useRoute();
+    const router = useRouter();
     const state = reactive({
       loading: true,
       contractAddress: null,
       collectable: {},
+      primaryCollectable: null,
       buyersVisible: 3,
     });
     const { chainId } = useWeb3();
@@ -340,6 +346,7 @@ export default {
 
     const backgroundImage = ref(false);
     const titleMonospace = ref(false);
+    const primaryCollectable = ref(null); 
 
     // TODO: Make this into a DB datasource unless V3 no longer uses this
     if(['0xmons-mork'].indexOf(route.params["slug"]) > -1) {
@@ -424,6 +431,13 @@ export default {
       window.open(url, '_blank').focus()
     }
 
+    const navigateToPrimaryMarketListing = (collectableSlug) => {
+      router.push({
+        name: "collectableDropV3",
+        params: { slug: collectableSlug },
+      });
+    }
+
     (async function loadCollectable() {
       state.loading = true;
       const slug = route.params["slug"];
@@ -434,6 +448,7 @@ export default {
       console.log({data})
       state.loading = false;
       state.collectable = data.collectable;
+      state.primaryCollectable = data.collectable;
       state.contractAddress = data.contract_address;
 
       let mergedSecondaryWithPrimary = mergePrimaryCollectableIntoSecondary(data.collectable, data);
@@ -517,11 +532,13 @@ export default {
       updateProgress,
       viewOnEtherscan,
       viewOnOpenSea,
+      navigateToPrimaryMarketListing,
       openModal,
       showAdditionalInformation,
       updateCollectableState,
       claim,
       pillOverride,
+      state,
     };
   },
 };
