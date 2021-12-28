@@ -188,7 +188,7 @@
             :winningAddress="winningAddress"
             @update-state="updateCollectableState"
           />
-          <div v-if="secondaryMarketListingsForRender?.length > 0" class="text-3xl font-title font-bold text-center mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
+          <div v-if="secondaryMarketListingsForRender?.length > 0" class="text-3xl font-title font-bold mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
             Secondary Market
           </div>
           <button v-if="secondaryMarketListingsForRender?.length > 0" @click="() => setShowSecondaryMarket(true)" class="button w-full primary mb-4">
