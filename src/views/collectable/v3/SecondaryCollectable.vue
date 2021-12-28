@@ -89,9 +89,16 @@
     </div>
     <container>
       
-      <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-12 md:mt-0">
+      <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-6">
         <div class="left-side col-span-7 pb-6">
-          <div class="text-lg description" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'" v-html="description"></div>
+          <sub-title
+            class="text-black hidden lg:flex pb-5"
+            textAlign="left"
+          >
+            {{title}}
+          </sub-title>
+          <light-typography class="description" textAlign="left" fontSize="18px">{{description}}</light-typography>
+
           <template v-if="showAdditionalInformation">
             <!--            <div class="rounded-container flex items-center mt-12">-->
             <!--              <i-->
@@ -228,6 +235,7 @@ import {computed, onBeforeUnmount, onUnmounted, reactive, ref, watchEffect} from
 import {useRoute, useRouter} from "vue-router";
 import {useMeta} from "vue-meta";
 
+import SubTitle from "@/components/SubTitle.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import UserBadge from "@/components/PillsAndTags/UserBadge.vue";
@@ -269,6 +277,7 @@ export default {
     HeroGallery,
     NftData,
     UnfencedTitle,
+    SubTitle,
   },
   methods: {
     getBackgroundImage(backgroundImage) {
