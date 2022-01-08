@@ -299,6 +299,7 @@ import {
 import { TIMER_STATE } from "@/hooks/v3/useTimer.js";
 
 import { roleToBytes, marketHandlerToListingType, selfUrl } from '@/constants';
+import { STEP_TYPE, STEP_INDEX } from '@/constants/StepTypes';
 import useCopyClipboard from "@/hooks/useCopyClipboard";
 
 export default {
@@ -331,38 +332,6 @@ export default {
     beforeUnmount() {
         window.removeEventListener('beforeunload', this.beforeWindowUnload)
     },
-    data() {
-        return {
-            steps: [
-                {
-                    label: 'Upload',
-                    helperText: 'Upload media to IPFS'
-                },
-                {
-                    label: 'Mint',
-                    helperText: 'Deploy your NFT on-chain'
-                },
-                {
-                    label: 'List',
-                    helperText: 'Create on-chain listing'
-                },
-                {
-                    label: 'Publish',
-                    helperText: 'Publish on SEEN.HAUS'
-                }
-            ],
-            secondarySteps: [
-                {
-                    label: 'List',
-                    helperText: 'Create on-chain listing'
-                },
-                {
-                    label: 'Publish',
-                    helperText: 'Publish on SEEN.HAUS'
-                }
-            ],
-        }
-    },
     filters: {
         pretty: function(value) {
             return JSON.stringify(JSON.parse(value), null, 2);
@@ -386,19 +355,19 @@ export default {
         nextStep() {
             this.router.push({
                 name: "selfCreate",
-                params: { stepName: this.stepIndexToName[this.processData.currentStep + 1]},
+                params: { stepName: STEP_INDEX[this.processData.currentStep + 1].toLowerCase() },
             });
         },
         prevStep() {
             this.router.push({
                 name: "selfCreate",
-                params: { stepName: this.stepIndexToName[this.processData.currentStep - 1]},
+                params: { stepName: STEP_INDEX[this.processData.currentStep - 1].toLowerCase() },
             });
         },
         setStep(step) {
             this.router.push({
                 name: "selfCreate",
-                params: { stepName: this.stepIndexToName[step]},
+                params: { stepName: STEP_INDEX[step].toLowerCase() },
             });
         },
         setTitleData(title) {
@@ -521,9 +490,7 @@ export default {
         const router = useRouter();
         const route = useRoute();
 
-        const stepName = route.params.stepName
-            ? route.params.stepName
-            : 'initiation';
+        const useStepName = computed(() => (route.params.stepName || STEP_INDEX[STEP_TYPE.INITIATION]).toLowerCase());
 
         const publishConsignmentId = route.params.consignmentId;
 
@@ -573,26 +540,60 @@ export default {
             }
         })
 
-        const stepNameToStepIndex = {
-            'initiation': 0,
-            'upload': 1,
-            'mint': 2,
-            'list': 3,
-            'publish': 4,
-            'live': 5,
-        }
-
-        const stepIndexToName = {
-            0: 'initiation',
-            1: 'upload',
-            2: 'mint',
-            3: 'list',
-            4: 'publish',
-            5: 'live',
-        }
+        const steps = [
+            {
+                // label: 'Initiation',
+                stepType: STEP_TYPE.INITIATION,
+                validated: (processData) => { return true; },
+            },
+            {
+                stepType: STEP_TYPE.UPLOAD,
+                label: 'Upload',
+                helperText: 'Upload media to IPFS',
+                validated: (processData) => processData.marketType,
+                primaryMarketTypeOnly: true,
+            },
+            {
+                stepType: STEP_TYPE.MINT,
+                label: 'Mint',
+                helperText: 'Deploy your NFT on-chain',
+                validated: (processData) => processData.marketType && processData.mediaIpfsHash,
+                primaryMarketTypeOnly: true,
+            },
+            {
+                stepType: STEP_TYPE.LIST,
+                label: 'List',
+                helperText: 'Create on-chain listing',
+                validated: (processData) => processData.marketType
+                    && processData.mediaIpfsHash
+                    && processData.metaDataIpfsHash
+                    && processData.nftTokenId
+            },
+            {
+                stepType: STEP_TYPE.PUBLISH,
+                label: 'Publish',
+                helperText: 'Publish on SEEN.HAUS',
+                validated: (processData) => processData.marketType
+                    && processData.mediaIpfsHash
+                    && processData.metaDataIpfsHash
+                    && processData.nftTokenId
+                    && processData.isMarketHandlerAssigned
+            },
+            {
+                stepType: STEP_TYPE.LIVE,
+                // label: 'Live',
+                validated: (processData) => processData.marketType
+                    && processData.mediaIpfsHash
+                    && processData.metaDataIpfsHash
+                    && processData.nftTokenId
+                    && processData.isMarketHandlerAssigned
+                    && processData.liveListingUrl
+            }
+        ];
+        const secondarySteps = computed(() => steps.filter((step) => !step.primaryMarketTypeOnly));
 
         const processData = reactive({
-            currentStep: stepNameToStepIndex[stepName],
+            currentStep: STEP_TYPE[useStepName.value],
             tangibility: false,
             locationData: {
                 country: false,
@@ -636,6 +637,36 @@ export default {
             secondaryBalance: false,
             marketType: 'primary',
             showAccessRequestForm: false,
+        });
+
+        watchEffect(() => {
+            if (!processData.hasCheckedRoles) {
+                return;
+            }
+
+            if (!processData.currentStep) {
+                return;
+            }
+
+            console.log('current step', processData.currentStep);
+
+            let nextStep = null;
+
+            for (let stepIndex = processData.currentStep; stepIndex > 0; stepIndex--) {
+                const stepData = steps[stepIndex];
+
+                if (stepData.validated(processData)) {
+                    nextStep = stepIndex;
+                    break;
+                }
+            }
+
+            if (nextStep) {
+                router.push({
+                    name: "selfCreate",
+                    params: { stepName: STEP_INDEX[nextStep].toLowerCase() },
+                });
+            }
         })
 
         const copyLiveListingUrlToClipboard = () => {
@@ -653,8 +684,7 @@ export default {
         }
 
         watchEffect(async () => {
-            let currentStepName = route.params.stepName;
-            if(currentStepName === 'publish') {
+            if (useStepName.value === 'publish') {
                 let useConsignmentId = publishConsignmentId ? publishConsignmentId : processData.nftConsignmentId
                 if(useConsignmentId === 0 || useConsignmentId) {
                     try {
@@ -746,10 +776,9 @@ export default {
         })
 
         watchEffect(() => {
-            if(route.params.stepName) {
-                processData.currentStep = stepNameToStepIndex[route.params.stepName];
-            } else {
-                processData.currentStep = 0;
+            if (useStepName.value) {
+                const stepType = useStepName.value.toUpperCase();
+                processData.currentStep = STEP_TYPE[stepType];
             }
         })
 
@@ -843,14 +872,14 @@ export default {
             temporaryMediaUrl,
             useTemporaryMediaUrl,
             onMediaChange,
-            stepName,
             processData,
             router,
-            stepIndexToName,
             creatorData,
             updateProgress,
             copyLiveListingUrlToClipboard,
             navigateToLiveListingUrl,
+            steps,
+            secondarySteps,
         }
     }
 };
