@@ -653,8 +653,6 @@ export default {
                 return;
             }
 
-            console.log('current step', processData.currentStep);
-
             let nextStep = null;
 
             for (let stepIndex = processData.currentStep; stepIndex > 0; stepIndex--) {
