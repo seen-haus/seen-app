@@ -555,14 +555,14 @@ export default {
                 stepType: STEP_TYPE.UPLOAD,
                 label: 'Upload',
                 helperText: 'Upload media to IPFS',
-                validated: (processData) => processData.marketType,
+                validated: (processData) => processData.isMinter && processData.marketType,
                 primaryMarketTypeOnly: true,
             },
             {
                 stepType: STEP_TYPE.MINT,
                 label: 'Mint',
                 helperText: 'Deploy your NFT on-chain',
-                validated: (processData) => processData.marketType && processData.mediaIpfsHash,
+                validated: (processData) => processData.isMinter && processData.marketType && processData.mediaIpfsHash,
                 primaryMarketTypeOnly: true,
             },
             {
