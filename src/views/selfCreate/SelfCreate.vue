@@ -269,6 +269,7 @@
 
 import { ref, reactive, computed, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useMeta } from "vue-meta";
 import { useStore } from "vuex";
 
 import { useToast } from "primevue/usetoast";
@@ -477,6 +478,10 @@ export default {
         }
     },
     async setup() {
+        const { meta } = useMeta({
+            title: 'Create',
+        })
+
         const {staticCopy} = useCopyClipboard();
         const store = useStore();
         const { user } = useUser();
