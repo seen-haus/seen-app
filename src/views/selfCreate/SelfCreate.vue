@@ -45,15 +45,17 @@
         </container>
     </div>
     <div v-if="processData.hasCheckedRoles && !processData.showAccessRequestForm">
-        <container class="pb-12" v-if="processData.currentStep < 5">
+        <container class="pb-12" v-if="processData.currentStep < STEP_TYPE.LIVE">
             <unfenced-title
                 class="text-black hidden lg:flex pb-6 pt-12"
                 color="fence-dark"
                 text-align="left"
             >Publish NFT</unfenced-title>
-            <div v-if="processData.currentStep > 0" class="flex items-center flex-col lg:flex-row mb-8">
+            <div v-if="processData.currentStep > STEP_TYPE.INITIATION" class="flex items-center flex-col lg:flex-row mb-2">
                 <div class="card flex-grow">
                     <!-- First step isn't part of step process, so we set currentStep in Step component to currentStep - 1 -->
+                    <Steps :stepOffset="useStepOffset" :steps="useSteps" :currentStep="processData.currentStep - useStepOffset" :setStep="setStep"  />
+                
                      <sub-title
                         v-if="processData.currentStep > STEP_TYPE.INITIATION && processData.currentStep < STEP_TYPE.PUBLISH"
                         class="light-mode-text-washed disable-text-transform clickable lg:flex mt-6"
@@ -70,7 +72,7 @@
                 <!-- <div class="flex-grow" v-if="currentStep === 0">
                     <type-selection :nextStep="nextStep" :setTangibility="setTangibility" :setLocationData="setLocationData" :clearLocationData="clearLocationData"/>
                 </div> -->
-                <div class="w-full" v-if="processData.currentStep === 0">
+                <div class="w-full" v-if="processData.currentStep === STEP_TYPE.INITIATION">
                     <initiation
                         :setStep="setStep"
                         :nextStep="nextStep"
@@ -97,10 +99,10 @@
                         :isSeller="processData.isSeller"
                     />
                 </div>
-                <div class="flex-grow" v-if="processData.currentStep === 1">
+                <div class="flex-grow" v-if="processData.currentStep === STEP_TYPE.UPLOAD">
                     <upload :nextStep="nextStep" :setMediaIpfsHash="setMediaIpfsHash" :setTempMediaUrl="setTempMediaUrl" :tempMediaUrl="processData.tempMediaUrl" :mediaIpfsHash="processData.mediaIpfsHash" />
                 </div>
-                <div class="flex-grow" v-if="processData.currentStep === 2">
+                <div class="flex-grow" v-if="processData.currentStep === STEP_TYPE.MINT">
                     <mint 
                         :setPropertyData="setPropertyData"
                         :propertyData="processData.properties"
@@ -154,7 +156,7 @@
                         :isSeller="processData.isSeller"
                     />
                 </div>
-                <div class="flex-grow" v-if="processData.currentStep === 3">
+                <div class="flex-grow" v-if="processData.currentStep === STEP_TYPE.LIST">
                     <self-create-listing
                         :nextStep="nextStep"
                         :prevStep="prevStep"
@@ -194,7 +196,7 @@
                         :isSeller="processData.isSeller"
                     />
                 </div>
-                <div class="flex-grow" v-if="processData.currentStep === 4 && processData.hasCheckedRoles">
+                <div class="flex-grow" v-if="processData.currentStep === STEP_TYPE.PUBLISH && processData.hasCheckedRoles">
                     <container class="publishing-loader-section flex-center pb-12">
                         <div class="flex-col flex">
                             <ProgressSpinner />
@@ -212,7 +214,7 @@
                 </div>
             </div>
         </container>
-        <div v-if="processData.currentStep === 5">
+        <div v-if="processData.currentStep === STEP_TYPE.LIVE">
             <div class="bg-light-grey-darkened live-preview-card-zone flex-center">
                 <drop-card-preview
                     :autoMargins="true"
@@ -603,7 +605,8 @@ export default {
                     && processData.liveListingUrl
             }
         ];
-        const secondarySteps = computed(() => steps.filter((step) => !step.primaryMarketTypeOnly));
+        const useSteps = computed(() => processData.marketType === 'primary' ? steps : steps.filter((step) => !step.primaryMarketTypeOnly));
+        const useStepOffset = computed(() => processData.marketType === 'primary' ? 1 : 3);
 
         const processData = reactive({
             currentStep: STEP_TYPE[useStepName.value],
@@ -889,8 +892,9 @@ export default {
             updateProgress,
             copyLiveListingUrlToClipboard,
             navigateToLiveListingUrl,
-            steps,
-            secondarySteps,
+            useSteps,
+            useStepOffset,
+            STEP_TYPE
         }
     }
 };
