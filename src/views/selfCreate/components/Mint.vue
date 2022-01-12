@@ -1,14 +1,7 @@
 <template>
     <div class="flex w-full mt-8">
         <div class="mint-info-form-container">
-            <sub-title
-                class="light-self-create-back-button light-mode-text-washed disable-text-transform clickable hidden lg:flex mb-1 mt-2"
-                text-align="left"
-                font-size="13px"
-                @click="prevStep"
-            >
-                <i class="fas fa-chevron-left mr-1"></i>Go Back
-            </sub-title>
+            
             <div :class="data.nftTokenId && 'cursor-not-allowed'">
                 <div :class="data.nftTokenId && 'disabled opacity-0-6'">
                     <form

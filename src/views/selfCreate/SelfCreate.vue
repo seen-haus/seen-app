@@ -54,8 +54,16 @@
             <div v-if="processData.currentStep > 0" class="flex items-center flex-col lg:flex-row mb-8">
                 <div class="card flex-grow">
                     <!-- First step isn't part of step process, so we set currentStep in Step component to currentStep - 1 -->
-                    <Steps v-if="processData.marketType === 'primary'" :stepOffset="1" :steps="steps" :currentStep="processData.currentStep - 1" :setStep="setStep"  />
-                    <Steps v-if="processData.marketType === 'secondary'" :stepOffset="3" :steps="secondarySteps" :currentStep="processData.currentStep - 3" :setStep="setStep"  />
+                     <sub-title
+                        v-if="processData.currentStep > STEP_TYPE.INITIATION && processData.currentStep < STEP_TYPE.PUBLISH"
+                        class="light-mode-text-washed disable-text-transform clickable lg:flex mt-6"
+                        text-align="left"
+                        font-size="13px"
+                        @click="prevStep"
+                    >
+                        <i class="fas fa-chevron-left mr-1"></i>Go Back
+                    </sub-title>
+
                 </div>
             </div>
             <div class="flex items-center flex-col lg:flex-row">
