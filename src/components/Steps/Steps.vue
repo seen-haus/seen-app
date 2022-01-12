@@ -2,8 +2,8 @@
   <div class="steps-row">
     <div 
         class="step-container"
-        :class="index < (steps.length - 1) && 'mr-4'"
-        v-for="(step, index) in steps"
+        :class="index < (useSteps.length - 1) && 'mr-4'"
+        v-for="(step, index) in useSteps"
         :key="step"
     >
         <div
@@ -64,9 +64,11 @@ export default {
     const useCurrentStep = computed(() => {
       return props.currentStep || 0;
     });
+    const useSteps = computed(() => props.steps.filter((step) => step.label));
 
     return {
         useCurrentStep,
+        useSteps,
     };
   },
 };

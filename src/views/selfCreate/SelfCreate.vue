@@ -45,24 +45,34 @@
         </container>
     </div>
     <div v-if="processData.hasCheckedRoles && !processData.showAccessRequestForm">
-        <container class="pb-12" v-if="processData.currentStep < 5">
+        <container class="pb-12" v-if="processData.currentStep < STEP_TYPE.LIVE">
             <unfenced-title
                 class="text-black hidden lg:flex pb-6 pt-12"
                 color="fence-dark"
                 text-align="left"
             >Publish NFT</unfenced-title>
-            <div v-if="processData.currentStep > 0" class="flex items-center flex-col lg:flex-row mb-8">
+            <div v-if="processData.currentStep > STEP_TYPE.INITIATION" class="flex items-center flex-col lg:flex-row mb-2">
                 <div class="card flex-grow">
                     <!-- First step isn't part of step process, so we set currentStep in Step component to currentStep - 1 -->
-                    <Steps v-if="processData.marketType === 'primary'" :stepOffset="1" :steps="steps" :currentStep="processData.currentStep - 1" :setStep="setStep"  />
-                    <Steps v-if="processData.marketType === 'secondary'" :stepOffset="3" :steps="secondarySteps" :currentStep="processData.currentStep - 3" :setStep="setStep"  />
+                    <Steps :stepOffset="useStepOffset" :steps="useSteps" :currentStep="processData.currentStep - useStepOffset" :setStep="setStep"  />
+                
+                     <sub-title
+                        v-if="processData.currentStep > STEP_TYPE.INITIATION && processData.currentStep < STEP_TYPE.PUBLISH"
+                        class="light-mode-text-washed disable-text-transform clickable lg:flex mt-6"
+                        text-align="left"
+                        font-size="13px"
+                        @click="prevStep"
+                    >
+                        <i class="fas fa-chevron-left mr-1"></i>Go Back
+                    </sub-title>
+
                 </div>
             </div>
             <div class="flex items-center flex-col lg:flex-row">
                 <!-- <div class="flex-grow" v-if="currentStep === 0">
                     <type-selection :nextStep="nextStep" :setTangibility="setTangibility" :setLocationData="setLocationData" :clearLocationData="clearLocationData"/>
                 </div> -->
-                <div class="w-full" v-if="processData.currentStep === 0">
+                <div class="w-full" v-if="processData.currentStep === STEP_TYPE.INITIATION">
                     <initiation
                         :setStep="setStep"
                         :nextStep="nextStep"
@@ -89,10 +99,10 @@
                         :isSeller="processData.isSeller"
                     />
                 </div>
-                <div class="flex-grow" v-if="processData.currentStep === 1">
+                <div class="flex-grow" v-if="processData.currentStep === STEP_TYPE.UPLOAD">
                     <upload :nextStep="nextStep" :setMediaIpfsHash="setMediaIpfsHash" :setTempMediaUrl="setTempMediaUrl" :tempMediaUrl="processData.tempMediaUrl" :mediaIpfsHash="processData.mediaIpfsHash" />
                 </div>
-                <div class="flex-grow" v-if="processData.currentStep === 2">
+                <div class="flex-grow" v-if="processData.currentStep === STEP_TYPE.MINT">
                     <mint 
                         :setPropertyData="setPropertyData"
                         :propertyData="processData.properties"
@@ -146,7 +156,7 @@
                         :isSeller="processData.isSeller"
                     />
                 </div>
-                <div class="flex-grow" v-if="processData.currentStep === 3">
+                <div class="flex-grow" v-if="processData.currentStep === STEP_TYPE.LIST">
                     <self-create-listing
                         :nextStep="nextStep"
                         :prevStep="prevStep"
@@ -186,7 +196,7 @@
                         :isSeller="processData.isSeller"
                     />
                 </div>
-                <div class="flex-grow" v-if="processData.currentStep === 4 && processData.hasCheckedRoles">
+                <div class="flex-grow" v-if="processData.currentStep === STEP_TYPE.PUBLISH && processData.hasCheckedRoles">
                     <container class="publishing-loader-section flex-center pb-12">
                         <div class="flex-col flex">
                             <ProgressSpinner />
@@ -204,7 +214,7 @@
                 </div>
             </div>
         </container>
-        <div v-if="processData.currentStep === 5">
+        <div v-if="processData.currentStep === STEP_TYPE.LIVE">
             <div class="bg-light-grey-darkened live-preview-card-zone flex-center">
                 <drop-card-preview
                     :autoMargins="true"
@@ -269,6 +279,7 @@
 
 import { ref, reactive, computed, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useMeta } from "vue-meta";
 import { useStore } from "vuex";
 
 import { useToast } from "primevue/usetoast";
@@ -299,6 +310,7 @@ import {
 import { TIMER_STATE } from "@/hooks/v3/useTimer.js";
 
 import { roleToBytes, marketHandlerToListingType, selfUrl } from '@/constants';
+import { STEP_TYPE, STEP_INDEX } from '@/constants/StepTypes';
 import useCopyClipboard from "@/hooks/useCopyClipboard";
 
 export default {
@@ -331,38 +343,6 @@ export default {
     beforeUnmount() {
         window.removeEventListener('beforeunload', this.beforeWindowUnload)
     },
-    data() {
-        return {
-            steps: [
-                {
-                    label: 'Upload',
-                    helperText: 'Upload media to IPFS'
-                },
-                {
-                    label: 'Mint',
-                    helperText: 'Deploy your NFT on-chain'
-                },
-                {
-                    label: 'List',
-                    helperText: 'Create on-chain listing'
-                },
-                {
-                    label: 'Publish',
-                    helperText: 'Publish on SEEN.HAUS'
-                }
-            ],
-            secondarySteps: [
-                {
-                    label: 'List',
-                    helperText: 'Create on-chain listing'
-                },
-                {
-                    label: 'Publish',
-                    helperText: 'Publish on SEEN.HAUS'
-                }
-            ],
-        }
-    },
     filters: {
         pretty: function(value) {
             return JSON.stringify(JSON.parse(value), null, 2);
@@ -386,19 +366,19 @@ export default {
         nextStep() {
             this.router.push({
                 name: "selfCreate",
-                params: { stepName: this.stepIndexToName[this.processData.currentStep + 1]},
+                params: { stepName: STEP_INDEX[this.processData.currentStep + 1].toLowerCase() },
             });
         },
         prevStep() {
             this.router.push({
                 name: "selfCreate",
-                params: { stepName: this.stepIndexToName[this.processData.currentStep - 1]},
+                params: { stepName: STEP_INDEX[this.processData.currentStep - 1].toLowerCase() },
             });
         },
         setStep(step) {
             this.router.push({
                 name: "selfCreate",
-                params: { stepName: this.stepIndexToName[step]},
+                params: { stepName: STEP_INDEX[step].toLowerCase() },
             });
         },
         setTitleData(title) {
@@ -508,6 +488,10 @@ export default {
         }
     },
     async setup() {
+        const { meta } = useMeta({
+            title: 'Create',
+        })
+
         const {staticCopy} = useCopyClipboard();
         const store = useStore();
         const { user } = useUser();
@@ -521,9 +505,7 @@ export default {
         const router = useRouter();
         const route = useRoute();
 
-        const stepName = route.params.stepName
-            ? route.params.stepName
-            : 'initiation';
+        const useStepName = computed(() => (route.params.stepName || STEP_INDEX[STEP_TYPE.INITIATION]).toLowerCase());
 
         const publishConsignmentId = route.params.consignmentId;
 
@@ -573,26 +555,61 @@ export default {
             }
         })
 
-        const stepNameToStepIndex = {
-            'initiation': 0,
-            'upload': 1,
-            'mint': 2,
-            'list': 3,
-            'publish': 4,
-            'live': 5,
-        }
-
-        const stepIndexToName = {
-            0: 'initiation',
-            1: 'upload',
-            2: 'mint',
-            3: 'list',
-            4: 'publish',
-            5: 'live',
-        }
+        const steps = [
+            {
+                // label: 'Initiation',
+                stepType: STEP_TYPE.INITIATION,
+                validated: (processData) => { return true; },
+            },
+            {
+                stepType: STEP_TYPE.UPLOAD,
+                label: 'Upload',
+                helperText: 'Upload media to IPFS',
+                validated: (processData) => processData.isMinter && processData.marketType,
+                primaryMarketTypeOnly: true,
+            },
+            {
+                stepType: STEP_TYPE.MINT,
+                label: 'Mint',
+                helperText: 'Deploy your NFT on-chain',
+                validated: (processData) => processData.isMinter && processData.marketType && processData.mediaIpfsHash,
+                primaryMarketTypeOnly: true,
+            },
+            {
+                stepType: STEP_TYPE.LIST,
+                label: 'List',
+                helperText: 'Create on-chain listing',
+                validated: (processData) => processData.marketType
+                    && processData.mediaIpfsHash
+                    && processData.metaDataIpfsHash
+                    && processData.nftTokenId
+            },
+            {
+                stepType: STEP_TYPE.PUBLISH,
+                label: 'Publish',
+                helperText: 'Publish on SEEN.HAUS',
+                validated: (processData) => processData.marketType
+                    && processData.mediaIpfsHash
+                    && processData.metaDataIpfsHash
+                    && processData.nftTokenId
+                    && processData.isMarketHandlerAssigned
+            },
+            {
+                stepType: STEP_TYPE.LIVE,
+                // label: 'Live',
+                validated: (processData) => processData.marketType
+                    && processData.mediaIpfsHash
+                    && processData.metaDataIpfsHash
+                    && processData.nftTokenId
+                    && processData.isMarketHandlerAssigned
+                    && processData.liveListingUrl
+            }
+        ];
+        const useSteps = computed(() => processData.marketType === 'primary' ? steps : steps.filter((step) => !step.primaryMarketTypeOnly));
+        const useStepOffset = computed(() => processData.marketType === 'primary' ? 1 : 3);
 
         const processData = reactive({
-            currentStep: stepNameToStepIndex[stepName],
+            currentStep: STEP_TYPE[useStepName.value],
             tangibility: false,
             locationData: {
                 country: false,
@@ -636,6 +653,34 @@ export default {
             secondaryBalance: false,
             marketType: 'primary',
             showAccessRequestForm: false,
+        });
+
+        watchEffect(() => {
+            if (!processData.hasCheckedRoles) {
+                return;
+            }
+
+            if (!processData.currentStep) {
+                return;
+            }
+
+            let nextStep = null;
+
+            for (let stepIndex = processData.currentStep; stepIndex > 0; stepIndex--) {
+                const stepData = steps[stepIndex];
+
+                if (stepData.validated(processData)) {
+                    nextStep = stepIndex;
+                    break;
+                }
+            }
+
+            if (nextStep) {
+                router.push({
+                    name: "selfCreate",
+                    params: { stepName: STEP_INDEX[nextStep].toLowerCase() },
+                });
+            }
         })
 
         const copyLiveListingUrlToClipboard = () => {
@@ -653,8 +698,7 @@ export default {
         }
 
         watchEffect(async () => {
-            let currentStepName = route.params.stepName;
-            if(currentStepName === 'publish') {
+            if (useStepName.value === 'publish') {
                 let useConsignmentId = publishConsignmentId ? publishConsignmentId : processData.nftConsignmentId
                 if(useConsignmentId === 0 || useConsignmentId) {
                     try {
@@ -746,10 +790,9 @@ export default {
         })
 
         watchEffect(() => {
-            if(route.params.stepName) {
-                processData.currentStep = stepNameToStepIndex[route.params.stepName];
-            } else {
-                processData.currentStep = 0;
+            if (useStepName.value) {
+                const stepType = useStepName.value.toUpperCase();
+                processData.currentStep = STEP_TYPE[stepType];
             }
         })
 
@@ -843,14 +886,15 @@ export default {
             temporaryMediaUrl,
             useTemporaryMediaUrl,
             onMediaChange,
-            stepName,
             processData,
             router,
-            stepIndexToName,
             creatorData,
             updateProgress,
             copyLiveListingUrlToClipboard,
             navigateToLiveListingUrl,
+            useSteps,
+            useStepOffset,
+            STEP_TYPE
         }
     }
 };
