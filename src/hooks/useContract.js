@@ -33,11 +33,12 @@ import {
 import VRF_SALE_V2_ABI from "@/constants/abis/vrfSaleV2ABI.json"
 import RANDOMNESS_CONSUMER_VRF_ABI from "@/constants/abis/randomnessConsumerVRFABI.json"
 import {Web3Provider, WebSocketProvider} from "@ethersproject/providers"
+import { DEFAULT_CHAIN_ID } from "@/constants/ChainIds";
 
 function useContract(address, ABI, withSignerIfPossible = true) {
     const {account, provider, chainId} = useWeb3()
     const library = provider.value
-        ? new Web3Provider(provider.value)
+        ? new Web3Provider(provider.value, {chainId: DEFAULT_CHAIN_ID})
         : new WebSocketProvider(process.env.VUE_APP_NETWORK_URL)
 
     try {
@@ -474,4 +475,63 @@ export const useV3TicketerContractNetworkReactive = async (withSignerIfPossible,
     return {
         state
     }
+}
+
+export const useDistributionContract = async (withSignerIfPossible) => {
+    let contractAddress = chainIdToDistributionPool(DEFAULT_CHAIN_ID);
+    return useContract(contractAddress, DISTRIBUTION_ABI, withSignerIfPossible);
+}
+
+export const useAccessControllerContract = async (withSignerIfPossible) => {
+    let contractAddress = chainIdToAccessController(DEFAULT_CHAIN_ID);
+    return useContract(contractAddress, ACCESS_CONTROLLER_ABI, withSignerIfPossible);
+}
+
+export const useV3NftContract = async (withSignerIfPossible) => {
+    let contractAddress = chainIdToSeenNFT(DEFAULT_CHAIN_ID);
+    return useContract(contractAddress, SEEN_NFT_ABI_V3, withSignerIfPossible);
+}
+
+export const useV3AuctionBuilderContract = async (withSignerIfPossible) => {
+    let contractAddress = chainIdToMarketDiamond(DEFAULT_CHAIN_ID);
+    return useContract(contractAddress, SEEN_AUCTION_BUILDER_V3, withSignerIfPossible);
+}
+
+export const useV3AuctionRunnerContract = async (withSignerIfPossible) => {
+    let contractAddress = chainIdToMarketDiamond(DEFAULT_CHAIN_ID);
+    return useContract(contractAddress, SEEN_AUCTION_RUNNER_V3, withSignerIfPossible);
+}
+
+export const useV3AuctionEnderContract = async (withSignerIfPossible) => {
+    let contractAddress = chainIdToMarketDiamond(DEFAULT_CHAIN_ID);
+    return useContract(contractAddress, SEEN_AUCTION_ENDER_V3, withSignerIfPossible);
+}
+
+export const useV3SaleBuilderContract = async (withSignerIfPossible) => {
+    let contractAddress = chainIdToMarketDiamond(DEFAULT_CHAIN_ID);
+    return useContract(contractAddress, SEEN_SALE_BUILDER_V3, withSignerIfPossible);
+}
+
+export const useV3SaleRunnerContract = async (withSignerIfPossible) => {
+    let contractAddress = chainIdToMarketDiamond(DEFAULT_CHAIN_ID);
+    return useContract(contractAddress, SEEN_SALE_RUNNER_V3, withSignerIfPossible);
+}
+
+export const useV3SaleEnderContract = async (withSignerIfPossible) => {
+    let contractAddress = chainIdToMarketDiamond(DEFAULT_CHAIN_ID);
+    return useContract(contractAddress, SEEN_SALE_ENDER_V3, withSignerIfPossible);
+}
+
+export const useV3MarketClerkContract = async (withSignerIfPossible) => {
+    let contractAddress = chainIdToMarketDiamond(DEFAULT_CHAIN_ID);
+    return useContract(contractAddress, SEEN_MARKET_CLERK_V3, withSignerIfPossible);
+}
+
+export const useV3MarketConfigContract = async (withSignerIfPossible) => {
+    let contractAddress = chainIdToMarketDiamond(DEFAULT_CHAIN_ID);
+    return useContract(contractAddress, SEEN_MARKET_CONFIG_V3, withSignerIfPossible);
+}
+
+export const useV3TicketerContract = async (withSignerIfPossible, ticketerAddress) => {
+    return useContract(ticketerAddress, SEEN_TICKETER_ABI_V3, withSignerIfPossible);
 }

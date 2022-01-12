@@ -1,6 +1,6 @@
 import {$axios} from './api/axios';
 
-import { useV3NftContractNetworkReactive } from '@/hooks/useContract.js';
+import { useV3NftContract } from '@/hooks/useContract.js';
 import { useOpenSeaBaseAPI, useOpenSeaCollectionV3 } from '@/constants';
 
 $axios.defaults.baseURL = `${process.env.VUE_APP_API_URL}/`;
@@ -246,7 +246,7 @@ export const OpenSeaAPIService = {
         const collectables = await ApiService.post('collectables/mapWithTokenContractAddress', {tokenContractAddressesToIds});
         const mapped = [];
 
-        let v3NftContract = await useV3NftContractNetworkReactive(true);
+        let v3NftContract = await useV3NftContract(true);
 
         for(let asset of assets) {
             const match = collectables.data.find(c => {
@@ -257,7 +257,7 @@ export const OpenSeaAPIService = {
                 }
             });
             if (match) {
-                let tokenBalance = await v3NftContract.state.contract.balanceOf(owner, match.nft_token_id);
+                let tokenBalance = await v3NftContract.balanceOf(owner, match.nft_token_id);
                 mapped.push({
                     data: {
                         ...match,

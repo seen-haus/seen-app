@@ -503,7 +503,11 @@ export default {
 
         watchEffect(() => {
             let { resetField } = titleField;
-            if(titleField?.value && (props.titleData !== titleField.value)) {
+            if(titleField?.value === "" && (props.titleData !== titleField.value) && props.nftTokenIdData) {
+                resetField({
+                    value: props.titleData
+                })
+            } else if(titleField?.value && (props.titleData !== titleField.value)) {
                 props.setTitleData(titleField.value)
             } else if (titleField?.value === "" && props.titleData !== false) {
                 props.setTitleData(false)
@@ -524,7 +528,11 @@ export default {
 
         watchEffect(() => {
             let { resetField } = descriptionField;
-            if(descriptionField?.value && (props.descriptionData !== descriptionField?.value)) {
+            if(descriptionField?.value === "" && (props.descriptionData !== descriptionField.value) && props.nftTokenIdData) {
+                resetField({
+                    value: props.descriptionData
+                })
+            } else if(descriptionField?.value && (props.descriptionData !== descriptionField?.value)) {
                 props.setDescriptionData(descriptionField.value)
             } else if (descriptionField?.value === "" && props.descriptionData !== false) {
                 props.setDescriptionData(false)

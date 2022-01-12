@@ -53,7 +53,7 @@
           }"
           class="button light-shadow bg-white quick-filter-button mb-4"
         >
-            <img src="@/assets/icons/gavel.svg" class="mr-3"/>Sold
+            <img src="@/assets/icons/gavel.svg" class="mr-3"/>Sold Out
         </button>
       </div>
 

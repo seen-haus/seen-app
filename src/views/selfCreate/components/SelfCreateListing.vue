@@ -536,10 +536,10 @@ export default {
                 if(seenNFTContract.value.contract && (Number(chainId.value) > 0)) {
                     processData.lastCheckedAccountForApproval = account?.value;
                     // Check that current user has approved the marketplace diamond as an operator for their SEEN NFTs
-                    console.log(account?.value, chainIdToMarketDiamond(Number(chainId.value)), Number(chainId.value))
-                    let hasApprovedMarketPlaceAsOperator = await seenNFTContract.value.contract.isApprovedForAll(account?.value, chainIdToMarketDiamond(Number(chainId.value)));
-                    console.log({hasApprovedMarketPlaceAsOperator})
-                    processData.hasApprovedMarketPlaceAsOperator = hasApprovedMarketPlaceAsOperator;
+                    if(seenNFTContract.value?.contract?.isApprovedForAll) {
+                        let hasApprovedMarketPlaceAsOperator = await seenNFTContract.value.contract.isApprovedForAll(account?.value, chainIdToMarketDiamond(Number(chainId.value)));
+                        processData.hasApprovedMarketPlaceAsOperator = hasApprovedMarketPlaceAsOperator;
+                    }
                 }
             } else if (!account?.value) {
                 processData.lastCheckedAccountForApproval = false;

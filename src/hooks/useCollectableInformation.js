@@ -297,9 +297,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
             return;
         }
 
-        console.log({is_closed})
-
-        if (is_closed.value) {
+        if (is_closed.value || (!isAuction.value && collectable.value.version === 3 && end && (now > end))) {
             collectableState.value = COLLECTABLE_STATE.CLOSED;
             return;
         }
