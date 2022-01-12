@@ -1,5 +1,5 @@
 import {
-    useV3MarketClerkContractNetworkReactive,
+    useV3MarketClerkContract,
 } from "@/hooks/useContract";
 import { ref, onBeforeUnmount} from 'vue';
 
@@ -12,8 +12,8 @@ const useConsignmentRecoveryList = () => {
     const fetchRecoveryList = async (account) => {
         try {
 
-          const marketClerkContractRaw = await useV3MarketClerkContractNetworkReactive();
-          marketClerkContract = marketClerkContractRaw.state.contract;
+          const marketClerkContractRaw = await useV3MarketClerkContract();
+          marketClerkContract = marketClerkContractRaw;
 
           // Get registered consignments
           let registeredConsignmentsFilter = marketClerkContract.filters.ConsignmentRegistered(account, null, null);

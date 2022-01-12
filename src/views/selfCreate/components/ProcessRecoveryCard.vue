@@ -178,7 +178,7 @@ export default {
                 processData.metaDataHash = uriToHash(tokenInfo.uri);
                 processData.tokenId = Number(tokenId);
                 processData.consignmentId = Number(consignment.id);
-                processData.royaltyFee = tokenInfo.royaltyPercentage;
+                processData.royaltyFee = tokenInfo.royaltyPercentage / 100;
                 processData.creatorAccount = consignment.seller;
               })
             }

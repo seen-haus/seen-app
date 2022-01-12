@@ -8,16 +8,16 @@ import {
     useV2OpenEditionContract,
     useV2VRFSaleContract,
     useRandomNumberConsumerContract,
-    useV3NftContractNetworkReactive,
-    useV3TicketerContractNetworkReactive,
-    useV3MarketClerkContractNetworkReactive,
-    useV3MarketConfigContractNetworkReactive,
-    useV3AuctionRunnerContractNetworkReactive,
-    useV3AuctionBuilderContractNetworkReactive,
-    useV3AuctionEnderContractNetworkReactive,
-    useV3SaleRunnerContractNetworkReactive,
-    useV3SaleBuilderContractNetworkReactive,
-    useV3SaleEnderContractNetworkReactive,
+    useV3NftContract,
+    useV3TicketerContract,
+    useV3MarketClerkContract,
+    useV3MarketConfigContract,
+    useV3AuctionRunnerContract,
+    useV3AuctionBuilderContract,
+    useV3AuctionEnderContract,
+    useV3SaleRunnerContract,
+    useV3SaleBuilderContract,
+    useV3SaleEnderContract,
 } from "@/hooks/useContract";
 import {computed, ref, onBeforeUnmount} from 'vue';
 import PURCHASE_TYPES from "@/constants/PurchaseTypes.js";
@@ -157,15 +157,15 @@ const useMarketContractEvents = () => {
                 } else if (version.value === 2) {
                     contract = useV2AuctionContract(contractAddress.value);
                 } else if (version.value === 3) {
-                    const auctionRunnerContractRaw = await useV3AuctionRunnerContractNetworkReactive();
-                    contract = auctionRunnerContractRaw.state.contract;
+                    const auctionRunnerContractRaw = await useV3AuctionRunnerContract();
+                    contract = auctionRunnerContractRaw;
                 }
                 if (version.value === 3) {
-                    const auctionBuilderContractRaw = await useV3AuctionBuilderContractNetworkReactive();
-                    builderContract = auctionBuilderContractRaw.state.contract;
+                    const auctionBuilderContractRaw = await useV3AuctionBuilderContract();
+                    builderContract = auctionBuilderContractRaw;
 
-                    const auctionEnderContractRaw = await useV3AuctionEnderContractNetworkReactive();
-                    enderContract = auctionEnderContractRaw.state.contract;
+                    const auctionEnderContractRaw = await useV3AuctionEnderContract();
+                    enderContract = auctionEnderContractRaw;
 
                     let auction = await builderContract.getAuction(consignmentId)
                     let parsedStartTime = parseInt(auction.start);
@@ -317,8 +317,8 @@ const useMarketContractEvents = () => {
                 return;
                 }
                 if (version.value === 3) {
-                    const saleRunnerContractRaw = await useV3SaleRunnerContractNetworkReactive();
-                    contract = saleRunnerContractRaw.state.contract;
+                    const saleRunnerContractRaw = await useV3SaleRunnerContract();
+                    contract = saleRunnerContractRaw;
                 } else if(version.value === 2) {
                     if(isOpenEdition.value) {
                         contract = useV2OpenEditionContract(contractAddress.value)
@@ -404,18 +404,17 @@ const useMarketContractEvents = () => {
 
                 if(version.value === 3) {
 
-                    const saleBuilderContractRaw = await useV3SaleBuilderContractNetworkReactive();
-                    builderContract = saleBuilderContractRaw.state.contract;
+                    const saleBuilderContractRaw = await useV3SaleBuilderContract();
+                    builderContract = saleBuilderContractRaw;
 
-                    const saleEnderContractRaw = await useV3SaleEnderContractNetworkReactive();
-                    enderContract = saleEnderContractRaw.state.contract;
+                    const saleEnderContractRaw = await useV3SaleEnderContract();
+                    enderContract = saleEnderContractRaw;
 
-                    const marketClerkContractRaw = await useV3MarketClerkContractNetworkReactive();
-                    let marketClerkContract = marketClerkContractRaw.state.contract;
+                    const marketClerkContractRaw = await useV3MarketClerkContract();
+                    let marketClerkContract = marketClerkContractRaw;
 
                     const checkClosureStatus = async (consignmentId) => {
                         // Recheck closure status
-                        console.log({consignmentId})
                         let sale = await builderContract.getSale(consignmentId);
                         console.log({sale})
                         if(sale) {
@@ -432,20 +431,20 @@ const useMarketContractEvents = () => {
                                 } else {
                                     if(Number(consignment.market) === MARKET_TYPES.PRIMARY) {
                                         // Check if this is a physical
-                                        const seenV3NFTContractRaw = await useV3NftContractNetworkReactive();
-                                        const seenV3NFTContract = seenV3NFTContractRaw.state.contract;
+                                        const seenV3NFTContractRaw = await useV3NftContract();
+                                        const seenV3NFTContract = seenV3NFTContractRaw;
 
                                         let isPhysical = await seenV3NFTContract.isPhysical(consignment.tokenId);
 
                                         if(isPhysical) {
                                             //check if the tickets issued = supply of sale
-                                            const marketConfigContractRaw = await useV3MarketConfigContractNetworkReactive();
-                                            let marketConfigContract = marketConfigContractRaw.state.contract;
+                                            const marketConfigContractRaw = await useV3MarketConfigContract();
+                                            let marketConfigContract = marketConfigContractRaw;
                                             let ticketer = await marketConfigContract.getEscrowTicketer(consignmentId);
 
                                             // Get total claims issued via tickets
-                                            const ticketerContractRaw = await useV3TicketerContractNetworkReactive(false, ticketer);
-                                            const ticketerContract = ticketerContractRaw.state.contract;
+                                            const ticketerContractRaw = await useV3TicketerContract(false, ticketer);
+                                            const ticketerContract = ticketerContractRaw;
 
                                             let ticketClaimsIssued = await ticketerContract.getTicketClaimableCount(consignment.id);
 
@@ -525,8 +524,8 @@ const useMarketContractEvents = () => {
         if (!contractAddress.value) return;
         let temporaryContract;
         if(version.value === 3) {
-            const auctionRunnerContractRaw = await useV3AuctionRunnerContractNetworkReactive(true);
-            temporaryContract = auctionRunnerContractRaw.state.contract;
+            const auctionRunnerContractRaw = await useV3AuctionRunnerContract(true);
+            temporaryContract = auctionRunnerContractRaw;
         } else if(version.value === 2) {
             temporaryContract = useV2AuctionContract(contractAddress.value, true)
         } else if (version.value === 1) {
@@ -577,8 +576,8 @@ const useMarketContractEvents = () => {
 
         let temporaryContract;
         if(version.value === 3) {
-            const saleRunnerContractRaw = await useV3SaleRunnerContractNetworkReactive(true);
-            temporaryContract = saleRunnerContractRaw.state.contract;
+            const saleRunnerContractRaw = await useV3SaleRunnerContract(true);
+            temporaryContract = saleRunnerContractRaw;
         } else if(version.value === 2) {
             temporaryContract = useV1NftContract(contractAddress.value, true);
         } else if (version.value === 1) {
@@ -637,8 +636,8 @@ const useMarketContractEvents = () => {
     const closeAuctionV3 = async (consignmentId) => {
         if (consignmentId !== 0 && !consignmentId) return;
 
-        const auctionEnderContractRaw = await useV3AuctionEnderContractNetworkReactive(true);
-        let temporaryContract = auctionEnderContractRaw.state.contract;
+        const auctionEnderContractRaw = await useV3AuctionEnderContract(true);
+        let temporaryContract = auctionEnderContractRaw;
 
         const temporaryProvider = new Web3Provider(provider.value);
         const gasPrice = await temporaryProvider.getGasPrice().catch((e) => {
@@ -672,8 +671,8 @@ const useMarketContractEvents = () => {
     const closeSaleV3 = async (consignmentId) => {
         if (consignmentId !== 0 && !consignmentId) return;
 
-        const saleEnderContractRaw = await useV3SaleEnderContractNetworkReactive(true);
-        let temporaryContract = saleEnderContractRaw.state.contract;
+        const saleEnderContractRaw = await useV3SaleEnderContract(true);
+        let temporaryContract = saleEnderContractRaw;
 
         const temporaryProvider = new Web3Provider(provider.value);
         const gasPrice = await temporaryProvider.getGasPrice().catch((e) => {

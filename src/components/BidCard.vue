@@ -423,9 +423,6 @@ import useMarketContractEvents from "@/hooks/useMarketContractEvents";
 import {
   useSeenNFTContract,
   useV2VRFSaleContract,
-  useV2OpenEditionContract,
-  useV3AuctionEnderContractNetworkReactive,
-  useV3SaleEnderContractNetworkReactive,
 } from "@/hooks/useContract";
 
 export default {
