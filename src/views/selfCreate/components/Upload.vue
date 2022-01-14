@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="flex w-full items-center justify-center text-center" id="app">
-            <div class="bg-gray-100 border border-gray-300 dropzone flex-center" @dragover="dragover" @dragleave="dragleave" @drop="drop">
+        <div :class="nftTokenIdData && 'cursor-not-allowed'" class="flex w-full items-center justify-center text-center" id="app">
+            <div :class="nftTokenIdData && 'disabled opacity-0-6'" class="bg-gray-100 border border-gray-300 dropzone flex-center" @dragover="dragover" @dragleave="dragleave" @drop="drop">
                 <input ref="mediaInputRef" type="file" id="file-to-pin" class="hidden" @change="onMediaChange" accept="image/png,image/jpg,image/gif,video/mp4">
                 <label class="block cursor-pointer flex-center-column">
                     <div class="flex-center media-preview-container">
@@ -102,6 +102,7 @@ export default {
         setTempMediaUrl: Function,
         tempMediaUrl: String,
         mediaIpfsHash: String,
+        nftTokenIdData: String,
     },
     data() {
         return {
@@ -229,7 +230,7 @@ export default {
                         if(res.data.ipfsHash) {
                             isUploadComplete.value = true;
                             props.setMediaIpfsHash(res.data.ipfsHash)
-                            props.setTempMediaUrl(useTemporaryMediaUrl)
+                            props.setTempMediaUrl(useTemporaryMediaUrl.value)
                             props.nextStep();
                         }else{
                             props.setMediaIpfsHash(false)
