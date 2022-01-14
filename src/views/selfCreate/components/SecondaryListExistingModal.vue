@@ -31,6 +31,7 @@
           :setNftConsignmentIdData="setNftConsignmentIdData"
           :setMarketType="setMarketType"
           :setSecondaryBalance="setSecondaryBalance"
+          :resetProcessData="resetProcessData"
         />
       </div>
     </div>
@@ -74,6 +75,7 @@ export default {
     setNftConsignmentIdData: Function,
     setMarketType: Function,
     setSecondaryBalance: Function,
+    resetProcessData: Function,
   },
   methods: {
     saveProperties() {

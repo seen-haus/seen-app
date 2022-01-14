@@ -57,6 +57,7 @@ export default {
       setSecondaryRoyaltyFeeData: Function,
       setNftConsignmentIdData: Function,
       setMarketType: Function,
+      resetProcessData: Function,
     },
     methods: {
       recoverListingProcess() {
@@ -154,6 +155,7 @@ export default {
         watchEffect(async () => {
             processData.mediaUrl = false;
             processData.hasInitialised = false;
+            props.resetProcessData();
             const { consignment } = props;
             let tokenId = consignment.tokenId;
             if(seenHausV3NFTContract.value.contract) {

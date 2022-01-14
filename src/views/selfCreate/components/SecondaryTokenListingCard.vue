@@ -34,6 +34,7 @@ import DropCardPreview from "@/components/DropCardPreview/DropCardPreview.vue";
 import uriToHttp from "@/services/utils/uriToHttp";
 import uriToHash from "@/services/utils/uriToHash";
 
+import useUser from '@/hooks/useUser.js'
 import { useV3NftContractNetworkReactive } from "@/hooks/useContract";
 
 export default {
@@ -56,6 +57,7 @@ export default {
       setNftTokenAddressData: Function,
       setSecondaryRoyaltyFeeData: Function,
       setNftConsignmentIdData: Function,
+      resetProcessData: Function,
     },
     methods: {
       recoverListingProcess() {
@@ -95,8 +97,6 @@ export default {
           royaltyFee,
           consignmentId,
         } = this.processData;
-
-        console.log({tokenAddress})
 
         setTempMediaUrl(mediaUrl);
         setMediaIpfsHash(mediaIpfsHash);
@@ -157,6 +157,7 @@ export default {
         watchEffect(async () => {
             processData.mediaUrl = false;
             processData.hasInitialised = false;
+            props.resetProcessData();
             const { tokenId, tokenAddress } = props;
             if(seenHausV3NFTContract.value.contract) {
               // Check that current user has access to NFT minting & selling

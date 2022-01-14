@@ -71,6 +71,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-5 gap-y-8">
         <process-recovery-card
           v-for="recoveryItem in recoveryList"
+          :resetProcessData="resetProcessData"
           :key="recoveryItem?.args?.consignment?.id"
           :consignment="recoveryItem?.args?.consignment"
           :setStep="setStep"
@@ -95,6 +96,7 @@
     </div>
     <pre>{{JSON.stringify(listOfCollectables, null, 4)}}</pre>
     <secondary-list-existing-modal
+      :resetProcessData="resetProcessData"
       :listOfCollectables="listOfCollectables"
       :setStep="setStep"
       :setMediaIpfsHash="setMediaIpfsHash"
@@ -155,6 +157,7 @@ export default {
       setMarketType: Function,
       setSecondaryBalance: Function,
       setShowAccessRequestForm: Function,
+      resetProcessData: Function,
       isMinter: Boolean,
       isSeller: Boolean,
     },
@@ -202,7 +205,8 @@ export default {
         emitter.emit("openSecondaryListExistingModal");
       };
 
-      const createNew = () => {
+      const createNew = async () => {
+        props.resetProcessData();
         props.setMarketType('primary');
         props.setStep(1);
       }

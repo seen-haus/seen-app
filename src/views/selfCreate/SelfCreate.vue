@@ -74,6 +74,7 @@
                 </div> -->
                 <div class="w-full" v-if="processData.currentStep === STEP_TYPE.INITIATION">
                     <initiation
+                        :key="processDataResetIndex"
                         :setStep="setStep"
                         :nextStep="nextStep"
                         :prevStep="prevStep"
@@ -95,15 +96,17 @@
                         :setMarketType="setMarketType"
                         :setSecondaryBalance="setSecondaryBalance"
                         :setShowAccessRequestForm="setShowAccessRequestForm"
+                        :resetProcessData="resetProcessData"
                         :isMinter="processData.isMinter"
                         :isSeller="processData.isSeller"
                     />
                 </div>
                 <div class="flex-grow" v-if="processData.currentStep === STEP_TYPE.UPLOAD">
-                    <upload :nextStep="nextStep" :setMediaIpfsHash="setMediaIpfsHash" :setTempMediaUrl="setTempMediaUrl" :tempMediaUrl="processData.tempMediaUrl" :mediaIpfsHash="processData.mediaIpfsHash" />
+                    <upload :key="processDataResetIndex" :nextStep="nextStep" :setMediaIpfsHash="setMediaIpfsHash" :setTempMediaUrl="setTempMediaUrl" :tempMediaUrl="processData.tempMediaUrl" :mediaIpfsHash="processData.mediaIpfsHash" :nftTokenIdData="processData.nftTokenId" />
                 </div>
                 <div class="flex-grow" v-if="processData.currentStep === STEP_TYPE.MINT">
                     <mint 
+                        :key="processDataResetIndex"
                         :setPropertyData="setPropertyData"
                         :propertyData="processData.properties"
                         :mediaUrl="processData.tempMediaUrl"
@@ -158,6 +161,7 @@
                 </div>
                 <div class="flex-grow" v-if="processData.currentStep === STEP_TYPE.LIST">
                     <self-create-listing
+                        :key="processDataResetIndex"
                         :nextStep="nextStep"
                         :prevStep="prevStep"
                         :setStep="setStep"
@@ -217,6 +221,7 @@
         <div v-if="processData.currentStep === STEP_TYPE.LIVE">
             <div class="bg-light-grey-darkened live-preview-card-zone flex-center">
                 <drop-card-preview
+                    :key="processDataResetIndex"
                     :autoMargins="true"
                     :listingType="processData.listingType"
                     :startTime="processData.openingTimeUnix ? processData.openingTimeUnix * 1000 : null"
@@ -312,6 +317,53 @@ import { TIMER_STATE } from "@/hooks/v3/useTimer.js";
 import { roleToBytes, marketHandlerToListingType, selfUrl } from '@/constants';
 import { STEP_TYPE, STEP_INDEX } from '@/constants/StepTypes';
 import useCopyClipboard from "@/hooks/useCopyClipboard";
+
+const defaultProcessData = {
+    currentStep: STEP_TYPE['INITIATION'],
+    tangibility: false,
+    locationData: {
+        country: false,
+        province: false,
+        city: false,
+    },
+    units: false,
+    mediaIpfsHash: false,
+    tempMediaUrl: false,
+    preparedMetaData: false,
+    metaDataIpfsHash: false,
+    rights: false,
+    title: false,
+    description: false,
+    secondaryRoyaltyFee: false,
+    properties: [],
+    tags: [],
+    listingType: false,
+    price: false,
+    priceType: false,
+    duration: false,
+    openingTimeUnix: false,
+    openingTimeType: false,
+    nftTokenId: false,
+    nftConsignmentId: false,
+    isMinter: false,
+    isSeller: false,
+    isEscrowAgent: false,
+    hasCheckedRoles: false,
+    isMarketHandlerAssigned: false,
+    creatorAccount: false,
+    creatorProfilePicture: false,
+    creatorUsername: false,
+    liveListingUrl: false,
+    skipFormNavigationCheck: false,
+    lastCheckedAccount: false,
+    collectableState: false,
+    latestProgressTick: false,
+    timerState: false,
+    liveStatus: false,
+    secondaryBalance: false,
+    marketType: false,
+    showAccessRequestForm: false,
+};
 
 export default {
     name: "SelfCreateWithRoutes",
@@ -485,6 +537,29 @@ export default {
         },
         setShowAccessRequestForm(status) {
             this.processData.showAccessRequestForm = status;
+        },
+        resetProcessData() {
+            this.processDataResetIndex += 1;
+            for(let [key, value] of Object.entries(defaultProcessData)) {
+                // Don't reset values that don't need to be reset
+                if(
+                    [
+                        'isMinter',
+                        'isSeller',
+                        'isEscrowAgent',
+                        'hasCheckedRoles',
+                        'timerState',
+                        'showAccessRequestForm',
+                        'secondaryBalance',
+                        'lastCheckedAccount',
+                        'creatorAccount',
+                        'creatorProfilePicture',
+                        'creatorUsername'
+                    ].indexOf(key) === -1
+                ) {
+                    this.processData[key] = value;
+                }
+            }
         }
     },
     async setup() {
@@ -608,52 +683,8 @@ export default {
         const useSteps = computed(() => processData.marketType === 'primary' ? steps : steps.filter((step) => !step.primaryMarketTypeOnly));
         const useStepOffset = computed(() => processData.marketType === 'primary' ? 1 : 3);
 
-        const processData = reactive({
-            currentStep: STEP_TYPE[useStepName.value],
-            tangibility: false,
-            locationData: {
-                country: false,
-                province: false,
-                city: false,
-            },
-            units: false,
-            mediaIpfsHash: false,
-            tempMediaUrl: false,
-            preparedMetaData: false,
-            metaDataIpfsHash: false,
-            rights: false,
-            title: false,
-            description: false,
-            secondaryRoyaltyFee: false,
-            properties: [],
-            tags: [],
-            listingType: false,
-            price: false,
-            priceType: false,
-            duration: false,
-            openingTimeUnix: false,
-            openingTimeType: false,
-            nftTokenId: false,
-            nftConsignmentId: false,
-            isMinter: false,
-            isSeller: false,
-            isEscrowAgent: false,
-            hasCheckedRoles: false,
-            isMarketHandlerAssigned: false,
-            creatorAccount: false,
-            creatorProfilePicture: false,
-            creatorUsername: false,
-            liveListingUrl: false,
-            skipFormNavigationCheck: false,
-            lastCheckedAccount: false,
-            collectableState: false,
-            latestProgressTick: false,
-            timerState: false,
-            liveStatus: false,
-            secondaryBalance: false,
-            marketType: 'primary',
-            showAccessRequestForm: false,
-        });
+        const processData = reactive({...defaultProcessData});
+        const processDataResetIndex = ref(0);
 
         watchEffect(() => {
             if (!processData.hasCheckedRoles) {
@@ -666,7 +697,7 @@ export default {
 
             let nextStep = null;
 
-            for (let stepIndex = processData.currentStep; stepIndex > 0; stepIndex--) {
+            for (let stepIndex = processData.currentStep; stepIndex >= 0; stepIndex--) {
                 const stepData = steps[stepIndex];
 
                 if (stepData.validated(processData)) {
@@ -675,7 +706,12 @@ export default {
                 }
             }
 
-            if (nextStep) {
+            if(nextStep === 0) {
+                processData.skipFormNavigationCheck = true;
+                router.push({
+                    name: "create",
+                })
+            }else if (nextStep) {
                 router.push({
                     name: "selfCreate",
                     params: { stepName: STEP_INDEX[nextStep].toLowerCase() },
@@ -887,6 +923,7 @@ export default {
             useTemporaryMediaUrl,
             onMediaChange,
             processData,
+            processDataResetIndex,
             router,
             creatorData,
             updateProgress,
