@@ -78,7 +78,10 @@ export default {
           setSecondaryRoyaltyFeeData,
           setNftConsignmentIdData,
           setMarketType,
+          resetProcessData,
         } = this;
+
+        resetProcessData();
 
         let {
           units,
@@ -155,7 +158,6 @@ export default {
         watchEffect(async () => {
             processData.mediaUrl = false;
             processData.hasInitialised = false;
-            props.resetProcessData();
             const { consignment } = props;
             let tokenId = consignment.tokenId;
             if(seenHausV3NFTContract.value.contract) {
