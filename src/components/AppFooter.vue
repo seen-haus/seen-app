@@ -1,9 +1,24 @@
 <template>
-  <div class="footer-background text-black pt-6 pb-6">
+  <div class="text-black pt-6 pb-6"
+    :class="{
+      'footer-background': !darkMode,
+      'dark-mode-section': darkMode,
+    }"
+  >
     <container>
-      <div class="grid-cols-1 lg:grid-cols-2 lg:grid mt-12 mb-10">
+      <div 
+        class="grid-cols-1 lg:grid-cols-2 lg:grid mt-12 mb-10"
+        :class="{
+          'text-grey-9': darkMode,
+        }"
+      >
         <div class="w-full inline-flex flex-col">
-          <p class="text-xl font-bold mb-1">Be the first to to hear about upcoming drops!</p>
+          <p 
+            class="text-xl font-bold mb-1"
+            :class="{
+              'text-white': darkMode,
+            }"
+          >Be the first to to hear about upcoming drops!</p>
           <p class="color-white opacity-50 text-md">Join our newsletter TODAY!</p>
           <div class="w-full py-4 md:inline-flex">
             <input type="text" class="mr-3 text-black w-full h-12 text-md pl-4 mb-2 rounded inline-flex flex-grow" placeholder="Your e-mail">
@@ -12,7 +27,13 @@
         </div>
           <div class="links lg:mb-0 sm:mt-12">
             <div class="first-link-column">
-              <p class="text-grey-9 font-bold text-xl mb-3">Offerings</p>
+              <p 
+                class="font-bold text-xl mb-3"
+                :class="{
+                  'text-grey-9': !darkMode,
+                  'text-white': darkMode,
+                }"
+              >Offerings</p>
               <div class="font-bold text-md leading-loose">
                 <router-link :to="{ name: 'drops'}" class="block">
                   <span class="font-bold">Drops</span>
@@ -26,7 +47,13 @@
               </div>
             </div>
             <div class="inner-link-column">
-              <p class="text-grey-9 font-bold text-xl mb-3">Support</p>
+              <p 
+                class="font-bold text-xl mb-3"
+                :class="{
+                  'text-grey-9': !darkMode,
+                  'text-white': darkMode,
+                }"
+              >Support</p>
               <div class="font-bold text-md leading-loose">
                 <router-link v-if="user?.username || account" :to="{ name: 'profileWithAddress', params: { userAddressOrUsername: user?.username || account }}" class="block">
                   Account
@@ -47,7 +74,13 @@
               </div>
             </div>
             <div class="last-link-column">
-              <p class="text-grey-9 font-bold text-xl mb-3">Community</p>
+              <p 
+                class="font-bold text-xl mb-3"
+                :class="{
+                  'text-grey-9': !darkMode,
+                  'text-white': darkMode,
+                }"
+              >Community</p>
               <div>
                 <div class="flex">
                   <div class="icon text-grey-9">
@@ -103,7 +136,13 @@
       </div>
     </container>
   </div>
-  <div class="footer-background text-white footer-border py-4">
+  <div 
+    class="text-white py-4"
+    :class="{
+      'footer-background footer-border': !darkMode,
+      'dark-mode-section': darkMode,
+    }"
+  >
     <container>
       <div class="flex justify-between">
         <p class="text-grey-9 text-sm">© seen.haus 2021, All rights reserved.</p>
@@ -129,6 +168,7 @@ import Container from "@/components/Container";
 import GradientOutlineButton from "@/components/GradientOutlineButton";
 import useUser from "@/hooks/useUser";
 import useWeb3 from "@/connectors/hooks";
+import useDarkMode from "@/hooks/useDarkMode";
 
 export default {
   name: 'AppFooter',
@@ -139,10 +179,12 @@ export default {
   setup() {
     const { user } = useUser();
     const { account } = useWeb3();
+    const { darkMode } = useDarkMode();
 
     return {
       user,
       account,
+      darkMode,
     }
   }
 }

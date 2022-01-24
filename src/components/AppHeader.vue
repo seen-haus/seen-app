@@ -1,7 +1,7 @@
 <template>
   <div>
     <top-header-bar/>
-    <div :class="darkMode ? [headerClasses, 'text-white', 'dark-mode-section'].join(' ') : [headerClasses, 'transparent-border-section'].join(' ')">
+    <div :class="darkMode ? [headerClasses, 'text-white', 'dark-mode-section', 'header-borders-dark-mode'].join(' ') : [headerClasses, 'transparent-border-section'].join(' ')">
       <container>
         <header>
           <div class="flex items-center flex-wrap justify-between header-size">
@@ -68,6 +68,11 @@ export default {
 .header-borders {
   border-top: 1px solid #DFE4E9;
   border-bottom: 1px solid #DFE4E9;
+}
+
+.header-borders-dark-mode {
+  border-top: 1px solid #262626!important;
+  border-bottom: 1px solid #262626!important;
 }
 
 @screen lg {

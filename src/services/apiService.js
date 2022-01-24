@@ -174,8 +174,8 @@ export const IPFSService = {
 };
 
 export const OpenSeaAPIService = {
-    async getProfileEntries(owner, limit = 6, offset = 0) {
-        const url = `https://api.opensea.io/api/v1/assets?owner=${owner}&collection=seen-haus&limit=${limit}&offset=${offset}`;
+    async getProfileEntries(owner, limit = 6, offset = 0, collection = "seen-haus") {
+        const url = `https://api.opensea.io/api/v1/assets?owner=${owner}&collection=${collection}&limit=${limit}&offset=${offset}`;
         const data = await $axios.get(url);
 
         if (!data) return [];
