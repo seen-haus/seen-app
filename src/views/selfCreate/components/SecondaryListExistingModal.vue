@@ -1,6 +1,9 @@
 <template>
   <Dialog header="Your SEEN.HAUS NFTs" :class="darkMode && 'dark-mode-surface-darkened'" v-model:visible="displayModal" :style="{maxWidth: '64rem', width: '100%'}" :modal="true" :closable="true">
-    <div>
+    <div style="position: relative">
+      <div v-if="isLoading" class="loading-zone">
+        <ProgressSpinner />
+      </div>
       <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         <nft-card-preview
           v-for="collectable in listOfCollectables"
@@ -32,6 +35,7 @@
           :setMarketType="setMarketType"
           :setSecondaryBalance="setSecondaryBalance"
           :resetProcessData="resetProcessData"
+          :setLoading="setLoading"
         />
       </div>
     </div>
@@ -84,11 +88,12 @@ export default {
     },
     usePreviewImage(listing) {
       return listing.media?.length > 0 ? listing.media.filter(media => media.is_preview).map(item => item.url)[0] : false;
-    }
+    },
   },
   setup(props) {
     const { darkMode } = useDarkMode();
 
+    const isLoading = ref(false);
     const displayModal = ref(false);
     emitter.on('openSecondaryListExistingModal', payload => {
       displayModal.value = true;
@@ -98,9 +103,15 @@ export default {
       displayModal.value = false;
     });
 
+    const setLoading = (loading) => {
+      isLoading.value = loading;
+    }
+
     return {
       displayModal,
       darkMode,
+      setLoading,
+      isLoading,
     }
 
   }
@@ -163,5 +174,16 @@ export default {
 
 .add-save-button {
   width: calc(50% - 10px);
+}
+
+.loading-zone {
+  position: absolute;
+  z-index: 9;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0000008c;
 }
 </style>

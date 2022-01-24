@@ -98,6 +98,7 @@ export default {
       setMarketType: Function,
       setSecondaryBalance: Function,
       balance: Number,
+      setLoading: Function,
     },
     components: {
         SubTitle,
@@ -192,32 +193,39 @@ export default {
           } = props;
 
           if(seenHausV3NFTContract.value.contract) {
+            if(props.setLoading) {
+                props.setLoading(true);
+            }
             let tokenInfo = await seenHausV3NFTContract.value.contract.getTokenInfo(props.tokenId)
             // Safe to assume that [2] (the seen IPFS gateway) should work here as this component is only for SEEN.HAUS NFTs
             // If this component becomes used for more than NFTs that have their media on the SEEN.HAUS IPFS gateway
             // Then don't rely on uriToHttp(tokenInfo.uri)[2] or uriToHttp(data.image)[2] working
             let ipfsMetaDataUrl = uriToHttp(tokenInfo.uri)[2];
             axios.get(ipfsMetaDataUrl).then(response => {
-              let data = response.data;
+                let data = response.data;
 
-              setTempMediaUrl(uriToHttp(data.image)[2]);
-              setMediaIpfsHash(uriToHash(data.image));
-              setPropertyData(data.attributes);
-              setTangibilityData(data.tangibility);
-              setTitleData(data.name);
-              setDescriptionData(data.description);
-              setTagData(data.tags);
-              setRightsData(data.rights);
-              setPreparedMetaData(response.data);
-              setMetaDataIpfsHashData(uriToHash(tokenInfo.uri));
-              setNftTokenIdData(Number(props.tokenId));
-              setNftTokenAddressData(props.tokenAddress);
-              setSecondaryRoyaltyFeeData(tokenInfo.royaltyPercentage);
-              setUnitData(props.balance);
-              setSecondaryBalance(props.balance);
-              setMarketType('secondary');
+                setTempMediaUrl(uriToHttp(data.image)[2]);
+                setMediaIpfsHash(uriToHash(data.image));
+                setPropertyData(data.attributes);
+                setTangibilityData(data.tangibility);
+                setTitleData(data.name);
+                setDescriptionData(data.description);
+                setTagData(data.tags);
+                setRightsData(data.rights);
+                setPreparedMetaData(response.data);
+                setMetaDataIpfsHashData(uriToHash(tokenInfo.uri));
+                setNftTokenIdData(Number(props.tokenId));
+                setNftTokenAddressData(props.tokenAddress);
+                setSecondaryRoyaltyFeeData(tokenInfo.royaltyPercentage);
+                setUnitData(props.balance);
+                setSecondaryBalance(props.balance);
+                setMarketType('secondary');
 
-              setStep(3);
+                setStep(3);
+
+                if(props.setLoading) {
+                    props.setLoading(false);
+                }
             })
           }
         }
