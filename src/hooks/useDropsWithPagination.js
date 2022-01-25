@@ -69,6 +69,9 @@ export default function useDropsWithPagination(
       if(state.additionalFiltrationOptions?.soldOut) {
         filtrationOptions.soldOut = state.additionalFiltrationOptions.soldOut;
       }
+      if(state.additionalFiltrationOptions?.marketType) {
+        filtrationOptions.marketType = state.additionalFiltrationOptions.marketType;
+      }
     }
 
     const { data, metadata } = await CollectablesService.list(
@@ -163,6 +166,9 @@ export default function useDropsWithPagination(
       }
       if(state.additionalFiltrationOptions?.soldOut) {
         filtrationOptions.soldOut = state.additionalFiltrationOptions.soldOut;
+      }
+      if(state.additionalFiltrationOptions?.marketType) {
+        filtrationOptions.marketType = state.additionalFiltrationOptions.marketType;
       }
     }
 

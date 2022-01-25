@@ -16,7 +16,7 @@
       
       <div class="flex flex-wrap justify-start items-center">
         <button 
-          @click="setQuickFilter('all')"
+          @click="setQuickFilter('all', marketTypeFilter)"
           :class="{
             'dark': quickFilter === 'all',
             'bg-white': quickFilter !== 'all',
@@ -26,7 +26,7 @@
             <img src="@/assets/icons/trending.svg" class="mr-3"/>All
         </button>
         <button 
-          @click="setQuickFilter('live')"
+          @click="setQuickFilter('live', marketTypeFilter)"
           :class="{
             'dark': quickFilter === 'live',
             'bg-white': quickFilter !== 'live',
@@ -36,7 +36,7 @@
             <img src="@/assets/icons/orange-flame.svg" class="mr-3"/>Live
         </button>
         <button 
-          @click="setQuickFilter('reserve-not-met')"
+          @click="setQuickFilter('reserve-not-met', marketTypeFilter)"
           :class="{
             'dark': quickFilter === 'reserve-not-met',
             'bg-white': quickFilter !== 'reserve-not-met',
@@ -46,7 +46,7 @@
             <img src="@/assets/icons/hotel-bell.svg" class="mr-3"/>Reserve not met
         </button>
         <button 
-          @click="setQuickFilter('sold')"
+          @click="setQuickFilter('sold', marketTypeFilter)"
           :class="{
             'dark': quickFilter === 'sold',
             'bg-white': quickFilter !== 'sold',
@@ -54,6 +54,19 @@
           class="button light-shadow bg-white quick-filter-button mb-4"
         >
             <img src="@/assets/icons/gavel.svg" class="mr-3"/>Sold Out
+        </button>
+      </div>
+
+      <div class="flex flex-wrap justify-start items-center">
+        <button 
+          @click="setQuickFilter(quickFilter, marketTypeFilter === 'secondary' ? 'primary' : 'secondary')"
+          :class="{
+            'dark': marketTypeFilter === 'secondary',
+            'bg-white': marketTypeFilter !== 'secondary',
+          }"
+          class="button light-shadow bg-white quick-filter-button mb-4"
+        >
+            Secondary Market
         </button>
       </div>
 
@@ -161,6 +174,7 @@ export default {
     const filterEditions = ref(true);
     const filterExcludeEnded = ref(false);
     const quickFilter = ref('all');
+    const marketTypeFilter = ref('primary');
 
     const paginatedCollectables = useDropsWithPagination();
     const listOfCollectables = computed(
@@ -191,16 +205,17 @@ export default {
       paginatedCollectables.filter(filterAuctions.value, filterEditions.value, {excludeEnded: event});
     }
 
-    const setQuickFilter = (alias) => {
+    const setQuickFilter = (alias, marketType) => {
       quickFilter.value = alias;
+      marketTypeFilter.value = marketType;
       if(alias === 'all') {
-        paginatedCollectables.filter(true, true);
+        paginatedCollectables.filter(true, true, {marketType});
       } else if(alias === 'live') {
-        paginatedCollectables.filter(true, true, {excludeEnded: true});
+        paginatedCollectables.filter(true, true, {excludeEnded: true, marketType});
       } else if(alias === 'reserve-not-met') {
-        paginatedCollectables.filter(true, true, {awaitingReserveBid: true});
+        paginatedCollectables.filter(true, true, {awaitingReserveBid: true, marketType});
       } else if(alias === 'sold') {
-        paginatedCollectables.filter(true, true, {soldOut: true});
+        paginatedCollectables.filter(true, true, {soldOut: true, marketType});
       }
     }
 
@@ -233,6 +248,7 @@ export default {
       handleEditionsToggle,
       handleExcludeEndedToggle,
       
+      marketTypeFilter,
       quickFilter,
       setQuickFilter,
 
