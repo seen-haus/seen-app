@@ -14,74 +14,53 @@
         </unfenced-title>
       </div>
       
-      <div class="flex flex-wrap justify-start items-center">
+      <div class="flex flex-col lg:flex-row gap-4 mb-4">
         <button 
-          @click="setQuickFilter('all')"
+          @click="quickFilter = 'all'"
           :class="{
             'dark': quickFilter === 'all',
             'bg-white': quickFilter !== 'all',
           }"
-          class="button light-shadow quick-filter-button mr-4 mb-4"
+          class="button light-shadow quick-filter-button"
         >
             <img src="@/assets/icons/trending.svg" class="mr-3"/>All
         </button>
         <button 
-          @click="setQuickFilter('live')"
+          @click="quickFilter = 'live'"
           :class="{
             'dark': quickFilter === 'live',
             'bg-white': quickFilter !== 'live',
           }"
-          class="button light-shadow bg-white quick-filter-button mr-4 mb-4"
+          class="button light-shadow bg-white quick-filter-button"
         >
             <img src="@/assets/icons/orange-flame.svg" class="mr-3"/>Live
         </button>
         <button 
-          @click="setQuickFilter('reserve-not-met')"
+          @click="quickFilter = 'reserve-not-met'"
           :class="{
             'dark': quickFilter === 'reserve-not-met',
             'bg-white': quickFilter !== 'reserve-not-met',
           }"
-          class="button light-shadow bg-white quick-filter-button mr-4 mb-4"
+          class="button light-shadow bg-white quick-filter-button"
         >
             <img src="@/assets/icons/hotel-bell.svg" class="mr-3"/>Reserve not met
         </button>
         <button 
-          @click="setQuickFilter('sold')"
+          @click="quickFilter = 'sold'"
           :class="{
             'dark': quickFilter === 'sold',
             'bg-white': quickFilter !== 'sold',
           }"
-          class="button light-shadow bg-white quick-filter-button mb-4"
+          class="button light-shadow bg-white quick-filter-button"
         >
             <img src="@/assets/icons/gavel.svg" class="mr-3"/>Sold Out
         </button>
+
+        <small class="button">
+          <InputSwitch v-model="secondaryListingsFilter" id="secondary-listings-filter" />
+          <label for="secondary-listings-filter" class="ml-3 clickable">Secondary Listings</label>
+        </small>
       </div>
-
-      <!-- <div class="flex justify-start items-center">
-
-        <toggle
-          :value="filterExcludeEnded"
-          class="mr-8"
-          @onChange="handleExcludeEndedToggle($event)"
-        >
-          <span :class="darkMode ? 'dark-mode-text' : 'text-black'" class="font-bold">Exclude Ended</span>
-        </toggle>
-
-        <toggle
-          :value="filterAuctions"
-          class="mr-8"
-          @onChange="handleAuctionsToggle($event)"
-        >
-          <span :class="darkMode ? 'dark-mode-text' : 'text-black'" class="font-bold">Auctions</span>
-        </toggle>
-
-        <toggle
-          :value="filterEditions"
-          @onChange="handleEditionsToggle($event)"
-        >
-          <span :class="darkMode ? 'dark-mode-text' : 'text-black'" class="font-bold">Editions</span>
-        </toggle>
-      </div> -->
 
       <div
         class="auction-list-big grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-5"
@@ -90,11 +69,6 @@
           v-for="collectable in listOfCollectables"
           :key="collectable && collectable.id"
         >
-          <!-- <product-card
-            v-if="collectable != null"
-            :collectable="collectable"
-            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
-          /> -->
           <product-card-v3
             v-if="collectable != null"
             :collectable="collectable"
@@ -121,10 +95,11 @@
 </template>
 
 <script>
-import { computed, ref } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
 
+import InputSwitch from 'primevue/inputswitch';
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
 import ProductCardV3 from "@/components/ProductCardV3.vue";
@@ -149,6 +124,7 @@ export default {
     HowToVideo,
     QuoteCarousel,
     ArtistCard,
+    InputSwitch,
   },
   setup() {
     const { darkMode } = useDarkMode();
@@ -157,10 +133,8 @@ export default {
       title: "Drops",
     });
     const router = useRouter();
-    const filterAuctions = ref(true);
-    const filterEditions = ref(true);
-    const filterExcludeEnded = ref(false);
     const quickFilter = ref('all');
+    const secondaryListingsFilter = ref(false);
 
     const paginatedCollectables = useDropsWithPagination();
     const listOfCollectables = computed(
@@ -174,35 +148,19 @@ export default {
       paginatedCollectables.loadMore();
     };
 
-    const handleAuctionsToggle = (event) => {
-      if (!filterEditions.value && !event) return;
-      filterAuctions.value = event;
-      paginatedCollectables.filter(filterAuctions.value, filterEditions.value);
-    }
+    watchEffect(() => {
+      const marketType = secondaryListingsFilter.value ? 'secondary' : 'primary';
 
-    const handleEditionsToggle = (event) => {
-      if (!filterAuctions.value && !event) return;
-      filterEditions.value = event;
-      paginatedCollectables.filter(filterAuctions.value, filterEditions.value);
-    }
-
-    const handleExcludeEndedToggle = (event) => {
-      filterExcludeEnded.value = event;
-      paginatedCollectables.filter(filterAuctions.value, filterEditions.value, {excludeEnded: event});
-    }
-
-    const setQuickFilter = (alias) => {
-      quickFilter.value = alias;
-      if(alias === 'all') {
-        paginatedCollectables.filter(true, true);
-      } else if(alias === 'live') {
-        paginatedCollectables.filter(true, true, {excludeEnded: true});
-      } else if(alias === 'reserve-not-met') {
-        paginatedCollectables.filter(true, true, {awaitingReserveBid: true});
-      } else if(alias === 'sold') {
-        paginatedCollectables.filter(true, true, {soldOut: true});
+      if(quickFilter.value === 'all') {
+        paginatedCollectables.filter(true, true, {marketType});
+      } else if(quickFilter.value === 'live') {
+        paginatedCollectables.filter(true, true, {excludeEnded: true, marketType});
+      } else if(quickFilter.value === 'reserve-not-met') {
+        paginatedCollectables.filter(true, true, {awaitingReserveBid: true, marketType});
+      } else if(quickFilter.value === 'sold') {
+        paginatedCollectables.filter(true, true, {soldOut: true, marketType});
       }
-    }
+    })
 
     const navigateToCollectable = function (slug, isSlugFullRoute, version) {
       if(isSlugFullRoute) {
@@ -225,16 +183,8 @@ export default {
     };
 
     return {
-      filterAuctions,
-      filterEditions,
-      filterExcludeEnded,
-
-      handleAuctionsToggle,
-      handleEditionsToggle,
-      handleExcludeEndedToggle,
-      
       quickFilter,
-      setQuickFilter,
+      secondaryListingsFilter,
 
       listOfCollectables,
       hasMore,
