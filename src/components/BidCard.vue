@@ -223,11 +223,11 @@
       <button class="button primary mt-6" v-if="claimId !== null && isOpenEdition && isCurrentAccountEntitledToDigital" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
         Claim NFT
       </button>
-      <button class="button primary mt-6" v-if="isReadyForClosure && isAuction" @click="closeAuction">
-        {{`${winningAddress}`.toLowerCase() === `${account}`.toLowerCase() ? 'Claim NFT' : 'Close Auction'}}
+      <button class="button primary mt-6" :class="{'cursor-wait disabled opacity-50': isClosingAuction}" :disabled="isClosingAuction" v-if="isReadyForClosure && isAuction" @click="closeAuction">
+        {{`${winningAddress}`.toLowerCase() === `${account}`.toLowerCase() ? (isClosingAuction ? 'Claiming NFT...' : 'Claim NFT') : (isClosingAuction ? 'Close Auction' : 'Closing Auction...')}}
       </button>
-      <button class="button primary mt-6" v-if="isReadyForClosure && !isAuction" @click="closeSale">
-        Close Sale
+      <button class="button primary mt-6" :class="{'cursor-wait disabled opacity-50': isClosingSale}" :disabled="isClosingSale" v-if="isReadyForClosure && !isAuction" @click="closeSale">
+        {{isClosingSale ? 'Closing Sale...' : 'Close Sale'}}
       </button>
     </div>
 
@@ -491,6 +491,8 @@ export default {
     const isSubmittingRandomnessRequest = ref(false);
     const isSubmittingRandomnessCommitment = ref(false);
     const isSubmittingClaimVRF = ref(false);
+    const isClosingSale = ref(false);
+    const isClosingAuction = ref(false);
     const isCurrentAccountEntitledToPhysical = ref(false);
     const isCurrentAccountEntitledToDigitalClaimVRF = ref(false);
     const isCurrentAccountEntitledToDigital = ref(false);
@@ -985,13 +987,17 @@ export default {
 
     const closeSale = async () => {
       if(account?.value && ((Number(props.collectableConsignmentId) === 0) || (Number(props.collectableConsignmentId) > 0))) {
-        await closeSaleV3(props.collectableConsignmentId)
+        isClosingSale.value = true;
+        await closeSaleV3(props.collectableConsignmentId);
+        isClosingSale.value = false;
       }
     }
 
     const closeAuction = async () => {
       if(account?.value && ((Number(props.collectableConsignmentId) === 0) || (Number(props.collectableConsignmentId) > 0))) {
+        isClosingAuction.value = true;
         await closeAuctionV3(props.collectableConsignmentId);
+        isClosingAuction.value = false;
       }
     }
     
@@ -1022,6 +1028,8 @@ export default {
       isSubmittingRandomnessRequest,
       isSubmittingRandomnessCommitment,
       isSubmittingClaimVRF,
+      isClosingAuction,
+      isClosingSale,
       openWalletModal,
       hasEnoughFunds,
       auctionField,
