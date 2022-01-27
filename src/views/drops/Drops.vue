@@ -14,7 +14,7 @@
         </unfenced-title>
       </div>
       
-      <div class="flex flex-col lg:flex-row gap-4 mb-4">
+      <div class="flex flex-col lg:flex-row gap-4 mb-8">
         <button 
           @click="quickFilter = 'all'"
           :class="{

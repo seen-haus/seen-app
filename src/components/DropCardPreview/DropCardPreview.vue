@@ -31,30 +31,32 @@
                         <live-indicator v-if="liveStatus" :status="liveStatus" class="text-white ml-auto dark"/>
                     </div>
                 </div>
-                <div class="drop-card-title mt-3 mb-3">
-                    <div v-if="!titleText" class="title-placeholder-container mt-4">
-                        <div class="placeholder-light-grey text-placeholder"></div>
+                <div class="drop-card-middle">
+                    <div class="drop-card-title mt-3 mb-3">
+                        <div v-if="!titleText" class="title-placeholder-container mt-4">
+                            <div class="placeholder-light-grey text-placeholder"></div>
+                        </div>
+                        <sub-title
+                            v-if="titleText"
+                            class="text-black hidden lg:flex"
+                            text-align="left"
+                            font-size="24px"
+                            line-height="30px"
+                            :overflowEllipsis="true"
+                        >
+                            {{data.titleText}}
+                        </sub-title>
                     </div>
-                    <sub-title
-                        v-if="titleText"
-                        class="text-black hidden lg:flex"
-                        text-align="left"
-                        font-size="24px"
-                        line-height="30px"
-                        :overflowEllipsis="true"
-                    >
-                        {{data.titleText}}
-                    </sub-title>
-                </div>
-                <div class="flex">
-                    <user-or-artist-badge
-                        :creatorAccount="data.creatorAccount"
-                        :creatorUsername="data.creatorUsername"
-                        :creatorSlug="data.creatorSlug"
-                        :creatorProfilePicture="data.creatorProfilePicture"
-                        :creatorType="data.creatorType"
-                        :disableLinkGrow="true"
-                    />
+                    <div class="flex">
+                        <user-or-artist-badge
+                            :creatorAccount="data.creatorAccount"
+                            :creatorUsername="data.creatorUsername"
+                            :creatorSlug="data.creatorSlug"
+                            :creatorProfilePicture="data.creatorProfilePicture"
+                            :creatorType="data.creatorType"
+                            :disableLinkGrow="true"
+                        />
+                    </div>
                 </div>
             </div>
             <div v-if="(listingType !== 'sale') && (data.timerState !== TIMER_STATE.IN_PROGRESS) && (collectableState !== COLLECTABLE_STATE.AWAITING_RESERVE)" class="divider-line-inactive mt-3"/>
@@ -331,7 +333,7 @@ export default {
         // This class is just here for if we ever want to add a border that can support gradients
         max-width: 100%;
         height: 504px;
-        width: 338px;
+        width: 326px;
         background: #FFFFFF;
         box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.4);
         border-radius: 10px;
@@ -349,7 +351,7 @@ export default {
     .drop-card-preview-container {
         max-width: 100%;
         height: 504px;
-        width: 338px;
+        width: 326px;
         background: #FFFFFF;
         border-radius: 10px;
         overflow: hidden;
@@ -360,16 +362,19 @@ export default {
     }
     .drop-card-inner-padding-top {
         max-width: 100%;
-        padding: 14px;
         padding-bottom: 0px;
+    }
+    .drop-card-middle {
+        padding-left: 14px;
+        padding-right: 14px;
     }
     .drop-card-inner-padding-bottom {
         padding: 14px;
     }
     .drop-card-media-container {
         max-width: 100%;
-        width: 310px;
-        height: 310px;
+        width: 326px;
+        height: 326px;
         border-radius: 6px;
         position: relative;
     }
