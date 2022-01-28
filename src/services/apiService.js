@@ -278,5 +278,19 @@ export const OpenSeaAPIService = {
         }
 
         return [consolidatedData, mayHaveMore];
-    }
+    },
+    async getOwnedCollectables(owner, limit = 6, offset = 0, collection = "seen-haus") {
+        const url = `https://api.opensea.io/api/v1/assets?owner=${owner}&collection=${collection}&limit=${limit}&offset=${offset}`;
+        const data = await $axios.get(url);
+
+        if (!data) return [];
+
+        const assets = data.assets;
+
+        if (!assets.length) {
+            return [];
+        }
+
+        return assets;
+    },
 };

@@ -1,10 +1,10 @@
 import {OpenSeaAPIService} from "@/services/apiService";
 import {computed, reactive} from "vue";
 
-export default function useOwnedItemsOfCollection(address = null, collection = "seen-haus") {
+export default function useOwnedItemsOfCollection(address = null, collection = "seen-haus", limit = 50) {
     const state = reactive({
-        items: [null, null, null, null, null, null],
-        limit: 6,
+        items: [],
+        limit: limit,
         offset: 0,
         hasMore: false,
         address,
@@ -17,21 +17,15 @@ export default function useOwnedItemsOfCollection(address = null, collection = "
     }
 
     async function load() {
-        state.limit = 6;
+        state.limit = limit;
         state.offset = 0;
         state.hasMore = false;
 
-        state.items = [
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-        ];
+        state.items = [];
 
         try {
-            const data = await OpenSeaAPIService.getProfileEntries(state.address, state.limit, state.offset, state.collection);
+            const data = await OpenSeaAPIService.getOwnedCollectables(state.address, state.limit, state.offset, state.collection);
+            console.log({data})
             state.items = data;
             state.hasMore = data.length === state.limit;
         } catch (e) {
@@ -61,7 +55,7 @@ export default function useOwnedItemsOfCollection(address = null, collection = "
                 ...data,
             ];
 
-            state.hasMore = data.length === 6;
+            state.hasMore = data.length === limit;
         } catch (e) {
             console.log(e)
             state.error = e;

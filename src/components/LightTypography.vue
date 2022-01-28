@@ -10,6 +10,7 @@
           'font-size': fontSize ? fontSize : '16px',
           'font-weight': fontWeight ? fontWeight : '400',
           'margin-bottom': marginBottom ? marginBottom : '0px',
+          ...(color && {'color': color}),
           ...(paddingBottom && {'padding-bottom': paddingBottom}),
           ...(upperCase && {'text-transform': 'uppercase'}),
           ...(lineHeight && {'line-height': lineHeight}),
@@ -35,6 +36,7 @@ export default {
     paddingBottom: String,
     upperCase: Boolean,
     maxWidth: String,
+    color: String,
   },
   computed: {
     alignment: function () {
