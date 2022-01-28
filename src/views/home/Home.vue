@@ -65,11 +65,7 @@
             :collectable="collectable"
             @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
           />
-          <div
-            v-else
-            class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
-            :style="{ 'padding-bottom': '120%' }"
-          ></div>
+          <product-card-v3-placeholder v-else />
         </template>
       </div>
     </container>
@@ -111,11 +107,7 @@
             :collectable="collectable"
             @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
           />
-          <div
-            v-else
-            class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
-            :style="{ 'padding-bottom': '120%' }"
-          ></div>
+          <product-card-v3-placeholder v-else />
         </template>
       </div>
     </container>
@@ -190,12 +182,10 @@ import SubTitle from "@/components/SubTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
 import IconSquare from "@/components/IconSquare.vue";
 import ProductCardV3 from "@/components/ProductCardV3.vue";
-import FencedTitle from "@/components/FencedTitle.vue";
+import ProductCardV3Placeholder from "@/components/ProductCardV3Placeholder.vue";
 import CommonTitle from "@/components/CommonTitle.vue";
-import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 import HeroAuction from "./components/HeroAuction.vue";
-import HowToVideo from "@/components/HowToVideo.vue";
 import PaneLink from "@/components/PaneLink.vue";
 import useDarkMode from "@/hooks/useDarkMode";
 import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
@@ -207,11 +197,9 @@ export default {
   components: {
     HeroAuction,
     Container,
-    FencedTitle,
     CommonTitle,
     ProductCardV3,
-    HowToVideo,
-    QuoteCarousel,
+    ProductCardV3Placeholder,
     ArtistCard,
     SubTitle,
     LightTypography,

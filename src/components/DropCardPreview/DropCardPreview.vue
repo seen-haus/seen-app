@@ -8,8 +8,8 @@
     >
         <div class="drop-card-preview-container">
             <div class="drop-card-inner-padding-top">
-                <div class="drop-card-media-container flex-center placeholder-light-grey">
-                    <img v-if="!data.mediaUrl" src="@/assets/icons/media-icon.svg" style="opacity: 0.6" alt="Media Icon">
+                <div class="drop-card-media-container flex-center bg-gray-100">
+                    <img v-if="!data.mediaUrl && !disableMediaPlaceholder" src="@/assets/icons/media-icon.svg" style="opacity: 0.6" alt="Media Icon">
                     <media-loader
                         :key="data.mediaUrl"
                         v-if="data.mediaUrl"
@@ -247,6 +247,7 @@ export default {
         collectableState: String,
         timerState: [String, null],
         liveStatus: String,
+        disableMediaPlaceholder: [Boolean, null],
     },
     methods: {
         updateTimerState(state) {
@@ -375,7 +376,6 @@ export default {
         max-width: 100%;
         width: 326px;
         height: 326px;
-        border-radius: 6px;
         position: relative;
     }
     .text-placeholder {

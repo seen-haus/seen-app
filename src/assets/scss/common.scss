@@ -299,6 +299,10 @@
   border-radius: 20px;
 }
 
+.rounded-10px {
+  border-radius: 10px;
+}
+
 .rounded-t-20px {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
@@ -318,7 +322,8 @@
 }
 
 .placeholder-light-grey {
-  background-color: #DFE4E9;
+  // background-color: #DFE4E9;
+  @apply bg-gray-100;
 }
 
 .auto-margins {
