@@ -74,11 +74,7 @@
             :collectable="collectable"
             @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
           />
-          <div
-            v-else
-            class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
-            :style="{ 'padding-bottom': '120%' }"
-          ></div>
+          <product-card-v3-placeholder v-else />
         </template>
       </div>
 
@@ -95,7 +91,7 @@
 </template>
 
 <script>
-import { computed, ref, watchEffect } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
 
@@ -103,6 +99,7 @@ import InputSwitch from 'primevue/inputswitch';
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
 import ProductCardV3 from "@/components/ProductCardV3.vue";
+import ProductCardV3Placeholder from "@/components/ProductCardV3Placeholder.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import UnfencedTitle from "@/components/FencedTitle.vue";
 import Toggle from "@/components/Inputs/Toggle.vue";
@@ -120,6 +117,7 @@ export default {
     UnfencedTitle,
     ProductCard,
     ProductCardV3,
+    ProductCardV3Placeholder,
     Toggle,
     HowToVideo,
     QuoteCarousel,
@@ -148,7 +146,7 @@ export default {
       paginatedCollectables.loadMore();
     };
 
-    watchEffect(() => {
+    watch([quickFilter, secondaryListingsFilter], () => {
       const marketType = secondaryListingsFilter.value ? 'secondary' : 'primary';
 
       if(quickFilter.value === 'all') {
