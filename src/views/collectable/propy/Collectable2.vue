@@ -404,7 +404,7 @@ export default {
 
     (async function loadCollectable() {
       state.loading = true;
-      const slug = 'first-real-estate-nft';
+      const slug = 'first-us-real-estate-nft';
       const {data} = await CollectablesService.show(slug);
 
       // data.events.reverse(); // Right order
