@@ -23,6 +23,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "collectablePropyDrop" */ '../views/collectable/propy/Collectable.vue')
     },
     {
+        path: '/drops/first-us-real-estate-nft',
+        name: 'collectablePropyDrop2',
+        component: () => import(/* webpackChunkName: "collectablePropyDrop2" */ '../views/collectable/propy/Collectable2.vue')
+    },
+    {
         path: '/drops/:slug',
         name: 'collectableDrops',
         component: () => import(/* webpackChunkName: "collectableDrops" */ '../views/collectable/Collectable.vue')
