@@ -175,7 +175,7 @@
             <img src="@/assets/images/propy-2-3d-tour.png">
           </div>
           <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
-            <GMapMap :center="{lat: 27.759575958232478, lng: 82.72284828122115}" :zoom="13" map-type-id="roadmap" style="height: 400px"></GMapMap>
+            <GMapMap :center="{lat: 27.759575958232478, lng: -82.72284828122115}" :zoom="13" map-type-id="roadmap" style="height: 400px"></GMapMap>
           </div>
 
           <div v-if="partnersPress" class="text-3xl font-title font-bold text-center mb-6 mt-12">
