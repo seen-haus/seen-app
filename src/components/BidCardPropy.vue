@@ -121,7 +121,7 @@
           
           <div class="text-gray-400 text-sm py-2">
             <p>
-              All bidders are required to submit KYC information, for legal purposes, before being able to bid on this auction.<br/><br/>Once you have submitted your KYC information, Propy will validate your information and enable your bidding status (this may take up to 2 hours).
+              All bidders are required to submit KYC information before being able to bid on this auction.<br/><br/>Once you have submitted your KYC information, Propy will validate your information and enable your bidding status (this may take up to 2 hours).
             </p>
           </div>
           <!-- <button
