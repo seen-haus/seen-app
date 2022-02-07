@@ -2,7 +2,7 @@
 
     <div class="rounded-lg agent-contact">
         <span class="title-text font-title text-4xl font-bold flex items-center justify-center">Contact {{ artistName ? artistName : 'Artist'}}</span>
-        <div class="h-40 flex flex-wrap content-start flex items-center justify-center">
+        <div class="flex flex-wrap content-start flex items-center justify-center">
             <p class="">Have questions about this property? Reach out to our partner, Propy, for more information:</p>
 
             <a v-for="item in socials" :key="item" :href="item.url">
@@ -55,7 +55,7 @@
 
 .agent-contact {
     margin: 30px 0;
-    padding: 30px 0 0;
+    padding: 30px 0 30px;
     border: 1px solid #ccc;
 }
 p {
