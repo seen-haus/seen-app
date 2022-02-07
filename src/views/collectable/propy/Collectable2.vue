@@ -59,6 +59,14 @@
 
           <div class="text-lg text-gray-500 description" v-html="description"></div>
 
+          <div class="tour-zone text-3xl text-center mb-6 mt-12" v-if="tour3d" @click="view3dTour">
+            <span class="font-title font-bold">3D Tour</span>
+            <div class="text-sm text-gray-400 text-center mt-2">
+              Click to view
+            </div>
+            <img src="@/assets/images/propy-2-3d-tour.png">
+          </div>
+
           <div class="gap-12 py-6">
             <product-video :src="video"></product-video>
           </div>
@@ -145,9 +153,18 @@
             </div>
           </template>
 
+          <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
+            <GMapMap :center="{lat: 27.759575958232478, lng: -82.72284828122115}" :zoom="13" map-type-id="roadmap" style="height: 400px"></GMapMap>
+          </div>
+
+          <div v-if="partnersPress" class="text-3xl font-title font-bold text-center mb-6 mt-12">
+            <partners-and-press :partners="partnersPress"></partners-and-press>
+          </div>
+
+          <contact-agent class="shadow-md" artist-name="Propy" :socials="contactAgent"/>
 
           <div v-if="collectable.nft_contract_address && collectable.nft_token_id" class="text-3xl font-title font-bold text-center mb-6 mt-12">
-            Proof of Authenticity
+            On-Chain Data
           </div>
 
           <div v-if="collectable.nft_contract_address && collectable.nft_token_id" class="rounded-container">
@@ -170,19 +187,6 @@
               ></i>
             </button>
           </div>
-          <div class="tour-zone text-3xl font-title font-bold text-center mb-6 mt-12" v-if="tour3d" @click="view3dTour">
-            <span>3D Tour</span>
-            <img src="@/assets/images/propy-2-3d-tour.png">
-          </div>
-          <div class="text-3xl font-title font-bold text-center mb-6 mt-12">
-            <GMapMap :center="{lat: 27.759575958232478, lng: -82.72284828122115}" :zoom="13" map-type-id="roadmap" style="height: 400px"></GMapMap>
-          </div>
-
-          <div v-if="partnersPress" class="text-3xl font-title font-bold text-center mb-6 mt-12">
-            <partners-and-press :partners="partnersPress"></partners-and-press>
-          </div>
-
-          <contact-agent class="shadow-md" artist-name="Propy" :socials="contactAgent"/>
 
         </div>
       </div>
