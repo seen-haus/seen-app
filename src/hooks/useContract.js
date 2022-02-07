@@ -10,6 +10,7 @@ import XSEEN_ABI from "@/constants/abis/xseenABI.json"
 import CLAIM_ABI from "@/constants/abis/claimABI.json"
 import SEEN_NFT_ABI from "@/constants/abis/SeenNFT.json"
 import VRF_SALE_V2_ABI from "@/constants/abis/vrfSaleV2ABI.json"
+import PROPY_AUCTION_V2_ABI from "@/constants/abis/propyAuctionV2ABI.json"
 import RANDOMNESS_CONSUMER_VRF_ABI from "@/constants/abis/randomnessConsumerVRFABI.json"
 import {Web3Provider, WebSocketProvider} from "@ethersproject/providers"
 
@@ -37,6 +38,10 @@ export function useV1AuctionContract(contract, withSignerIfPossible) {
 
 export function useV2AuctionContract(contract, withSignerIfPossible) {
     return useContract(contract, ENGLISH_AUCTION_V2_ABI, withSignerIfPossible)
+}
+
+export function useV2PropyAuctionContract(contract, withSignerIfPossible) {
+    return useContract(contract, PROPY_AUCTION_V2_ABI, withSignerIfPossible)
 }
 
 export function useV2OpenEditionContract(contract, withSignerIfPossible) {
