@@ -297,7 +297,6 @@ export default {
     const video = "https://www.youtube.com/embed/RoBB-rrZC-k";
     const tour3d = "https://my.matterport.com/show/?m=wtHSRJ9eoPC";
     const contactAgent = [
-            {type: 'website', url: 'https://propy.com/browse/propy-nft/'},
             {type: 'telegram', url: 'https://t.me/propy/'},
             {type: 'twitter', url: 'https://twitter.com/propyinc'},
             {type: 'discord', url: 'https://discord.gg/hR73KhhzMc'},
