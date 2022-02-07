@@ -108,12 +108,15 @@
 
 
           </template>
-          <bid-card
+          <bid-card-propy
+              :status="liveStatus"
               :collectable="collectable"
-              :startsAt="startsAt"
+              :startsAt="currentStartsAt"
+              :minimumStartsAt="currentMinimumStartsAt"
               :endsAt="currentEndsAt"
               :isAuction="isAuction"
               :isOpenEdition="isOpenEdition"
+              :isVRFSale="false"
               :itemsBought="itemsBought"
               :numberOfBids="events.length"
               :edition="edition"
@@ -129,7 +132,7 @@
               :isUpcomming="isUpcomming"
               :nextBidPrice="nextBidPrice"
               :claim="claim"
-              :requiresRegistration="requiresRegistration"
+              :requiresBiddingWhitelist="true"
               :bidDisclaimers="bidDisclaimers"
               overrideClaimLink="https://propy.com/nft"
               @update-state="updateCollectableState"
@@ -206,7 +209,7 @@ import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import Container from "@/components/Container.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
-import BidCard from "@/components/BidCard.vue";
+import BidCardPropy from "@/components/BidCardPropy.vue";
 import ListOfBuyers from "@/components/Lists/ListOfBuyers.vue";
 import HeroGallery from "@/components/Media/HeroGallery.vue";
 import {CollectablesService} from "@/services/apiService";
@@ -233,7 +236,7 @@ export default {
     Tag,
     LiveIndicator,
     ArtistCard,
-    BidCard,
+    BidCardPropy,
     ListOfBuyers,
     HeroGallery,
     MediaLoader,
@@ -328,6 +331,7 @@ export default {
       events,
       startsAt,
       endsAt,
+      minimumStartsAt,
       liveStatus,
       is_sold_out,
       is_closed,
@@ -346,11 +350,18 @@ export default {
       updateCollectableState,
       claim,
       pillOverride,
-      requiresRegistration,
     } = useCollectableInformation();
 
     const currentEndsAt = computed(() => {
       return endsAt.value;
+    });
+
+    const currentStartsAt = computed(() => {
+      return startsAt.value;
+    });
+
+    const currentMinimumStartsAt = computed(() => {
+      return minimumStartsAt.value;
     });
 
     const keywords = computed(() => {
@@ -469,6 +480,8 @@ export default {
       events,
       startsAt,
       currentEndsAt,
+      currentStartsAt,
+      currentMinimumStartsAt,
       liveStatus,
       is_sold_out,
       is_closed,
@@ -496,7 +509,6 @@ export default {
       contactAgent,
       partnersPress,
       bidDisclaimers,
-      requiresRegistration,
       tour3d,
     };
   },
