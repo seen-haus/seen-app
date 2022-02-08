@@ -1,5 +1,5 @@
 <template>
-  <button class="button w-full mb-6" :class="darkMode ? 'dark dark-mode-outline' : 'outline'" @click="loadIPFSData()">
+  <button class="button w-full mb-6" :class="darkMode ? 'dark dark-mode-outline' : 'outline'" @click="displayModal = true">
     View On-Chain Data<i class="fas fa-link mr-2 text-sm icon-right"></i>
   </button>
   <Dialog header="On-Chain Data Viewer" :class="darkMode && 'dark-mode-surface-darkened'" v-model:visible="displayModal" :style="{maxWidth: '48rem', width: '100%'}" :modal="true" :closable="true">
@@ -18,20 +18,20 @@
     <div>
       <div class="flex flex-wrap -mx-2 wrapper">
         <div class="my-2 px-2 w-full wrapper lg:w-1/2 xl:w-1/2">
-          <p v-if="ipfsData?.value?.name" class="text-xl font-title font-bold mb-4">
-            {{ ipfsData.value.name }}
+          <p v-if="ipfsItem?.name" class="text-xl font-title font-bold mb-4">
+            {{ ipfsItem.name }}
           </p>
-          <p v-else-if="isLoading.value" class="text-xl font-title font-bold mb-4">Loading...</p>
+          <p v-else-if="loading" class="text-xl font-title font-bold mb-4">Loading...</p>
           <p v-else class="text-xl font-title font-bold mb-4">NFT Data not available</p>
 
-          <span v-if="ipfsData?.value?.description">
-            <p class="text-sm" :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-500'">{{ ipfsData.value.description }}</p>
-            <p v-if="ipfsData?.value?.attributes" class="text-md font-title font-bold mt-4 mb-2">Properties</p>
-            <div v-if="ipfsData?.value?.attributes" class="grid grid-cols-2 gap-2 text-center">
+          <span v-if="ipfsItem?.description">
+            <p class="text-sm" :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-500'">{{ ipfsItem?.description }}</p>
+            <p v-if="ipfsItem?.attributes" class="text-md font-title font-bold mt-4 mb-2">Properties</p>
+            <div v-if="ipfsItem?.attributes" class="grid grid-cols-2 gap-2 text-center">
               <span
                 class="flex-center border rounded-md overflow-hidden bg-background-gray p-1"
                 :class="darkMode && 'dark-mode-surface'"
-                v-for="attribute in ipfsData.value.attributes"
+                v-for="attribute in ipfsItem?.attributes"
                 :key="attribute"
               >
                 <div>
@@ -41,7 +41,7 @@
               </span>
             </div>
           </span>
-          <span v-else-if="isLoading.value">
+          <span v-else-if="loading">
               <p class="text-md" :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-500'">Loading...</p>
           </span>
           <span v-else>
@@ -52,11 +52,11 @@
               - The IPFS datasource can't be reached
             </p>
           </span>
-          <div v-if="isLoading.value" class="filler"></div>
+          <div v-if="loading" class="filler"></div>
         </div>
-        <div class="py-5 px-2 w-full lg:w-1/2 xl:w-1/2" v-if="ipfsData?.value?.image">
+        <div class="py-5 px-2 w-full lg:w-1/2 xl:w-1/2" v-if="ipfsMediaUrl">
           <media-loader
-              :src="ipfsData.value.image"
+              :src="ipfsMediaUrl"
               aspectRatio="100%"
               class="overflow-hidden rounded-20px flex-1"
               muted
@@ -73,14 +73,14 @@
 </template>
 
 <script>
-import {ref} from "vue";
+import { ref, watch, watchEffect } from "vue";
 import Dialog from 'primevue/dialog';
 
-import emitter from "@/services/utils/emitter";
-import {useSeenNFTContract} from "@/hooks/useContract";
+import { useSeenNFTContract } from "@/hooks/useContract";
 import useIPFS from "@/hooks/useIPFS";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
 import useDarkMode from "@/hooks/useDarkMode";
+import uriToHttp from '@/services/utils/uriToHttp';
 
 export default {
   name: "NftData",
@@ -94,50 +94,36 @@ export default {
   setup(props) {
     const { darkMode } = useDarkMode();
 
+    const collectable = ref(props.collectable);
+
+    const ipfsUri = ref(null);
+    const ipfsMediaUrl = ref(null);
     const displayModal = ref(false);
-    emitter.on('openNftDataModal', payload => {
-      displayModal.value = true;
+    
+    const { item: ipfsItem, loading } = useIPFS(ipfsUri);
+
+    watch(ipfsItem, () => {
+      if (ipfsItem.value && ipfsItem.value.image) {
+        ipfsMediaUrl.value = uriToHttp(ipfsItem.value.image)[0] ?? null;
+      }
     });
-    const openModal = () => {
-      emitter.emit("openNftDataModal");
-    };
 
-    const collectableData = ref(props.collectable);
-    const hash = ref(null);
-    let ipfs = null;
-    const ipfsData = ref(null);
-    const isLoading = ref(null);
-    const contract = collectableData?.value?.nft_contract_address ?
-        useSeenNFTContract(collectableData.value.nft_contract_address) : null;
+    watchEffect(async () => {
+      if (displayModal.value && collectable.value?.nft_contract_address && collectable.value?.nft_token_id) {
+        const contract = useSeenNFTContract(collectable.value.nft_contract_address);
+        const uri = await contract.uri(collectable.value.nft_token_id);
 
-
-    const loadIPFSData = async () => {
-      if (contract) {
-        hash.value = await contract.uri(collectableData.value.nft_token_id);
-        ipfs = useIPFS(hash.value);
-        ipfs.load();
-        ipfsData.value = ipfs.item;
-        isLoading.value = ipfs.loading;
+        ipfsUri.value = uri;
       }
-      else {
-        ipfsData.value = null;
-        isLoading.value = false;
-      }
-      openModal();
-    };
-
+    });
 
     return {
-      contract,
-      ipfsData,
-      loadIPFSData,
-      openModal,
+      ipfsItem,
+      ipfsMediaUrl,
+      loading,
       displayModal,
-      isLoading,
       darkMode,
     }
-
-
   }
 };
 </script>

@@ -198,14 +198,14 @@ export default {
                 props.setLoading(true);
             }
             let tokenInfo = await seenHausV3NFTContract.value.contract.getTokenInfo(props.tokenId)
-            // Safe to assume that [2] (the seen IPFS gateway) should work here as this component is only for SEEN.HAUS NFTs
+            // Safe to assume that [0] (the seen IPFS gateway) should work here as this component is only for SEEN.HAUS NFTs
             // If this component becomes used for more than NFTs that have their media on the SEEN.HAUS IPFS gateway
-            // Then don't rely on uriToHttp(tokenInfo.uri)[2] or uriToHttp(data.image)[2] working
-            let ipfsMetaDataUrl = uriToHttp(tokenInfo.uri)[2];
+            // Then don't rely on uriToHttp(tokenInfo.uri)[0] or uriToHttp(data.image)[0] working
+            let ipfsMetaDataUrl = uriToHttp(tokenInfo.uri)[0];
             axios.get(ipfsMetaDataUrl).then(response => {
                 let data = response.data;
 
-                setTempMediaUrl(uriToHttp(data.image)[2]);
+                setTempMediaUrl(uriToHttp(data.image)[0]);
                 setMediaIpfsHash(uriToHash(data.image));
                 setPropertyData(data.attributes);
                 setTangibilityData(data.tangibility);
