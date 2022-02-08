@@ -282,26 +282,26 @@ export default {
       {question: "If Propy is ever sold or liquidated, the transaction participants will have private keys to all their documents forever. All files are stored on decentralized IPFS  storage.", answer: "If a buyer loses a private key, they can reach out to agents to access the necessary transaction documents. For the time being Propy will always be able to identify the user and provide the transaction data upon request if passwords or private keys are lost. There will not be a case where ownership is locked into a digital wallet with a single access to a private key, which could be lost together with ownership."},
     ];
     const bidDisclaimers = [
-      "Apartment images are rendered designs",
-      "Apartment comes unfurnished",
-      "Apartment renovations to be completed by July 1st",
+      "Home comes unfurnished",
     ]
     const highlights = [
-            {icon: "fas fa-circle", text: "7405 sq/foot (687.95 Sq/Meters)"},
-            {icon: "fas fa-circle", text: "5 bedrooms"},
-            {icon: "fas fa-circle", text: "4 bathrooms"},
-            {icon: "fas fa-circle", text: "Built in 1951"},
-            {icon: "fas fa-circle", text: "Central Heating"},
-            {icon: "fas fa-circle", text: `Central AC`},
-            ];
+      {icon: "fas fa-circle", text: "7405 ft² lot (687.95 m²)"},
+      {icon: "fas fa-circle", text: "2164 ft² house (201.04 m²)"},
+      {icon: "fas fa-circle", text: "Unfurnished"},
+      {icon: "fas fa-circle", text: "5 bedrooms"},
+      {icon: "fas fa-circle", text: "4 bathrooms"},
+      {icon: "fas fa-circle", text: "Built in 1951"},
+      {icon: "fas fa-circle", text: `Central AC/Heating`},
+      {icon: "fas fa-circle", text: "Be part of a historical first"},
+    ];
     const video = "https://www.youtube.com/embed/RoBB-rrZC-k";
     const tour3d = "https://my.matterport.com/show/?m=wtHSRJ9eoPC";
     const contactAgent = [
-            {type: 'telegram', url: 'https://t.me/propy/'},
-            {type: 'twitter', url: 'https://twitter.com/propyinc'},
-            {type: 'discord', url: 'https://discord.gg/hR73KhhzMc'},
-            {type: 'mail', url: 'mailto:info@propy.com'},
-            ];
+      {type: 'telegram', url: 'https://t.me/propy/'},
+      {type: 'twitter', url: 'https://twitter.com/propyinc'},
+      {type: 'discord', url: 'https://discord.gg/hR73KhhzMc'},
+      {type: 'mail', url: 'mailto:nft@propy.com'},
+    ];
     const partnersPress = [
         {image: require("@/assets/images/partners/coindesk.jpg"), url: 'https://www.coindesk.com/tag/propy'},
         {image: require("@/assets/images/partners/techcrunch.jpg"), url: 'https://techcrunch.com/tag/propy/'},
