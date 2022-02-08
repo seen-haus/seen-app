@@ -287,7 +287,7 @@ export default {
     const highlights = [
       {icon: "fas fa-circle", text: "7405 ft² lot (687.95 m²)"},
       {icon: "fas fa-circle", text: "2164 ft² house (201.04 m²)"},
-      {icon: "fas fa-circle", text: "unfurnished"},
+      {icon: "fas fa-circle", text: "Unfurnished"},
       {icon: "fas fa-circle", text: "5 bedrooms"},
       {icon: "fas fa-circle", text: "4 bathrooms"},
       {icon: "fas fa-circle", text: "Built in 1951"},
