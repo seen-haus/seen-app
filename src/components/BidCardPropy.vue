@@ -6,7 +6,7 @@
           class="flex justify-start items-center text-xs font-bold"
           :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
       >
-        {{ is_closed ? (isAuction ? 'AUCTION CLOSED' : 'SALE CLOSED') : 'EDITION HAS BEEN SOLD'}}
+        {{ is_closed ? (isAuction ? 'AUCTION CLOSED' : 'SALE CLOSED') : 'AUCTION HAS ENDED'}}
       </div>
       <div
           v-else-if="!isAuction"
@@ -50,7 +50,7 @@
               v-if="isAuction"
               type="number"
               @keypress="isNumber"
-              :placeholder="'Min bid price is ' + nextBidPrice + ' ETH'"
+              :placeholder="'Min bid price is ' + minimumBidValue + ' ETH'"
           />
           <input
               v-model="saleField.value"
@@ -82,9 +82,6 @@
           </p>
         </div>
       </template>
-      <button class="button opensea mt-6" v-if="!isCollectableActive && nftTokenId && !isVRFSale" @click="viewOnOpenSea">
-        Opensea
-      </button>
       <button class="button primary mt-6" v-if="!isCollectableActive && isVRFSale && !hasRequestedVRF && !hasFulfilledVRF && !hasCommittedVRF && !isSubmittingRandomnessRequest && (itemsBought > 0)" @click="startRandomnessRequest">
         Generate Chainlink Randomness
       </button>
@@ -105,12 +102,28 @@
         Claiming Tokens...
       </button>
       <template v-else-if="isCollectableActive && !isUpcomming">
-        <button class="button primary mt-1"
-                :class="{
-                  'cursor-wait disabled opacity-50': isSubmitting,
-                  'disabled opacity-50': !isWhitelistedBidder
-                }"
-                :disabled="isSubmitting" v-if="account && hasEnoughFunds() && (!requiresBiddingWhitelist || (requiresBiddingWhitelist && isWhitelistedBidder))" @click="placeABidOrBuy">
+        <div class="text-gray-400 flex text-sm py-2" v-if="isWhitelistedBidder">
+          <input
+            class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
+            v-model="acceptTermsField.value"
+            type="checkbox"
+            :placeholder="'Propy Terms & Conditions'"
+          />
+          <p style="width: calc(100% - 30px)">
+            I confirm that I have read and accept the <a href="https://propy-docs-storage-public.s3.amazonaws.com/NFT/8.2.22-220207_00267_NEVER_FORGET_TO_HODL_LLC_Operating_Agreement_ACCEPTANCE+(execution).pdf" style="color: #2196F3;" target="_blank" rel="noopener noreferrer">Propy Operating Agreement</a> and <a href="https://propy-docs-storage-public.s3.amazonaws.com/NFT/220207.00267_Administration+Agreement+(execution)+MA.pdf" style="color: #2196F3;" target="_blank" rel="noopener noreferrer">Propy Administration Agreement</a>. I agree to be registered as a member of the LLC in case I am the winner of this Auction and I hereby give my authorization for my electronic signature to be placed in those agreements.
+          </p>
+        </div>
+        <span v-if="isWhitelistedBidder" class="error-notice">{{ acceptTermsField.errors[0] }}</span>
+        <button 
+          class="button primary mt-1"
+          :class="{
+            'cursor-wait disabled opacity-50': isSubmitting,
+            'disabled opacity-50': !isWhitelistedBidder || !acceptTermsField.value
+          }"
+          :disabled="isSubmitting || !acceptTermsField.value"
+          v-if="account && hasEnoughFunds() && isWhitelistedBidder"
+          @click="placeABidOrBuy"
+        >
           <span v-if="!isSubmitting">{{ isAuction ? (`Place ${isAwaitingReserve ? 'reserve' : 'a'} bid`) : "Buy now" }}</span>
           <span v-else>Submitting...</span>
         </button>
@@ -159,15 +172,16 @@
           <i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
         </button>
       </template>
-      <button class="button primary mt-6" v-if="hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="viewOverrideClaimLink">
-        Claim Physical
-      </button>
-      <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
-        Claim Physical
-      </button>
-      <button class="button primary mt-6" v-if="claimId !== null && isOpenEdition && isCurrentAccountEntitledToDigital" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
-        Claim NFT
-      </button>
+      <template v-if="hasOverrideClaimLink && isCurrentAccountEntitledToPhysical">
+        <div class="text-gray-400 text-sm py-2">
+          <p>
+            Congratulations! You will receive an email with the next steps within an hour.
+          </p>
+        </div>
+      </template>
+      <!-- <button class="button primary mt-3" v-if="hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="viewOverrideClaimLink">
+        Complete Ownership Process
+      </button> -->
     </div>
 
     <div class="bottom-part border-t p-8" :class="darkMode ? 'dark-mode-surface-darkened black-border' : 'light-mode-surface'">
@@ -346,7 +360,7 @@ import useExchangeRate from "@/hooks/useExchangeRate.js";
 import useSigner from "@/hooks/useSigner";
 import useContractEvents from "@/hooks/useContractEvents";
 import {shortenAddress} from "@/services/utils/index"
-import {useSeenNFTContract, useV2VRFSaleContract, useV2PropyAuctionContract} from "@/hooks/useContract";
+import {useSeenNFTContract, useV2VRFSaleContract, useV2PropyAuctionContract, useEthAddressWhitelistContract} from "@/hooks/useContract";
 
 export default {
   name: "BidCard",
@@ -431,6 +445,7 @@ export default {
       },
     });
 
+    const acceptTermsField = reactive(useField("terms and conditions", (val) => fieldValidatorAcceptTerms(val)));
     const auctionField = reactive(useField("bid", (val) => fieldValidatorAuction(val)));
     const saleField = reactive(useField("amount", (val) => fieldValidatorSale(val)));
 
@@ -441,10 +456,16 @@ export default {
     const checkWhitelistStatus = async () => {
       isCheckingWhitelistStatus.value = true;
       try {
-        let auctionContract = useV2PropyAuctionContract(collectableData.value.contract_address);
-        let isWhitelisted = await auctionContract.isBidderWhitelisted(account?.value);
-        console.log({isWhitelisted})
-        isWhitelistedBidder.value = isWhitelisted;
+        if(collectableData.value.contract_address) {
+          let auctionContract = useV2PropyAuctionContract(collectableData.value.contract_address);
+          let isWhitelisted = await auctionContract.isBidderWhitelisted(account?.value);
+          isWhitelistedBidder.value = isWhitelisted;
+        } else {
+          // TODO: Move to DB source if/when another one of these drops is done
+          let ethWhitelistContract = useEthAddressWhitelistContract("0xBE2779646C64e0f7111F4Dd32f3a6940B4717629");
+          let isWhitelisted = await ethWhitelistContract.isWhitelisted(account?.value);
+          isWhitelistedBidder.value = isWhitelisted;
+        }
       } catch (e) {
         isWhitelistedBidder.value = false;
         console.error(e);
@@ -461,40 +482,11 @@ export default {
     })
 
     watchEffect(async () => {
-      if (account?.value && isAuction?.value && !props.isOpenEdition && !props?.isCollectableActive && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
-        let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
-        let balanceOfAuctionContract = await nftContract.balanceOf(collectableData.value.contract_address, collectableData.value.nft_token_id)
-        if(parseInt(balanceOfAuctionContract) > 0) {
-          // NFT is still in auction contract, set auction winner as holder by proxy of auction contract
-          if(collectableData.value?.winner_address?.toLowerCase() === account.value.toLowerCase()) {
-            isCurrentAccountEntitledToPhysical.value = true;
-          }else{
-            isCurrentAccountEntitledToPhysical.value = false;
-          }
-        } else {
-          // NFT is no longer in auction contract, check if current account is holding NFT
-          let balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
-          if(parseInt(balanceOfCurrentAccount) > 0) {
-            isCurrentAccountEntitledToPhysical.value = true;
-          } else {
-            isCurrentAccountEntitledToPhysical.value = false;
-          }
-        }
-      } else if(account?.value && !isAuction?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
-        // Cover sale scenarios, show claim button when balance is positive
-        let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
-        let balanceOfCurrentAccount = 0;
-        if((collectableData.value.nft_token_id.indexOf("[") === 0) || collectableData.value.is_vrf_drop) {
-          let tokenIds = JSON.parse(collectableData.value.nft_token_id);
-          for(let tokenId of tokenIds) {
-            let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
-            balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
-          }
-        } else {
-          balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
-        }
-        if(parseInt(balanceOfCurrentAccount) > 0) {
-          isCurrentAccountEntitledToPhysical.value = true;
+      if (account?.value && isAuction?.value && !props.isOpenEdition && !props?.isCollectableActive && collectableData?.value?.contract_address) {
+        let auctionContract = useV2PropyAuctionContract(collectableData.value.contract_address);
+        let auctionWinner = await auctionContract.winning();
+        if(auctionWinner.toLowerCase() === account?.value.toLowerCase()) {
+          isCurrentAccountEntitledToPhysical.value = true
         } else {
           isCurrentAccountEntitledToPhysical.value = false;
         }
@@ -514,10 +506,24 @@ export default {
       }
     })
 
+    const minimumBidValue = ref(props.price);
+
+    watchEffect(() => {
+      if(props.numberOfBids > 0) {
+        minimumBidValue.value = props.price + 0.5;
+      } else {
+        minimumBidValue.value = props.price;
+      }
+    })
+
     const fieldValidatorAuction = (value) => {
       if (value) {
-        if (value < parseFloat(props.nextBidPrice.toString())) {
-          return 'Entered sum must be 1% higher than the currently winning bid.'
+        if (parseFloat(value.toString()) < parseFloat(minimumBidValue.value.toString())) {
+          if(props.numberOfBids > 0) {
+            return 'Must be at least 0.5 ETH higher than the currently winning bid.'
+          } else {
+            return `Must be at least ${minimumBidValue.value} ETH.`
+          }
         }
         return hasEnoughFunds() ? true : 'You do not have enough funds';
       } else {
@@ -530,6 +536,14 @@ export default {
         return hasEnoughFunds(value) ? true : 'You do not have enough funds';
       } else {
         return true;
+      }
+    }
+
+    const fieldValidatorAcceptTerms = (value) => {
+      if (value) {
+        return true;
+      } else {
+        return 'Please accept the Propy Operating Agreement as well as the Propy Service Provider Agreement to continue';
       }
     }
 
@@ -853,6 +867,8 @@ export default {
       shortenAddress,
       checkWhitelistStatus,
       isCheckingWhitelistStatus,
+      acceptTermsField,
+      minimumBidValue,
     };
   },
 };
