@@ -277,7 +277,7 @@ export default {
       // {question: "Does the transaction require title insurance?", answer: "No. Proof of ownership will be provided to whitelisted auction candidates on DATE"},
       // {question: "Can I view any inspections or disclosures for the property?", answer: "Inspections and disclosures will be provided to whitelisted auction candidates upon request."},
       // {question: "What is the property currently appraised at?", answer: "We estimate the property price to be a minimum of $650,000 USD. Access to comparables will be provided to whitelisted auction candidates on DATE."},
-      {question: "How do I get keys to the property?", answer: ""},
+      // {question: "How do I get keys to the property?", answer: ""},
       {question: "What happens if the value of ETH fluctuations occur during bidding?  Is the minimum price based on dollars or ETH?", answer: "The price is based on the dollar value."},
       {question: "If Propy is ever sold or liquidated, the transaction participants will have private keys to all their documents forever. All files are stored on decentralized IPFS  storage.", answer: "If a buyer loses a private key, they can reach out to agents to access the necessary transaction documents. For the time being Propy will always be able to identify the user and provide the transaction data upon request if passwords or private keys are lost. There will not be a case where ownership is locked into a digital wallet with a single access to a private key, which could be lost together with ownership."},
     ];
