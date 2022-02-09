@@ -483,13 +483,20 @@ export default {
 
     watchEffect(async () => {
       if (account?.value && isAuction?.value && !props.isOpenEdition && !props?.isCollectableActive && collectableData?.value?.contract_address) {
+        isCurrentAccountEntitledToPhysical.value = false;
         let auctionContract = useV2PropyAuctionContract(collectableData.value.contract_address);
-        let auctionWinner = await auctionContract.winning();
-        if(auctionWinner.toLowerCase() === account?.value.toLowerCase()) {
-          isCurrentAccountEntitledToPhysical.value = true
-        } else {
+        try {
+          let auctionWinner = await auctionContract.winning();
+          if(auctionWinner.toLowerCase() === account?.value.toLowerCase()) {
+            isCurrentAccountEntitledToPhysical.value = true
+          } else {
+            isCurrentAccountEntitledToPhysical.value = false;
+          }
+        } catch (e) {
           isCurrentAccountEntitledToPhysical.value = false;
         }
+      } else {
+        isCurrentAccountEntitledToPhysical.value = false;
       }
     })
 
