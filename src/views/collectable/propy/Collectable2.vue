@@ -64,7 +64,7 @@
             <div class="text-sm text-gray-400 text-center mt-2">
               Click to view
             </div>
-            <img src="@/assets/images/propy-2-3d-tour.png">
+            <img src="@/assets/images/propy-2-3d-tour.png"/>
           </div>
 
           <div class="gap-12 py-6">
