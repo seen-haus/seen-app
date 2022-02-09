@@ -289,7 +289,7 @@ export default {
       {icon: "fas fa-circle", text: "2164 ft² house (201.04 m²)"},
       {icon: "fas fa-circle", text: "Unfurnished"},
       {icon: "fas fa-circle", text: "5 bedrooms"},
-      {icon: "fas fa-circle", text: "4 bathrooms"},
+      {icon: "fas fa-circle", text: "3.5 bathrooms"},
       {icon: "fas fa-circle", text: "Built in 1951"},
       {icon: "fas fa-circle", text: `Central AC/Heating`},
       {icon: "fas fa-circle", text: "Be part of a historical first"},
