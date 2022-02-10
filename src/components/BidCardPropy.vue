@@ -101,7 +101,7 @@
       <button class="button disabled mt-6" v-if="!isCollectableActive && isVRFSale && hasRequestedVRF && hasFulfilledVRF && hasCommittedVRF && isSubmittingClaimVRF">
         Claiming Tokens...
       </button>
-      <template v-else-if="isCollectableActive && !isUpcomming">
+      <template v-else-if="isCollectableActive">
         <div class="text-gray-400 flex text-sm py-2" v-if="isWhitelistedBidder">
           <input
             class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
