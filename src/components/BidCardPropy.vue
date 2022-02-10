@@ -602,7 +602,7 @@ export default {
         if (isAuction.value) {
           amount = parseFloat(auctionField.value, 10);
           if (isNaN(amount)) throw new Error("invalid number");
-          if (amount < props.nextBidPrice) throw new Error("not enough funds");
+          if (amount < minimumBidValue.value) throw new Error("not enough funds");
           onBid(auctionField.value);
         } else {
           amount = parseInt(saleField.value, 10);
