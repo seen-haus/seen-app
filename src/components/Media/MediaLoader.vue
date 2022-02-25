@@ -47,7 +47,17 @@
     </template>
 
     <template v-if="mediaType === 'video'">
-      <div class="absolute-full-width-and-height">
+      <div 
+        class="absolute-full-width-and-height"
+        :style="{
+          ...(fillHeight && 
+            {
+              'display': 'flex',
+              'justify-content': 'center'
+            }
+          ),
+        }"
+      >
         <video
           ref="videoRef"
           :src="src"
@@ -56,7 +66,15 @@
           playsinline="playsinline"
           :loop="loop"
           class="auto-horizontal-margins"
-          :style="`max-height: 100%;`"
+          :style="{
+            'max-height': '100%',
+            ...(fillHeight && 
+              {
+                'height': '100%',
+                'max-width': 'fit-content'
+              }
+            ),
+          }"
         ></video>
 
         <div
@@ -126,6 +144,10 @@ export default {
       default: false,
     },
     maxWidthAndHeight: {
+      type: Boolean,
+      default: false,
+    },
+    fillHeight: {
       type: Boolean,
       default: false,
     },

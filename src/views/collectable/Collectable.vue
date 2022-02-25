@@ -115,6 +115,8 @@
 
         <div class="right-side col-span-5">
           <social-sharing></social-sharing>
+          <br/>
+          <br/>
           <bid-card
               :status="liveStatus"
               :collectable="collectable"

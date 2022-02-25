@@ -19,6 +19,7 @@
                         loop
                         autoplay
                         maxWidthAndHeight
+                        fillHeight
                     />
                     <div class="tag-container">
                         <tag :value="tagItem" v-for="(tagItem, index) in data.tags.map(tag => tag.name)" :key="`inline-tag-${tagItem}-${index}`" class="bg-black mr-1 text-white">{{tagItem.toUpperCase()}}</tag>

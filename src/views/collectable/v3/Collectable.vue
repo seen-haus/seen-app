@@ -267,7 +267,7 @@ import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import Container from "@/components/Container.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
-import BidCard from "@/components/BidCard.vue";
+import BidCard from "@/components/BidCardV3.vue";
 import ListOfBuyers from "@/components/Lists/ListOfBuyers.vue";
 import HeroGallery from "@/components/Media/HeroGallery.vue";
 import SecondaryListings from "@/components/SecondaryListings.vue";

@@ -409,7 +409,7 @@ import {useToast} from "primevue/usetoast";
 
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
-import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
+import ProgressTimer from "@/components/Progress/v3/ProgressTimer.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import numberHelper from "@/services/utils/numbers"
 import emitter from "@/services/utils/emitter";

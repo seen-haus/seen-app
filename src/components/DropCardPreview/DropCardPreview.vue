@@ -19,6 +19,7 @@
                         loop
                         autoplay
                         maxWidthAndHeight
+                        fillHeight
                     />
                     <div class="tangibility-container">
                         <tag v-if="data.tangibility === 'nft-digital'" class="bg-black mr-1 text-white">NFT</tag>
