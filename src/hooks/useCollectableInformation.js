@@ -254,6 +254,18 @@ export default function useCollectableInformation(initialCollectable = {}) {
                             }
                             return carry;
                         }, 0);
+            } else {
+                items.value = (events.value || [])
+                    .reduce((carry, evt) => {
+                        if (evt.amount) {
+                            return parseInt(evt.amount) + carry;
+                        }
+                        if (evt.raw && typeof evt.raw == "string") {
+                            let decodedEvt = JSON.parse(evt.raw);
+                            return parseInt(decodedEvt.amount) + carry;
+                        }
+                        return carry;
+                    }, 0);
             }
             price.value = +(data.price || 0).toFixed(3);
             priceUSD.value = +(data.value_in_usd || 0).toFixed(2);

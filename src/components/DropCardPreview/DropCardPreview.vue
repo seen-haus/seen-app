@@ -77,6 +77,7 @@
                         data.startTime > new Date().getTime()
                         || collectableState === COLLECTABLE_STATE.OUT_OF_STOCK 
                         || collectableState === COLLECTABLE_STATE.CLOSED
+                        || collectableState === COLLECTABLE_STATE.DONE
                     "
                     class="divider-line-inactive mt-3"
                 />
@@ -84,6 +85,7 @@
                         (data.startTime < new Date().getTime())
                         && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
                         && collectableState !== COLLECTABLE_STATE.CLOSED
+                        && collectableState !== COLLECTABLE_STATE.DONE
                     " class="divider-line-active bg-progress-bar-green-vibrant mt-3">
                     <div class="bg-black mini-progress-bar" :style="`width:${100-(progress*100)}%`"/>
                 </div>
@@ -94,10 +96,11 @@
                     ((data.timerState === TIMER_STATE.IN_PROGRESS || collectableState === COLLECTABLE_STATE.IN_PROGRESS) || (listingType == 'sale' && data.startTime && (data.startTime < new Date().getTime())))
                     && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
                     && collectableState !== COLLECTABLE_STATE.CLOSED
+                    && collectableState !== COLLECTABLE_STATE.DONE
                     && 'bg-black'"
             >
                 <div>
-                    <div v-if="!data.startTime || (listingType === 'sale' && !itemsOf)" class="mr-6">
+                    <div v-if="!data.startTime || (listingType === 'sale' && !itemsOf && !isOpenEdition)" class="mr-6">
                         <div class="timer-helper-placeholder-container">
                             <div class="placeholder-light-grey text-placeholder"></div>
                         </div>
@@ -105,7 +108,8 @@
                             <div class="placeholder-light-grey text-placeholder"/>
                         </div>
                     </div>
-                    <div class="mr-6" v-if="collectableState !== COLLECTABLE_STATE.DONE && ((data.startTime > new Date().getTime()) || (data.endTime > new Date().getTime() || (listingType === 'sale' && (listingType === 'sale' && itemsOf))))">
+                    
+                    <div class="mr-6" v-if="collectableState !== COLLECTABLE_STATE.DONE && !isOpenEdition && ((data.startTime > new Date().getTime()) || (data.endTime > new Date().getTime() || (listingType === 'sale' && (listingType === 'sale' && itemsOf))))">
                         <progress-timer
                             v-if="data.startTime && (listingType !== 'sale' || (data.startTime > new Date().getTime()))"
                             ref="timerRef"
@@ -143,6 +147,45 @@
                             </sub-title>
                         </div>
                     </div>
+                    <div class="mr-6" v-if="listingType === 'sale' && isOpenEdition">
+                        <progress-timer
+                            v-if="data.startTime && (listingType !== 'sale' || (data.startTime > new Date().getTime()))"
+                            ref="timerRef"
+                            :whiteText="data.timerState === TIMER_STATE.IN_PROGRESS"
+                            :listingType="listingType"
+                            :startDate="data.startTime"
+                            :endDate="data.endTime"
+                            @onProgress="updateProgress"
+                            @onTimerStateChange="updateTimerState"
+                        />
+                        <div v-if="listingType === 'sale' && data.startTime && (data.startTime < new Date().getTime())">
+                            <light-typography 
+                                textAlign="left"
+                                fontSize="14px"
+                                fontWeight="700"
+                                lineHeight="16px"
+                                paddingBottom="6px"
+                                :upperCase="true"
+                            >
+                                EDITIONS SOLD
+                            </light-typography>
+                            <sub-title
+                                class="lg:flex"
+                                :class="
+                                    collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
+                                    && collectableState !== COLLECTABLE_STATE.CLOSED
+                                    && collectableState !== COLLECTABLE_STATE.DONE
+                                    && 'text-white'
+                                "
+                                text-align="left"
+                                fontSize="24px"
+                                line-height="30px"
+                                :overflowEllipsis="true"
+                            >
+                                {{items}}
+                            </sub-title>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <div v-if="!data.priceType" class="price-helper-placeholder-container">
@@ -170,6 +213,7 @@
                                 (data.timerState === TIMER_STATE.IN_PROGRESS || (listingType == 'sale' && (data.startTime < new Date().getTime())))
                                 && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
                                 && collectableState !== COLLECTABLE_STATE.CLOSED
+                                && collectableState !== COLLECTABLE_STATE.DONE
                                 && 'text-white'
                             "
                             text-align="left"
@@ -244,6 +288,10 @@ export default {
         },
         itemsOf: {
             type: [Number]
+        },
+        isOpenEdition: {
+            type: [Boolean],
+            default: false
         },
         collectableState: String,
         timerState: [String, null],

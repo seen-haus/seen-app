@@ -23,6 +23,7 @@
     :itemsOf="itemsOf"
     :collectableState="collectableState"
     :liveStatus="liveStatus"
+    :isOpenEdition="isOpenEdition"
   />
 </template>
 
