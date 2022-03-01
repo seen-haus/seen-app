@@ -70,7 +70,8 @@
     <container>
       <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-12 md:mt-0">
         <div class="left-side col-span-7 pb-6">
-          <div class="text-lg description" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'" v-html="description"></div>
+          <div v-if="version === 2 || version === 1" class="text-lg description" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'" v-html="description"></div>
+          <div v-if="version === 3" class="text-lg description" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'">{{description}}</div>
           <template v-if="showAdditionalInformation">
             <!--            <div class="rounded-container flex items-center mt-12">-->
             <!--              <i-->
@@ -498,6 +499,7 @@ export default {
       updateCollectableState,
       claim,
       pillOverride,
+      version,
     };
   },
 };

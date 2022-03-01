@@ -49,11 +49,7 @@
                 </div>
               </div>
               <div class="grid grid-cols-1 gap-10 md:grid-cols-2 my-2 flex render-line-breaks bio-description-zone" v-if="artist">
-                <div>
-                  {{
-                    artist?.bio ? artist.bio : "Artist has no description."
-                  }}
-                </div>
+                <div v-html="artist?.bio ? artist.bio : 'Artist has no description.'"></div>
               </div>
             </div>
           </div>
