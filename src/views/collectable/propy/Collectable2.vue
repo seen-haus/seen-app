@@ -222,7 +222,6 @@ import Faq from "@/views/collectable/components/FAQ.vue";
 import PartnersAndPress from "@/views/collectable/components/PartnersAndPress.vue";
 
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
-import useContractEvents from "@/hooks/useContractEvents";
 import {getEtherscanLink} from "@/services/utils";
 import GLightbox from 'glightbox';
 import 'glightbox/dist/css/glightbox.css';
