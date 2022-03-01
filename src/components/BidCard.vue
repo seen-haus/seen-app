@@ -256,7 +256,7 @@
             {{ is_closed ? 'CLOSED' : 'SOLD ' + itemsBought + ' EDITIONS'}}
           </div>
           <div v-if="isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            {{ 'SOLD OUT (' + itemsBought + ' EDITIONS)' }}
+            {{ 'SOLD OUT' }}
           </div>
         </div>
         <!-- <button
