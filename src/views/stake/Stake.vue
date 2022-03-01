@@ -129,7 +129,7 @@
           </span>
         </div>
 
-        <p class="font-medium text-gray-400">* All deposits are subject to a 3 day lockup period to precent sandwich attacks</p>
+        <p class="font-medium text-gray-400">* All deposits are subject to a 3 day lockup period to protect against sandwich attacks</p>
       </div>
     </container>
   </div>
