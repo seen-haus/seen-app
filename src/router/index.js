@@ -139,6 +139,7 @@ const routes = [
         name: 'privacy',
         component: () => import(/* webpackChunkName: "privacy" */ '../views/privacy/Privacy.vue')
     },
+    {
         path: '/creator/apply', // This is here because there was a graphic made with a typo in it, use /creators/apply for routing within app
         name: 'creatorApplicationsTypo',
         component: () => import(/* webpackChunkName: "creatorApplicationsTypo" */ '../views/creators/CreatorApplications.vue')
