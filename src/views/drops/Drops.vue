@@ -56,10 +56,12 @@
             <img src="@/assets/icons/gavel.svg" class="mr-3"/>Sold Out
         </button>
 
+        <!-- Temp disable until there are secondary listings
         <small class="button">
           <InputSwitch v-model="secondaryListingsFilter" id="secondary-listings-filter" />
           <label for="secondary-listings-filter" class="ml-3 clickable">Secondary Listings</label>
         </small>
+        -->
       </div>
 
       <div

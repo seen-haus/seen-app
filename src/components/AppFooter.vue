@@ -5,9 +5,9 @@
         <div class="w-full inline-flex flex-col">
           <p class="text-xl font-bold mb-1">Be the first to to hear about upcoming drops!</p>
           <p class="color-white opacity-50 text-md">Join our newsletter TODAY!</p>
-          <div class="w-full py-4 md:inline-flex">
-            <input type="text" class="mr-3 text-black w-full h-12 text-md pl-4 mb-2 rounded inline-flex flex-grow" placeholder="Your e-mail">
-            <gradient-outline-button class="footer-button"></gradient-outline-button>
+          <div class="w-full py-4 md:inline-flex opacity-0-6 disabled">
+            <input type="text" class="mr-3 text-black w-full h-12 text-md pl-4 mb-2 rounded inline-flex flex-grow" placeholder="Coming Soon">
+            <gradient-outline-button class="footer-button">Coming Soon</gradient-outline-button>
           </div>
         </div>
           <div class="links lg:mb-0 sm:mt-12">
