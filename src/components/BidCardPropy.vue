@@ -358,7 +358,7 @@ import { BidRegistrationService } from "@/services/apiService"
 import useWeb3 from "@/connectors/hooks";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 import useSigner from "@/hooks/useSigner";
-import useContractEvents from "@/hooks/useContractEvents";
+import useMarketContractEvents from "@/hooks/useMarketContractEvents";
 import {shortenAddress} from "@/services/utils/index"
 import {useSeenNFTContract, useV2VRFSaleContract, useV2PropyAuctionContract, useEthAddressWhitelistContract} from "@/hooks/useContract";
 
@@ -563,7 +563,7 @@ export default {
       commitRandomness,
       claimTokensSaleVRF,
       initializeContractEvents,
-    } = useContractEvents();
+    } = useMarketContractEvents();
 
     watchEffect(() => {
       if (collectableData.value) {
