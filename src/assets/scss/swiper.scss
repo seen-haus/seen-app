@@ -19,6 +19,7 @@
   justify-content: center; 
 }
 .swiper-pagination {
+  max-width: 900px;
   .swiper-pagination-bullet {
     width: 12px !important;
     height: 12px !important;
@@ -125,6 +126,7 @@
       opacity: 1 !important;
     }
     .swiper-pagination {
+      max-width: 95%;
       bottom: -2.5rem;
     }
   }

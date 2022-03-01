@@ -171,7 +171,7 @@
 
           <div class="rounded-container" :class="darkMode ? 'dark-mode-background' : 'light-mode-surface'">
 
-            <nft-data v-if="collectable" :collectable="collectable"></nft-data>
+            <nft-data v-if="collectable && !isVRFSale" :collectable="collectable"></nft-data>
 
             <button class="button w-full" :class="darkMode ? 'dark dark-mode-outline' : 'outline'" @click="viewOnEtherscan">
               View on Etherscan
@@ -186,7 +186,7 @@
             <!--                class="fas fa-external-link-alt mr-2 text-sm icon-right text-gray-500"-->
             <!--              ></i>-->
             <!--            </button>-->
-            <button :class="darkMode ? 'dark dark-mode-outline' : 'outline'" class="button w-full mt-6" @click="viewOnOpenSea">
+            <button v-if="!isVRFSale" :class="darkMode ? 'dark dark-mode-outline' : 'outline'" class="button w-full mt-6" @click="viewOnOpenSea">
               View on OpenSea
               <i
                   class="fas fa-external-link-alt mr-2 text-sm icon-right"

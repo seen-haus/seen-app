@@ -15,6 +15,14 @@ export default {
                         title: 'Staking',
                         url: 'stake',
                     },
+                ],
+                mobileOnlyItems: [
+                    {
+                        title: 'Notifications',
+                        url: 'notifications'
+                    },
+                ],
+                desktopOnlyItems: [
                     {
                         title: 'Create',
                         url: 'create',

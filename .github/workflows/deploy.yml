@@ -18,6 +18,10 @@ jobs:
           touch .env.production.local
           echo "${{ secrets.PRODUCTION_ENV_VARS }}" >> .env.production.local
           cat .env.production.local
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
       - run: yarn install
       - run: yarn run build
       - run: yarn run deploy
