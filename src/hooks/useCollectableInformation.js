@@ -4,7 +4,7 @@ import useWeb3 from "@/connectors/hooks";
 import { BigNumber } from "@ethersproject/bignumber";
 import { formatEther, parseEther } from "@ethersproject/units";
 
-import useContractEvents from "@/hooks/useContractEvents";
+import useMarketContractEvents from "@/hooks/useMarketContractEvents";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 import orderBy from "lodash/orderBy";
 
@@ -13,6 +13,9 @@ import {
     COLLECTABLE_STATE,
 } from "@/constants/Collectables.js";
 import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
+import MARKET_HANDLER_TYPES from "@/constants/MarketHandlerTypes.js";
+
+import { marketHandlerToListingType } from '@/constants';
 
 export default function useCollectableInformation(initialCollectable = {}) {
     const { converEthToUSD } = useExchangeRate();
@@ -21,13 +24,18 @@ export default function useCollectableInformation(initialCollectable = {}) {
         initializeContractEvents,
         supply,
         itemsBought,
+        isReadyForClosure,
+        checkClosureStatusFn,
+        isClosed,
+        isCancelled,
+        winningAddress,
         hasRequestedVRF,
         hasFulfilledVRF,
         hasCommittedVRF,
         endsAt: updatedEndsAt,
         startsAt: updatedStartsAt,
         minimumStartsAt: updatedMinimumStartsAt,
-    } = useContractEvents();
+    } = useMarketContractEvents();
 
     const collectable = ref(initialCollectable);
     const events = ref(collectable.value.events || []);
@@ -55,6 +63,16 @@ export default function useCollectableInformation(initialCollectable = {}) {
         let orderedMedia = orderBy(media.value, 'position', "asc")
         return orderedMedia[0].url || '';
     });
+    const firstMediaType = computed(() => { // Use preview image or first
+        if (!media.value) return '';
+        const found = media.value.find(v => v.is_preview);
+
+        if (found) {
+            return found?.type?.indexOf('image') > -1 ? 'image' : 'video';
+        }
+        let orderedMedia = orderBy(media.value, 'position', "asc")
+        return orderedMedia[0]?.type?.indexOf('image') > -1 ? 'image' : 'video';
+    });
     const gallerySortedMedia = computed(() => collectable.value.mediaSorted);
     const artist = computed(() => collectable.value.artist);
     const artistStatement = computed(() => collectable.value.artist_statement);
@@ -74,7 +92,8 @@ export default function useCollectableInformation(initialCollectable = {}) {
         return (
             collectableState.value === COLLECTABLE_STATE.WAITING ||
             collectableState.value === COLLECTABLE_STATE.IN_PROGRESS ||
-            collectableState.value === COLLECTABLE_STATE.AWAITING_RESERVE
+            collectableState.value === COLLECTABLE_STATE.AWAITING_RESERVE ||
+            (!is_closed.value && !isReadyForClosure.value && !isClosed.value && !isCancelled.value && new Date(collectable.value.ends_at).getTime() > new Date().getTime())
         );
     });
     const edition = computed(() => collectable.value.edition || 0);
@@ -91,7 +110,12 @@ export default function useCollectableInformation(initialCollectable = {}) {
     );
     const liveStatus = computed(() => {
         if (collectableState.value === COLLECTABLE_STATE.CLOSED) return "closed";
-        if (collectableState.value === COLLECTABLE_STATE.DONE) return "ended";
+        if (collectableState.value === COLLECTABLE_STATE.DONE) {
+            if(checkClosureStatusFn?.value && !isReadyForClosure.value && collectable.value && (collectable.value.consignment_id === 0 || collectable.value.consignment_id)) {
+                checkClosureStatusFn.value(collectable.value.consignment_id.toString())
+            }
+            return "ended"
+        }
         if (collectableState.value === COLLECTABLE_STATE.AWAITING_RESERVE) return "awaiting-reserve-bid";
         if (collectableState.value === COLLECTABLE_STATE.WAITING)
             return "coming soon";
@@ -112,6 +136,72 @@ export default function useCollectableInformation(initialCollectable = {}) {
     );
     const isUpcomming = computed(() => collectableState.value === COLLECTABLE_STATE.WAITING);
     const isOpenEdition = computed(() => collectable.value.is_open_edition);
+    const tangibility = computed(() => collectable.value.type === 'tangible_nft' ? 'nft-physical' : 'nft-digital');
+    const tags = computed(() => collectable.value.tags ? collectable.value.tags.map(tag => tag.name) : []);
+    const listingType = computed(() => marketHandlerToListingType[collectable.value.version === 3 ? collectable.value.market_handler_type : collectable.value.purchase_type]);
+    const priceType = computed(() => {
+        let listingTypeCheck = marketHandlerToListingType[collectable.value.version === 3 ? collectable.value.market_handler_type : collectable.value.purchase_type];
+        if(listingTypeCheck === 'auction') {
+            if(events.value.length === 0) {
+                return 'Reserve Price';
+            } else if ((collectableState.value === COLLECTABLE_STATE.DONE) || (collectableState.value === COLLECTABLE_STATE.CLOSED)) {
+                return 'Winning Bid';
+            } else {
+                return 'Current Bid';
+            }
+        } else {
+            return 'Sale Price';
+        }
+    });
+    const creatorAccount = computed(() => {
+        if(collectable.value.user?.wallet) {
+            return collectable.value.user.wallet;
+        } else if (collectable.value?.artist?.wallet) {
+            return collectable.value.artist.wallet
+        } else {
+            return false;
+        }
+    })
+    const creatorType = computed(() => {
+        if(collectable.value.user?.wallet) {
+            return 'user';
+        } else if (collectable.value?.artist?.slug) {
+            return 'artist';
+        } else {
+            return null;
+        }
+    })
+    const creatorProfilePicture = computed(() => {
+        if(collectable.value.user?.avatar_image) {
+            return collectable.value.user.avatar_image;
+        } else if (collectable.value.artist?.avatar) {
+            return collectable.value.artist.avatar
+        } else {
+            return false;
+        }
+    })
+    const creatorUsername = computed(() => {
+        if(collectable.value.user?.username) {
+            return collectable.value.user.username;
+        } else if (collectable.value.artist?.name) {
+            return collectable.value.artist.name
+        } else {
+            return false;
+        }
+    })
+    const creatorSlug = computed(() => {
+        if(collectable.value.user?.username) {
+            return collectable.value.user.username;
+        } else if (collectable.value.artist?.slug) {
+            return collectable.value.artist.slug
+        } else {
+            return false;
+        }
+    })
+    const secondaryMarketListings = computed(() => {
+        return collectable.value?.secondary_market_listings || false;
+    })
+    
     const isVRFSale = computed(() => collectable.value.is_vrf_drop);
 
     const updateProgress = function (event) {
@@ -164,6 +254,18 @@ export default function useCollectableInformation(initialCollectable = {}) {
                             }
                             return carry;
                         }, 0);
+            } else {
+                items.value = (events.value || [])
+                    .reduce((carry, evt) => {
+                        if (evt.amount) {
+                            return parseInt(evt.amount) + carry;
+                        }
+                        if (evt.raw && typeof evt.raw == "string") {
+                            let decodedEvt = JSON.parse(evt.raw);
+                            return parseInt(decodedEvt.amount) + carry;
+                        }
+                        return carry;
+                    }, 0);
             }
             price.value = +(data.price || 0).toFixed(3);
             priceUSD.value = +(data.value_in_usd || 0).toFixed(2);
@@ -197,13 +299,17 @@ export default function useCollectableInformation(initialCollectable = {}) {
         const now = Date.now();
         const start = startsAt.value ? new Date(startsAt.value) : null;
         const end = endsAt.value ? new Date(endsAt.value) : null;
+        console.log({endUpdate: end})
+        const isStartInPast = start && start.getTime() <= now;
 
-        if(end === null && collectable.value.is_reserve_price_auction) {
+        console.log({end, 'collectable.value.is_reserve_price_auction': collectable.value.is_reserve_price_auction, isStartInPast})
+
+        if(end === null && collectable.value.is_reserve_price_auction && isStartInPast) {
             collectableState.value = COLLECTABLE_STATE.AWAITING_RESERVE;
             return;
         }
 
-        if (is_closed.value) {
+        if (is_closed.value || (!isAuction.value && collectable.value.version === 3 && end && (now > end))) {
             collectableState.value = COLLECTABLE_STATE.CLOSED;
             return;
         }
@@ -244,14 +350,20 @@ export default function useCollectableInformation(initialCollectable = {}) {
         endDate.setHours(endDate.getHours() + 6);
         const end = endDate.getTime();
         if(collectable.value.contract_address) {
-            if (((now >= start) && (now < end) && !is_sold_out.value) || (collectable.value.is_vrf_drop && !collectable.value.is_closed) || (new Date(endsAt.value).getTime() === 0 && collectable.value.is_reserve_price_auction)) {
+            if (
+                ((now >= start) && (now < end) && !is_sold_out.value) ||
+                (collectable.value.is_vrf_drop && !collectable.value.is_closed) ||
+                (new Date(endsAt.value).getTime() === 0 && collectable.value.is_reserve_price_auction) ||
+                (isAuction.value && !collectable.value.winner_address) ||
+                ((collectable.value.version === 3) && (collectable.value.market_handler_type === MARKET_HANDLER_TYPES.SALE) && !collectable.value.is_closed)
+            ) {
                 console.log('contract initialized');
                 initializeContractEvents(collectable.value);
-            } else if (now < end && !is_sold_out.value) {
+            } else if ((now < end || !endsAt.value) && !is_sold_out.value) {
                 timeoutHandler = setTimeout(() => {
                     console.log('starting soon');
-                    initializeContractEvents(collectable.value);
-                }, start - now);
+                        initializeContractEvents(collectable.value);
+                    }, start - now);
             }
         }
     };
@@ -325,6 +437,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         type,
         media,
         firstMedia,
+        firstMediaType,
         gallerySortedMedia,
         artist,
         artistStatement,
@@ -349,6 +462,20 @@ export default function useCollectableInformation(initialCollectable = {}) {
         pillOverride,
         requiresRegistration,
         isOpenEdition,
+        tangibility,
+        priceType,
+        tags,
+        creatorAccount,
+        creatorProfilePicture,
+        creatorUsername,
+        creatorType,
+        creatorSlug,
+        listingType,
+        isReadyForClosure,
+        isClosed,
+        isCancelled,
+        winningAddress,
+        secondaryMarketListings,
         isVRFSale,
         // Methods
         updateProgress,

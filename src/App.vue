@@ -9,6 +9,8 @@
     <!--  Modals -->
     <wallet-modal />
     <notifications-modal />
+    <network-modal/>
+    <transaction-modal />
     <!--  Modals END -->
     <mobile-menu/>
     <Toast />
@@ -35,12 +37,15 @@
 import { useStore } from "vuex";
 import { useMeta, useActiveMeta } from "vue-meta";
 import useWeb3 from "@/connectors/hooks"
-import {watchEffect, computed} from 'vue';
+import {watchEffect} from 'vue';
 import {useStakingContract, useTokenContract} from "@/hooks/useContract";
+import useDarkMode from '@/hooks/useDarkMode';
 
 import Web3Provider from "@/connector/Web3Provider";
 import WalletModal from "@/components/WalletModal/WalletModal";
 import NotificationsModal from "@/components/NotificationsModal/NotificationsModal";
+import NetworkModal from "@/components/NetworkModal/NetworkModal";
+import TransactionModal from "@/components/TransactionModal/TransactionModal";
 import MobileMenu from "@/components/Menu/MobileMenu";
 import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
@@ -57,6 +62,8 @@ export default {
     MobileMenu,
     WalletModal,
     NotificationsModal,
+    NetworkModal,
+    TransactionModal,
     Web3Provider,
     WinnerInfo,
   },
@@ -65,9 +72,7 @@ export default {
     const store = useStore();
     let accountCurrent = null;
 
-    const darkMode = computed(() => {
-      return store.getters['application/darkMode']
-    });
+    const { darkMode } = useDarkMode();
 
     watchEffect(async () => {
       if (account.value && account.value !== accountCurrent) {
@@ -125,5 +130,8 @@ export default {
 <style lang="scss" scoped>
 .router-wrap {
   min-height: calc(100vh - 298px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 </style>

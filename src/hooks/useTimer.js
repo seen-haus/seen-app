@@ -89,7 +89,7 @@ export default function useTimer(callback) {
         state.percentage = +(progress / duration).toFixed(2);
         if (progressLeft <= 0 || (state.isAwaitingReserve && new Date().getTime() > state.startDate)) {
             timerState.value = TIMER_STATE.DONE;
-            if(state.isAwaitingReserve) {
+            if(state.isAwaitingReserve) { // || !state.endDate maybe
                 state.value = 'Awaiting Reserve Bid';
             } else {
                 state.value = 'Auction Ended';
@@ -172,10 +172,18 @@ export default function useTimer(callback) {
     // Formatter
     function formatter(time) {
         const total = 0 | (time / 1000);
-        const seconds = Math.floor((total) % 60);
-        const minutes = Math.floor((total / 60) % 60);
+        let seconds = Math.floor((total) % 60);
+        let minutes = Math.floor((total / 60) % 60);
         const hours = Math.floor((total / (60 * 60)) % 24);
         const days = Math.floor(total / (60 * 60 * 24));
+
+        if(seconds < 10) {
+            seconds = `0${seconds}`
+        }
+
+        if(minutes < 10) {
+            minutes = `0${minutes}`
+        }
 
         if (days > 0 || hours > 24) {
             return `${days}d ${hours}h ${minutes}m`;

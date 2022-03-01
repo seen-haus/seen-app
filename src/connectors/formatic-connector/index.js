@@ -1,17 +1,11 @@
 import AbstractConnector from "@/connectors/abstract-connector"
 import invariant from 'tiny-invariant'
-
-const chainIdToNetwork = {
-    1: 'mainnet',
-    3: 'ropsten',
-    4: 'rinkeby',
-    42: 'kovan'
-}
+import {CHAIN_ID_TO_NETWORK, CHAIN_ID_ETHEREUM_MAINNET, CHAIN_ID_ETHEREUM_RINKEBY} from "@/constants/ChainIds";
 
 export default class FormaticConnector extends AbstractConnector {
 
     constructor({apiKey, chainId}) {
-        invariant(Object.keys(chainIdToNetwork).includes(chainId.toString()), `Unsupported chainId ${chainId}`)
+        invariant(Object.keys(CHAIN_ID_TO_NETWORK).includes(chainId.toString()), `Unsupported chainId ${chainId}`)
         super({supportedChainIds: [chainId]})
         this.name = 'Fortmatic';
         this.apiKey = apiKey
@@ -23,7 +17,7 @@ export default class FormaticConnector extends AbstractConnector {
             const Fortmatic = await import('fortmatic').then(m => m?.default ?? m)
             this.fortmatic = new Fortmatic(
                 this.apiKey,
-                this.chainId === 1 || this.chainId === 4 ? undefined : chainIdToNetwork[this.chainId]
+                this.chainId === CHAIN_ID_ETHEREUM_MAINNET || this.chainId === CHAIN_ID_ETHEREUM_RINKEBY ? undefined : CHAIN_ID_TO_NETWORK[this.chainId]
             )
         }
 

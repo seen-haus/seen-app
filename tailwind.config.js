@@ -33,7 +33,7 @@ module.exports = {
                 accent: "#FCD34D",
                 star: "#FFDD36",
                 opensea: "#3391E8",
-                'background-gray': '#F5F4F3',
+                'background-gray': '#F7F8FA',
                 'tag-nft': '#665BE8',
                 'tag-tangible': '#3391E8',
                 'hero-gray': '#262626',
@@ -46,10 +46,12 @@ module.exports = {
                 'newsletter': '#333333',
                 'grey-9': '#999999',
                 'topbar': '#DDDDDD',
+                'light-grey': '#8E98A0',
+                'black': '#130B27',
             },
             fontFamily: {
                 body: ['Inter', "sans-serif"],
-                title: ['Playfair Display', "serif"],
+                title: ['Roboto', "sans-serif"],
                 address: ['Courier', 'serif']
             },
             fontSize: {
@@ -62,6 +64,7 @@ module.exports = {
             },
             borderRadius: {
                 '2sm': '0.25rem', // 4px
+                '5sm': '0.625rem', // 10px
             },
             spacing: {
                 '1.5': '0.375rem', // 6px

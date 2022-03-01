@@ -1,27 +1,30 @@
 <template>
   <div class="py-3 relative pl-8 pl-md-0">
-    <button v-if="!account" class="cursor-pointer button primary flex-shrink-0" @click="openWalletModal">
-      <i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
-    </button>
-
-    <div @click="toggle" class="pr-4 md:pr-0">
-      <button v-if="account" class="cursor-pointer button primary flex items-center wallet">
-        <div class="profile-avatar wallet-button-avatar" :style="{ backgroundImage: `url(${userLocal?.image})` }">
-          <identicon :size="36" :address="account" v-if="!userLocal?.image"/>
-        </div>
-        <div class="ml-2 flex flex-col items-start">
-          <span class="block">{{ balanceFormatted ? balanceFormatted.substring(0, 8) : 'Fetching balance' }} ETH</span>
-          <span class="addressText" v-if="!userLocal?.username">{{ shortenAddress(account) }}</span>
-          <span class="usernameText" v-if="userLocal?.username">{{ userLocal.username }}</span>
-        </div>
-        <div class="mr-4 ml-4 ml-md-12">
-          <i class="fas fa-caret-down" v-if="!isOpen"></i>
-          <i class="fas fa-caret-up" v-if="isOpen"></i>
-        </div>
+    <div v-if="!account" class="wallet-button-container">
+      <button class="cursor-pointer button primary w-full flex-shrink-0 wallet" @click="openWalletModal"><i
+          class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
       </button>
     </div>
-    <OverlayPanel ref="op" appendTo="body" @hide="close" :showCloseIcon="false" id="overlay_panel" style="width: 280px"
-                  :breakpoints="{'960px': '75vw'}">
+
+    <div @click="toggle" class="pr-4 md:pr-0">
+      <div v-if="account" class="wallet-button-container">
+        <button class="cursor-pointer button primary flex items-center wallet">
+          <div class="profile-avatar wallet-button-avatar" :style="{ backgroundImage: `url(${user?.avatar_image})` }">
+            <identicon :size="32" :address="account" v-if="!user?.avatar_image"/>
+          </div>
+          <div class="ml-2 flex flex-col items-start disable-text-transform">
+            <span class="addressText" v-if="!user?.username">{{ shortenAddress(account) }}</span>
+            <span class="usernameText" v-if="user?.username">{{ user.username }}</span>
+            <span class="block balanceText">{{ balanceFormatted ? balanceFormatted.substring(0, 8) : 'Fetching balance' }} ETH</span>
+          </div>
+          <div class="mr-4 ml-4 ml-md-12">
+            <i class="fas fa-caret-down" v-if="!isOpen"></i>
+            <i class="fas fa-caret-up" v-if="isOpen"></i>
+          </div>
+        </button>
+      </div>
+    </div>
+    <OverlayPanel ref="op" appendTo="body" @hide="close" :showCloseIcon="false" id="overlay_panel" :breakpoints="{'960px': '75vw'}">
       <div class="dropdown-menu">
         <div class="arrow-up"></div>
         <div v-if="!isMobileMenu" class="py-6 px-8 bg-background-gray lg:rounded-t-lg">
@@ -68,7 +71,7 @@
             </button>
           </span>
           <div class="mx-8 h-0.5 bg-background-gray"></div>
-          <router-link :to="{ name: 'profile'}">
+          <router-link v-if="user?.username || account" :to="{ name: 'profileWithAddress', params: { userAddressOrUsername: user?.username || account }}">
             <button class="button dropdown-btn" @click="close">
               <i class="gray far fa-clone cursor-pointer mr-2" alt="SEEN"></i> My Collection
             </button>
@@ -85,6 +88,7 @@
 
 <script>
 import useWeb3 from "@/connectors/hooks"
+import useUser from "@/hooks/useUser";
 import {useStore} from "vuex"
 import Identicon from "@/components/Identicon/Identicon"
 import {shortenAddress} from "@/services/utils/index"
@@ -137,13 +141,13 @@ export default {
       }
     })
 
-    const userLocal = computed(() => store.getters['user/user']);
+    const { user, setUser } = useUser();
 
     let isOpen = ref(false);
     const openWalletModal = () => {
       op.value.hide();
       isOpen.value = false;
-      store.dispatch('application/openModal', 'WalletModal')
+      store.dispatch('application/openModal', 'WalletModalConnectOnly')
     };
     const openNotificationsModal = () => {
       op.value.hide();
@@ -152,7 +156,7 @@ export default {
     };
     const handleDisconnect = () => {
       close();
-      store.dispatch('user/setUser', null);
+      setUser(null);
       deactivate();
     };
 
@@ -215,7 +219,7 @@ export default {
       toggle,
       close,
       op,
-      userLocal,
+      user,
     }
   }
 }
@@ -237,19 +241,20 @@ export default {
 .wallet {
   padding: 0 .75rem !important;
 }
-
+.balanceText {
+  font-size: 13px;
+  margin-top: -.25rem;
+}
 .addressText {
   color: #b8ffe8;
   font-size: 13px;
   font-weight: 400;
-  margin-top: -.25rem;
-}
-.wallet-button-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 2rem;
+  // margin-top: .25rem;
 }
 .usernameText {
+  color: #b8ffe8;
+  font-size: 14px;
+  font-weight: 400;
   width: 100px;
   text-align: left;
   white-space: nowrap;
@@ -263,5 +268,17 @@ export default {
 
 .gray {
   color: #999999;
+}
+
+.wallet-button-avatar {
+  width: 34px;
+  height: 34px;
+  border: 1px solid white;
+  border-radius: 2rem;
+}
+.wallet-button-container {
+  @apply rounded-5sm;
+  padding: 1px;
+  background: linear-gradient(94.05deg, #11998e80 1.74%, #38ef7d80 100%);
 }
 </style>

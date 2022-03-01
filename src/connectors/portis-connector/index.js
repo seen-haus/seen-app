@@ -1,26 +1,7 @@
 import AbstractConnector from "@/connectors/abstract-connector";
 import invariant from 'tiny-invariant';
 import {isProduction} from "@/connectors/mode";
-
-const chainIdToNetwork = {
-    1: 'mainnet',
-    3: 'ropsten',
-    4: 'rinkeby',
-    5: 'goerli',
-    42: 'kovan',
-    100: 'xdai',
-    30: 'orchid',
-    31: 'orchidTestnet',
-    99: 'core',
-    77: 'sokol',
-    61: 'classic',
-    8: 'ubiq',
-    108: 'thundercore',
-    18: 'thundercoreTestnet',
-    163: 'lightstreams',
-    122: 'fuse',
-    15001: 'maticTestnet'
-}
+import {CHAIN_ID_TO_NETWORK} from "@/constants/ChainIds";
 
 const __DEV__ = !isProduction;
 
@@ -30,7 +11,7 @@ export default class PortisConnector extends AbstractConnector {
         const chainIds = networks.map((n) => (typeof n === 'number' ? n : Number(n.chainId)))
         super({supportedChainIds: chainIds})
         invariant(
-            chainIds.every((c) => !!chainIdToNetwork[c]),
+            chainIds.every((c) => !!CHAIN_ID_TO_NETWORK[c]),
             `One or more unsupported networks ${networks}`
         )
 
@@ -70,7 +51,7 @@ export default class PortisConnector extends AbstractConnector {
             const Portis = await import('@portis/web3').then(m => m?.default ?? m)
             this.portis = new Portis(
                 this.dAppId,
-                typeof this.networks[0] === 'number' ? chainIdToNetwork[this.networks[0]] : (this.networks[0]),
+                typeof this.networks[0] === 'number' ? CHAIN_ID_TO_NETWORK[this.networks[0]] : (this.networks[0]),
                 this.config
             )
         }
@@ -104,8 +85,8 @@ export default class PortisConnector extends AbstractConnector {
 
     async changeNetwork(newNetwork, isGasRelayEnabled) {
         if (typeof newNetwork === 'number') {
-            invariant(!!chainIdToNetwork[newNetwork], `Invalid chainId ${newNetwork}`)
-            this.portis.changeNetwork(chainIdToNetwork[newNetwork], isGasRelayEnabled)
+            invariant(!!CHAIN_ID_TO_NETWORK[newNetwork], `Invalid chainId ${newNetwork}`)
+            this.portis.changeNetwork(CHAIN_ID_TO_NETWORK[newNetwork], isGasRelayEnabled)
             this.emitUpdate({chainId: newNetwork})
         } else {
             this.portis.changeNetwork(newNetwork, isGasRelayEnabled)

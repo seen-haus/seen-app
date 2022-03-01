@@ -67,7 +67,6 @@
 <script>
 import { computed, reactive, watch, ref } from "vue";
 import { useMeta } from "vue-meta";
-import { useStore } from "vuex";
 
 import { LeaderboardService } from "@/services/apiService";
 import { UserService } from "@/services/apiService"
@@ -92,11 +91,6 @@ export default {
       users: [],
     });
 
-    const store = useStore();
-
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
-
     const extendedUserData = ref({});
 
     const isLoading = computed(() => state.isLoading);
@@ -104,7 +98,7 @@ export default {
 
     const extendedUsers = computed(() => [...state.users].map(v => {
         const ud = extendedUserData.value[v.wallet_address.toLowerCase()];
-        return {...v, username: ud && ud.username, image: ud && ud.image}
+        return {...v, username: ud && ud.username, avatar_image: ud && ud.avatar_image}
       })
     );
 
@@ -125,7 +119,7 @@ export default {
 
       UserService.getExtendedUserData(payload).then(res => {
         extendedUserData.value = res.data.reduce((p, v) => {
-          p[v.walletAddress.toLowerCase()] = {username: v.username, image: v.image};
+          p[v.walletAddress.toLowerCase()] = {username: v.username, avatar_image: v.avatar_image};
           return p;
         }, {});
       }).catch(e => {

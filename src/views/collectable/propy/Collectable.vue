@@ -71,7 +71,7 @@
           <div class="text-4xl font-title font-bold mt-14 mb-6">
             The NFT Creator Statement
           </div>
-          <artist-card class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
+          <artist-card class="shadow-md" fullSize :artist="artist" :artistStatement="artistStatement"/>
         </div>
 
         <div class="right-side col-span-5">
@@ -102,7 +102,7 @@
               @update-state="updateCollectableState"
           />
 
-          <div v-if="collectable.nft_contract_address && collectable.nft_token_id" class="text-3xl font-title font-bold text-center mb-6 mt-12">
+          <div v-if="collectable.nft_contract_address && collectable.nft_token_id" class="text-3xl font-title font-bold mb-6 mt-12">
             {{ isAuction ? "Recent bids" : "Recent buys" }}
           </div>
           <list-of-buyers v-if="collectable.nft_contract_address && collectable.nft_token_id" :list="events" :isAuction="isAuction"/>
@@ -223,7 +223,6 @@ import Faq from "@/views/collectable/components/FAQ.vue";
 import PartnersAndPress from "@/views/collectable/components/PartnersAndPress.vue";
 
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
-import useContractEvents from "@/hooks/useContractEvents";
 import {getEtherscanLink} from "@/services/utils";
 import GLightbox from 'glightbox';
 import 'glightbox/dist/css/glightbox.css';

@@ -17,8 +17,7 @@
 
 <script>
 import {computed} from 'vue'
-import {useStore} from "vuex";
-
+import useDarkMode from '@/hooks/useDarkMode';
 import useExchangeRate from '@/hooks/useExchangeRate.js';
 
 export default {
@@ -77,8 +76,7 @@ export default {
     },
   },
 setup(props) {
-    const store = useStore();
-    const darkMode = computed(() => store.getters['application/darkMode']);
+    const { darkMode } = useDarkMode();
 
     const { formatCurrency, convertEthToUSDAndFormat } = useExchangeRate();
     const formattedPrice = computed(() => {

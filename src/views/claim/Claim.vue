@@ -182,7 +182,6 @@
 import { Web3Provider } from "@ethersproject/providers";
 import { computed, ref, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useStore } from "vuex";
 
 import Container from "@/components/Container.vue";
 import { ClaimsService } from "@/services/apiService";
@@ -190,7 +189,7 @@ import { ClaimsService } from "@/services/apiService";
 import useWeb3 from "@/connectors/hooks";
 import useSigner from "@/hooks/useSigner";
 import { useClaimContract } from "@/hooks/useContract";
-import { useField, useForm, ValidationObserver } from "vee-validate";
+import { useField, useForm } from "vee-validate";
 import { useToast } from "primevue/usetoast";
 import { useMeta } from "vue-meta";
 import { countryList } from "@/connectors/constants";
@@ -205,11 +204,6 @@ export default {
     // TODO:
     // 1. add Title column
     // 2. test wiring
-
-    const store = useStore();
-
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
 
     const toast = useToast();
     const route = useRoute();

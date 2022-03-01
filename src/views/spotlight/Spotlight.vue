@@ -1,6 +1,6 @@
 <template>
   <div class="spotlight">
-    <container class="py-6 mb-52">
+    <container class="pb-6 mb-52">
       <fenced-title
         class="flex-grow mr-0 mb-2 self-stretch"
         color="fence-gray"
@@ -130,7 +130,6 @@
 
 <script>
 import { useMeta } from "vue-meta";
-import { useStore } from "vuex";
 
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
@@ -144,11 +143,6 @@ export default {
     const { meta } = useMeta({
       title: "Spotlight",
     });
-
-    const store = useStore();
-
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
   },
   data() {
     return {

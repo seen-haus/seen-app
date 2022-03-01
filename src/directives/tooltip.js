@@ -19,7 +19,9 @@ function createTooltip(el, bindings) {
                 el.classList.add('tooltip--active');
             }
         };
-        el.addEventListener('click', showTooltip);
+        if(!el.hasAttribute("tooltip-ignore-click") || el.getAttribute("tooltip-ignore-click") === "false") {
+            el.addEventListener('click', showTooltip);
+        }
         el.addEventListener('touchstart', showTooltip);
     }
 }

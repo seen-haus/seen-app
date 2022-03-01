@@ -6,14 +6,13 @@ export default {
                     {
                         title: 'Drops',
                         url: 'drops',
-                        icon: 'icon-fire.svg'
                     },
                     {
                         title: 'Creators',
                         url: 'artists'
                     },
                     {
-                        title: 'Stake',
+                        title: 'Staking',
                         url: 'stake',
                     },
                 ],
@@ -25,31 +24,15 @@ export default {
                 ],
                 desktopOnlyItems: [
                     {
-                        title: 'Gallery',
-                        url: [
-                            {
-                                title: 'Top Collectors',
-                                url: 'collectors'
-                            },
-                            {
-                                title: 'VR Gallery',
-                                url: 'https://www.cryptovoxels.com/play?coords=S@105W,125N'
-                            }
-                        ]
+                        title: 'Create',
+                        url: 'create',
                     },
+                ],
+                mobileOnlyItems: [
                     {
-                        title: 'Press',
-                        url: [
-                            {
-                                title: 'Podcasts',
-                                url: 'https://anchor.fm/seenhaus'
-                            },
-                            {
-                                title: 'Newsletters',
-                                url: 'https://seen-haus.medium.com/'
-                            }
-                        ]
-                    }
+                        title: 'Notifications',
+                        url: 'notifications'
+                    },
                 ]
         }
     }

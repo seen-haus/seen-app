@@ -27,7 +27,7 @@
             :src="drop.videoUrl"
             aspectRatio="56.25%"
             controls
-            class="overflow-hidden rounded-3xl flex-1"
+            class="overflow-hidden rounded-20px flex-1"
           />
         </div>
 
@@ -74,7 +74,7 @@
             :is-reserved="collectable && !isNaN(reservedId) && collectable.id === reservedId"
             :is-next-phase="collectable && nextPhaseIds && nextPhaseIds.indexOf(collectable.id) > -1"
             :collectable="collectable"
-            @click="collectable.id !== reservedId && navigateToCollectable(collectable.slug)"
+            @click="collectable.id !== reservedId && navigateToCollectable(collectable.slug, collectable.version)"
           />
         </template>
       </div>
@@ -108,7 +108,6 @@
 <script>
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { useStore } from "vuex";
 
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
@@ -237,12 +236,6 @@ export default {
     },
   },
   async setup(props) {
-
-    const store = useStore();
-
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
-
     const router = useRouter();
 
     const {data} = await ArtistService.show(props.drop.artistSlug);
@@ -251,7 +244,7 @@ export default {
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
     paginatedArtists.load();
 
-    const paginatedCollectables = useDropsWithPagination(null, props.drop.numberOfItems, {includeIsHiddenFromDropList: true, bundleChildId: props.drop.bundleChildId});
+    const paginatedCollectables = useDropsWithPagination(props.drop.numberOfItems, {includeIsHiddenFromDropList: true, bundleChildId: props.drop.bundleChildId});
     const listOfCollectables = computed(() => {
       let list = paginatedCollectables.listOfCollectables.value;
       return orderBy(list, 'id', "asc")
@@ -259,11 +252,18 @@ export default {
 
     paginatedCollectables.load();
 
-    const navigateToCollectable = function (slug) {
-      router.push({
-        name: "collectableAuction",
-        params: { slug: slug },
-      });
+    const navigateToCollectable = function (slug, version) {
+      if(version === 2) {
+        router.push({
+          name: "collectableDropV2",
+          params: { slug: slug },
+        });
+      } else if (version === 3) {
+        router.push({
+          name: "collectableDropV3",
+          params: { slug: slug },
+        });
+      }
     };
 
 

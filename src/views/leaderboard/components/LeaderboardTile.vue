@@ -8,14 +8,14 @@
         selected && !isInFirstThree,
       'bg-gray-200 border-gray-300': selected && isInFirstThree,
     }"
-    @click="$router.push({name: 'profileWithAddress', params: {userAddress: user.wallet_address}})"
+    @click="$router.push({name: 'profileWithAddress', params: {userAddressOrUsername: user.wallet_address}})"
   >
     <div
       class="flex-1 flex-col lg:flex-row text-left flex items-center relative"
     >
       <div class="relative">
         <icon
-          v-if="!user.image"
+          v-if="!user.avatar_image"
           :size="isInFirstThree ? 56 : 40"
           :wallet-address="user.wallet_address"
           class="rounded-full lg:mr-6"
@@ -23,10 +23,10 @@
           :style="{ 'min-width': isInFirstThree ? '56px' : '40px' }"
         />
         <div
-          v-if="user.image"
+          v-if="user.avatar_image"
           :class="isInFirstThree ? 'leaderboard-img-big my-6' : 'leaderboard-img-small my-4'"
           class="profile-avatar leaderboard-img rounded-full lg:mr-6 my-4"
-          :style="{ backgroundImage: `url(${user?.image})` }"></div>
+          :style="{ backgroundImage: `url(${user?.avatar_image})` }"></div>
 
         <i
           v-if="isInFirstThree"
@@ -114,7 +114,7 @@ export default {
       return null;
     },
     image: function() {
-      return this.user.image;
+      return this.user.avatar_image;
     }
   },
 };

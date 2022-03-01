@@ -4,7 +4,7 @@
 
 <script>
 import useWeb3 from "@/connectors/hooks"
-import Jazzicon from 'jazzicon'
+import Jazzicon from '@metamask/jazzicon'
 import {ref, watchEffect, computed} from 'vue'
 
 export default {

@@ -1,123 +1,211 @@
 <template>
-  <div class="bg-black text-white pt-12 pb-6 lg:pb-4">
+  <div class="footer-background text-black pt-6 pb-6">
     <container>
-      <div class="newsletter rounded-lg py-4 bg-newsletter px-8 lg:flex align-center">
-        <div class="w-full lg:w-1/2 py-4 inline-flex flex-col justify-center">
-          <p class="text-xl mb-1">Be the first to to hear about upcoming drops!</p>
+      <div class="grid-cols-1 lg:grid-cols-2 lg:grid mt-12 mb-10">
+        <div class="w-full inline-flex flex-col">
+          <p class="text-xl font-bold mb-1">Be the first to to hear about upcoming drops!</p>
           <p class="color-white opacity-50 text-md">Join our newsletter TODAY!</p>
+          <div class="w-full py-4 md:inline-flex">
+            <input type="text" class="mr-3 text-black w-full h-12 text-md pl-4 mb-2 rounded inline-flex flex-grow" placeholder="Your e-mail">
+            <gradient-outline-button class="footer-button"></gradient-outline-button>
+          </div>
         </div>
-        <div class="w-full lg:w-1/2 py-4 md:inline-flex">
-          <input type="text" class="mr-3 text-black w-full h-13 text-md pl-4 rounded inline-flex flex-grow" placeholder="Your e-mail">
-          <button class="cursor-pointer primary button mt-3 md:mt-0">
-            Join&nbsp;Newsletter
-          </button>
-        </div>
+          <div class="links lg:mb-0 sm:mt-12">
+            <div class="first-link-column">
+              <p class="text-grey-9 font-bold text-xl mb-3">Offerings</p>
+              <div class="font-bold text-md leading-loose">
+                <router-link :to="{ name: 'drops'}" class="block">
+                  <span class="font-bold">Drops</span>
+                </router-link>
+                <router-link :to="{ name: 'stake'}" class="block">
+                  <span class="font-bold">Stake</span>
+                </router-link>
+                <router-link :to="{ name: 'artists'}" class="block">
+                  <span class="font-bold">Artists</span>
+                </router-link>
+              </div>
+            </div>
+            <div class="inner-link-column">
+              <p class="text-grey-9 font-bold text-xl mb-3">Support</p>
+              <div class="font-bold text-md leading-loose">
+                <router-link v-if="user?.username || account" :to="{ name: 'profileWithAddress', params: { userAddressOrUsername: user?.username || account }}" class="block">
+                  Account
+                </router-link>
+                <router-link :to="{ name: 'about'}" class="block">
+                  About Us
+                </router-link>
+                <router-link :to="{ name: 'team'}" class="block">
+                  Team
+                </router-link>
+                <a href="https://seen-haus.medium.com" class="block" target="_blank">Blog</a>
+                <router-link :to="{ name: 'faq'}" class="block">
+                  FAQs
+                </router-link>
+                <!-- <router-link :to="{ name: 'privacy'}" class="block">
+                  Privacy
+                </router-link> -->
+              </div>
+            </div>
+            <div class="last-link-column">
+              <p class="text-grey-9 font-bold text-xl mb-3">Community</p>
+              <div>
+                <div class="flex">
+                  <div class="icon text-grey-9">
+                    <i class="fab fa-telegram text-lg"></i>
+                  </div>
+                  <div class="font-bold text-md ml-2 leading-loose">
+                    <a href="https://t.me/seenhaus"
+                      target="_blank"
+                      class="block">
+                      Telegram
+                    </a>
+                  </div>
+                </div>
+                <div class="flex">
+                  <div class="icon text-grey-9">
+                    <i class="fab fa-discord text-lg"></i>
+                  </div>
+                  <div class="font-bold text-md ml-2 leading-loose">
+                    <a href="https://discord.com/invite/dad8J4f"
+                      target="_blank"
+                      class="block">
+                      Discord
+                    </a>
+                  </div>
+                </div>
+                <div class="flex">
+                  <div class="icon text-grey-9">
+                    <i class="fab fa-instagram-square text-lg"></i>
+                  </div>
+                  <div class="font-bold text-md ml-2 leading-loose">
+                    <a href="https://www.instagram.com/seen.haus/"
+                      target="_blank"
+                      class="block">
+                      Instagram
+                    </a>
+                  </div>
+                </div>
+                <div class="flex">
+                  <div class="icon text-grey-9">
+                    <i class="fab fa-twitter text-lg"></i>
+                  </div>
+                  <div class="font-bold text-md ml-2 leading-loose">
+                    <a href="https://twitter.com/seen_haus"
+                      target="_blank"
+                      class="block">
+                      Twitter
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
       </div>
-      <div class="grid-cols-1 lg:grid-cols-2 grid mt-12 mb-10">
-        <div class="about sm:w-88">
-          <div id="logo" class="flex items-center mb-6">
-            <img src="@/assets/images/seen-white.svg"  class="mr-4 footer-logo" alt="seen logo">
-          </div>
-          <p class="opacity-70 text-md mb-3">SEEN HAUS is the innovative auction house of the future, merging the physical and digital worlds of art built upon blockchain technology. </p>
-          <p class="opacity-70 text-md">Our platform offers a curated NFT marketplace, hosting creators and artists whilst showcasing exclusive and unique artworks to collectors.</p>
-        </div>
-        <div class="links grid-cols-3 grid row-start-1 lg:row-auto mb-12 lg:mb-0">
-          <div>
-            <p class="text-grey-9 font-bold text-xl mb-6">Offerings</p>
-            <div class="font-bold text-md leading-loose">
-              <router-link :to="{ name: 'drops'}" class="block">
-                <span class="font-bold">Drops</span>
-              </router-link>
-              <router-link :to="{ name: 'stake'}" class="block">
-                <span class="font-bold">Stake</span>
-              </router-link>
-              <router-link :to="{ name: 'artists'}" class="block">
-                <span class="font-bold">Artists</span>
-              </router-link>
-            </div>
-          </div>
-          <div>
-            <p class="text-grey-9 font-bold text-xl mb-6">Support</p>
-            <div class="font-bold text-md leading-loose">
-              <router-link :to="{ name: 'profile'}" class="block">
-                Account
-              </router-link>
-              <router-link :to="{ name: 'about'}" class="block">
-                About Us
-              </router-link>
-              <router-link :to="{ name: 'team'}" class="block">
-                Team
-              </router-link>
-              <a href="https://seen-haus.medium.com" class="block" target="_blank">Blog</a>
-              <router-link :to="{ name: 'faq'}" class="block">
-                FAQs
-              </router-link>
-            </div>
-          </div>
-          <div>
-            <p class="text-grey-9 font-bold text-xl mb-6">Community</p>
-            <div class="font-bold text-md leading-loose">
-              <a href="https://t.me/seenhaus"
-                target="_blank"
-                class="block">
-                Telegram
-              </a>
-              <a href="https://discord.com/invite/dad8J4f"
-                target="_blank"
-                class="block">
-                Discord
-              </a>
-              <a href="https://www.instagram.com/seen.haus/"
-                target="_blank"
-                class="block">
-                Instagram
-              </a>
-              <a href="https://twitter.com/seen_haus"
-                target="_blank"
-                class="block">
-                Twitter
-              </a>
-            </div>
-          </div>
+    </container>
+  </div>
+  <div class="footer-background text-white footer-border py-4">
+    <container>
+      <div class="flex justify-between">
+        <p class="text-grey-9 text-sm">© seen.haus 2021, All rights reserved.</p>
+        <div>
+          <!--           <a href="#"-->
+          <!--            target="_blank"-->
+          <!--            class="text-grey-9 text-sm mr-4 inline-block">-->
+          <!--            Privacy Policy-->
+          <!--          </a>-->
+          <!--          <a href="#"-->
+          <!--            target="_blank"-->
+          <!--            class="text-grey-9 text-sm inline-block">-->
+          <!--            Terms of Use-->
+          <!--          </a>-->
         </div>
       </div>
     </container>
   </div>
-   <div class="bg-black text-white footer-border py-4">
-    <container>
-      <div class="flex justify-between">
-        <p class="text-grey-9 text-sm">© Seen.haus 2021, All rights reserved.</p>
-        <div>
-<!--           <a href="#"-->
-<!--            target="_blank"-->
-<!--            class="text-grey-9 text-sm mr-4 inline-block">-->
-<!--            Privacy Policy-->
-<!--          </a>-->
-<!--          <a href="#"-->
-<!--            target="_blank"-->
-<!--            class="text-grey-9 text-sm inline-block">-->
-<!--            Terms of Use-->
-<!--          </a>-->
-        </div>
-      </div>
-    </container>
-   </div>
 </template>
 
 <script>
 import Container from "@/components/Container";
+import GradientOutlineButton from "@/components/GradientOutlineButton";
+import useUser from "@/hooks/useUser";
+import useWeb3 from "@/connectors/hooks";
 
 export default {
   name: 'AppFooter',
-  components: {Container},
+  components: {
+    Container,
+    GradientOutlineButton
+  },
+  setup() {
+    const { user } = useUser();
+    const { account } = useWeb3();
+
+    return {
+      user,
+      account,
+    }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-.footer-border {
-  border-top: 2px solid rgba(255,255,255,.2);
+
+.footer-background {
+  background-color: #EBEEF2;
 }
+
+.footer-border {
+  border-top: 2px solid #DFE4E9;
+}
+
+.links {
+  @screen sm {
+    margin-top: 0px;
+    display: flex;
+    justify-content: space-between;
+  }
+  @screen md {
+    margin-top: 10px;
+  }
+  @screen lg {
+    @apply pl-12;
+    margin-top: 0px;
+  }
+  @screen xl {
+    @apply pl-24;
+  }
+}
+.first-link-column {
+  @apply mt-4 mb-3;
+  @screen sm {
+    @apply mt-0 mb-0;
+  }
+}
+.inner-link-column {
+  @apply mt-6 mb-3;
+  @screen sm {
+    @apply mt-0 mb-0;
+  }
+}
+.last-link-column {
+  @apply mt-6;
+  @screen sm {
+    @apply mt-0;
+  }
+}
+
+.footer-button {
+  @screen md {
+    white-space: nowrap;
+  }
+}
+
 .footer-logo {
   height: 39px;
+}
+
+.icon {
+  width: 23px;
+  text-align: center;
 }
 </style>

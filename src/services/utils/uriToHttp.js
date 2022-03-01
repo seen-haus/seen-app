@@ -12,7 +12,7 @@ export default function uriToHttp(uri) {
         case 'ipfs':
             // eslint-disable-next-line no-case-declarations
             let hash = uri.match(/^ipfs:(\/\/)?(.*)$/i)?.[2]
-            return [`https://cloudflare-ipfs.com/ipfs/${hash}/`, `https://ipfs.io/ipfs/${hash}/`]
+            return [`https://cloudflare-ipfs.com/ipfs/${hash}/`, `https://ipfs.io/ipfs/${hash}/`, `https://seenhaus.mypinata.cloud/ipfs/${hash}/`]
         case 'ipns':
             // eslint-disable-next-line no-case-declarations
             let name = uri.match(/^ipns:(\/\/)?(.*)$/i)?.[2]

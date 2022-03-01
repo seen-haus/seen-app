@@ -49,7 +49,7 @@
 
     </template>
 
-    <wallet-button :isMobileMenu="true" class="mx-auto block pl-2 sm:pl-8"/>
+    <wallet-button class="mx-auto block pl-2 pr-2 sm:pl-4 sm:pr-4 md:w-full"/>
   </nav>
 </template>
 

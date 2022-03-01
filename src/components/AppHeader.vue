@@ -4,15 +4,15 @@
     <div :class="darkMode ? [headerClasses, 'text-white', 'dark-mode-section'].join(' ') : [headerClasses, 'transparent-border-section'].join(' ')">
       <container>
         <header>
-          <div class="flex items-center flex-wrap justify-between">
+          <div class="flex items-center flex-wrap justify-between header-size">
             <router-link to="/">
               <div id="logo" class="flex items-center" style="width:100%; max-width: 208px">
-                <img :class="!darkMode && 'hidden'" src="@/assets/images/seen-white.svg" class="mr-4" alt="">
-                <img :class="darkMode && 'hidden'" src="@/assets/images/seen-black.svg" class="mr-4" alt="">
+                <img :class="!darkMode && 'hidden'" src="@/assets/images/seen-logo-white.svg" class="mr-4" alt="">
+                <img :class="darkMode && 'hidden'" src="@/assets/images/seen-logo-black.svg" class="mr-4" alt="">
               </div>
             </router-link>
             <div class="items-center hidden lg:flex lg:flex-grow justify-between">
-              <desktop-menu class="flex justify-center flex-1"/>
+              <desktop-menu class="flex justify-center flex-1 header-desktop flex-center-vertical"/>
               <wallet-button/>
             </div>
             <nav class="lg:hidden">
@@ -31,22 +31,21 @@
 </template>
 
 <script>
-import { computed } from "vue";
 import {useStore} from "vuex";
 
 import DesktopMenu from "@/components/Menu/DesktopMenu";
 import WalletButton from "@/components/WalletButton";
 import Container from "@/components/Container";
 import TopHeaderBar from "@/components/TopHeaderBar";
+import useDarkMode from "@/hooks/useDarkMode";
 
 export default {
   name: 'AppHeader',
   components: {TopHeaderBar, Container, WalletButton, DesktopMenu},
   setup() {
     const store = useStore();
-    const darkMode = computed(() => {
-      return store.getters['application/darkMode']
-    });
+    const { darkMode } = useDarkMode();
+
     return {
       openMobileMenu: () => store.commit('application/OPEN_MOBILE_MENU'),
       darkMode
@@ -54,7 +53,7 @@ export default {
   },
   computed: {
     headerClasses() {
-      return this.$route.fullPath.match('/profile') ? 'pt-10 pb-14 bg-background-gray' : 'py-10';
+      return this.$route.fullPath.match('/profile') ? 'header-borders' : 'header-borders';
     }
   }
 }
@@ -63,16 +62,26 @@ export default {
 <style lang="scss" scoped>
 #logo img {
   width: auto;
-  max-width: 180px;
-  height: 39px;
+  max-width: 133px;
+}
+
+.header-borders {
+  border-top: 1px solid #DFE4E9;
+  border-bottom: 1px solid #DFE4E9;
 }
 
 @screen lg {
   #logo img {
     width: auto;
-    max-width: 208px;
-    height: 39px;
+    max-width: 133px;
   }
 }
 
+.header-size {
+  height: 89px;
+}
+
+.header-desktop {
+  height: 88px;
+}
 </style>

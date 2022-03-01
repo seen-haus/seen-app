@@ -1,14 +1,22 @@
 <template>
+  <div class="banner-image-container-account-modal absolute">
+    <div class="absolute clear-image-icon reset-banner-icon" v-if="temporaryBannerImageUrl" @click="resetTemporaryBannerImage"><i class="fas fa-undo"></i></div>
+    <img class="banner-image-account-modal" :style="{ backgroundImage: `url(${temporaryBannerImageUrl ? temporaryBannerImageUrl : user?.banner_image})` }">
+    <input type="file" id="profileBannerUpload" class="hidden" @change="uploadBannerImage" accept="image/*">
+  </div>
+  <div class="absolute edit-banner-button">
+    <button class="text-sm mb-8 text-grey-9" @click="openBannerUploadWindow"><i class="fas fa-pencil-alt"></i> Banner</button>
+  </div>
   <div class="-mb-8 pt-9 relative">
     <div class="flex justify-center text-grey-9">
       <div class="avatar absolute">
-        <div class="absolute clear-image-icon" v-if="temporaryImageUrl" @click="resetTemporaryImage"><i class="fas fa-times"></i></div>
-        <div class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5 profile-avatar" :style="{ backgroundImage: `url(${temporaryImageUrl ? temporaryImageUrl : user?.image})` }">
-          <img src="@/assets/icons/avatar.svg" class="h-16 cursor-pointer" alt="SEEN" v-if="!user?.image && !temporaryImageUrl">
-          <input type="file" id="profileAvatarUpload" class="hidden" @change="uploadImage" accept="image/*">
+        <div class="absolute clear-image-icon" v-if="temporaryAvatarImageUrl" @click="resetTemporaryAvatarImage"><i class="fas fa-undo"></i></div>
+        <div class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5 profile-avatar" :style="{ backgroundImage: `url(${temporaryAvatarImageUrl ? temporaryAvatarImageUrl : user?.avatar_image})` }">
+          <img src="@/assets/icons/avatar.svg" class="h-16 cursor-pointer" alt="SEEN" v-if="!user?.avatar_image && !temporaryAvatarImageUrl">
+          <input type="file" id="profileAvatarUpload" class="hidden" @change="uploadAvatarImage" accept="image/*">
         </div>
       </div>
-      <button class="text-sm mb-8" @click="openUploadWindow"><i class="fas fa-pencil-alt"></i> Change Avatar</button>
+      <button class="text-sm mb-8" @click="openAvatarUploadWindow"><i class="fas fa-pencil-alt"></i> Avatar</button>
     </div>
     <div class="block md:flex justify-between items-center mb-4 my-8">
       <div>
@@ -39,6 +47,11 @@
           <label for="profile-twitter">Twitter</label>
           <input type="text" id="profile-twitter" class="w-full outlined-input mt-2" v-model="twitterField.value" />
           <span class="error-notice">{{ twitterField.errors[0] }}</span>
+        </div>
+        <div class="fc mb-4">
+          <label for="profile-instagram">Instagram</label>
+          <input type="text" id="profile-instagram" class="w-full outlined-input mt-2" v-model="instagramField.value" />
+          <span class="error-notice">{{ instagramField.errors[0] }}</span>
         </div>
         <div class="fc mb-4">
           <label for="profile-website">Website</label>
@@ -76,18 +89,19 @@
 <script>
 
 import useWeb3 from "@/connectors/hooks";
+import useUser from "@/hooks/useUser";
 import {SUPPORTED_WALLETS} from "@/connectors/constants";
 import Identicon from "@/components/Identicon/Identicon";
 import {shortenAddress, getEtherscanLink, clean} from "@/services/utils/index";
 import CopyHelper from "@/components/CopyHelper/CopyHelper";
 import {useStore} from "vuex";
 
-import {reactive, computed, ref} from 'vue';
+import {reactive, ref} from 'vue';
 import { useField, useForm } from "vee-validate";
 import { UserService } from "@/services/apiService"
 import useSigner from "@/hooks/useSigner";
 import { useToast } from "primevue/usetoast";
-import {twitterRegx, isValidHttpUrl} from '@/connectors/constants'
+import {twitterRegx, instagramRegx, isValidHttpUrl} from '@/connectors/constants'
 
 export default {
   name: "AccountView",
@@ -95,9 +109,10 @@ export default {
   setup(props, {emit}) {
     const {chainId, account, connector} = useWeb3();
     const store = useStore()
-    const user = computed(() => store.getters['user/user']);
+    const { user, setUser } = useUser();
     const toast = useToast();
-    const temporaryImageUrl = ref('');
+    const temporaryAvatarImageUrl = ref('');
+    const temporaryBannerImageUrl = ref('');
 
     const {ethereum} = window;
     const isMetaMask = !!(ethereum && ethereum.isMetaMask)
@@ -111,20 +126,25 @@ export default {
       initialValues: {
         username: (user.value && user.value.username) ? user.value.username : "",
         twitter: (user.value && user.value.socials) ? user.value.socials.twitter : "",
+        instagram: (user.value && user.value.socials) ? user.value.socials.instagram : "",
         website: (user.value && user.value.socials) ? user.value.socials.website : "",
         description: (user.value && user.value.description) ? user.value.description : "",
       },
     });
 
-    const resetTemporaryImage = () => {
-      temporaryImageUrl.value = '';
+    const resetTemporaryAvatarImage = () => {
+      temporaryAvatarImageUrl.value = '';
     }
 
-    const uploadImage = (event) => {
+    const resetTemporaryBannerImage = () => {
+      temporaryBannerImageUrl.value = '';
+    }
+
+    const uploadAvatarImage = (event) => {
       const fd = new FormData();
       const file = event.target.files[0];
-      if (file && file.size > 500000) {
-        toast.add({severity:'error', summary:'Error', detail:'Profile image must be less than 0.5 MB.', life: 3000});
+      if (file && file.size > 1500000) {
+        toast.add({severity:'error', summary:'Error', detail:'Profile image must be less than 1.5 MB.', life: 3000});
         return;
       }
       fd.append('files', file);
@@ -132,8 +152,8 @@ export default {
       UserService.avatar(fd)
         .then(res => {
           const imageSrc = res.data.url;
-          temporaryImageUrl.value = imageSrc;
-          form.setFieldValue('image', imageSrc);
+          temporaryAvatarImageUrl.value = imageSrc;
+          form.setFieldValue('avatar_image', imageSrc);
         })
         .catch(e => {
           console.error(e)
@@ -141,8 +161,33 @@ export default {
       });
     }
 
-    const openUploadWindow = () => {
+    const uploadBannerImage = (event) => {
+      const fd = new FormData();
+      const file = event.target.files[0];
+      if (file && file.size > 1500000) {
+        toast.add({severity:'error', summary:'Error', detail:'Profile image must be less than 1.5 MB.', life: 3000});
+        return;
+      }
+      fd.append('files', file);
+
+      UserService.banner(fd)
+        .then(res => {
+          const imageSrc = res.data.url;
+          temporaryBannerImageUrl.value = imageSrc;
+          form.setFieldValue('banner_image', imageSrc);
+        })
+        .catch(e => {
+          console.error(e)
+          toast.add({severity:'error', summary:'Error', detail:'Profile avatar upload failed.', life: 3000});
+      });
+    }
+
+    const openAvatarUploadWindow = () => {
       document.getElementById('profileAvatarUpload').click();
+    }
+
+    const openBannerUploadWindow = () => {
+      document.getElementById('profileBannerUpload').click();
     }
 
     const usernameField = reactive(useField("username", "required"));
@@ -151,11 +196,17 @@ export default {
       if (!url) return true;
       return (res && res[1]) ? true : 'This is not a valid twitter address';
     }));
+    const instagramField = reactive(useField("instagram", url => {
+      const res = instagramRegx.exec(url);
+      if (!url) return true;
+      return (res && res[1]) ? true : 'This is not a valid instagram username';
+    }));
     const websiteField = reactive(useField("website", isValidHttpUrl));
     const descriptionField = reactive(useField("description"));
 
     const onSubmit = form.handleSubmit(async (values) => {
-      values.image = temporaryImageUrl.value;
+      values.avatar_image = temporaryAvatarImageUrl.value;
+      values.banner_image = temporaryBannerImageUrl.value;
       const signer = useSigner();
       const msg = `I would like to update my account preferences for ${account.value}.`
 
@@ -172,10 +223,10 @@ export default {
         values = clean(values);
         UserService.update(account.value, {...values, sig})
           .then(res => {
-            store.dispatch('user/setUser', res.data.user);
+            setUser(res.data.user);
             toast.add({severity:'info', summary:'Success', detail:'Your profile has been updated.', life: 3000});
             store.dispatch('application/closeModal');
-            temporaryImageUrl.value = '';
+            temporaryAvatarImageUrl.value = '';
           })
           .catch(e => {
             console.error(e)
@@ -196,14 +247,19 @@ export default {
       getEtherscanLink,
       usernameField,
       twitterField,
+      instagramField,
       websiteField,
       descriptionField,
       onSubmit,
-      uploadImage,
-      openUploadWindow,
+      uploadAvatarImage,
+      uploadBannerImage,
+      openAvatarUploadWindow,
+      openBannerUploadWindow,
       user,
-      temporaryImageUrl,
-      resetTemporaryImage,
+      temporaryAvatarImageUrl,
+      temporaryBannerImageUrl,
+      resetTemporaryAvatarImage,
+      resetTemporaryBannerImage,
     }
   }
 }
@@ -236,5 +292,27 @@ export default {
   justify-content: center;
   font-size: .75rem;
   cursor: pointer;
+  padding-left: 2px;
+  padding-top: 1px;
+}
+.reset-banner-icon {
+  top: calc(100% - 30px);
+}
+.banner-image-container-account-modal {
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 165px;
+  overflow: hidden;
+}
+.banner-image-account-modal {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+.edit-banner-button {
+  right: 15px;
+  margin-top: -20px;
 }
 </style>

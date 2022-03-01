@@ -4,19 +4,17 @@
       <img
         :src="teamMember.avatar"
         :alt="teamMember.name"
-        class="rounded-full w-25 h-25 flex-shrink-0 mx-8"
+        class="rounded-full w-25 h-25 flex-shrink-0 mr-6"
       />
 
       <div class="flex flex-col items-start">
-        <div class="text-title font-bold text-xl md:text-2xl ellipsis mb-1">
+        <div class="text-title font-bold text-xl md:text-2xl ellipsis mb-2">
           {{ teamMember.name }}
         </div>
 
-        <tag class="bg-fence-light text-gray-400 font-semibold text-11px mb-2"
+        <tag class="bg-fence-light text-gray-400 font-semibold text-11px mb-2 pl-3 pr-3"
           >{{ teamMember.title.toUpperCase() }}
         </tag>
-
-        <div class="h-0.5 mt-4 mb-4 w-full rounded-full bg-gray-200"></div>
 
         <div
           class="flex flex-wrap justify-start items-center text-xs text-gray-400"

@@ -1,24 +1,27 @@
 <template>
   <div>
     <container class="section-featured-artists pb-24">
-      <div class="flex items-center py-6 flex-col lg:flex-row">
-        <fenced-title
-          class="flex-grow mr-0 mb-2 self-stretch"
-          color="fence-gray"
-          textAlign="center"
-          :closed="true"
-          >Creators
-        </fenced-title>
+      <div class="flex items-center pb-6 flex-col lg:flex-row">
+        <div class="abstract-circles abstract-circles-creators">
+          <img src="@/assets/images/abstract-circles.svg" alt="">
+        </div>
+        <unfenced-title
+          class="text-black hidden lg:flex pb-4 pt-12"
+          color="fence-dark"
+          text-align="left"
+        >
+          Creators
+        </unfenced-title>
       </div>
-      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
         <template
           v-for="artist in listOfArtists"
           :key="artist && artist.id"
         >
-          <artist-card v-if="artist != null" :artist="artist" class="cursor-pointer"/>
+          <artist-card :autoMargins="true" v-if="artist != null" :artist="artist" class="cursor-pointer"/>
           <div
             v-else
-            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
+            class="creator-placeholder placeholder-card overflow-hidden rounded-2xl bg-gray-100"
             :style="{ 'padding-bottom': '100%' }"
           ></div>
         </template>
@@ -32,13 +35,14 @@
 
 <script>
 import { computed } from "vue";
-import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
 
+import useDarkMode from "@/hooks/useDarkMode";
 import ArtistCard from "@/components/ArtistCard.vue";
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
+import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
 
 export default {
@@ -46,14 +50,10 @@ export default {
   components: {
     Container,
     FencedTitle,
+    UnfencedTitle,
     ArtistCard,
   },
   setup() {
-    const store = useStore();
-    
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
-
     const { meta } = useMeta({
       title: "Creators",
     });
@@ -61,7 +61,7 @@ export default {
     const paginatedArtists = useArtistsWithPagination(48);
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
     const hasMore = computed(() => paginatedArtists.hasMore.value);
-    const darkMode = computed(() => store.getters['application/darkMode']);
+    const { darkMode } = useDarkMode();
 
     paginatedArtists.load();
 
@@ -71,7 +71,7 @@ export default {
 
     const navigateToArtist = (artistSlug) => {
         router.push({
-            name: "artistProfile",
+            name: "legacyArtistProfile",
             params: { artistSlug: artistSlug },
         });
     };
@@ -87,5 +87,11 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  .abstract-circles-creators {
+    top: 100px;
+    @screen lg {
+      right: 35px;
+    }
+  }
 </style>

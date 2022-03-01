@@ -5,7 +5,6 @@ import { computed, reactive } from "vue";
 
 
 export default function useDropsWithPagination(
-  artistId = null,
   perPage = 12,
   initAdditionalFiltrationOptions = {}
 ) {
@@ -15,7 +14,6 @@ export default function useDropsWithPagination(
     page: 1,
     hasMore: false,
     filter: PURCHASE_TYPE.BOTH,
-    artistId,
     additionalFiltrationOptions: initAdditionalFiltrationOptions
   });
 
@@ -39,11 +37,14 @@ export default function useDropsWithPagination(
     };
 
     const filtrationOptions = { purchaseType: state.filter };
-    if (artistId != null) {
-      filtrationOptions.artistId = artistId;
-    }
 
     if(state.additionalFiltrationOptions) {
+      if (state.additionalFiltrationOptions.artistId != null) {
+        filtrationOptions.artistId = state.additionalFiltrationOptions.artistId;
+      }
+      if (state.additionalFiltrationOptions.userId != null) {
+        filtrationOptions.userId = state.additionalFiltrationOptions.userId;
+      }
       if (state.additionalFiltrationOptions?.includeIsHiddenFromDropList) {
         filtrationOptions.includeIsHiddenFromDropList = true;
       }
@@ -55,6 +56,21 @@ export default function useDropsWithPagination(
       }
       if(state.additionalFiltrationOptions?.excludeEnded) {
         filtrationOptions.excludeEnded = state.additionalFiltrationOptions.excludeEnded;
+      }
+      if(state.additionalFiltrationOptions?.excludeLive) {
+        filtrationOptions.excludeLive = state.additionalFiltrationOptions.excludeLive;
+      }
+      if(state.additionalFiltrationOptions?.excludeComingSoon) {
+        filtrationOptions.excludeComingSoon = state.additionalFiltrationOptions.excludeComingSoon;
+      }
+      if(state.additionalFiltrationOptions?.awaitingReserveBid) {
+        filtrationOptions.awaitingReserveBid = state.additionalFiltrationOptions.awaitingReserveBid;
+      }
+      if(state.additionalFiltrationOptions?.soldOut) {
+        filtrationOptions.soldOut = state.additionalFiltrationOptions.soldOut;
+      }
+      if(state.additionalFiltrationOptions?.marketType) {
+        filtrationOptions.marketType = state.additionalFiltrationOptions.marketType;
       }
     }
 
@@ -94,6 +110,8 @@ export default function useDropsWithPagination(
     //   mockData = [mockAuction];
     // }
 
+    console.log({data})
+
     state.items = data;
     state.hasMore =
       metadata.pagination.totalPages > state.page;
@@ -118,10 +136,13 @@ export default function useDropsWithPagination(
     ];
 
     const filtrationOptions = { purchaseType: state.filter };
-    if (artistId != null) {
-      filtrationOptions.artistId = artistId;
-    }
     if(state.additionalFiltrationOptions) {
+      if (state.additionalFiltrationOptions.artistId != null) {
+        filtrationOptions.artistId = state.additionalFiltrationOptions.artistId;
+      }
+      if (state.additionalFiltrationOptions.userId != null) {
+        filtrationOptions.userId = state.additionalFiltrationOptions.userId;
+      }
       if (state.additionalFiltrationOptions?.includeIsHiddenFromDropList) {
         filtrationOptions.includeIsHiddenFromDropList = true;
       }
@@ -133,6 +154,21 @@ export default function useDropsWithPagination(
       }
       if(state.additionalFiltrationOptions?.excludeEnded) {
         filtrationOptions.excludeEnded = state.additionalFiltrationOptions.excludeEnded;
+      }
+      if(state.additionalFiltrationOptions?.excludeLive) {
+        filtrationOptions.excludeLive = state.additionalFiltrationOptions.excludeLive;
+      }
+      if(state.additionalFiltrationOptions?.excludeComingSoon) {
+        filtrationOptions.excludeComingSoon = state.additionalFiltrationOptions.excludeComingSoon;
+      }
+      if(state.additionalFiltrationOptions?.awaitingReserveBid) {
+        filtrationOptions.awaitingReserveBid = state.additionalFiltrationOptions.awaitingReserveBid;
+      }
+      if(state.additionalFiltrationOptions?.soldOut) {
+        filtrationOptions.soldOut = state.additionalFiltrationOptions.soldOut;
+      }
+      if(state.additionalFiltrationOptions?.marketType) {
+        filtrationOptions.marketType = state.additionalFiltrationOptions.marketType;
       }
     }
 
@@ -153,7 +189,7 @@ export default function useDropsWithPagination(
 
   function filter(filterAuctions, filterEditions, additionalFiltrationOptions) {
     state.filter = getFilter(filterAuctions, filterEditions);
-    state.additionalFiltrationOptions = {...state.additionalFiltrationOptions, ...additionalFiltrationOptions};
+    state.additionalFiltrationOptions = {...additionalFiltrationOptions};
     load();
   }
 

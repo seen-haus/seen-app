@@ -40,6 +40,7 @@
 
         <div class="status flex justify-center items-center mb-5">
           <user-badge
+                v-if="artist && artist.avatar"
                 type="light"
                 :url="artist.avatar"
                 :username="pillOverride ? pillOverride : artist.name"
@@ -106,14 +107,16 @@
             </div>
           </template>
 
-          <div class="text-4xl font-title font-bold mt-14 mb-6" :class="darkMode && 'dark-mode-text'">
+          <div v-if="artist" class="text-4xl font-title font-bold mt-14 mb-6" :class="darkMode && 'dark-mode-text'">
             Artist statement
           </div>
-          <artist-card class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
+          <artist-card v-if="artist" fullSize class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
         </div>
 
         <div class="right-side col-span-5">
           <social-sharing></social-sharing>
+          <br/>
+          <br/>
           <bid-card
               :status="liveStatus"
               :collectable="collectable"
@@ -144,7 +147,7 @@
               @update-state="updateCollectableState"
           />
 
-          <div class="text-3xl font-title font-bold text-center mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
+          <div class="text-3xl font-title font-bold mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
             {{ isAuction ? "Recent bids" : "Recent buys" }}
           </div>
           <list-of-buyers class="mb-12" :list="events" :isAuction="isAuction"/>
@@ -199,7 +202,7 @@
 
 
 <script>
-import {computed, onBeforeUnmount, reactive, ref, watchEffect} from "vue";
+import {computed, reactive, ref, onUnmounted} from "vue";
 import {useRoute} from "vue-router";
 import {useMeta} from "vue-meta";
 import {useStore} from "vuex";
@@ -217,13 +220,15 @@ import HeroGallery from "@/components/Media/HeroGallery.vue";
 import {CollectablesService} from "@/services/apiService";
 import {useToast} from "primevue/usetoast";
 
+import useDarkMode from "@/hooks/useDarkMode";
 import useCollectableInformation from "@/hooks/useCollectableInformation.js";
-import useContractEvents from "@/hooks/useContractEvents";
 import {getEtherscanLink} from "@/services/utils";
 import GLightbox from 'glightbox';
 import 'glightbox/dist/css/glightbox.css';
 import NftData from "@/views/collectable/components/NftData.vue";
 import SocialSharing from "@/components/SocialSharing";
+
+import useWeb3 from "@/connectors/hooks";
 
 export default {
   name: "Collectable",
@@ -259,9 +264,9 @@ export default {
     });
     const store = useStore();
 
-    const darkMode = computed(() => {
-      return store.getters['application/darkMode']
-    });
+    const { chainId } = useWeb3();
+
+    const { darkMode, setDarkMode } = useDarkMode();
 
     const {
       collectable,
@@ -313,9 +318,7 @@ export default {
     const backgroundImage = ref(false);
     const titleMonospace = ref(false);
 
-    // TODO: Make this into a DB datasource unless V3 no longer uses this
-    if(
-      [
+    const darkModeEnabled = [
       '0xmons-mork',
       'crossover',
       'virus',
@@ -323,17 +326,22 @@ export default {
       'eye-contact',
       'face-off',
       'nosferatus-mushroom-party',
-      ].indexOf(route.params["slug"]) > -1) {
-      store.dispatch("application/setDarkMode", true);
+    ].indexOf(route.params["slug"]) > -1;
+    
+    setDarkMode(darkModeEnabled);
+
+    onUnmounted(() => {
+      setDarkMode(false);
+    })
+
+    // TODO: Make this into a DB datasource unless V3 no longer uses this
+    if (darkModeEnabled) {
       switch(route.params["slug"]) {
         case '0xmons-mork':
           backgroundImage.value = '0xmons-tile.png';
           titleMonospace.value = true;
           break;
       }
-    } else {
-      // Disable dark mode until dark mode is supported across website
-      store.dispatch("application/setDarkMode", false);
     }
 
     const currentEndsAt = computed(() => {
@@ -395,6 +403,9 @@ export default {
       let nftAddress = collectable.value.nft_contract_address
       let nftTokenId = collectable.value.nft_token_id
       let url = `https://opensea.io/assets/${nftAddress}/${nftTokenId}`;
+      if(Number(chainId.value) > 0) {
+        url = `https://testnets.opensea.io/assets/${nftAddress}/${nftTokenId}`;
+      }
       window.open(url, '_blank').focus()
     }
 

@@ -47,11 +47,11 @@
           <product-card
             v-if="collectable != null"
             :collectable="collectable"
-            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route)"
+            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
           />
           <div
             v-else
-            class="placeholder-card overflow-hidden rounded-3xl bg-gray-100"
+            class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
             :style="{ 'padding-bottom': '120%' }"
           ></div>
         </template>
@@ -68,20 +68,20 @@
 </template>
 
 <script>
-import {ref, computed} from "vue";
+import {ref, computed, onUnmounted} from "vue";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
-import {useStore} from "vuex";
 
 import FencedTitle from "@/components/FencedTitle.vue";
 import Container from "@/components/Container.vue";
 import SocialLine from "@/components/PillsAndTags/SocialLine.vue";
 import { ArtistService } from "@/services/apiService";
+import useDarkMode from "@/hooks/useDarkMode";
 import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
 import ProductCard from "@/components/ProductCard.vue";
 
 export default {
-  name: "ArtistProfile",
+  name: "legacyArtistProfile",
   components: { FencedTitle, Container, SocialLine, ProductCard },
   methods: {
     cropWithExtension: function(text, maxCharacters) {
@@ -97,35 +97,44 @@ export default {
     }
   },
   async setup() {
-    const store = useStore();
     const { meta } = useMeta({
       title: "Loading...",
     });
     const router = useRouter();
-    const {data} = await ArtistService.show(router.currentRoute.value.params.artistSlug);
+    const { darkMode, setDarkMode } = useDarkMode();
+
+    const darkModeEnabled = [
+      '0xmons',
+      'haydiroket',
+      'tengushee',
+      'desultor',
+      'cruelcoppinger',
+      'nostallergy',
+      'deathimself'
+    ].indexOf(router?.currentRoute?.value?.params?.artistSlug) > -1
+
+    setDarkMode(darkModeEnabled);
+    
+    onUnmounted(() => {
+      setDarkMode(false);
+    })
+
     const backgroundImage = ref(false);
 
     // TODO: Make this into a DB datasource unless V3 no longer uses this
-    if(['0xmons', 'haydiroket', 'tengushee', 'desultor', 'cruelcoppinger', 'nostallergy', 'deathimself'].indexOf(router?.currentRoute?.value?.params?.artistSlug) > -1) {
-      store.dispatch("application/setDarkMode", true);
+    if (darkModeEnabled) {
       switch(router?.currentRoute?.value?.params?.artistSlug) {
         case '0xmons':
           backgroundImage.value = '0xmons-tile.png';
           break;
       }
-    } else {
-      // Disable dark mode until dark mode is supported across website
-      store.dispatch("application/setDarkMode", false);
     }
 
-    const darkMode = computed(() => {
-      return store.getters['application/darkMode']
-    });
-
+    const {data} = await ArtistService.show(router.currentRoute.value.params.artistSlug);
     const artist = ref(data);
     meta.title = artist.value.name;
 
-    const paginatedCollectables = useDropsWithPagination(artist.value.id, 48);
+    const paginatedCollectables = useDropsWithPagination(48, {artistId: artist.value.id});
     await paginatedCollectables.load();
     const hasMore = computed(() => paginatedCollectables.hasMore.value);
     const handleLoadMore = async () => {
@@ -134,16 +143,23 @@ export default {
     const listOfCollectables = computed(
       () => paginatedCollectables.listOfCollectables.value
     );
-    const navigateToCollectable = function (slug, isSlugFullRoute) {
+    const navigateToCollectable = function (slug, isSlugFullRoute, version) {
       if(isSlugFullRoute) {
         router.push({
           name: slug,
         });
       }else{
-        router.push({
-          name: "collectableAuction",
-          params: { slug: slug },
-        });
+        if(version === 2) {
+          router.push({
+            name: "collectableDropV2",
+            params: { slug: slug },
+          });
+        } else if (version === 3) {
+          router.push({
+            name: "collectableDropV3",
+            params: { slug: slug },
+          });
+        }
       }
     };
 
@@ -166,7 +182,7 @@ export default {
   border: solid 1px #e6e6e6;
 }
 .wallet-address-badge {
-  @apply pr-3.5 py-1 pl-2 rounded-3xl w-66 font-address;
+  @apply pr-3.5 py-1 pl-2 w-66 font-address;
   box-shadow: 0 1px 15px 0 rgba(0, 0, 0, 0.15);
 }
 

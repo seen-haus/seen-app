@@ -1,64 +1,80 @@
 <template>
   <div>
     <container class="section-featured-auctions pb-24">
-      <div class="flex items-center py-6 flex-col lg:flex-row">
-        <fenced-title
-          class="flex-grow mr-0 mb-2 self-stretch"
-          color="fence-gray"
-          textAlign="center"
-          unshrinkable
-          :closed="true"
-          ><img
-            src="@/assets/icons/icon-fire.svg"
-            class="cursor-pointer mr-2 inline-flex icon-fire -mt-1.5"
-            alt="SEEN"
-          />Drops
-        </fenced-title>
+      <div class="flex items-center pb-4 flex-col lg:flex-row">
+        <div class="abstract-circles abstract-circles-drops">
+          <img src="@/assets/images/abstract-circles.svg" alt="">
+        </div>
+        <unfenced-title
+          class="text-black hidden lg:flex pt-12"
+          color="fence-dark"
+          text-align="left"
+        >
+          Drops
+        </unfenced-title>
       </div>
-
-      <div class="flex justify-start items-center">
-
-        <toggle
-          :value="filterExcludeEnded"
-          class="mr-8"
-          @onChange="handleExcludeEndedToggle($event)"
+      
+      <div class="flex flex-col lg:flex-row gap-4 mb-8">
+        <button 
+          @click="quickFilter = 'all'"
+          :class="{
+            'dark': quickFilter === 'all',
+            'bg-white': quickFilter !== 'all',
+          }"
+          class="button light-shadow quick-filter-button"
         >
-          <span :class="darkMode ? 'dark-mode-text' : 'text-black'" class="font-bold">Exclude Ended</span>
-        </toggle>
-
-        <toggle
-          :value="filterAuctions"
-          class="mr-8"
-          @onChange="handleAuctionsToggle($event)"
+            <img src="@/assets/icons/trending.svg" class="mr-3"/>All
+        </button>
+        <button 
+          @click="quickFilter = 'live'"
+          :class="{
+            'dark': quickFilter === 'live',
+            'bg-white': quickFilter !== 'live',
+          }"
+          class="button light-shadow bg-white quick-filter-button"
         >
-          <span :class="darkMode ? 'dark-mode-text' : 'text-black'" class="font-bold">Auctions</span>
-        </toggle>
-
-        <toggle
-          :value="filterEditions"
-          @onChange="handleEditionsToggle($event)"
+            <img src="@/assets/icons/orange-flame.svg" class="mr-3"/>Live
+        </button>
+        <button 
+          @click="quickFilter = 'reserve-not-met'"
+          :class="{
+            'dark': quickFilter === 'reserve-not-met',
+            'bg-white': quickFilter !== 'reserve-not-met',
+          }"
+          class="button light-shadow bg-white quick-filter-button"
         >
-          <span :class="darkMode ? 'dark-mode-text' : 'text-black'" class="font-bold">Editions</span>
-        </toggle>
+            <img src="@/assets/icons/hotel-bell.svg" class="mr-3"/>Reserve not met
+        </button>
+        <button 
+          @click="quickFilter = 'sold'"
+          :class="{
+            'dark': quickFilter === 'sold',
+            'bg-white': quickFilter !== 'sold',
+          }"
+          class="button light-shadow bg-white quick-filter-button"
+        >
+            <img src="@/assets/icons/gavel.svg" class="mr-3"/>Sold Out
+        </button>
+
+        <small class="button">
+          <InputSwitch v-model="secondaryListingsFilter" id="secondary-listings-filter" />
+          <label for="secondary-listings-filter" class="ml-3 clickable">Secondary Listings</label>
+        </small>
       </div>
 
       <div
-        class="auction-list-big grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
+        class="auction-list-big grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 mt-5"
       >
         <template
           v-for="collectable in listOfCollectables"
           :key="collectable && collectable.id"
         >
-          <product-card
+          <product-card-v3
             v-if="collectable != null"
             :collectable="collectable"
-            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route)"
+            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
           />
-          <div
-            v-else
-            class="placeholder-card overflow-hidden rounded-3xl bg-gray-100"
-            :style="{ 'padding-bottom': '120%' }"
-          ></div>
+          <product-card-v3-placeholder v-else />
         </template>
       </div>
 
@@ -75,48 +91,48 @@
 </template>
 
 <script>
-import { computed, reactive, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
-import { useStore } from "vuex";
 
+import InputSwitch from 'primevue/inputswitch';
 import Container from "@/components/Container.vue";
 import ProductCard from "@/components/ProductCard.vue";
+import ProductCardV3 from "@/components/ProductCardV3.vue";
+import ProductCardV3Placeholder from "@/components/ProductCardV3Placeholder.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
+import UnfencedTitle from "@/components/FencedTitle.vue";
 import Toggle from "@/components/Inputs/Toggle.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
 import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
-
 import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
+import useDarkMode from "@/hooks/useDarkMode";
 
 export default {
   name: "Drops",
   components: {
     Container,
     FencedTitle,
+    UnfencedTitle,
     ProductCard,
+    ProductCardV3,
+    ProductCardV3Placeholder,
     Toggle,
     HowToVideo,
     QuoteCarousel,
     ArtistCard,
+    InputSwitch,
   },
   setup() {
-
-    const store = useStore();
-
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
-
-    const darkMode = computed(() => store.getters['application/darkMode']);
+    const { darkMode } = useDarkMode();
 
     const { meta } = useMeta({
       title: "Drops",
     });
     const router = useRouter();
-    const filterAuctions = ref(true);
-    const filterEditions = ref(true);
-    const filterExcludeEnded = ref(false);
+    const quickFilter = ref('all');
+    const secondaryListingsFilter = ref(false);
 
     const paginatedCollectables = useDropsWithPagination();
     const listOfCollectables = computed(
@@ -130,44 +146,43 @@ export default {
       paginatedCollectables.loadMore();
     };
 
-    const handleAuctionsToggle = (event) => {
-      if (!filterEditions.value && !event) return;
-      filterAuctions.value = event;
-      paginatedCollectables.filter(filterAuctions.value, filterEditions.value);
-    }
+    watch([quickFilter, secondaryListingsFilter], () => {
+      const marketType = secondaryListingsFilter.value ? 'secondary' : 'primary';
 
-    const handleEditionsToggle = (event) => {
-      if (!filterAuctions.value && !event) return;
-      filterEditions.value = event;
-      paginatedCollectables.filter(filterAuctions.value, filterEditions.value);
-    }
+      if(quickFilter.value === 'all') {
+        paginatedCollectables.filter(true, true, {marketType});
+      } else if(quickFilter.value === 'live') {
+        paginatedCollectables.filter(true, true, {excludeEnded: true, marketType});
+      } else if(quickFilter.value === 'reserve-not-met') {
+        paginatedCollectables.filter(true, true, {awaitingReserveBid: true, marketType});
+      } else if(quickFilter.value === 'sold') {
+        paginatedCollectables.filter(true, true, {soldOut: true, marketType});
+      }
+    })
 
-    const handleExcludeEndedToggle = (event) => {
-      filterExcludeEnded.value = event;
-      paginatedCollectables.filter(filterAuctions.value, filterEditions.value, {excludeEnded: event});
-    }
-
-    const navigateToCollectable = function (slug, isSlugFullRoute) {
+    const navigateToCollectable = function (slug, isSlugFullRoute, version) {
       if(isSlugFullRoute) {
         router.push({
           name: slug,
         });
       } else {
-        router.push({
-          name: "collectableAuction",
-          params: { slug: slug },
-        });
+        if(version === 2) {
+          router.push({
+            name: "collectableDropV2",
+            params: { slug: slug },
+          });
+        } else if (version === 3) {
+          router.push({
+            name: "collectableDropV3",
+            params: { slug: slug },
+          });
+        }
       }
     };
 
     return {
-      filterAuctions,
-      filterEditions,
-      filterExcludeEnded,
-
-      handleAuctionsToggle,
-      handleEditionsToggle,
-      handleExcludeEndedToggle,
+      quickFilter,
+      secondaryListingsFilter,
 
       listOfCollectables,
       hasMore,
@@ -180,5 +195,17 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  .abstract-circles-drops {
+    top: 100px;
+    @screen lg {
+      right: 35px;
+    }
+  }
+  .quick-filter-button {
+    transition: all 500ms ease-in-out;
+    img {
+      height: 20px;
+    }
+  }
 </style>

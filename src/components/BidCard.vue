@@ -6,7 +6,7 @@
           class="flex justify-start items-center text-xs font-bold"
           :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
       >
-        {{ is_closed ? (isAuction ? 'AUCTION CLOSED' : 'SALE CLOSED') : 'EDITION HAS BEEN SOLD'}}
+        {{ isAuction ? 'AUCTION ENDED' : 'SALE OVER'}}
       </div>
       <div
           v-else-if="!isAuction"
@@ -15,7 +15,7 @@
       >
         <span v-if="isOpenEdition" class="tracking-widest mr-4">OPEN EDITION</span>
         <span v-if="!isOpenEdition" class="tracking-widest mr-4">EDITIONS LEFT </span>
-        <tag 
+        <tag
           v-if="!isOpenEdition"
           class="bg-fence-light self-end font-semibold"
           :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
@@ -108,7 +108,7 @@
             </p>
         </div>
         <template v-if="isCollectableActive">
-          <div class="text-gray-400 flex text-sm py-2">
+          <div class="text-gray-400 flex text-sm py-2" v-if="tangibility === 'tangible_nft'">
             <input
               class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
               v-model="acceptPhysicalTermsField.value"
@@ -144,7 +144,7 @@
           <span v-if="!isSubmitting">{{ isAuction ? (`Place ${isAwaitingReserve ? 'reserve' : 'a'} bid`) : "Buy now" }}</span>
           <span v-else>Submitting...</span>
         </button>
-        <button 
+        <button
           class="button primary mt-4"
           :class="{'cursor-wait disabled opacity-50': isSubmitting}"
           :disabled="isSubmitting"
@@ -223,10 +223,28 @@
       <button class="button primary mt-6" v-if="claimId !== null && isOpenEdition && isCurrentAccountEntitledToDigital" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
         Claim NFT
       </button>
+      <button class="button primary mt-6" :class="{'cursor-wait disabled opacity-50': isClosingAuction}" :disabled="isClosingAuction" v-if="isReadyForClosure && isAuction" @click="closeAuction">
+        {{`${winningAddress}`.toLowerCase() === `${account}`.toLowerCase() ? (isClosingAuction ? 'Claiming NFT...' : 'Claim NFT') : (isClosingAuction ? 'Close Auction' : 'Closing Auction...')}}
+      </button>
+      <button class="button primary mt-6" :class="{'cursor-wait disabled opacity-50': isClosingSale}" :disabled="isClosingSale" v-if="isReadyForClosure && !isAuction" @click="closeSale">
+        {{isClosingSale ? 'Closing Sale...' : 'Close Sale'}}
+      </button>
     </div>
 
     <div class="bottom-part border-t p-8" :class="darkMode ? 'dark-mode-surface-darkened black-border' : 'light-mode-surface'">
       <template v-if="!isCollectableActive">
+        <!-- <progress-timer
+            v-if="!isAwaitingReserve"
+            ref="timerRef"
+            class="text-3xl mt-2"
+            :class="darkMode ? 'dark-mode-text' : 'text-black'"
+            :isAuction="isAuction"
+            :label="null"
+            :startDate="startsAt"
+            :endDate="endsAt"
+            @onProgress="updateProgress"
+            @onTimerStateChange="updateState"
+        /> -->
         <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold" v-if="isAuction">
           AUCTION ENDED
         </div>
@@ -253,7 +271,7 @@
 
       <template v-else-if="isAuction">
         <div v-if="!isAwaitingReserve" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-          {{ isUpcomming ? "AUCTION STARTS IN" : "AUCTION ENDS IN" }}
+          {{ isUpcomming ? "BIDDING OPENS IN" : "AUCTION ENDS IN" }}
         </div>
         <div v-if="isAwaitingReserve && currentProgress" class="tracking-widest mb-6 text-gray-400 text-xs font-bold">
           24 HR COUNTDOWN BEGINS ONCE RESERVE IS MET
@@ -305,7 +323,7 @@
       <template v-else>
         <template v-if="isUpcomming">
           <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            {{ isAuction ? "AUCTION STARTS IN" : "DROP OPENS IN" }}
+            {{ isAuction ? "BIDDING OPENS IN" : "DROP OPENS IN" }}
           </div>
           <progress-timer
               ref="timerRef"
@@ -397,10 +415,15 @@ import numberHelper from "@/services/utils/numbers"
 import emitter from "@/services/utils/emitter";
 import { BidRegistrationService } from "@/services/apiService"
 import useWeb3 from "@/connectors/hooks";
+import useUser from "@/hooks/useUser";
+import useDarkMode from '@/hooks/useDarkMode';
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 import useSigner from "@/hooks/useSigner";
-import useContractEvents from "@/hooks/useContractEvents";
-import {useSeenNFTContract, useV2VRFSaleContract} from "@/hooks/useContract";
+import useMarketContractEvents from "@/hooks/useMarketContractEvents";
+import {
+  useSeenNFTContract,
+  useV2VRFSaleContract,
+} from "@/hooks/useContract";
 
 export default {
   name: "BidCard",
@@ -435,11 +458,15 @@ export default {
     is_sold_out: Boolean,
     is_closed: Boolean,
     collectable: Object,
+    collectableVersion: Number,
+    collectableConsignmentId: Number,
     nextBidPrice: Number,
     claim: [Number, Boolean],
     requiresRegistration: Boolean,
     bidDisclaimers: [Array],
     overrideClaimLink: String,
+    isReadyForClosure: Boolean,
+    winningAddress: [Boolean, String],
   },
   computed: {
     isAwaitingReserve: function () {
@@ -454,7 +481,7 @@ export default {
   setup(props, ctx) {
     const toast = useToast();
     const store = useStore();
-    const {account} = useWeb3();
+    const {account, chainId} = useWeb3();
 
     const price = ref(props.price);
     const isAuction = ref(props.isAuction);
@@ -464,6 +491,8 @@ export default {
     const isSubmittingRandomnessRequest = ref(false);
     const isSubmittingRandomnessCommitment = ref(false);
     const isSubmittingClaimVRF = ref(false);
+    const isClosingSale = ref(false);
+    const isClosingAuction = ref(false);
     const isCurrentAccountEntitledToPhysical = ref(false);
     const isCurrentAccountEntitledToDigitalClaimVRF = ref(false);
     const isCurrentAccountEntitledToDigital = ref(false);
@@ -474,8 +503,18 @@ export default {
     const winner = computed(() => collectableData.value.winner_address);
     const tangibility = computed(() => collectableData.value.type);
     const balance = computed(() => store.getters['application/balance'].eth);
-    const darkMode = computed(() => store.getters['application/darkMode']);
-    const user = computed(() => store.getters['user/user']);
+    const { user } = useUser();
+    const { darkMode } = useDarkMode();
+
+    const data = reactive({
+      endTime: false,
+    })
+
+    watchEffect(() => {
+      console.log({'props.winningAddress': props.winningAddress})
+      data.endTime = props.endsAt;
+      data.winningAddress = props.winningAddress;
+    })
 
     const form = useForm({
       initialValues: {
@@ -486,7 +525,6 @@ export default {
 
     const auctionField = reactive(useField("bid", (val) => fieldValidatorAuction(val)));
     const saleField = reactive(useField("amount", (val) => fieldValidatorSale(val)));
-    
     const firstNameField = reactive(useField("first name", "required|min:3"));
     const lastNameField = reactive(useField("last name", "required|min:3"));
     const emailField = reactive(useField("email", "email"));
@@ -543,9 +581,8 @@ export default {
         // Cover sale scenarios, show claim button when balance is positive
         let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
         let balanceOfCurrentAccount = 0;
-        if((collectableData.value.nft_token_id.indexOf("[") === 0) || collectableData.value.is_vrf_drop) {
-          let tokenIds = JSON.parse(collectableData.value.nft_token_id);
-          for(let tokenId of tokenIds) {
+        if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
+          for(let tokenId of collectableData.value.nft_token_id) {
             let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
             balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
           }
@@ -632,11 +669,13 @@ export default {
     const {
       bid,
       buy,
+      closeAuctionV3,
+      closeSaleV3,
       requestRandomness,
       commitRandomness,
       claimTokensSaleVRF,
       initializeContractEvents,
-    } = useContractEvents();
+    } = useMarketContractEvents();
 
     watchEffect(() => {
       if (collectableData.value) {
@@ -676,7 +715,7 @@ export default {
           amount = parseFloat(auctionField.value, 10);
           if (isNaN(amount)) throw new Error("invalid number");
           if (amount < props.nextBidPrice) throw new Error("not enough funds");
-          onBid(auctionField.value);
+          onBid(auctionField.value, props.collectableConsignmentId);
         } else {
           amount = parseInt(saleField.value, 10);
           if (isNaN(amount)) throw new Error("invalid number");
@@ -684,7 +723,7 @@ export default {
           // if (amount > props.items_of - props.items) {
           //   throw new Error("not enough items");
           // }
-          onBuy(saleField.value);
+          onBuy(saleField.value, props.collectableConsignmentId);
 
         }
         hasError.value = null;
@@ -796,9 +835,8 @@ export default {
                 // Cover sale scenarios, show claim button when balance is positive
                 let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
                 let balanceOfCurrentAccount = 0;
-                if((collectableData.value.nft_token_id.indexOf("[") === 0) || collectableData.value.is_vrf_drop) {
-                  let tokenIds = JSON.parse(collectableData.value.nft_token_id);
-                  for(let tokenId of tokenIds) {
+                if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
+                  for(let tokenId of collectableData.value.nft_token_id) {
                     let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
                     balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
                   }
@@ -821,14 +859,14 @@ export default {
       }
     }
 
-    const onBuy = async (event) => {
+    const onBuy = async (event, collectableConsignmentId) => {
       try {
         const currentPrice = price.value;
         const amount = +parseInt(event, 10);
         const totalPrice = amount * currentPrice;
 
         isSubmitting.value = true
-        await buy(amount)
+        await buy(amount, collectableConsignmentId)
             .then(async (response) => {
               isSubmitting.value = false
               if (response) {
@@ -838,9 +876,8 @@ export default {
                 // Cover sale scenarios, show claim button when balance is positive
                 let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
                 let balanceOfCurrentAccount = 0;
-                if((collectableData.value.nft_token_id.indexOf("[") === 0) || collectableData.value.is_vrf_drop) {
-                  let tokenIds = JSON.parse(collectableData.value.nft_token_id);
-                  for(let tokenId of tokenIds) {
+                if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
+                  for(let tokenId of collectableData.value.nft_token_id) {
                     let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
                     balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
                   }
@@ -864,17 +901,17 @@ export default {
       }
     };
 
-    const onBid = async (event) => {
+    const onBid = async (event, collectableConsignmentId) => {
       try {
         const amount = +parseFloat(event, 10);
         isSubmitting.value = true
-        await bid(amount)
+        await bid(amount, collectableConsignmentId)
             .then((response) => {
               try {
                 if(response) {
                   auctionField.resetField(null)
                   showNotificationButtonRef.value = true;
-                  if((user?.value?.email === false || (!user?.value?.email && account?.value)) && !localStorage.getItem(`hasDismissedNotificationModal-${account?.value}`)) {
+                  if((user.value?.email === false || (!user.value?.email && account?.value)) && !localStorage.getItem(`hasDismissedNotificationModal-${account?.value}`)) {
                     openNotificationsModal(true);
                   }
                 }
@@ -902,7 +939,8 @@ export default {
       currentProgress.value = event;
     };
 
-    const updateState = function () {
+    const updateState = function (state) {
+      console.log({state})
       ctx.emit('updateState');
     }
 
@@ -936,13 +974,33 @@ export default {
     const viewOnOpenSea = () => {
       let nftAddress = collectableData.value.nft_contract_address
       let nftTokenId = collectableData.value.nft_token_id
-      window.open(`https://opensea.io/assets/${nftAddress}/${nftTokenId}`, '_blank').focus()
+      let url = `https://opensea.io/assets/${nftAddress}/${nftTokenId}`;
+      if(Number(chainId.value) > 0) {
+        url = `https://testnets.opensea.io/assets/${nftAddress}/${nftTokenId}`;
+      }
+      window.open(url, '_blank').focus()
     }
 
     const viewOverrideClaimLink = () => {
       window.open(props.overrideClaimLink, '_blank').focus()
     }
 
+    const closeSale = async () => {
+      if(account?.value && ((Number(props.collectableConsignmentId) === 0) || (Number(props.collectableConsignmentId) > 0))) {
+        isClosingSale.value = true;
+        await closeSaleV3(props.collectableConsignmentId);
+        isClosingSale.value = false;
+      }
+    }
+
+    const closeAuction = async () => {
+      if(account?.value && ((Number(props.collectableConsignmentId) === 0) || (Number(props.collectableConsignmentId) > 0))) {
+        isClosingAuction.value = true;
+        await closeAuctionV3(props.collectableConsignmentId);
+        isClosingAuction.value = false;
+      }
+    }
+    
     const isNumber = (value) => {
       return numberHelper.isNumber(value)
     }
@@ -970,6 +1028,8 @@ export default {
       isSubmittingRandomnessRequest,
       isSubmittingRandomnessCommitment,
       isSubmittingClaimVRF,
+      isClosingAuction,
+      isClosingSale,
       openWalletModal,
       hasEnoughFunds,
       auctionField,
@@ -997,6 +1057,8 @@ export default {
       nftTokenId: collectableData.value.nft_token_id,
       showNotificationButton,
       openNotificationsModal,
+      closeSale,
+      closeAuction,
       startRandomnessRequest,
       startRandomnessCommitment,
       startClaimVRF,

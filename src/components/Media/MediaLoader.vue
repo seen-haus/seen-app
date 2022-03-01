@@ -1,8 +1,9 @@
 <template>
   <div
-    class="media-loader relative h-0"
+    class="media-loader relative"
+    :class="!maxWidthAndHeight && 'h-0'"
     :style="{
-      'padding-bottom': calculatedAspecRatio,
+      'padding-bottom': ignoreAspectRatioPadding ? '0px' : calculatedAspecRatio,
     }"
   >
     <div
@@ -11,11 +12,12 @@
         [ 
           'loading-indicator',
           (isLoading ? 'is-loading' : ''),
-          (darkMode ? 'dark-mode-surface' : 'bg-gray-100') 
+          (darkMode && !transparentBg && 'dark-mode-surface'),
+          (!darkMode && !transparentBg && 'bg-gray-100'),
         ].join(' ')
       "
     >
-      <i class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i>
+      <i v-if="isLoading" class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i>
     </div>
 
     <template v-if="mediaType === 'youtube'">
@@ -45,7 +47,17 @@
     </template>
 
     <template v-if="mediaType === 'video'">
-      <div class="absolute-full-width-and-height">
+      <div 
+        class="absolute-full-width-and-height"
+        :style="{
+          ...(fillHeight && 
+            {
+              'display': 'flex',
+              'justify-content': 'center'
+            }
+          ),
+        }"
+      >
         <video
           ref="videoRef"
           :src="src"
@@ -54,7 +66,15 @@
           playsinline="playsinline"
           :loop="loop"
           class="auto-horizontal-margins"
-          :style="`max-height: 100%;`"
+          :style="{
+            'max-height': '100%',
+            ...(fillHeight && 
+              {
+                'height': '100%',
+                'max-width': 'fit-content'
+              }
+            ),
+          }"
         ></video>
 
         <div
@@ -68,10 +88,10 @@
     </template>
 
     <template v-if="mediaType === 'image'">
-      <div class="absolute-full-width-and-height">
+      <div class="absolute-full-width-and-height overflow-hidden">
         <img
           ref="imageRef"
-          class="image absolute mx-auto h-full"
+          class="image absolute mx-auto h-full self-align-absolute-item max-width-none"
           :src="src"
           alt=""
           :style="`max-height: 100%;`"
@@ -92,7 +112,7 @@ import {
   toRefs,
   watchEffect,
 } from "vue";
-import {useStore} from "vuex";
+import useDarkMode from '@/hooks/useDarkMode';
 
 import PlayButton from "./components/PlayButton.vue";
 
@@ -123,12 +143,34 @@ export default {
       type: Boolean,
       default: false,
     },
+    maxWidthAndHeight: {
+      type: Boolean,
+      default: false,
+    },
+    fillHeight: {
+      type: Boolean,
+      default: false,
+    },
+    ignoreAspectRatioPadding: {
+      type: Boolean,
+      default: false,
+    },
+    ignoreAutoAspectRatio: {
+      type: Boolean,
+      default: false,
+    },
+    declaredMediaType: {
+      type: [String, Boolean, null],
+      default: false,
+    },
+    transparentBg: {
+      type: [Boolean],
+      default: false,
+    }
   },
   components: { PlayButton },
   setup(props) {
-
-    const store = useStore();
-    const darkMode = computed(() => store.getters['application/darkMode']);
+    const { darkMode } = useDarkMode();    
 
     let observer = null;
     const { autoplay } = toRefs(props);
@@ -144,10 +186,17 @@ export default {
 
     const isPaused = computed(() => state.paused);
     const mediaType = computed(() => {
+      if(props.declaredMediaType) {
+        return props.declaredMediaType;
+      }
       if (overrideMediaType.value) {
         return overrideMediaType.value;
       }
       if (props.src.includes("ipfs")) {
+        setOverrideMediaType()
+        return "video"
+      }
+      if (props.src.includes("blob:http://")) {
         setOverrideMediaType()
         return "video"
       }
@@ -229,17 +278,21 @@ export default {
     });
 
     function onLoadedCallback() {
+      console.log({mediaType: mediaType.value})
+      isLoading.value = false;
+      console.log({isLoading})
       if (mediaType.value === "video") {
         if (!videoRef.value) return;
         //Video should now be loaded but we can add a second check
         if (videoRef.value.readyState >= 3) {
-          isLoading.value = false;
           videoRef.value.removeEventListener("loadeddata", onLoadedCallback);
           // P.S. I did not create this aspect ratio logic
           // just added a max of 100% because it breaks when it goes above that
           // Haven't had a chance to work out why this is being done in the first place
           let useAspectRatio = 100;
-          if(((videoRef.value.videoHeight / videoRef.value.videoWidth) * 100) <= 100) {
+          if(props.aspectRatio && props.ignoreAutoAspectRatio) {
+            useAspectRatio = props.aspectRatio;
+          } else if (((videoRef.value.videoHeight / videoRef.value.videoWidth) * 100) <= 100) {
             useAspectRatio = (videoRef.value.videoHeight / videoRef.value.videoWidth) * 100;
           }
           calculatedAspecRatio.value = `${useAspectRatio}%`;
@@ -251,7 +304,6 @@ export default {
       }
 
       if (mediaType.value === "image") {
-        isLoading.value = false;
         if (!imageRef.value) return;
         imageRef.value.removeEventListener("load", onLoadedCallback);
         // P.S. I did not create this aspect ratio logic
@@ -294,6 +346,7 @@ export default {
     }
 
     onMounted(() => {
+      console.log({mediaType: mediaType.value})
       if (mediaType.value === "video") {
         videoRef.value.addEventListener("canplay", onLoadedCallback);
         createObserver();
@@ -303,6 +356,7 @@ export default {
         isLoading.value = false;
       }
       if (mediaType.value === "image") {
+        console.log({imageRef})
         imageRef.value.addEventListener("load", onLoadedCallback);
       }
     });
@@ -335,6 +389,9 @@ export default {
 
 <style lang="scss">
 .media-loader {
+  width: 100%;
+  height: 100%;
+
   .loading-indicator {
     opacity: 0;
     visibility: 0;

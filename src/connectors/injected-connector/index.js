@@ -32,6 +32,7 @@ export default class InjectedConnector extends AbstractConnector {
         this.handleChainChanged = this.handleChainChanged.bind(this)
         this.handleAccountsChanged = this.handleAccountsChanged.bind(this)
         this.handleClose = this.handleClose.bind(this)
+        this.getChainId = this.getChainId.bind(this);
     }
 
     handleChainChanged(chainId) {

@@ -1,7 +1,8 @@
 <template>
   <div class="title flex items-center fence-wrap"
     :style="{
-      ...(alignment === 'center' && {'justify-content': 'center'})
+      ...(alignment === 'center' && {'justify-content': 'center'}),
+      'width': width ? width : '100%',
     }"
   >
     <div
@@ -11,6 +12,7 @@
           'max-width': maxWidth ? maxWidth : '100%',
           'width': hideBars ? '100%' : 'auto',
           'text-align': alignment,
+          'font-size': fontSize ? fontSize : '48px',
           ...(titleMonospace && {'font-family': 'monospace'})
         }"
     >
@@ -28,6 +30,8 @@ export default {
     color: String, //
     unshrinkable: Boolean,
     titleMonospace: Boolean,
+    fontSize: String,
+    width: String,
     maxWidth: String,
   },
   computed: {

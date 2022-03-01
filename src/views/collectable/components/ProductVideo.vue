@@ -5,7 +5,7 @@
                   :src=src
                   aspectRatio="56.25%"
                   controls
-                  class="overflow-hidden rounded-3xl"
+                  class="overflow-hidden rounded-20px"
                 />
               </div>
             </div>

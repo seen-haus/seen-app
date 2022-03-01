@@ -28,7 +28,7 @@ export default {
         const navigateToArtist = (e) => {
             e.stopImmediatePropagation();
             router.push({
-                name: "artistProfile",
+                name: "legacyArtistProfile",
                 params: { artistSlug: props.artistSlug },
             });
         };

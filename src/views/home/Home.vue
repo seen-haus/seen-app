@@ -6,25 +6,50 @@
     />
     <div
       v-else
-      class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
-      :style="{ 'padding-bottom': '40%' }"
-    ></div>
+      class="overflow-hidden rounded-2xl bg-gray-100"
+      :style="{ 'padding-bottom': '634px', 'background-color': 'white' }"
+    >
 
-    <container class="section-featured-auctions pb-24">
-      <div class="flex items-center pb-12 pt-20 lg:py-24 flex-col lg:flex-row">
-        <fenced-title
-          class="flex-grow mr-0 md:mb-6 lg:mb-0 lg:mr-6 lg:hidden self-stretch"
-          color="fence-light"
-          textAlign="center"
-          :closed="false"
-          > Featured Drops</fenced-title
-        >
-        <fenced-title
+       <div class="abstract-circles abstract-circles-hero">
+        <img src="@/assets/images/abstract-circles.svg" alt="">
+      </div>
+    </div>
+
+    <container class="section-featured-auctions relative pt-20">
+      <div class="abstract-circles" :style="{
+          'left': '-274px',
+          'top': '77px'
+        }">
+        <img src="@/assets/images/abstract-circles.svg" alt="">
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-10">
+        <div class="flex-center flex-col">
+          <icon-square icon="paint-and-brush.svg"></icon-square>
+          <sub-title fontSize="24px" class="mt-2">The future of art collecting</sub-title>
+          <light-typography maxWidth="250px" class="mt-2">Browse and build your collection of the world’s most cutting-edge digital art</light-typography>
+        </div>
+        <div class="flex-center flex-col">
+          <icon-square icon="royalties.svg"></icon-square>
+          <sub-title fontSize="24px" class="mt-2">Pioneering royalties</sub-title>
+          <light-typography maxWidth="280px" class="mt-2">Artists receive royalties for secondary sales of their artworks on any EIP-2981 compliant marketplaces – forever</light-typography>
+        </div>
+        <div class="flex-center flex-col">
+          <icon-square icon="infinity.svg"></icon-square>
+          <sub-title fontSize="24px" class="mt-2">Built for longevity</sub-title>
+          <light-typography maxWidth="250px" class="mt-2">All transactions happen on-chain, creating a tamper-proof record of each artwork’s history</light-typography>
+        </div>
+      </div>
+    </container>
+
+    <container class="section-featured-auctions pb-12">
+      <div class="flex items-center pt-20 lg:pt-24 flex-col lg:flex-row">
+        <img src="@/assets/icons/orange-flame.svg" class="mr-2"/>
+        <common-title
           class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
           color="fence-light"
           textAlign="left"
           :closed="false"
-          > Featured Drops</fenced-title
+          >Live</common-title
         >
         <router-link to="drops" class="hidden lg:block">
           <button :class="darkMode ? 'light' : 'dark'" class="button flex-shrink-0">
@@ -34,58 +59,65 @@
       </div>
 
       <div
-        class="auction-list-big grid grid-cols-1 md:grid-cols-2 mb-22 gap-10"
+        class="auction-list-big grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
       >
         <template
-          v-for="collectable in featuredCollectables"
+          v-for="collectable in listOfLiveCollectables"
           :key="collectable && collectable.id"
         >
-          <product-card
+          <product-card-v3
             v-if="collectable != null"
             :collectable="collectable"
-            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route)"
+            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
           />
-          <div
-            v-else
-            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
-            :style="{ 'padding-bottom': '120%' }"
-          ></div>
+          <product-card-v3-placeholder v-else />
         </template>
-        <!-- <product-card />
-        <product-card /> -->
+      </div>
+    </container>
+
+    <container class="section-featured-auctions">
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 gap-10 mt-9"
+      >
+        <pane-link image="state-of-seen.jpeg" title="State of SEEN" link="https://seen-haus.medium.com/" :isExternalLink="true"/>
+        <pane-link image="discord.jpeg" title="Discord Community" link="https://discord.com/invite/dad8J4f" :isExternalLink="true"/>
+      </div>
+    </container>
+
+    <container class="section-featured-auctions">
+      <div class="flex items-center pt-16 lg:pt-16 flex-col lg:flex-row">
+        <img src="@/assets/icons/paint-palette.svg" class="mr-2"/>
+        <common-title
+          class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
+          color="fence-light"
+          textAlign="left"
+          :closed="false"
+          >Featured</common-title>
+        <router-link to="drops" class="hidden lg:block">
+          <button :class="darkMode ? 'light' : 'dark'" class="button flex-shrink-0">
+            View All Drops <i class="fas fa-arrow-right ml-3 icon-right"></i>
+          </button>
+        </router-link>
       </div>
 
       <div
-        class="auction-list-big grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
+        class="auction-list-big grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
       >
         <template
-          v-for="collectable in otherCollectables"
+          v-for="collectable in listOfEndedCollectables"
           :key="collectable && collectable.id"
         >
-          <product-card
+          <product-card-v3
             v-if="collectable != null"
             :collectable="collectable"
-            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route)"
+            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
           />
-          <div
-            v-else
-            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
-            :style="{ 'padding-bottom': '120%' }"
-          ></div>
+          <product-card-v3-placeholder v-else />
         </template>
-        <!-- <product-card />
-        <product-card />
-        <product-card /> -->
       </div>
-
-      <router-link to="drops">
-        <button :class="darkMode ? 'light' : 'dark'" class="button mt-20 mx-auto w-full md:w-96">
-          View All Drops
-        </button>
-      </router-link>
     </container>
 
-    <div :class="darkMode ? 'dark-mode-background' : 'bg-background-gray'" class="learn-how-to border-t border-b">
+    <!-- <div :class="darkMode ? 'dark-mode-background' : 'bg-background-gray'" class="learn-how-to border-t border-b">
       <container class="py-24 pb-56 mb-8">
         <fenced-title
           class="flex-grow mr-0 mb-8 self-stretch"
@@ -113,117 +145,118 @@
       <container class="flex justify-center">
         <quote-carousel class="centered-quote" />
       </container>
-    </div>
+    </div> -->
 
-    <container class="meet-artists -mt-12 pb-32">
-      <fenced-title
-        class="flex-grow mr-0 mb-8 self-stretch"
-        color="fence-gray"
-        textAlign="center"
-        :closed="true"
-        >Creators
-      </fenced-title>
+    <container class="meet-artists pb-32">
+      <div class="flex items-center pt-20 lg:pt-24 flex-col lg:flex-row">
+        <img src="@/assets/icons/trending.svg" class="mr-2"/>
+        <common-title
+          class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
+          color="fence-light"
+          textAlign="left"
+          :closed="false"
+          >Creators</common-title>
+        <router-link to="creators" class="hidden lg:block">
+          <button :class="darkMode ? 'light' : 'dark'" class="button flex-shrink-0">
+            View All Creators <i class="fas fa-arrow-right ml-3 icon-right"></i>
+          </button>
+        </router-link>
+      </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 mt-9">
         <template v-for="artist in listOfArtists" :key="artist && artist.id">
-          <artist-card v-if="artist != null" :artist="artist" />
+          <artist-card :autoMargins="true" v-if="artist != null" :artist="artist" />
           <div
             v-else
-            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
+            class="creator-placeholder auto-margins placeholder-card overflow-hidden rounded-2xl bg-gray-100"
             :style="{ 'padding-bottom': '100%' }"
           ></div>
         </template>
       </div>
-
-      <router-link to="creators">
-        <button :class="darkMode ? 'light' : 'dark'" class="button mt-20 mx-auto w-full md:w-96">
-          View All Creators
-        </button>
-      </router-link>
     </container>
   </div>
 </template>
 
 <script>
-import {computed, watchEffect} from "vue";
+import {computed} from "vue";
 import { useRouter } from "vue-router";
 import { useMeta } from "vue-meta";
-import { useStore } from "vuex";
 
 import Container from "@/components/Container.vue";
-import ProductCard from "@/components/ProductCard.vue";
-import FencedTitle from "@/components/FencedTitle.vue";
-import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
+import SubTitle from "@/components/SubTitle.vue";
+import LightTypography from "@/components/LightTypography.vue";
+import IconSquare from "@/components/IconSquare.vue";
+import ProductCardV3 from "@/components/ProductCardV3.vue";
+import ProductCardV3Placeholder from "@/components/ProductCardV3Placeholder.vue";
+import CommonTitle from "@/components/CommonTitle.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
 import HeroAuction from "./components/HeroAuction.vue";
-import HowToVideo from "@/components/HowToVideo.vue";
-
-import PURCHASE_TYPE from "@/constants/PurchaseTypes.js";
-import useCollectablesWithPagination from "@/hooks/useCollectablesWithPagination.js";
+import PaneLink from "@/components/PaneLink.vue";
+import useDarkMode from "@/hooks/useDarkMode";
+import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
+import useHeroCollectable from "@/hooks/useHeroCollectable.js";
 import useArtistsWithPagination from "@/hooks/useArtistsWithPagination.js";
-import useWeb3 from "@/connectors/hooks";
-import {Web3Provider} from "@ethersproject/providers";
-import {formatEther} from "@ethersproject/units";
-import {useTokenContract} from "@/hooks/useContract";
 
 export default {
   name: "Home",
   components: {
     HeroAuction,
     Container,
-    FencedTitle,
-    ProductCard,
-    HowToVideo,
-    QuoteCarousel,
+    CommonTitle,
+    ProductCardV3,
+    ProductCardV3Placeholder,
     ArtistCard,
+    SubTitle,
+    LightTypography,
+    IconSquare,
+    PaneLink,
   },
   setup() {
     const { meta } = useMeta({
       title: "Home",
     });
     const router = useRouter();
-    const store = useStore();
+    const { darkMode } = useDarkMode();
 
-    // Disable dark mode until dark mode is supported across website
-    store.dispatch("application/setDarkMode", false);
+    const heroCollectableApi = useHeroCollectable();
+    const heroCollectable = computed(() => heroCollectableApi?.heroCollectable?.value);
+    
+    const paginatedLiveCollectables = useDropsWithPagination(7, {excludeEnded: true, excludeComingSoon: true}); // Use 7 in case one of them is the hero listing
+    const paginatedEndedCollectables = useDropsWithPagination(7, {excludeLive: true}); // Use 7 in case one of them is the hero listing
 
-    const darkMode = computed(() => store.getters['application/darkMode']);
-
-    const paginatedCollectables = useCollectablesWithPagination( 0);
-    const listOfCollectables = computed(
-      () => paginatedCollectables.listOfCollectables.value
+    const listOfLiveCollectables = computed(
+      // Uncomment if hero should be excluded from live list
+      // () => paginatedCollectables.listOfCollectables.value.filter(item =>  item && !item.featured_drop).slice(0,6) // Limit to 6 items
+      () => paginatedLiveCollectables.listOfCollectables.value.slice(0,6) // Limit to 6 items
     );
 
-    const listOfNonHeroCollectables = computed(
-      () => paginatedCollectables.listOfCollectables.value.filter(item =>  item && !item.featured_drop)
+    const listOfEndedCollectables = computed(
+      // Uncomment if hero should be excluded from ended list
+      // () => paginatedCollectables.listOfCollectables.value.filter(item =>  item && !item.featured_drop).slice(0,6) // Limit to 6 items
+      () => paginatedEndedCollectables.listOfCollectables.value.slice(0,6) // Limit to 6 items
     );
 
-    const heroCollectable = computed(() => listOfCollectables.value.filter(item =>  item && item.featured_drop)[0] || listOfCollectables.value[0]);
-    const featuredCollectables = computed(() =>
-      [listOfNonHeroCollectables.value[0], listOfNonHeroCollectables.value[1]].filter(
-        (i) => i !== undefined
-      )
-    );
-    const otherCollectables = computed(() =>
-      [
-        listOfNonHeroCollectables.value[2],
-        listOfNonHeroCollectables.value[3],
-        listOfNonHeroCollectables.value[4],
-      ].filter((i) => i !== undefined)
-    );
+    paginatedLiveCollectables.load();
+    paginatedEndedCollectables.load();
+    heroCollectableApi.load();
 
-    paginatedCollectables.load();
-
-    const navigateToCollectable = function (slug, isSlugFullRoute) {
+    const navigateToCollectable = function (slug, isSlugFullRoute, version) {
       if(isSlugFullRoute) {
         router.push({
           name: slug,
         });
       }else{
-        router.push({
-          name: "collectableAuction",
-          params: { slug: slug },
-        });
+        if(version === 2) {
+          router.push({
+            name: "collectableDropV2",
+            params: { slug: slug },
+          });
+        } else if (version === 3) {
+          router.push({
+            name: "collectableDropV3",
+            params: { slug: slug },
+          });
+        }
       }
     };
 
@@ -243,8 +276,8 @@ export default {
 
     return {
       heroCollectable,
-      featuredCollectables,
-      otherCollectables,
+      listOfLiveCollectables,
+      listOfEndedCollectables,
       listOfArtists,
       navigateToCollectable,
       navigateToCollection,
