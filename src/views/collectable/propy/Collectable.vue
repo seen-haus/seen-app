@@ -71,7 +71,7 @@
           <div class="text-4xl font-title font-bold mt-14 mb-6">
             The NFT Creator Statement
           </div>
-          <artist-card class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
+          <artist-card class="shadow-md" fullSize :artist="artist" :artistStatement="artistStatement"/>
         </div>
 
         <div class="right-side col-span-5">

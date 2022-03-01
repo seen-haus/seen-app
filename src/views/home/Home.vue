@@ -6,9 +6,14 @@
     />
     <div
       v-else
-      class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
-      :style="{ 'padding-bottom': '40%' }"
-    ></div>
+      class="overflow-hidden rounded-2xl bg-gray-100"
+      :style="{ 'padding-bottom': '634px', 'background-color': 'white' }"
+    >
+
+       <div class="abstract-circles abstract-circles-hero">
+        <img src="@/assets/images/abstract-circles.svg" alt="">
+      </div>
+    </div>
 
     <container class="section-featured-auctions relative pt-20">
       <div class="abstract-circles" :style="{
@@ -54,7 +59,7 @@
       </div>
 
       <div
-        class="auction-list-big grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
+        class="auction-list-big grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
       >
         <template
           v-for="collectable in listOfLiveCollectables"
@@ -96,7 +101,7 @@
       </div>
 
       <div
-        class="auction-list-big grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
+        class="auction-list-big grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
       >
         <template
           v-for="collectable in listOfEndedCollectables"
@@ -158,12 +163,12 @@
         </router-link>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 mt-9">
         <template v-for="artist in listOfArtists" :key="artist && artist.id">
-          <artist-card v-if="artist != null" :artist="artist" />
+          <artist-card :autoMargins="true" v-if="artist != null" :artist="artist" />
           <div
             v-else
-            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
+            class="creator-placeholder auto-margins placeholder-card overflow-hidden rounded-2xl bg-gray-100"
             :style="{ 'padding-bottom': '100%' }"
           ></div>
         </template>

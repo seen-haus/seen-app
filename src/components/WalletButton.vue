@@ -1,7 +1,7 @@
 <template>
   <div class="py-3 relative pl-8 pl-md-0">
     <div v-if="!account" class="wallet-button-container">
-      <button class="cursor-pointer button primary flex-shrink-0 wallet" @click="openWalletModal"><i
+      <button class="cursor-pointer button primary w-full flex-shrink-0 wallet" @click="openWalletModal"><i
           class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
       </button>
     </div>

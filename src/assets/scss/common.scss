@@ -385,6 +385,12 @@
   align-items: center;
 }
 
+.creator-placeholder {
+  height: 360px;
+  background: #FFFFFF;
+  box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.4);
+}
+
 .metadata-property-grid-container {
   display: grid;
   grid-template-columns: auto auto auto;

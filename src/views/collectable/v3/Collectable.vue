@@ -156,7 +156,7 @@
           <div v-if="artist" class="text-4xl font-title font-bold mt-14 mb-6" :class="darkMode && 'dark-mode-text'">
             Artist statement
           </div>
-          <artist-card v-if="artist" class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
+          <artist-card v-if="artist" fullSize class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
         </div>
         <div class="right-side col-span-5 mt-15">
           <bid-card

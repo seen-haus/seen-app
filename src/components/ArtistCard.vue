@@ -1,80 +1,75 @@
 <template>
   <div
-    class="artist-card overflow-hidden rounded-lg custom-shadow cursor-pointer"
-    :class="darkMode && 'dark-mode-surface'"
+    class="artist-card artist-card-container-border overflow-hidden rounded-lg custom-shadow cursor-pointer"
+    :class="{
+      'dark-mode-surface': darkMode,
+      'auto-margins': autoMargins,
+    }"
+    :style="{
+      ...(fullSize && {'width': 'auto', 'height': 'auto'})
+    }"
     @click="navigateToArtist"
   >
-    <div class="top-bar" :class="darkMode ? 'dark-mode-background' : 'light-mode-background'">
-    <img v-if="artist.header_image" :src="artist.header_image" class="mr-4 header" alt="">
-    <img v-else :src="artist.avatar" class="mr-4 blur" alt="">
-    </div>
-    <div class="description flex flex-col p-6" :class="darkMode ? 'dark-mode-surface' : 'light-mode-background'">
-      <img
-        :src="artist.avatar"
-        alt=""
-        class="rounded-full border-white border-3 left-6 -top-12.5 w-25 h-25 avatar"
-      />
-
-      <div class="flex items-center mt-4">
-        <div class="text-title font-bold text-xl ellipsis  mr-4" :class="darkMode && 'dark-mode-text'">
-          {{ artist.name }}
-        </div>
+    <div>
+      <div class="top-bar" :class="darkMode ? 'dark-mode-background' : 'light-mode-background'">
+        <img v-if="artist.header_image" :src="artist.header_image" class="mr-4 header" alt="">
+        <img v-else :src="artist.avatar" class="mr-4 blur" alt="">
       </div>
-
-      <div class="flex items-center mt-2">
-        <tag 
-          class="bg-fence-light text-gray-400 font-semibold flex-shrink-0" 
-          :class="{
-            'ml-auto': $route.name !== 'collectableDrops',
-            'dark-mode-text': darkMode,
-            'text-gray-400': !darkMode,
-          }"
-        >
-          {{ collectablesCount }} CREATION{{
-            collectablesCount > 1 || collectablesCount === 0
-              ? "S"
-              : ""
-          }}</tag
-        >
-        <div class="text-xs text-gray-400 mt-2">
-          <div v-if="socials">
-            <social-line
-              class="my-1"
-              :social="social"
-              :isVertical="false"
-              :iconOnly="true"
-              v-for="social in socials"
-              :key="social.url"
-            />
-          </div>
-          <div v-else>User has no socials yet</div>
-        </div>
-      </div>
-
-       <div class="flex items-center mt-2">
+      <div class="description flex flex-col p-6" :class="darkMode ? 'dark-mode-surface' : 'light-mode-background'">
         
-      </div>
+        <div class="flex">
+          <img
+            :src="artist.avatar"
+            alt=""
+            class="rounded-full border-white border-3 left-6 -top-12.5 w-25 h-25 avatar"
+          />
+          <div class="mt-13 ml-3">
+            <div class="text-xs text-gray-400 mt-1">
+              <div v-if="artist.socials">
+                <social-line
+                  class="my-1"
+                  :social="social"
+                  :isVertical="false"
+                  :iconOnly="true"
+                  v-for="social in artist.socials"
+                  :key="social.url"
+                />
+              </div>
+              <div v-else>User has no socials yet</div>
+            </div>
+          </div>
+        </div>
 
-      <div
-        class="mt-3 text-gray-600 md:text-lg"
-        :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-600'"
-        v-if="artistStatement != null"
-        v-html="artistStatement"
-      ></div>
-      <div class="mt-3" :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-600'" v-else v-html="artist.bio">
-      </div>
+          <div class="mt-3">
+            <div class="text-title font-bold text-xl ellipsis  mr-4" :class="darkMode && 'dark-mode-text'">
+              {{ artist.name }}
+            </div>
+            <div class="mt-1">
+              <tag 
+                class="bg-fence-light text-gray-400 font-semibold flex-shrink-0 inline-block" 
+                :class="{
+                  'ml-auto': $route.name !== 'collectableDrops',
+                  'dark-mode-text': darkMode,
+                  'text-gray-400': !darkMode,
+                }"
+              >
+                {{ collectablesCount }} CREATION{{
+                  collectablesCount > 1 || collectablesCount === 0
+                    ? "S"
+                    : ""
+                }}</tag
+              >
+            </div>
+          </div>
 
-      <div class="h-0.5 my-4 w-full rounded-full bg-gray-200"></div>
-
-      <div
-        class="flex flex-wrap justify-start items-center text-xs"
-        :class="darkMode ? 'dark-mode-text' : 'text-gray-400'"
-      >
-        <social-line
-          :social="social"
-          v-for="social in artist.socials"
-          :key="social.url"
-        />
+        <div
+          class="mt-2 text-gray-600 md:text-lg"
+          :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-600'"
+          v-if="artistStatement != null"
+          v-html="artistStatement"
+        ></div>
+        <div v-else class="mt-2" :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-600'" v-html="artist.bio">
+        </div>
       </div>
     </div>
   </div>
@@ -101,6 +96,14 @@ export default {
     artistStatement: {
       type: String,
     },
+    fullSize: {
+      type: Boolean,
+      default: false,
+    },
+    autoMargins: {
+      type: Boolean,
+      default: false,
+    }
   },
   setup(props) {
     const artist = ref(props.artist);
@@ -128,6 +131,36 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.artist-card-container-border {
+    // This class is just here for if we ever want to add a border that can support gradients
+    max-width: 100%;
+    height: 360px;
+    width: 326px;
+    background: #FFFFFF;
+    box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.4);
+    border-radius: 10px;
+    position: relative;
+    transition: all 0.2s ease-out;
+    &:hover {
+        box-shadow: 0px 6px 30px rgba(142, 152, 160, 0.6);
+        transform: translateY(-2px);
+    }
+    &:active {
+        box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.3);
+        transform: translateY(2px);
+    }
+}
+
+.artist-card-container {
+    max-width: 100%;
+    height: 360px;
+    width: 326px;
+    background: #FFFFFF;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
 .custom-shadow {
     box-shadow: 0px 3px 15px rgba(0,0,0,.1);
 }

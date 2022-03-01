@@ -155,6 +155,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    ignoreAutoAspectRatio: {
+      type: Boolean,
+      default: false,
+    },
     declaredMediaType: {
       type: [String, Boolean, null],
       default: false,
@@ -286,7 +290,9 @@ export default {
           // just added a max of 100% because it breaks when it goes above that
           // Haven't had a chance to work out why this is being done in the first place
           let useAspectRatio = 100;
-          if(((videoRef.value.videoHeight / videoRef.value.videoWidth) * 100) <= 100) {
+          if(props.aspectRatio && props.ignoreAutoAspectRatio) {
+            useAspectRatio = props.aspectRatio;
+          } else if (((videoRef.value.videoHeight / videoRef.value.videoWidth) * 100) <= 100) {
             useAspectRatio = (videoRef.value.videoHeight / videoRef.value.videoWidth) * 100;
           }
           calculatedAspecRatio.value = `${useAspectRatio}%`;
