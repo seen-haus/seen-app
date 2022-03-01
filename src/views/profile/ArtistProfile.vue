@@ -23,7 +23,7 @@
           </div>
           </div>
           <div class="mt-4 flex justify-between flex-wrap items-center mx-auto" :class="darkMode && 'dark-mode-text'">
-            <div v-html="artist?.bio ? artist.bio : 'No biography available.'"></div>
+            <div>{{artist?.bio ? artist.bio : 'No biography available.'}}</div>
           </div>
           <div class="mt-4 flex justify-between flex-wrap items-center mx-auto">
             <div class="text-xs text-gray-400">
