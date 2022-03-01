@@ -53,7 +53,7 @@
           }"
           class="button light-shadow bg-white quick-filter-button"
         >
-            <img src="@/assets/icons/gavel.svg" class="mr-3"/>Sold Out
+            <img src="@/assets/icons/gavel.svg" class="mr-3"/>Sold
         </button>
 
         <!-- Temp disable until there are secondary listings
