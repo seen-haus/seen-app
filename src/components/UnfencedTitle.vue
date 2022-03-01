@@ -1,8 +1,11 @@
 <template>
-  <div class="title flex items-center fence-wrap"
+  <div class="title items-center fence-wrap"
     :style="{
       ...(alignment === 'center' && {'justify-content': 'center'}),
       'width': width ? width : '100%',
+    }"
+    :class="{
+      'flex': !ignoreDefaultDisplay
     }"
   >
     <div
@@ -33,6 +36,10 @@ export default {
     fontSize: String,
     width: String,
     maxWidth: String,
+    ignoreDefaultDisplay: {
+      type: Boolean,
+      default: false,
+    }
   },
   computed: {
     alignment: function () {

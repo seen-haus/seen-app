@@ -39,11 +39,12 @@
         ><span class="flex-shrink-0">{{ title }}</span></fenced-title>
 
         <unfenced-title
-            class="text-black xs:hidden sm:hidden md:hidden lg:flex"
+            class="text-black hidden lg:flex"
             color="fence-dark"
             text-align="left"
             :titleMonospace="titleMonospace"
             :closed="true"
+            ignoreDefaultDisplay
         ><span class="flex-shrink-0">{{ title }}</span></unfenced-title>
 
         <div class="flex lg:justify-start items-center mt-2 justify-center">
