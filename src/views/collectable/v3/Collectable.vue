@@ -394,6 +394,12 @@ export default {
           const contract = await useV3NftContract(true);
           currentUserIsOwnerOfCollectable.value = await contract.balanceOf(account?.value, collectable.value?.nft_token_id) > 0;
       }
+      if(collectable.value?.slug && (collectable.value?.version === 2 || collectable.value?.version === 1)) {
+        router.push({
+          name: "collectableDropV2",
+          params: { slug: collectable.value.slug }
+        })
+      }
     });
 
     const navigateToCreate = () => {
