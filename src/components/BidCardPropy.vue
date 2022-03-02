@@ -6,7 +6,7 @@
           class="flex justify-start items-center text-xs font-bold"
           :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
       >
-        {{ isAuction ? 'AUCTION ENDED' : 'SALE OVER'}}
+        {{ is_closed ? (isAuction ? 'AUCTION CLOSED' : 'SALE CLOSED') : 'AUCTION HAS ENDED'}}
       </div>
       <div
           v-else-if="!isAuction"
@@ -15,7 +15,7 @@
       >
         <span v-if="isOpenEdition" class="tracking-widest mr-4">OPEN EDITION</span>
         <span v-if="!isOpenEdition" class="tracking-widest mr-4">EDITIONS LEFT </span>
-        <tag
+        <tag 
           v-if="!isOpenEdition"
           class="bg-fence-light self-end font-semibold"
           :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-400'"
@@ -34,7 +34,13 @@
           :number-of-bids="isAuction ? numberOfBids : undefined"
       />
 
-      <template v-if="isCollectableActive && !isUpcomming && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
+      <div class="text-gray-400 text-sm py-2" v-if="account">
+        <p>
+          Bidding status (<strong>{{shortenAddress(account)}}</strong>): <span :style="`color:${isWhitelistedBidder ? 'green' : 'orange'}`">{{isWhitelistedBidder ? 'verified' : 'unverified'}}</span>
+        </p>
+      </div>
+
+      <template v-if="isCollectableActive && !isUpcomming && (!requiresBiddingWhitelist || (requiresBiddingWhitelist && isWhitelistedBidder))">
         <div class="outlined-input mt-5" :class="{ 
           invalid: hasError || isFieldInvalid,
           'light-mode-background': darkMode,
@@ -44,7 +50,7 @@
               v-if="isAuction"
               type="number"
               @keypress="isNumber"
-              :placeholder="'Min bid price is ' + nextBidPrice + ' ETH'"
+              :placeholder="'Min bid price is ' + minimumBidValue + ' ETH'"
           />
           <input
               v-model="saleField.value"
@@ -76,9 +82,6 @@
           </p>
         </div>
       </template>
-      <button class="button opensea mt-6" v-if="!isCollectableActive && nftTokenId && !isVRFSale" @click="viewOnOpenSea">
-        Opensea
-      </button>
       <button class="button primary mt-6" v-if="!isCollectableActive && isVRFSale && !hasRequestedVRF && !hasFulfilledVRF && !hasCommittedVRF && !isSubmittingRandomnessRequest && (itemsBought > 0)" @click="startRandomnessRequest">
         Generate Chainlink Randomness
       </button>
@@ -98,113 +101,68 @@
       <button class="button disabled mt-6" v-if="!isCollectableActive && isVRFSale && hasRequestedVRF && hasFulfilledVRF && hasCommittedVRF && isSubmittingClaimVRF">
         Claiming Tokens...
       </button>
-      <template v-else-if="isCollectableActive && !isUpcomming">
-        <div v-if="bidDisclaimers && bidDisclaimers.length > 0 && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" class="text-gray-400 text-sm py-2">
-            <p style="width: calc(100%)">
-              Please note:<br/>
-              <ul>
-                <li v-for="item in bidDisclaimers" :key="item">• {{item}}</li>
-              </ul>
-            </p>
+      <template v-else-if="isCollectableActive">
+        <div class="text-gray-400 flex text-sm py-2" v-if="isWhitelistedBidder">
+          <input
+            class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
+            v-model="acceptTermsField.value"
+            type="checkbox"
+            :placeholder="'Propy Terms & Conditions'"
+          />
+          <p style="width: calc(100% - 30px)">
+            I confirm that I have downloaded and read the <a href="https://propy.com/browse/terms-and-conditions/" style="color: #2196F3;" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>, <a href="https://propy-docs-storage-public.s3.amazonaws.com/NFT/8.2.22-220207_00267_NEVER_FORGET_TO_HODL_LLC_Operating_Agreement_ACCEPTANCE+(execution).pdf" style="color: #2196F3;" target="_blank" rel="noopener noreferrer">Operating Agreement (OA)</a>, the <a href="https://propy-docs-storage-public.s3.amazonaws.com/NFT/8.2.22-220207_00267_NEVER_FORGET_TO_HODL_LLC_Operating_Agreement_ACCEPTANCE+(execution).pdf" style="color: #2196F3;" target="_blank" rel="noopener noreferrer">Purchase and Joinder Agreement (PJA)</a> and <a href="https://propy-docs-storage-public.s3.amazonaws.com/NFT/220207.00267_Administration+Agreement+(execution)+MA.pdf" style="color: #2196F3;" target="_blank" rel="noopener noreferrer">Administration Agreement (AA)</a> and acknowledge that I understand that if I am the winning bidder that I am purchasing limited liability company interests in the entity owning the property, which interests are only represented by the NFT. If I am the winning bidder, I specifically agree and consent to become a signatory via my electronic signature to the OA, the PJA, and the AA, to become a party to and bound by the terms set forth in those agreements and become the sole member of the limited liability company.
+          </p>
         </div>
-        <template v-if="isCollectableActive">
-          <div class="text-gray-400 flex text-sm py-2" v-if="tangibility === 'tangible_nft'">
-            <input
-              class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
-              v-model="acceptPhysicalTermsField.value"
-              type="checkbox"
-              :placeholder="'Physical Terms'"
-            />
-            <p style="width: calc(100% - 30px)">
-              I accept that physical items associated with purchased NFTs are only claimable for 31 days from the date of purchase. <span class="text-xs error-notice">* required</span>
-            </p>
-          </div>
-          <span class="error-notice">{{ acceptPhysicalTermsField.errors[0] }}</span>
-          <div v-if="isVRFSale">
-            <div class="text-gray-400 flex text-sm py-2">
-              <input
-                class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
-                v-model="acceptVRFTermsField.value"
-                type="checkbox"
-                :placeholder="'Physical Terms'"
-              />
-              <p style="width: calc(100% - 30px)">
-                I understand that I will need to come back to this page once the sale has ended in order to claim my NFT (randomness is generated once the sale ends). <span class="text-xs error-notice">* required</span>
-              </p>
-            </div>
-            <span class="error-notice">{{ acceptVRFTermsField.errors[0] }}</span>
-          </div>
-        </template>
-        <button class="button primary mt-1"
-                :class="{
-                  'cursor-wait disabled opacity-50': isSubmitting,
-                  'disabled opacity-50': (tangibility === 'tangible_nft' && !acceptPhysicalTermsField.value) || (isVRFSale && !acceptVRFTermsField.value)
-                }"
-                :disabled="isSubmitting" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
+        <span v-if="isWhitelistedBidder" class="error-notice">{{ acceptTermsField.errors[0] }}</span>
+        <button 
+          class="button primary mt-1"
+          :class="{
+            'cursor-wait disabled opacity-50': isSubmitting,
+            'disabled opacity-50': !isWhitelistedBidder || !acceptTermsField.value
+          }"
+          :disabled="isSubmitting || !acceptTermsField.value"
+          v-if="account && hasEnoughFunds() && isWhitelistedBidder"
+          @click="placeABidOrBuy"
+        >
           <span v-if="!isSubmitting">{{ isAuction ? (`Place ${isAwaitingReserve ? 'reserve' : 'a'} bid`) : "Buy now" }}</span>
           <span v-else>Submitting...</span>
         </button>
-        <button
-          class="button primary mt-4"
-          :class="{'cursor-wait disabled opacity-50': isSubmitting}"
-          :disabled="isSubmitting"
-          v-if="showNotificationButton"
-          @click="openNotificationsModal"
-        >
-          <span>Notification Manager</span>
-        </button>
-        <button :class="darkMode ? 'light' : 'dark'" class="button disabled opacity-50" v-if="account && !hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))">
+        <button :class="darkMode ? 'light' : 'dark'" class="button disabled opacity-50" v-if="account && !hasEnoughFunds() && (!requiresBiddingWhitelist || (requiresBiddingWhitelist && isWhitelistedBidder))">
           Insufficient funds
         </button>
-        <template v-if="account && requiresRegistration && !isRegisteredBidder">
+        <template v-if="account && requiresBiddingWhitelist && !isWhitelistedBidder">
+          
           <div class="text-gray-400 text-sm py-2">
             <p>
-              Your real information is required for identity verification only. You can become an owner <b>only</b> if you’re older than 18 years old, and provide your name as per your ID.
+              All bidders are required to submit KYC information before being able to bid on this auction.<br/><br/>Once you have submitted your KYC information, Propy will validate your information and enable your bidding status (this may take up to 2 hours).
             </p>
           </div>
-          <div class="outlined-input mt-2" :class="{ invalid: hasError || isFieldInvalid }">
-            <input
-                v-model="firstNameField.value"
-                autocomplete="given-name"
-                :placeholder="'First Name as per ID'"
-            />
-          </div>
-          <span class="error-notice">{{ firstNameField.errors[0] }}</span>
-          <div class="outlined-input mt-2" :class="{ invalid: hasError || isFieldInvalid }">
-            <input
-                v-model="lastNameField.value"
-                autocomplete="family-name"
-                :placeholder="'Last Name as per ID'"
-            />
-          </div>
-          <span class="error-notice">{{ lastNameField.errors[0] }}</span>
-          <div class="outlined-input mt-2" :class="{ invalid: hasError || isFieldInvalid }">
-            <input
-                v-model="emailField.value"
-                autocomplete="email"
-                type="email"
-                :placeholder="'Email Address'"
-            />
-          </div>
-          <span class="error-notice">{{ emailField.errors[0] }}</span>
-          <div class="text-gray-400 flex text-sm py-2">
-            <input
-              class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
-              v-model="acceptTermsField.value"
-              type="checkbox"
-              :placeholder="'Email Address'"
-            />
-            <p style="width: calc(100% - 30px)">
-              I agree with Propy's <a href="https://propy.com/browse/terms-and-conditions/" style="color: #2196F3;" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> and <a href="https://propy.com/browse/privacy-policy/" style="color: #2196F3" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. I hereby declare that the information provided is true and correct, and I am not subject to any sanctions imposed by a regulatory body.
-            </p>
-          </div>
-          <span class="error-notice">{{ acceptTermsField.errors[0] }}</span>
-          <button
+          <!-- <button
               class="cursor-pointer button primary flex-shrink-0 mt-2"
               @click="registerToBid"
           >
             <i class="fas fa-id-badge mr-2 transform"></i> Register to bid
+          </button> -->
+          <button
+              class="cursor-pointer button primary flex-shrink-0 mt-2 mb-1"
+              @click="startKycProcess"
+          >
+            <i class="fas fa-id-badge mr-2 transform"></i> Start KYC Process
           </button>
+          <button
+              class="cursor-pointer button primary flex-shrink-0 mt-2"
+              @click="checkWhitelistStatus"
+              :class="{
+                'cursor-wait disabled opacity-50': isCheckingWhitelistStatus,
+              }"
+          >
+            <i class="fas fa-redo mr-2 transform"></i> Recheck Bidding Status
+          </button>
+          <div class="text-gray-400 text-sm mt-4">
+            <p>
+              If it has been over 2 hours since submitting your KYC info and you have not yet been granted bidding access, please contact Propy via <a style="color: #2d78ff" href="mailto:nft@propy.com">nft@propy.com</a>
+            </p>
+          </div>
         </template>
         <button
             v-if="!account"
@@ -214,37 +172,20 @@
           <i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
         </button>
       </template>
-      <button class="button primary mt-6" v-if="hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="viewOverrideClaimLink">
-        Claim Physical
-      </button>
-      <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
-        Claim Physical
-      </button>
-      <button class="button primary mt-6" v-if="claimId !== null && isOpenEdition && isCurrentAccountEntitledToDigital" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
-        Claim NFT
-      </button>
-      <button class="button primary mt-6" :class="{'cursor-wait disabled opacity-50': isClosingAuction}" :disabled="isClosingAuction" v-if="isReadyForClosure && isAuction" @click="closeAuction">
-        {{`${winningAddress}`.toLowerCase() === `${account}`.toLowerCase() ? (isClosingAuction ? 'Claiming NFT...' : 'Claim NFT') : (isClosingAuction ? 'Close Auction' : 'Closing Auction...')}}
-      </button>
-      <button class="button primary mt-6" :class="{'cursor-wait disabled opacity-50': isClosingSale}" :disabled="isClosingSale" v-if="isReadyForClosure && !isAuction" @click="closeSale">
-        {{isClosingSale ? 'Closing Sale...' : 'Close Sale'}}
-      </button>
+      <template v-if="hasOverrideClaimLink && isCurrentAccountEntitledToPhysical">
+        <div class="text-gray-400 text-sm py-2">
+          <p>
+            Congratulations! You will receive an email with the next steps within an hour.
+          </p>
+        </div>
+      </template>
+      <!-- <button class="button primary mt-3" v-if="hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="viewOverrideClaimLink">
+        Complete Ownership Process
+      </button> -->
     </div>
 
     <div class="bottom-part border-t p-8" :class="darkMode ? 'dark-mode-surface-darkened black-border' : 'light-mode-surface'">
       <template v-if="!isCollectableActive">
-        <!-- <progress-timer
-            v-if="!isAwaitingReserve"
-            ref="timerRef"
-            class="text-3xl mt-2"
-            :class="darkMode ? 'dark-mode-text' : 'text-black'"
-            :isAuction="isAuction"
-            :label="null"
-            :startDate="startsAt"
-            :endDate="endsAt"
-            @onProgress="updateProgress"
-            @onTimerStateChange="updateState"
-        /> -->
         <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold" v-if="isAuction">
           AUCTION ENDED
         </div>
@@ -256,7 +197,7 @@
             {{ is_closed ? 'CLOSED' : 'SOLD ' + itemsBought + ' EDITIONS'}}
           </div>
           <div v-if="isOpenEdition" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            {{ 'SOLD OUT' }}
+            {{ 'SOLD OUT (' + itemsBought + ' EDITIONS)' }}
           </div>
         </div>
         <!-- <button
@@ -271,10 +212,10 @@
 
       <template v-else-if="isAuction">
         <div v-if="!isAwaitingReserve" class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-          {{ isUpcomming ? "BIDDING OPENS IN" : "AUCTION ENDS IN" }}
+          {{ isUpcomming ? "AUCTION STARTS IN" : "AUCTION ENDS IN" }}
         </div>
         <div v-if="isAwaitingReserve && currentProgress" class="tracking-widest mb-6 text-gray-400 text-xs font-bold">
-          24 HR COUNTDOWN BEGINS ONCE RESERVE IS MET
+          7 HR COUNTDOWN BEGINS ONCE RESERVE IS MET
         </div>
         <div v-if="isAwaitingReserve && !currentProgress" class="tracking-widest mb-6 text-gray-400 text-xs font-bold">
           BIDDING OPENS IN
@@ -323,7 +264,7 @@
       <template v-else>
         <template v-if="isUpcomming">
           <div class="tracking-widest mr-4 text-gray-400 text-xs font-bold">
-            {{ isAuction ? "BIDDING OPENS IN" : "DROP OPENS IN" }}
+            {{ isAuction ? "AUCTION STARTS IN" : "DROP OPENS IN" }}
           </div>
           <progress-timer
               ref="timerRef"
@@ -415,15 +356,11 @@ import numberHelper from "@/services/utils/numbers"
 import emitter from "@/services/utils/emitter";
 import { BidRegistrationService } from "@/services/apiService"
 import useWeb3 from "@/connectors/hooks";
-import useUser from "@/hooks/useUser";
-import useDarkMode from '@/hooks/useDarkMode';
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 import useSigner from "@/hooks/useSigner";
 import useMarketContractEvents from "@/hooks/useMarketContractEvents";
-import {
-  useSeenNFTContract,
-  useV2VRFSaleContract,
-} from "@/hooks/useContract";
+import {shortenAddress} from "@/services/utils/index"
+import {useSeenNFTContract, useV2VRFSaleContract, useV2PropyAuctionContract, useEthAddressWhitelistContract} from "@/hooks/useContract";
 
 export default {
   name: "BidCard",
@@ -458,15 +395,11 @@ export default {
     is_sold_out: Boolean,
     is_closed: Boolean,
     collectable: Object,
-    collectableVersion: Number,
-    collectableConsignmentId: Number,
     nextBidPrice: Number,
     claim: [Number, Boolean],
-    requiresRegistration: Boolean,
+    requiresBiddingWhitelist: Boolean,
     bidDisclaimers: [Array],
     overrideClaimLink: String,
-    isReadyForClosure: Boolean,
-    winningAddress: [Boolean, String],
   },
   computed: {
     isAwaitingReserve: function () {
@@ -481,18 +414,17 @@ export default {
   setup(props, ctx) {
     const toast = useToast();
     const store = useStore();
-    const {account, chainId} = useWeb3();
+    const {account} = useWeb3();
 
     const price = ref(props.price);
     const isAuction = ref(props.isAuction);
     const hasError = ref(null);
-    const isRegisteredBidder = ref(false);
+    const isWhitelistedBidder = ref(false);
+    const isCheckingWhitelistStatus = ref(false);
     const isSubmitting = ref(false);
     const isSubmittingRandomnessRequest = ref(false);
     const isSubmittingRandomnessCommitment = ref(false);
     const isSubmittingClaimVRF = ref(false);
-    const isClosingSale = ref(false);
-    const isClosingAuction = ref(false);
     const isCurrentAccountEntitledToPhysical = ref(false);
     const isCurrentAccountEntitledToDigitalClaimVRF = ref(false);
     const isCurrentAccountEntitledToDigital = ref(false);
@@ -503,18 +435,8 @@ export default {
     const winner = computed(() => collectableData.value.winner_address);
     const tangibility = computed(() => collectableData.value.type);
     const balance = computed(() => store.getters['application/balance'].eth);
-    const { user } = useUser();
-    const { darkMode } = useDarkMode();
-
-    const data = reactive({
-      endTime: false,
-    })
-
-    watchEffect(() => {
-      console.log({'props.winningAddress': props.winningAddress})
-      data.endTime = props.endsAt;
-      data.winningAddress = props.winningAddress;
-    })
+    const darkMode = computed(() => store.getters['application/darkMode']);
+    const user = computed(() => store.getters['user/user']);
 
     const form = useForm({
       initialValues: {
@@ -523,89 +445,59 @@ export default {
       },
     });
 
+    const acceptTermsField = reactive(useField("terms and conditions", (val) => fieldValidatorAcceptTerms(val)));
     const auctionField = reactive(useField("bid", (val) => fieldValidatorAuction(val)));
     const saleField = reactive(useField("amount", (val) => fieldValidatorSale(val)));
-    const firstNameField = reactive(useField("first name", "required|min:3"));
-    const lastNameField = reactive(useField("last name", "required|min:3"));
-    const emailField = reactive(useField("email", "email"));
-    const acceptTermsField = reactive(useField("terms and conditions", (val) => fieldValidatorAcceptTerms(val)));
-    const acceptPhysicalTermsField = reactive(useField("physical terms and conditions", (val) => fieldValidatorAcceptPhysicalTerms(val)));
-    const acceptVRFTermsField = reactive(useField("vrf terms and conditions", (val) => fieldValidatorAcceptVRFTerms(val)));
 
     const isFieldInvalid = computed(() => {
       return isAuction.value ? auctionField.errors.length : saleField.errors.length
     });
 
-    function checkRegistrationStatusIfRequired() {
-      let walletAddress = account.value;
-      let collectableId = collectableData.value.id;
-      if(props.requiresRegistration) {
-        BidRegistrationService.isRegistered(walletAddress, collectableId).then(res => {
-          isRegisteredBidder.value = res.data.is_registered;
-        }).catch(e => {
-          isRegisteredBidder.value = false;
-          console.error(e);
-        });
-      }else{
-        isRegisteredBidder.value = false;
+    const checkWhitelistStatus = async () => {
+      isCheckingWhitelistStatus.value = true;
+      try {
+        if(collectableData.value.contract_address) {
+          let auctionContract = useV2PropyAuctionContract(collectableData.value.contract_address);
+          let isWhitelisted = await auctionContract.isBidderWhitelisted(account?.value);
+          isWhitelistedBidder.value = isWhitelisted;
+        } else {
+          // TODO: Move to DB source if/when another one of these drops is done
+          let ethWhitelistContract = useEthAddressWhitelistContract("0xBE2779646C64e0f7111F4Dd32f3a6940B4717629");
+          let isWhitelisted = await ethWhitelistContract.isWhitelisted(account?.value);
+          isWhitelistedBidder.value = isWhitelisted;
+        }
+      } catch (e) {
+        isWhitelistedBidder.value = false;
+        console.error(e);
       }
+      isCheckingWhitelistStatus.value = false;
     }
 
-    checkRegistrationStatusIfRequired()
-
-    watch(account, () => {
-      checkRegistrationStatusIfRequired()
-    });
+    watchEffect(async () => {
+      if (props.requiresBiddingWhitelist && account?.value && collectableData?.value?.contract_address) {
+        await checkWhitelistStatus();
+      } else {
+        isWhitelistedBidder.value = false;
+      }
+    })
 
     watchEffect(async () => {
-      if (account?.value && isAuction?.value && !props.isOpenEdition && !props?.isCollectableActive && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
-        let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
-        let balanceOfAuctionContract = await nftContract.balanceOf(collectableData.value.contract_address, collectableData.value.nft_token_id)
-        if(parseInt(balanceOfAuctionContract) > 0) {
-          // NFT is still in auction contract, set auction winner as holder by proxy of auction contract
-          if(collectableData.value?.winner_address?.toLowerCase() === account.value.toLowerCase()) {
-            isCurrentAccountEntitledToPhysical.value = true;
-          }else{
-            isCurrentAccountEntitledToPhysical.value = false;
-          }
-        } else {
-          // NFT is no longer in auction contract, check if current account is holding NFT
-          let balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
-          if(parseInt(balanceOfCurrentAccount) > 0) {
-            isCurrentAccountEntitledToPhysical.value = true;
+      if (account?.value && isAuction?.value && !props.isOpenEdition && !props?.isCollectableActive && collectableData?.value?.contract_address) {
+        isCurrentAccountEntitledToPhysical.value = false;
+        let auctionContract = useV2PropyAuctionContract(collectableData.value.contract_address);
+        try {
+          let auctionWinner = await auctionContract.winning();
+          if(auctionWinner.toLowerCase() === account?.value.toLowerCase()) {
+            isCurrentAccountEntitledToPhysical.value = true
           } else {
             isCurrentAccountEntitledToPhysical.value = false;
           }
-        }
-      } else if(account?.value && !isAuction?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
-        // Cover sale scenarios, show claim button when balance is positive
-        let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
-        let balanceOfCurrentAccount = 0;
-        if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
-          for(let tokenId of collectableData.value.nft_token_id) {
-            let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
-            balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
-          }
-        } else {
-          balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
-        }
-        if(parseInt(balanceOfCurrentAccount) > 0) {
-          isCurrentAccountEntitledToPhysical.value = true;
-        } else {
+        } catch (e) {
           isCurrentAccountEntitledToPhysical.value = false;
         }
+      } else {
+        isCurrentAccountEntitledToPhysical.value = false;
       }
-      // else if(account?.value && props.isOpenEdition && !props?.isCollectableActive) {
-      //   // Cover open edition claim scenarios, show claim button when balance is positive
-      //   let openEditionSaleContract = useV2OpenEditionContract(collectableData.value.contract_address);
-      //   let entitledBalanceOfCurrentAccount = await openEditionSaleContract.buyerToBuyCount(account.value);
-      //   console.log({entitledBalanceOfCurrentAccount})
-      //   if(parseInt(entitledBalanceOfCurrentAccount) > 0) {
-      //     isCurrentAccountEntitledToDigital.value = true;
-      //   } else {
-      //     isCurrentAccountEntitledToDigital.value = false;
-      //   }
-      // }
     })
 
     watchEffect(async () => {
@@ -621,10 +513,24 @@ export default {
       }
     })
 
+    const minimumBidValue = ref(props.price);
+
+    watchEffect(() => {
+      if(props.numberOfBids > 0) {
+        minimumBidValue.value = props.price + 0.5;
+      } else {
+        minimumBidValue.value = props.price;
+      }
+    })
+
     const fieldValidatorAuction = (value) => {
       if (value) {
-        if (value < parseFloat(props.nextBidPrice.toString())) {
-          return 'Entered sum must be 10% higher than the currently winning bid.'
+        if (parseFloat(value.toString()) < parseFloat(minimumBidValue.value.toString())) {
+          if(props.numberOfBids > 0) {
+            return 'Must be at least 0.5 ETH higher than the currently winning bid.'
+          } else {
+            return `Must be at least ${minimumBidValue.value} ETH.`
+          }
         }
         return hasEnoughFunds() ? true : 'You do not have enough funds';
       } else {
@@ -644,23 +550,7 @@ export default {
       if (value) {
         return true;
       } else {
-        return 'Please accept the Terms and Conditions as well as the Privacy Policy to continue';
-      }
-    }
-
-    const fieldValidatorAcceptPhysicalTerms = (value) => {
-      if (value) {
-        return true;
-      } else {
-        return 'Please accept the terms regarding physical redemptions to continue';
-      }
-    }
-
-    const fieldValidatorAcceptVRFTerms = (value) => {
-      if (value) {
-        return true;
-      } else {
-        return 'Please accept the terms regarding randomised sales to continue';
+        return 'Please accept the Propy Operating Agreement as well as the Propy Service Provider Agreement to continue';
       }
     }
 
@@ -669,8 +559,6 @@ export default {
     const {
       bid,
       buy,
-      closeAuctionV3,
-      closeSaleV3,
       requestRandomness,
       commitRandomness,
       claimTokensSaleVRF,
@@ -714,8 +602,8 @@ export default {
         if (isAuction.value) {
           amount = parseFloat(auctionField.value, 10);
           if (isNaN(amount)) throw new Error("invalid number");
-          if (amount < props.nextBidPrice) throw new Error("not enough funds");
-          onBid(auctionField.value, props.collectableConsignmentId);
+          if (amount < minimumBidValue.value) throw new Error("not enough funds");
+          onBid(auctionField.value);
         } else {
           amount = parseInt(saleField.value, 10);
           if (isNaN(amount)) throw new Error("invalid number");
@@ -723,7 +611,7 @@ export default {
           // if (amount > props.items_of - props.items) {
           //   throw new Error("not enough items");
           // }
-          onBuy(saleField.value, props.collectableConsignmentId);
+          onBuy(saleField.value);
 
         }
         hasError.value = null;
@@ -735,56 +623,6 @@ export default {
           summary: 'Error',
           detail: `Error placing ${isAuction.value ? 'a bid' : 'a buy order'}.`,
           life: 3000
-        });
-      }
-    };
-
-    const registerToBid = async () => {
-      let firstName = "";
-      let lastName = "";
-      let email = "";
-      let collectableId = "";
-      let acceptTerms = false;
-      try {
-        firstName = firstNameField.value;
-        lastName = lastNameField.value;
-        email = emailField.value;
-        acceptTerms = acceptTermsField.value;
-        collectableId = collectableData.value.id;
-
-        if (!firstName || firstName.length < 3) throw new Error("first name required");
-        if (!lastName || lastName.length < 3) throw new Error("last name required");
-        if (!email || email.length < 3) throw new Error("email required");
-        if (!acceptTerms) throw new Error("Please accept the Terms and Conditions to continue")
-        if (!collectableId) throw new Error("collectable ID required");
-
-        const msg = `First name: ${firstName}\nLast name: ${lastName}\nEmail: ${email}\nCollectable ID: ${collectableId}\nI accept Propy's terms and conditions and privacy policy.`;
-        const signer = useSigner();
-
-        if (signer) {
-          const sig = await signer
-            .signMessage(msg)
-            .catch((e) => {
-              throw new Error("Message signing failed");
-          });
-          BidRegistrationService.register({ collectable_id: collectableId, first_name: firstName, last_name: lastName, email: email, sig, wallet_address: account.value})
-            .then(() => {
-              toast.add({severity:'success', summary:'Success', detail:'Successfully registered as bidder for this auction.', life: 3000});
-              checkRegistrationStatusIfRequired();
-            })
-            .catch(() => toast.add({severity:'error', summary:'Error', detail:'Could not submit your details. Please try to enter them later.', life: 3000}));
-        }else{
-          throw new Error("signer not imported");
-        }
-        hasError.value = null;
-      } catch (e) {
-        hasError.value = true;
-        console.error("Error when trying to register", e);
-        toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: `${e}`,
-          life: 5000
         });
       }
     };
@@ -835,8 +673,9 @@ export default {
                 // Cover sale scenarios, show claim button when balance is positive
                 let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
                 let balanceOfCurrentAccount = 0;
-                if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
-                  for(let tokenId of collectableData.value.nft_token_id) {
+                if((collectableData.value.nft_token_id.indexOf("[") === 0) || collectableData.value.is_vrf_drop) {
+                  let tokenIds = JSON.parse(collectableData.value.nft_token_id);
+                  for(let tokenId of tokenIds) {
                     let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
                     balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
                   }
@@ -859,14 +698,14 @@ export default {
       }
     }
 
-    const onBuy = async (event, collectableConsignmentId) => {
+    const onBuy = async (event) => {
       try {
         const currentPrice = price.value;
         const amount = +parseInt(event, 10);
         const totalPrice = amount * currentPrice;
 
         isSubmitting.value = true
-        await buy(amount, collectableConsignmentId)
+        await buy(amount)
             .then(async (response) => {
               isSubmitting.value = false
               if (response) {
@@ -876,8 +715,9 @@ export default {
                 // Cover sale scenarios, show claim button when balance is positive
                 let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
                 let balanceOfCurrentAccount = 0;
-                if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
-                  for(let tokenId of collectableData.value.nft_token_id) {
+                if((collectableData.value.nft_token_id.indexOf("[") === 0) || collectableData.value.is_vrf_drop) {
+                  let tokenIds = JSON.parse(collectableData.value.nft_token_id);
+                  for(let tokenId of tokenIds) {
                     let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
                     balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
                   }
@@ -901,19 +741,15 @@ export default {
       }
     };
 
-    const onBid = async (event, collectableConsignmentId) => {
+    const onBid = async (event) => {
       try {
         const amount = +parseFloat(event, 10);
         isSubmitting.value = true
-        await bid(amount, collectableConsignmentId)
+        await bid(amount)
             .then((response) => {
               try {
                 if(response) {
                   auctionField.resetField(null)
-                  showNotificationButtonRef.value = true;
-                  if((user.value?.email === false || (!user.value?.email && account?.value)) && !localStorage.getItem(`hasDismissedNotificationModal-${account?.value}`)) {
-                    openNotificationsModal(true);
-                  }
                 }
                 isSubmitting.value = false
               } catch(e) {
@@ -939,8 +775,7 @@ export default {
       currentProgress.value = event;
     };
 
-    const updateState = function (state) {
-      console.log({state})
+    const updateState = function () {
       ctx.emit('updateState');
     }
 
@@ -974,33 +809,17 @@ export default {
     const viewOnOpenSea = () => {
       let nftAddress = collectableData.value.nft_contract_address
       let nftTokenId = collectableData.value.nft_token_id
-      let url = `https://opensea.io/assets/${nftAddress}/${nftTokenId}`;
-      if(Number(chainId.value) > 0) {
-        url = `https://testnets.opensea.io/assets/${nftAddress}/${nftTokenId}`;
-      }
-      window.open(url, '_blank').focus()
+      window.open(`https://opensea.io/assets/${nftAddress}/${nftTokenId}`, '_blank').focus()
+    }
+
+    const startKycProcess = () => {
+      window.open(`https://propy.com/kyc`, '_blank').focus()
     }
 
     const viewOverrideClaimLink = () => {
       window.open(props.overrideClaimLink, '_blank').focus()
     }
 
-    const closeSale = async () => {
-      if(account?.value && ((Number(props.collectableConsignmentId) === 0) || (Number(props.collectableConsignmentId) > 0))) {
-        isClosingSale.value = true;
-        await closeSaleV3(props.collectableConsignmentId);
-        isClosingSale.value = false;
-      }
-    }
-
-    const closeAuction = async () => {
-      if(account?.value && ((Number(props.collectableConsignmentId) === 0) || (Number(props.collectableConsignmentId) > 0))) {
-        isClosingAuction.value = true;
-        await closeAuctionV3(props.collectableConsignmentId);
-        isClosingAuction.value = false;
-      }
-    }
-    
     const isNumber = (value) => {
       return numberHelper.isNumber(value)
     }
@@ -1028,18 +847,10 @@ export default {
       isSubmittingRandomnessRequest,
       isSubmittingRandomnessCommitment,
       isSubmittingClaimVRF,
-      isClosingAuction,
-      isClosingSale,
       openWalletModal,
       hasEnoughFunds,
       auctionField,
       saleField,
-      firstNameField,
-      lastNameField,
-      emailField,
-      acceptTermsField,
-      acceptPhysicalTermsField,
-      acceptVRFTermsField,
       tangibility,
       isFieldInvalid,
       viewOnOpenSea,
@@ -1048,8 +859,7 @@ export default {
       isNumber,
       isInteger,
       claimId: props.claim?.id ? props.claim.id : null,
-      isRegisteredBidder,
-      registerToBid,
+      isWhitelistedBidder,
       isCurrentAccountEntitledToPhysical,
       isCurrentAccountEntitledToDigital,
       isCurrentAccountEntitledToDigitalClaimVRF,
@@ -1057,11 +867,15 @@ export default {
       nftTokenId: collectableData.value.nft_token_id,
       showNotificationButton,
       openNotificationsModal,
-      closeSale,
-      closeAuction,
       startRandomnessRequest,
       startRandomnessCommitment,
       startClaimVRF,
+      startKycProcess,
+      shortenAddress,
+      checkWhitelistStatus,
+      isCheckingWhitelistStatus,
+      acceptTermsField,
+      minimumBidValue,
     };
   },
 };

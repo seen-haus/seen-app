@@ -137,10 +137,10 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const isUpcomming = computed(() => collectableState.value === COLLECTABLE_STATE.WAITING);
     const isOpenEdition = computed(() => collectable.value.is_open_edition);
     const tangibility = computed(() => collectable.value.type === 'tangible_nft' ? 'nft-physical' : 'nft-digital');
-    const tags = computed(() => collectable.value.tags.map(tag => tag.name));
-    const listingType = computed(() => marketHandlerToListingType[collectable.value.market_handler_type]);
+    const tags = computed(() => collectable.value.tags ? collectable.value.tags.map(tag => tag.name) : []);
+    const listingType = computed(() => marketHandlerToListingType[collectable.value.version === 3 ? collectable.value.market_handler_type : collectable.value.purchase_type]);
     const priceType = computed(() => {
-        let listingTypeCheck = marketHandlerToListingType[collectable.value.market_handler_type];
+        let listingTypeCheck = marketHandlerToListingType[collectable.value.version === 3 ? collectable.value.market_handler_type : collectable.value.purchase_type];
         if(listingTypeCheck === 'auction') {
             if(events.value.length === 0) {
                 return 'Reserve Price';
@@ -254,6 +254,18 @@ export default function useCollectableInformation(initialCollectable = {}) {
                             }
                             return carry;
                         }, 0);
+            } else {
+                items.value = (events.value || [])
+                    .reduce((carry, evt) => {
+                        if (evt.amount) {
+                            return parseInt(evt.amount) + carry;
+                        }
+                        if (evt.raw && typeof evt.raw == "string") {
+                            let decodedEvt = JSON.parse(evt.raw);
+                            return parseInt(decodedEvt.amount) + carry;
+                        }
+                        return carry;
+                    }, 0);
             }
             price.value = +(data.price || 0).toFixed(3);
             priceUSD.value = +(data.value_in_usd || 0).toFixed(2);

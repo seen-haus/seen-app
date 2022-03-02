@@ -6,7 +6,7 @@
             <span v-html="question.answer"></span>
         </collapsible-tile>
         </template>
-        <button v-if="faq && faq.length > 3" class="button dark w-full mt-6 p-6" @click="openModal">
+        <button v-if="faq && faq.length > 3" class="button dark w-full mt-6" @click="openModal">
             <i class="fas fa-list mr-2 text-xl icon-left text-white"></i> Open full FAQ
             <faq-modal :faq="faq"></faq-modal>
         </button>

@@ -8,8 +8,8 @@
     >
         <div class="drop-card-preview-container">
             <div class="drop-card-inner-padding-top">
-                <div class="drop-card-media-container flex-center placeholder-light-grey">
-                    <img v-if="!data.mediaUrl" src="@/assets/icons/media-icon.svg" style="opacity: 0.6" alt="Media Icon">
+                <div class="drop-card-media-container flex-center bg-gray-100">
+                    <img v-if="!data.mediaUrl && !disableMediaPlaceholder" src="@/assets/icons/media-icon.svg" style="opacity: 0.6" alt="Media Icon">
                     <media-loader
                         :key="data.mediaUrl"
                         v-if="data.mediaUrl"
@@ -19,6 +19,7 @@
                         loop
                         autoplay
                         maxWidthAndHeight
+                        fillHeight
                     />
                     <div class="tangibility-container">
                         <tag v-if="data.tangibility === 'nft-digital'" class="bg-black mr-1 text-white">NFT</tag>
@@ -31,30 +32,32 @@
                         <live-indicator v-if="liveStatus" :status="liveStatus" class="text-white ml-auto dark"/>
                     </div>
                 </div>
-                <div class="drop-card-title mt-3 mb-3">
-                    <div v-if="!titleText" class="title-placeholder-container mt-4">
-                        <div class="placeholder-light-grey text-placeholder"></div>
+                <div class="drop-card-middle">
+                    <div class="drop-card-title mt-3 mb-3">
+                        <div v-if="!titleText" class="title-placeholder-container mt-4">
+                            <div class="placeholder-light-grey text-placeholder"></div>
+                        </div>
+                        <sub-title
+                            v-if="titleText"
+                            class="text-black hidden lg:flex"
+                            text-align="left"
+                            font-size="24px"
+                            line-height="30px"
+                            :overflowEllipsis="true"
+                        >
+                            {{data.titleText}}
+                        </sub-title>
                     </div>
-                    <sub-title
-                        v-if="titleText"
-                        class="text-black hidden lg:flex"
-                        text-align="left"
-                        font-size="24px"
-                        line-height="30px"
-                        :overflowEllipsis="true"
-                    >
-                        {{data.titleText}}
-                    </sub-title>
-                </div>
-                <div class="flex">
-                    <user-or-artist-badge
-                        :creatorAccount="data.creatorAccount"
-                        :creatorUsername="data.creatorUsername"
-                        :creatorSlug="data.creatorSlug"
-                        :creatorProfilePicture="data.creatorProfilePicture"
-                        :creatorType="data.creatorType"
-                        :disableLinkGrow="true"
-                    />
+                    <div class="flex">
+                        <user-or-artist-badge
+                            :creatorAccount="data.creatorAccount"
+                            :creatorUsername="data.creatorUsername"
+                            :creatorSlug="data.creatorSlug"
+                            :creatorProfilePicture="data.creatorProfilePicture"
+                            :creatorType="data.creatorType"
+                            :disableLinkGrow="true"
+                        />
+                    </div>
                 </div>
             </div>
             <div v-if="(listingType !== 'sale') && (data.timerState !== TIMER_STATE.IN_PROGRESS) && (collectableState !== COLLECTABLE_STATE.AWAITING_RESERVE)" class="divider-line-inactive mt-3"/>
@@ -74,6 +77,7 @@
                         data.startTime > new Date().getTime()
                         || collectableState === COLLECTABLE_STATE.OUT_OF_STOCK 
                         || collectableState === COLLECTABLE_STATE.CLOSED
+                        || collectableState === COLLECTABLE_STATE.DONE
                     "
                     class="divider-line-inactive mt-3"
                 />
@@ -81,6 +85,7 @@
                         (data.startTime < new Date().getTime())
                         && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
                         && collectableState !== COLLECTABLE_STATE.CLOSED
+                        && collectableState !== COLLECTABLE_STATE.DONE
                     " class="divider-line-active bg-progress-bar-green-vibrant mt-3">
                     <div class="bg-black mini-progress-bar" :style="`width:${100-(progress*100)}%`"/>
                 </div>
@@ -91,10 +96,11 @@
                     ((data.timerState === TIMER_STATE.IN_PROGRESS || collectableState === COLLECTABLE_STATE.IN_PROGRESS) || (listingType == 'sale' && data.startTime && (data.startTime < new Date().getTime())))
                     && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
                     && collectableState !== COLLECTABLE_STATE.CLOSED
+                    && collectableState !== COLLECTABLE_STATE.DONE
                     && 'bg-black'"
             >
                 <div>
-                    <div v-if="!data.startTime || (listingType === 'sale' && !itemsOf)" class="mr-6">
+                    <div v-if="!data.startTime || (listingType === 'sale' && !itemsOf && !isOpenEdition)" class="mr-6">
                         <div class="timer-helper-placeholder-container">
                             <div class="placeholder-light-grey text-placeholder"></div>
                         </div>
@@ -102,7 +108,8 @@
                             <div class="placeholder-light-grey text-placeholder"/>
                         </div>
                     </div>
-                    <div class="mr-6" v-if="collectableState !== COLLECTABLE_STATE.DONE && ((data.startTime > new Date().getTime()) || (data.endTime > new Date().getTime() || (listingType === 'sale' && (listingType === 'sale' && itemsOf))))">
+                    
+                    <div class="mr-6" v-if="collectableState !== COLLECTABLE_STATE.DONE && !isOpenEdition && ((data.startTime > new Date().getTime()) || (data.endTime > new Date().getTime() || (listingType === 'sale' && (listingType === 'sale' && itemsOf))))">
                         <progress-timer
                             v-if="data.startTime && (listingType !== 'sale' || (data.startTime > new Date().getTime()))"
                             ref="timerRef"
@@ -140,6 +147,45 @@
                             </sub-title>
                         </div>
                     </div>
+                    <div class="mr-6" v-if="listingType === 'sale' && isOpenEdition">
+                        <progress-timer
+                            v-if="data.startTime && (listingType !== 'sale' || (data.startTime > new Date().getTime()))"
+                            ref="timerRef"
+                            :whiteText="data.timerState === TIMER_STATE.IN_PROGRESS"
+                            :listingType="listingType"
+                            :startDate="data.startTime"
+                            :endDate="data.endTime"
+                            @onProgress="updateProgress"
+                            @onTimerStateChange="updateTimerState"
+                        />
+                        <div v-if="listingType === 'sale' && data.startTime && (data.startTime < new Date().getTime())">
+                            <light-typography 
+                                textAlign="left"
+                                fontSize="14px"
+                                fontWeight="700"
+                                lineHeight="16px"
+                                paddingBottom="6px"
+                                :upperCase="true"
+                            >
+                                EDITIONS SOLD
+                            </light-typography>
+                            <sub-title
+                                class="lg:flex"
+                                :class="
+                                    collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
+                                    && collectableState !== COLLECTABLE_STATE.CLOSED
+                                    && collectableState !== COLLECTABLE_STATE.DONE
+                                    && 'text-white'
+                                "
+                                text-align="left"
+                                fontSize="24px"
+                                line-height="30px"
+                                :overflowEllipsis="true"
+                            >
+                                {{items}}
+                            </sub-title>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <div v-if="!data.priceType" class="price-helper-placeholder-container">
@@ -167,6 +213,7 @@
                                 (data.timerState === TIMER_STATE.IN_PROGRESS || (listingType == 'sale' && (data.startTime < new Date().getTime())))
                                 && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
                                 && collectableState !== COLLECTABLE_STATE.CLOSED
+                                && collectableState !== COLLECTABLE_STATE.DONE
                                 && 'text-white'
                             "
                             text-align="left"
@@ -242,9 +289,14 @@ export default {
         itemsOf: {
             type: [Number]
         },
+        isOpenEdition: {
+            type: [Boolean],
+            default: false
+        },
         collectableState: String,
         timerState: [String, null],
         liveStatus: String,
+        disableMediaPlaceholder: [Boolean, null],
     },
     methods: {
         updateTimerState(state) {
@@ -331,7 +383,7 @@ export default {
         // This class is just here for if we ever want to add a border that can support gradients
         max-width: 100%;
         height: 504px;
-        width: 338px;
+        width: 326px;
         background: #FFFFFF;
         box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.4);
         border-radius: 10px;
@@ -349,7 +401,7 @@ export default {
     .drop-card-preview-container {
         max-width: 100%;
         height: 504px;
-        width: 338px;
+        width: 326px;
         background: #FFFFFF;
         border-radius: 10px;
         overflow: hidden;
@@ -360,17 +412,19 @@ export default {
     }
     .drop-card-inner-padding-top {
         max-width: 100%;
-        padding: 14px;
         padding-bottom: 0px;
+    }
+    .drop-card-middle {
+        padding-left: 14px;
+        padding-right: 14px;
     }
     .drop-card-inner-padding-bottom {
         padding: 14px;
     }
     .drop-card-media-container {
         max-width: 100%;
-        width: 310px;
-        height: 310px;
-        border-radius: 6px;
+        width: 326px;
+        height: 326px;
         position: relative;
     }
     .text-placeholder {

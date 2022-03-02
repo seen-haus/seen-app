@@ -38,6 +38,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "secondaryCollectableDropV3" */ '../views/collectable/v3/SecondaryCollectable.vue')
     },
     {
+        path: '/drops/first-us-real-estate-nft',
+        name: 'collectablePropyDrop2',
+        component: () => import(/* webpackChunkName: "collectablePropyDrop2" */ '../views/collectable/propy/Collectable2.vue')
+    },
+    {
         path: '/drops/:slug',
         name: 'collectableDropV3',
         component: () => import(/* webpackChunkName: "collectableDropV3" */ '../views/collectable/v3/Collectable.vue')
@@ -139,6 +144,16 @@ const routes = [
         name: 'privacy',
         component: () => import(/* webpackChunkName: "privacy" */ '../views/privacy/Privacy.vue')
     },
+    {
+        path: '/creator/apply', // This is here because there was a graphic made with a typo in it, use /creators/apply for routing within app
+        name: 'creatorApplicationsTypo',
+        component: () => import(/* webpackChunkName: "creatorApplicationsTypo" */ '../views/creators/CreatorApplications.vue')
+    },
+    {
+        path: '/creators/apply',
+        name: 'creatorApplications',
+        component: () => import(/* webpackChunkName: "creatorApplications" */ '../views/creators/CreatorApplications.vue')
+    }
 ]
 
 const router = createRouter({

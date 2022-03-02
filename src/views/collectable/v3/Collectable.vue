@@ -156,7 +156,7 @@
           <div v-if="artist" class="text-4xl font-title font-bold mt-14 mb-6" :class="darkMode && 'dark-mode-text'">
             Artist statement
           </div>
-          <artist-card v-if="artist" class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
+          <artist-card v-if="artist" fullSize class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
         </div>
         <div class="right-side col-span-5 mt-15">
           <bid-card
@@ -188,13 +188,17 @@
             :winningAddress="winningAddress"
             @update-state="updateCollectableState"
           />
-          <div v-if="secondaryMarketListingsForRender?.length > 0" class="text-3xl font-title font-bold mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
+          <!-- START Secondary listings -->
+          <div v-if="secondaryMarketListingsForRender?.length || currentUserIsOwnerOfCollectable" class="text-3xl font-title font-bold mt-12" :class="darkMode && 'dark-mode-text'">
             Secondary Market
           </div>
-          <button v-if="secondaryMarketListingsForRender?.length > 0" @click="() => setShowSecondaryMarket(true)" class="button w-full primary mb-4">
+          <button v-if="secondaryMarketListingsForRender?.length > 0" @click="setShowSecondaryMarket(true)" class="button w-full primary mt-6">
             View Secondary Listings
           </button>
-          <div class="text-3xl font-title font-bold  mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
+          <button v-if="currentUserIsOwnerOfCollectable" class="button w-full primary mt-4" @click="navigateToCreate">List on Secondary</button>
+          <!-- END Secondary listings -->
+
+          <div class="text-3xl font-title font-bold mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
             {{ isAuction ? "Recent bids" : "Recent buys" }}
           </div>
           <list-of-buyers class="mb-12" :list="events" :isAuction="isAuction"/>
@@ -248,9 +252,10 @@
 </template>
 
 <script>
-import {computed, onBeforeUnmount, onUnmounted, reactive, ref, watchEffect} from "vue";
-import {useRoute} from "vue-router";
+import {computed, onUnmounted, reactive, ref, watchEffect} from "vue";
+import {useRoute, useRouter} from "vue-router";
 import {useMeta} from "vue-meta";
+import { useV3NftContract } from "@/hooks/useContract";
 
 import SubTitle from "@/components/SubTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
@@ -262,7 +267,7 @@ import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import Container from "@/components/Container.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
-import BidCard from "@/components/BidCard.vue";
+import BidCard from "@/components/BidCardV3.vue";
 import ListOfBuyers from "@/components/Lists/ListOfBuyers.vue";
 import HeroGallery from "@/components/Media/HeroGallery.vue";
 import SecondaryListings from "@/components/SecondaryListings.vue";
@@ -309,6 +314,7 @@ export default {
   setup() {
     const toast = useToast();
     const route = useRoute();
+    const router = useRouter();
     const state = reactive({
       loading: true,
       contractAddress: null,
@@ -317,7 +323,7 @@ export default {
       secondaryMarketListings: [],
       showSecondaryMarket: false,
     });
-    const { chainId } = useWeb3();
+    const { account, chainId } = useWeb3();
     const { darkMode, setDarkMode } = useDarkMode();
 
     const setShowSecondaryMarket = (status) => {
@@ -376,6 +382,31 @@ export default {
       claim,
       pillOverride,
     } = useCollectableInformation();
+
+    const currentUserIsOwnerOfCollectable = ref(false);
+
+    watchEffect(async () => {
+      if (account.value
+        && collectable.value?.nft_contract_address
+        && collectable.value?.nft_token_id
+        && collectable.value?.version === 3
+      ) {
+          const contract = await useV3NftContract(true);
+          currentUserIsOwnerOfCollectable.value = await contract.balanceOf(account?.value, collectable.value?.nft_token_id) > 0;
+      }
+      if(collectable.value?.slug && (collectable.value?.version === 2 || collectable.value?.version === 1)) {
+        router.push({
+          name: "collectableDropV2",
+          params: { slug: collectable.value.slug }
+        })
+      }
+    });
+
+    const navigateToCreate = () => {
+      router.push({
+        name: "create",
+      })
+    }
 
     const backgroundImage = ref(false);
     const titleMonospace = ref(false);
@@ -574,6 +605,8 @@ export default {
       pillOverride,
       showSecondaryMarket,
       setShowSecondaryMarket,
+      currentUserIsOwnerOfCollectable,
+      navigateToCreate,
     };
   },
 };

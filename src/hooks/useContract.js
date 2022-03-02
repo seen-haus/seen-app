@@ -31,6 +31,8 @@ import {
     chainIdToDistributionPool,
 } from '@/constants/ContractAddressesV3.js'
 import VRF_SALE_V2_ABI from "@/constants/abis/vrfSaleV2ABI.json"
+import PROPY_AUCTION_V2_ABI from "@/constants/abis/propyAuctionV2ABI.json"
+import ETH_ADDRESS_WHITELIST_ABI from "@/constants/abis/ethAddressWhitelistABI.json"
 import RANDOMNESS_CONSUMER_VRF_ABI from "@/constants/abis/randomnessConsumerVRFABI.json"
 import {Web3Provider, WebSocketProvider} from "@ethersproject/providers"
 import { DEFAULT_CHAIN_ID } from "@/constants/ChainIds";
@@ -59,6 +61,14 @@ export function useV1AuctionContract(contract, withSignerIfPossible) {
 
 export function useV2AuctionContract(contract, withSignerIfPossible) {
     return useContract(contract, ENGLISH_AUCTION_V2_ABI, withSignerIfPossible)
+}
+
+export function useV2PropyAuctionContract(contract, withSignerIfPossible) {
+    return useContract(contract, PROPY_AUCTION_V2_ABI, withSignerIfPossible)
+}
+
+export function useEthAddressWhitelistContract(contract, withSignerIfPossible) {
+    return useContract(contract, ETH_ADDRESS_WHITELIST_ABI, withSignerIfPossible)
 }
 
 export function useV2OpenEditionContract(contract, withSignerIfPossible) {

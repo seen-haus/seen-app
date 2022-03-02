@@ -63,6 +63,7 @@
                     loop
                     autoplay
                     maxWidthAndHeight
+                    fillHeight
                     transparentBg
                   />
                 </div>

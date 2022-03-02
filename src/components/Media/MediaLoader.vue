@@ -47,7 +47,17 @@
     </template>
 
     <template v-if="mediaType === 'video'">
-      <div class="absolute-full-width-and-height">
+      <div 
+        class="absolute-full-width-and-height"
+        :style="{
+          ...(fillHeight && 
+            {
+              'display': 'flex',
+              'justify-content': 'center'
+            }
+          ),
+        }"
+      >
         <video
           ref="videoRef"
           :src="src"
@@ -56,7 +66,15 @@
           playsinline="playsinline"
           :loop="loop"
           class="auto-horizontal-margins"
-          :style="`max-height: 100%;`"
+          :style="{
+            'max-height': '100%',
+            ...(fillHeight && 
+              {
+                'height': '100%',
+                'max-width': 'fit-content'
+              }
+            ),
+          }"
         ></video>
 
         <div
@@ -129,7 +147,15 @@ export default {
       type: Boolean,
       default: false,
     },
+    fillHeight: {
+      type: Boolean,
+      default: false,
+    },
     ignoreAspectRatioPadding: {
+      type: Boolean,
+      default: false,
+    },
+    ignoreAutoAspectRatio: {
       type: Boolean,
       default: false,
     },
@@ -264,7 +290,9 @@ export default {
           // just added a max of 100% because it breaks when it goes above that
           // Haven't had a chance to work out why this is being done in the first place
           let useAspectRatio = 100;
-          if(((videoRef.value.videoHeight / videoRef.value.videoWidth) * 100) <= 100) {
+          if(props.aspectRatio && props.ignoreAutoAspectRatio) {
+            useAspectRatio = props.aspectRatio;
+          } else if (((videoRef.value.videoHeight / videoRef.value.videoWidth) * 100) <= 100) {
             useAspectRatio = (videoRef.value.videoHeight / videoRef.value.videoWidth) * 100;
           }
           calculatedAspecRatio.value = `${useAspectRatio}%`;

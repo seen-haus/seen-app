@@ -259,6 +259,7 @@
                     <sub-title
                         class="text-green-gradient clickable hidden lg:flex pt-6 pb-12"
                         text-align="center"
+                        @click="navigateToLiveListingUrl"
                     >
                         {{processData.liveListingUrl}}
                     </sub-title>

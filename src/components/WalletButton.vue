@@ -1,7 +1,7 @@
 <template>
   <div class="py-3 relative pl-8 pl-md-0">
     <div v-if="!account" class="wallet-button-container">
-      <button class="cursor-pointer button primary flex-shrink-0 wallet" @click="openWalletModal"><i
+      <button class="cursor-pointer button primary w-full flex-shrink-0 wallet" @click="openWalletModal"><i
           class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
       </button>
     </div>
@@ -27,7 +27,7 @@
     <OverlayPanel ref="op" appendTo="body" @hide="close" :showCloseIcon="false" id="overlay_panel" :breakpoints="{'960px': '75vw'}">
       <div class="dropdown-menu">
         <div class="arrow-up"></div>
-        <div class="py-6 px-8 bg-background-gray lg:rounded-t-lg">
+        <div v-if="!isMobileMenu" class="py-6 px-8 bg-background-gray lg:rounded-t-lg">
           <p class="text-xs font-bold text-grey-9">YOUR WALLET BALANCE</p>
           <p class="text-3xl font-bold text-black"><span v-if="balance">{{ balanceFormatted }}</span><i v-if="!balance"
                                                                                                         class="fas fa-spinner fa-spin text-gray-400 text-3xl"></i>
@@ -37,7 +37,7 @@
           </p>
         </div>
         <div class="lg:bg-white lg:rounded-b-lg">
-          <a class="button dropdown-btn" :href="etherscanLink" target="_blank">
+          <a v-if="!isMobileMenu" class="button dropdown-btn" :href="etherscanLink" target="_blank">
             <div class="flex justify-between flex-grow">
               <div class="flex flex-grow normal-text">
                 <img src="@/assets/icons/icon--seen.svg" class="cursor-pointer mr-2" alt="SEEN">
@@ -46,8 +46,8 @@
               <div class="text-grey-9 font-normal">{{ seenBalanceUSD }}</div>
             </div>
           </a>
-          <div class="mx-8 h-0.5 bg-background-gray"></div>
-          <router-link :to="{ name: 'stake'}">
+          <div v-if="!isMobileMenu" class="mx-8 h-0.5 bg-background-gray"></div>
+          <router-link v-if="!isMobileMenu" :to="{ name: 'stake'}">
             <button class="button dropdown-btn" @click="close">
               <div class="flex justify-between flex-grow">
                 <div class="flex flex-grow normal-text">
@@ -58,14 +58,14 @@
               </div>
             </button>
           </router-link>
-          <div class="mx-8 h-0.5 bg-background-gray"></div>
+          <div v-if="!isMobileMenu" class="mx-8 h-0.5 bg-background-gray"></div>
           <span>
             <button class="button dropdown-btn" @click="openWalletModal">
               <i class="gray fas fa-user cursor-pointer mr-2" alt="SEEN"></i> Edit Profile
             </button>
           </span>
-          <div class="mx-8 h-0.5 bg-background-gray"></div>
-          <span>
+          <div v-if="!isMobileMenu" class="mx-8 h-0.5 bg-background-gray"></div>
+          <span v-if="!isMobileMenu">
             <button class="button dropdown-btn" @click="openNotificationsModal">
               <i class="gray fas fa-bell cursor-pointer mr-2" alt="Notification Manager"></i> Notification Manager
             </button>
@@ -101,6 +101,12 @@ import OverlayPanel from 'primevue/overlaypanel';
 export default {
   name: 'WalletButton',
   components: {Identicon, OverlayPanel},
+  props: {
+    isMobileMenu: {
+      type: Boolean,
+      default: false
+    },
+  },
   setup() {
     const store = useStore();
     const op = ref();

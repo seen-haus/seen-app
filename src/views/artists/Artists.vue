@@ -13,15 +13,15 @@
           Creators
         </unfenced-title>
       </div>
-      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
         <template
           v-for="artist in listOfArtists"
           :key="artist && artist.id"
         >
-          <artist-card v-if="artist != null" :artist="artist" class="cursor-pointer"/>
+          <artist-card :autoMargins="true" v-if="artist != null" :artist="artist" class="cursor-pointer"/>
           <div
             v-else
-            class="placeholder-card overflow-hidden rounded-2xl bg-gray-100"
+            class="creator-placeholder placeholder-card overflow-hidden rounded-2xl bg-gray-100"
             :style="{ 'padding-bottom': '100%' }"
           ></div>
         </template>

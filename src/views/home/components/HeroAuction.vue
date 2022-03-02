@@ -9,9 +9,12 @@
             :src="firstMedia"
             aspectRatio="100%"
             class="overflow-hidden rounded-20px hero-media-shadow flex-1"
+            ignoreAutoAspectRatio
             muted
             loop
             autoplay
+            maxWidthAndHeight
+            fillHeight
         />
 
         <div class="tags flex absolute top-6 left-6">
@@ -25,7 +28,7 @@
 
       <div class="w-12"></div>
 
-      <div class="description flex flex-1 flex-col justify-center">
+      <div class="description flex flex-1 flex-col justify-center items-center lg:items-start">
 
         <fenced-title
             class="text-black flex lg:hidden mt-6"
@@ -41,6 +44,7 @@
             text-align="left"
             :titleMonospace="titleMonospace"
             :closed="true"
+            ignoreDefaultDisplay
         ><span class="flex-shrink-0">{{ title }}</span></unfenced-title>
 
         <div class="flex lg:justify-start items-center mt-2 justify-center">
@@ -56,7 +60,7 @@
           <live-indicator :status="liveStatus" class="text-black ml-4"/>
         </div>
 
-        <light-typography textAlign="left" class="mt-6 collectable-description">{{description}}</light-typography>
+        <light-typography v-if="collectable.version === 3" textAlign="left" class="mt-6 collectable-description">{{description}}</light-typography>
 
         <div class="auction-action flex items-center pt-6">
           <button class="button primary dark mr-7" @click="navigateToCollectable">

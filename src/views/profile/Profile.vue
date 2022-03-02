@@ -85,11 +85,7 @@
                           @click="navigateToCollectable(collectable.data.slug, collectable.data.is_slug_full_route, collectable.data.version)"
                         />
                       </template>
-                      <div
-                        v-else
-                        class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
-                        :style="{ 'padding-bottom': '120%' }"
-                      ></div>
+                      <product-card-v3-placeholder v-else />
                     </template>
                   </div>
                   <div class="flex justify-center w-full" v-if="listOfCollectables && listOfCollectables.length > 0 && hasMore">
@@ -103,14 +99,10 @@
                 </div>
                 <div v-else-if="collectablesReactive.loading">
                   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 my-8">
-                    <div
-                      class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
-                      :style="{ 'padding-bottom': '120%' }"
-                    ></div>
-                    <div
-                      class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
-                      :style="{ 'padding-bottom': '120%' }"
-                    ></div>
+                    <product-card-v3-placeholder />
+                    <product-card-v3-placeholder />
+                    <product-card-v3-placeholder/>
+                    <product-card-v3-placeholder/>
                   </div>
                 </div>
                 <div v-else class="text-xl text-center py-8 no-collectable-zone">
@@ -131,11 +123,7 @@
                           @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
                         />
                       </template>
-                      <div
-                        v-else
-                        class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
-                        :style="{ 'padding-bottom': '120%' }"
-                      ></div>
+                      <product-card-v3-placeholder v-else />
                     </template>
                   </div>
                   <div class="flex justify-center w-full" v-if="creationsReactive?.hasMoreCreations">
@@ -149,14 +137,10 @@
                 </div>
                 <div v-else-if="creationsReactive.loading">
                   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 my-8">
-                    <div
-                      class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
-                      :style="{ 'padding-bottom': '120%' }"
-                    ></div>
-                    <div
-                      class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
-                      :style="{ 'padding-bottom': '120%' }"
-                    ></div>
+                    <product-card-v3-placeholder/>
+                    <product-card-v3-placeholder/>
+                    <product-card-v3-placeholder/>
+                    <product-card-v3-placeholder/>
                   </div>
                 </div>
                 <div v-else class="text-xl text-center py-8 no-collectable-zone">
@@ -191,24 +175,21 @@ import SocialLine from "@/components/PillsAndTags/SocialLine.vue";
 import Identicon from "@/components/Identicon/Identicon";
 import NotFound from "@/components/Common/NotFound"
 
-import ProductCard from "@/components/ProductCard.vue";
 import ProductCardV3 from "@/components/ProductCardV3.vue";
-import GiftProductCard from "@/views/profile/components/GiftProductCard.vue";
+import ProductCardV3Placeholder from "@/components/ProductCardV3Placeholder.vue";
 import { DEFAULT_CHAIN_ID } from "@/constants/ChainIds";
 
 export default {
   name: "Profile",
   components: {
-    FencedTitle,
     Container,
     CopyHelper,
     EditProfile,
     SocialLine,
     Identicon,
     NotFound,
-    ProductCard,
     ProductCardV3,
-    GiftProductCard,
+    ProductCardV3Placeholder,
   },
   methods: {
     cropWithExtension: function (text, maxCharacters) {

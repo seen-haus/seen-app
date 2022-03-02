@@ -36,7 +36,7 @@
                 'width': '100%'
               }"
           >
-            Join newsletter
+            <slot> Title</slot>
           </button>
         </div>
       </div>

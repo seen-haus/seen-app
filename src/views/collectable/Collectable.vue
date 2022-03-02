@@ -70,7 +70,8 @@
     <container>
       <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-12 md:mt-0">
         <div class="left-side col-span-7 pb-6">
-          <div class="text-lg description" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'" v-html="description"></div>
+          <div v-if="version === 2 || version === 1" class="text-lg description" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'" v-html="description"></div>
+          <div v-if="version === 3" class="text-lg description" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'">{{description}}</div>
           <template v-if="showAdditionalInformation">
             <!--            <div class="rounded-container flex items-center mt-12">-->
             <!--              <i-->
@@ -110,11 +111,13 @@
           <div v-if="artist" class="text-4xl font-title font-bold mt-14 mb-6" :class="darkMode && 'dark-mode-text'">
             Artist statement
           </div>
-          <artist-card v-if="artist" class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
+          <artist-card v-if="artist" fullSize class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
         </div>
 
         <div class="right-side col-span-5">
           <social-sharing></social-sharing>
+          <br/>
+          <br/>
           <bid-card
               :status="liveStatus"
               :collectable="collectable"
@@ -169,7 +172,7 @@
 
           <div class="rounded-container" :class="darkMode ? 'dark-mode-background' : 'light-mode-surface'">
 
-            <nft-data v-if="collectable" :collectable="collectable"></nft-data>
+            <nft-data v-if="collectable && !isVRFSale" :collectable="collectable"></nft-data>
 
             <button class="button w-full" :class="darkMode ? 'dark dark-mode-outline' : 'outline'" @click="viewOnEtherscan">
               View on Etherscan
@@ -184,7 +187,7 @@
             <!--                class="fas fa-external-link-alt mr-2 text-sm icon-right text-gray-500"-->
             <!--              ></i>-->
             <!--            </button>-->
-            <button :class="darkMode ? 'dark dark-mode-outline' : 'outline'" class="button w-full mt-6" @click="viewOnOpenSea">
+            <button v-if="!isVRFSale" :class="darkMode ? 'dark dark-mode-outline' : 'outline'" class="button w-full mt-6" @click="viewOnOpenSea">
               View on OpenSea
               <i
                   class="fas fa-external-link-alt mr-2 text-sm icon-right"
@@ -496,6 +499,7 @@ export default {
       updateCollectableState,
       claim,
       pillOverride,
+      version,
     };
   },
 };
