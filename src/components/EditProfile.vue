@@ -20,9 +20,10 @@ export default {
     const store = useStore()
     const user = computed(() => props.userData);
   
-    const {account} = useWeb3();
-  // username, description, twitter, website, sig
+    const { account } = useWeb3();
+    // username, description, twitter, website, sig
     const isEditProfileButtonShown = computed(() => account && account.value && ((account.value.toLowerCase() === user.value?.wallet.toLowerCase()) || !user.value));
+
     const openEditProfileModal = () => {
       store.dispatch('application/openModal', 'WalletModal');
     }
