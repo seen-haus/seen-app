@@ -47,15 +47,16 @@
           <a href="https://discord.com/invite/dad8J4f" target="_blank" class="btn-social">
               <i class="fab fa-discord mr-2 text-lg"></i>
           </a>
-
           <a href="https://t.me/seenhaus" target="_blank" class="btn-social">
               <i class="fab fa-telegram mr-2 text-lg"></i>
           </a>
-
+          <a href="https://www.instagram.com/seen.haus" target="_blank" class="btn-social">
+              <i class="fab fa-instagram-square mr-2 text-lg"></i>
+          </a>
           <a href="https://open.spotify.com/show/4b9DLCFMYKy1LTESYshCPZ" target="_blank" class="btn-social">
               <i class="fab fa-spotify mr-2 text-lg"></i>
           </a>
-          <a href="https://seen-haus.medium.com/" target="_blank" class="btn-social">
+          <a href="https://seen-haus.medium.com" target="_blank" class="btn-social">
               <i class="fab fa-medium mr-2 text-lg"></i>
           </a>
           <a href="https://twitter.com/seen_haus" target="_blank" class="btn-social">

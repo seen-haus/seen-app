@@ -164,7 +164,7 @@ export default {
   setup() {
     const {account, provider} = useWeb3()
     const {meta} = useMeta({
-      title: "Stake"
+      title: "Staking"
     })
 
     const store = useStore()

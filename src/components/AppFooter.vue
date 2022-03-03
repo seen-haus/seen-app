@@ -17,11 +17,11 @@
                 <router-link :to="{ name: 'drops'}" class="block">
                   <span class="font-bold">Drops</span>
                 </router-link>
-                <router-link :to="{ name: 'stake'}" class="block">
-                  <span class="font-bold">Stake</span>
-                </router-link>
                 <router-link :to="{ name: 'artists'}" class="block">
-                  <span class="font-bold">Artists</span>
+                  <span class="font-bold">Creators</span>
+                </router-link>
+                <router-link :to="{ name: 'stake'}" class="block">
+                  <span class="font-bold">Staking</span>
                 </router-link>
               </div>
             </div>
@@ -51,18 +51,6 @@
               <div>
                 <div class="flex">
                   <div class="icon text-grey-9">
-                    <i class="fab fa-telegram text-lg"></i>
-                  </div>
-                  <div class="font-bold text-md ml-2 leading-loose">
-                    <a href="https://t.me/seenhaus"
-                      target="_blank"
-                      class="block">
-                      Telegram
-                    </a>
-                  </div>
-                </div>
-                <div class="flex">
-                  <div class="icon text-grey-9">
                     <i class="fab fa-discord text-lg"></i>
                   </div>
                   <div class="font-bold text-md ml-2 leading-loose">
@@ -70,6 +58,18 @@
                       target="_blank"
                       class="block">
                       Discord
+                    </a>
+                  </div>
+                </div>
+                <div class="flex">
+                  <div class="icon text-grey-9">
+                    <i class="fab fa-telegram text-lg"></i>
+                  </div>
+                  <div class="font-bold text-md ml-2 leading-loose">
+                    <a href="https://t.me/seenhaus"
+                      target="_blank"
+                      class="block">
+                      Telegram
                     </a>
                   </div>
                 </div>
