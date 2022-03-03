@@ -281,7 +281,7 @@ export default {
           name: props.collectable.slug,
         });
       }else{
-        if(props.collectable.version === 2) {
+        if(props.collectable.version === 1 || props.collectable.version === 2) {
           router.push({
             name: "collectableDropV2",
             params: { slug: props.collectable.slug },
