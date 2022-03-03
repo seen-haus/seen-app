@@ -212,7 +212,7 @@ export default {
           name: slug,
         });
       }else{
-        if(version === 2) {
+        if(version === 1 || version === 2) {
           router.push({
             name: "collectableDropV2",
             params: { slug: slug },
