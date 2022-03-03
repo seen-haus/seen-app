@@ -339,6 +339,15 @@
   margin-right: auto;
 }
 
+.disable-horizontal-padding {
+  padding-left: 0px!important;
+  padding-right: 0px!important;
+}
+
+.disable-right-margin {
+  margin-right: 0px!important;
+}
+
 .disabled {
   cursor: auto;
   pointer-events: none;

@@ -18,6 +18,10 @@ export default {
                 ],
             mobileOnlyItems: [
                 {
+                    title: 'Roadmap',
+                    url: 'roadmap',
+                },
+                {
                     title: 'Notifications',
                     url: 'notifications'
                 },
@@ -26,6 +30,10 @@ export default {
                 {
                     title: 'Create',
                     url: 'create',
+                },
+                {
+                    title: 'Roadmap',
+                    url: 'roadmap',
                 },
             ]
         }

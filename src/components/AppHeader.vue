@@ -7,13 +7,13 @@
           <div class="flex items-center flex-wrap justify-between header-size">
             <router-link to="/">
               <div id="logo" class="flex items-center" style="width:100%; max-width: 208px">
-                <img :class="!darkMode && 'hidden'" src="@/assets/images/seen-logo-white.svg" class="mr-4" alt="">
-                <img :class="darkMode && 'hidden'" src="@/assets/images/seen-logo-black.svg" class="mr-4" alt="">
+                <img :class="!darkMode && 'hidden'" src="@/assets/images/seen-logo-white.svg" alt="">
+                <img :class="darkMode && 'hidden'" src="@/assets/images/seen-logo-black.svg" alt="">
               </div>
             </router-link>
             <div class="items-center hidden lg:flex lg:flex-grow justify-between">
               <desktop-menu class="flex justify-center flex-1 header-desktop flex-center-vertical"/>
-              <wallet-button/>
+              <wallet-button class="disable-horizontal-padding"/>
             </div>
             <nav class="lg:hidden">
               <button
