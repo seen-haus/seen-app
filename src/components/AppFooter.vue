@@ -106,7 +106,7 @@
   <div class="footer-background text-white footer-border py-4">
     <container>
       <div class="flex justify-between">
-        <p class="text-grey-9 text-sm">© seen.haus 2022, All rights reserved.</p>
+        <p class="text-grey-9 text-sm">&#169; seen.haus {{ new Date().getFullYear() }}, All rights reserved.</p>
         <div>
           <!--           <a href="#"-->
           <!--            target="_blank"-->
