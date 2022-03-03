@@ -51,18 +51,6 @@
               <div>
                 <div class="flex">
                   <div class="icon text-grey-9">
-                    <i class="fab fa-telegram text-lg"></i>
-                  </div>
-                  <div class="font-bold text-md ml-2 leading-loose">
-                    <a href="https://t.me/seenhaus"
-                      target="_blank"
-                      class="block">
-                      Telegram
-                    </a>
-                  </div>
-                </div>
-                <div class="flex">
-                  <div class="icon text-grey-9">
                     <i class="fab fa-discord text-lg"></i>
                   </div>
                   <div class="font-bold text-md ml-2 leading-loose">
@@ -70,6 +58,18 @@
                       target="_blank"
                       class="block">
                       Discord
+                    </a>
+                  </div>
+                </div>
+                <div class="flex">
+                  <div class="icon text-grey-9">
+                    <i class="fab fa-telegram text-lg"></i>
+                  </div>
+                  <div class="font-bold text-md ml-2 leading-loose">
+                    <a href="https://t.me/seenhaus"
+                      target="_blank"
+                      class="block">
+                      Telegram
                     </a>
                   </div>
                 </div>
