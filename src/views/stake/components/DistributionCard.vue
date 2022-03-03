@@ -103,8 +103,7 @@ export default {
     })
 
     const loadLatestDistribution = async () => {
-      if(distributionPoolContract.value) {
-
+      if (distributionPoolContract.value?.contract) {
         let events = await distributionPoolContract.value.contract.queryFilter("SwapForMinimum");
 
         let latestDistributionBlockNumber = null;
