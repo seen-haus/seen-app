@@ -1,4 +1,4 @@
-# SEEN HAUS FRONTENT
+# SEEN HAUS FRONTEND
 
 ## Tech Stack
 
