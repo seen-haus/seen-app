@@ -128,6 +128,7 @@
 
 <script>
 import { reactive } from "vue";
+import { useMeta } from 'vue-meta';
 
 import Container from "@/components/Container.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
@@ -155,6 +156,10 @@ export default {
   },
 
   setup() {
+    useMeta({
+      title: 'Team',
+    })
+
     const data = reactive({
       selectedType: 'all',
     })
