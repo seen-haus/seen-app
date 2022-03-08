@@ -57,11 +57,6 @@ const roadmap = {
   },
   'Upcoming': [
     {
-      title: 'NFT Holder Balance Tracker',
-      description: 'Construct internal balance tracker to migrate away from OpenSea API, due to unreliability and difficulty acquiring stable OpenSea API keys.',
-      status: 'in-progress'
-    },
-    {
       title: '0xmons x SEEN HAUS Collab Claim Flow',
       description: 'Construction of claiming flow for 2nd iteration of 0xmons x SEEN HAUS collaboration',
       githubCommits: {
@@ -73,6 +68,11 @@ const roadmap = {
         ]
       },
       status: 'in-progress'
+    },
+    {
+      title: 'NFT Holder Balance Tracker',
+      description: 'Construct internal balance tracker to migrate away from OpenSea API, due to unreliability and difficulty acquiring stable OpenSea API keys.',
+      status: 'upcoming'
     },
     {
       title: 'Migrate Physical Drops to V3 contracts',
