@@ -162,14 +162,14 @@ export default {
             let tokenId = consignment.tokenId;
             if(seenHausV3NFTContract.value.contract) {
               let tokenInfo = await seenHausV3NFTContract.value.contract.getTokenInfo(tokenId)
-              // Safe to assume that [2] (the seen IPFS gateway) should work here as this component is only for SEEN.HAUS NFTs
+              // Safe to assume that [0] (the seen IPFS gateway) should work here as this component is only for SEEN.HAUS NFTs
               // If this component becomes used for more than NFTs that have their media on the SEEN.HAUS IPFS gateway
-              // Then don't rely on uriToHttp(tokenInfo.uri)[2] or uriToHttp(data.image)[2] working
-              let ipfsMetaDataUrl = uriToHttp(tokenInfo.uri)[2];
+              // Then don't rely on uriToHttp(tokenInfo.uri)[0] or uriToHttp(data.image)[0] working
+              let ipfsMetaDataUrl = uriToHttp(tokenInfo.uri)[0];
               axios.get(ipfsMetaDataUrl).then(response => {
                 let data = response.data;
                 processData.hasInitialised = true;
-                processData.mediaUrl = uriToHttp(data.image)[2];
+                processData.mediaUrl = uriToHttp(data.image)[0];
                 processData.mediaIpfsHash = uriToHash(data.image);
                 processData.tags = data.tags;
                 processData.titleText = data.name;

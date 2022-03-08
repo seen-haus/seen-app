@@ -2,6 +2,7 @@ import {$axios} from './api/axios';
 
 import { useV3NftContract } from '@/hooks/useContract.js';
 import { useOpenSeaBaseAPI, useOpenSeaCollectionV3 } from '@/constants';
+import uriToHttp from '@/services/utils/uriToHttp';
 
 $axios.defaults.baseURL = `${process.env.VUE_APP_API_URL}/`;
 export const ApiService = {
@@ -153,10 +154,22 @@ export const ExchangeRateService = {
 };
 
 export const IPFSService = {
-    get(hash) {
-        return $axios.get(`https://cloudflare-ipfs.com/ipfs/${hash}`).catch(error => {
-            throw new Error(`[RWV] ApiService ${error}`);
-        });
+    async get(uri) {
+        const httpUrls = uriToHttp(uri);
+
+        for (const httpUrl of httpUrls) {
+            try {
+                const ipfsItem = await $axios.get(httpUrl);
+
+                if (ipfsItem) {
+                    return ipfsItem;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        return null;
     },
     pinFile(payload, onProgressPercentCallback = false, fullFileSize = false) {
         return ApiService.post(`ipfs/pin/file/`, payload, onProgressPercentCallback && fullFileSize && {

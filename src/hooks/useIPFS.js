@@ -1,42 +1,29 @@
-import {IPFSService} from "@/services/apiService";
-import {computed, reactive} from "vue";
+import { IPFSService } from "@/services/apiService";
+import { computed, watchEffect, ref } from "vue";
 
-export default function useIPFS(uri) {
-    const state = reactive({
-        item: null,
-        uri,
-        hash: null,
-        error: null,
-        loading: null
-    });
+export default function useIPFS(ipfsUri) {
+    const item = ref(null);
+    const error = ref(false);
+    const loading = computed(() => !(item.value || error.value));
 
-    const setUri = (uri) => {
-        state.uri = uri
-    };
-
-    const item = computed(() => state.item);
-    const loading = computed(() => !(state.item || state.error));
-    const error = computed(() => state.error);
-    const hash = computed(() => state.uri.split('/').pop());
-
-    async function load() {
-        state.item = null;
-        state.loading = true;
-        try {
-            state.item = await IPFSService.get(hash.value);
-        } catch (e) {
-            state.error = e;
+    watchEffect(async () => {
+        if (!ipfsUri.value) {
+            return;
         }
-    }
+
+        item.value = null;
+        error.value = null;
+
+        try {
+            item.value = await IPFSService.get(ipfsUri.value);
+        } catch (e) {
+            error.value = e;
+        }
+    });
 
     return {
         item,
         error,
-        hash,
-        uri: state.uri,
-        setUri,
-        load,
-        loading
+        loading,
     };
-
 }
