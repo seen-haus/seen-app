@@ -5,6 +5,9 @@
             :to="{ name: item.url }"
             v-slot="{ isActive }"
             class="routing-link mr-4 xl:mr-6 opacity-50 hover:opacity-100"
+            :class="{
+              'disable-right-margin': index === ([...menu, ...desktopOnlyItems].length - 1),
+            }"
         >
           <img  v-if="item.icon != null"
               :src="require('@/assets/icons/' + item.icon)"
