@@ -44,7 +44,7 @@ const roadmap = {
         status: 'complete'
       },
       {
-        title: 'ROADMAP UPDATE',
+        title: 'Roadmap Update',
         description: 'Added this roadmap page to the website as a means to more effectively display progress being made going forward',
         githubCommits: {
           'frontend': [
@@ -56,6 +56,11 @@ const roadmap = {
     ]
   },
   'Upcoming': [
+    {
+      title: 'NFT Holder Balance Tracker',
+      description: 'Construct internal balance tracker to migrate away from OpenSea API, due to unreliability and difficulty acquiring stable OpenSea API keys.',
+      status: 'in-progress'
+    },
     {
       title: '0xmons x SEEN HAUS Collab Claim Flow',
       description: 'Construction of claiming flow for 2nd iteration of 0xmons x SEEN HAUS collaboration',
