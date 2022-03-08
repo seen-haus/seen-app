@@ -25,34 +25,16 @@
               {{yearOrStatus}}
             </common-title>
             <template v-for="(roadmapEntry, childIndex) in roadmap[yearOrStatus]" :parentIndex="parentIndex" :key="`roadmap-entry-child-${parentIndex}-${childIndex}`">
-              <div class="roadmap-card mt-4 mb-4" v-if="yearOrStatus"
-                :class="{
-                  'mb-8': childIndex === (roadmap[yearOrStatus].length - 1)
-                }"
-              >
-                  <div class="flex p-4 align-center">
-                    <div class="status-container">
-                      <div v-if="roadmapEntry.status === 'in-progress'" class="status-circle in-progress-status flex items-center justify-center">
-                        <i class="fas fa-ellipsis-h" style="font-size: 24px;color:white;"></i>
-                      </div>
-                      <div v-if="roadmapEntry.status === 'upcoming'" class="status-circle upcoming-status flex items-center justify-center">
-                        <i class="fas fa-ellipsis-h" style="font-size: 24px;color:white;"></i>
-                      </div>
-                    </div>
-                    <div class="roadmap-item-title-container flex items-center">
-                      <common-title
-                        class="flex-grow"
-                        color="fence-light"
-                        textAlign="left"
-                        fontSize="27px"
-                        style="margin-top: 2px"
-                        :closed="false"
-                      >
-                        {{roadmapEntry.title}}
-                      </common-title>
-                    </div>
-                  </div>
-                </div>
+              <roadmap-entry
+                :title="roadmapEntry.title"
+                :status="roadmapEntry.status"
+                :description="roadmapEntry.description"
+                :exampleLinks="roadmapEntry.exampleLinks"
+                :githubLinksFrontend="roadmapEntry?.githubCommits?.['frontend']"
+                :githubLinksApi="roadmapEntry?.githubCommits?.['api']"
+                :githubLinksContracts="roadmapEntry?.githubCommits?.['contracts']"
+                :marginBottom="childIndex === (roadmap[yearOrStatus].length - 1)"
+              />
             </template>
           </div>
           <div v-else>
@@ -66,31 +48,16 @@
                 {{quarterOrTitle + ' ' + yearOrStatus}}
               </common-title>
               <template v-for="(roadmapEntry, childIndex) in roadmap[yearOrStatus][quarterOrTitle]" :parentIndex="parentIndex" :key="`roadmap-entry-child-${parentIndex}-${childIndex}`">
-                <div class="roadmap-card mt-4 mb-4" v-if="yearOrStatus"
-                  :class="{
-                    'mb-8': childIndex === (roadmap[yearOrStatus][quarterOrTitle].length - 1)
-                  }"
-                >
-                  <div class="flex p-4 align-center">
-                    <div class="status-container">
-                      <div class="status-circle complete-status flex items-center justify-center">
-                        <img src="@/assets/icons/complete-icon.svg" style="width: 24px"/>
-                      </div>
-                    </div>
-                    <div class="roadmap-item-title-container flex items-center">
-                      <common-title
-                        class="flex-grow"
-                        color="fence-light"
-                        textAlign="left"
-                        fontSize="27px"
-                        style="margin-top: 2px"
-                        :closed="false"
-                      >
-                        {{roadmapEntry.title}}
-                      </common-title>
-                    </div>
-                  </div>
-                </div>
+                <roadmap-entry
+                  :title="roadmapEntry.title"
+                  :status="roadmapEntry.status"
+                  :description="roadmapEntry.description"
+                  :exampleLinks="roadmapEntry.exampleLinks"
+                  :githubLinksFrontend="roadmapEntry?.githubCommits?.['frontend']"
+                  :githubLinksApi="roadmapEntry?.githubCommits?.['api']"
+                  :githubLinksContracts="roadmapEntry?.githubCommits?.['contracts']"
+                  :marginBottom="childIndex === (roadmap[yearOrStatus][quarterOrTitle].length - 1)"
+                />
               </template>
             </template>
           </div>
@@ -107,6 +74,7 @@ import Container from "@/components/Container.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import CommonTitle from "../../components/CommonTitle.vue";
 import LightTypography from "../../components/LightTypography.vue";
+import RoadmapEntry from "../../components/RoadmapEntry.vue";
 
 import { roadmap } from "./data.js";
 
@@ -117,6 +85,7 @@ export default {
     UnfencedTitle,
     LightTypography,
     CommonTitle,
+    RoadmapEntry,
   },
   setup() {
     const { meta } = useMeta({
@@ -139,39 +108,6 @@ ul {
 ol {
     list-style-type: decimal;
     list-style-position: inside;
-}
-
-.roadmap-card {
-  max-width: 100%;
-  background: #FFFFFF;
-  box-shadow: 0px 6px 20px rgba(142, 152, 160, 0.4);
-  border-radius: 10px;
-}
-
-.status-circle {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-}
-
-.complete-status {
-  background-color: #31E07F;
-}
-
-.in-progress-status {
-  background-color: #038FFF;
-}
-
-.upcoming-status {
-  background-color: #BEBEBE;
-}
-
-.status-container {
-  width: 60px;
-}
-
-.roadmap-item-title-container {
-  width: calc(100% - 60px);
 }
 
 </style>

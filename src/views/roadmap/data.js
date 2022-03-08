@@ -5,13 +5,13 @@ const roadmap = {
         title: 'Chainlink VRF Support',
         description: 'Added support for randomised drops utilising Chainlink\'s VRF (Verifiably Random Function) toolkit.',
         githubCommits: {
-          'API': [
+          'api': [
             'https://github.com/seen-haus/seen-api/commit/19e3f5762ac12d6a5309dd181fbdfc1576009eda'
           ],
-          'Frontend': [
+          'frontend': [
             'https://github.com/seen-haus/seen-app/commit/552cfcd47f1d9854f9c389dc586ef7b382437481'
           ],
-          'Smart Contracts': [
+          'contracts': [
             'https://github.com/seen-haus/seen-contract-archive/commit/e8b0a04e7c1aa8ca5c770ea0aa04e8a3c0ea1954',
             'https://github.com/seen-haus/seen-contract-archive/commit/62601fe72f68706e9d3e9c09c86ab5a0eddc6bf4',
           ]
@@ -21,7 +21,7 @@ const roadmap = {
           'https://seen.haus/drops/v2/pacman-series',
           'https://seen.haus/drops/v2/body-language'
         ],
-        status: 'done'
+        status: 'complete'
       }
     ]
   },
@@ -31,17 +31,27 @@ const roadmap = {
         title: 'SEEN HAUS V3',
         description: 'Added support for self-minting for whitelisted artists, reduced gas fees per drop, secondary sales, frontend reskin',
         githubCommits: {
-          'API': [
+          'api': [
             'https://github.com/seen-haus/seen-api/commit/6a86020407f2456e7dd9039036db13fe849f0d8d'
           ],
-          'Frontend': [
+          'frontend': [
             'https://github.com/seen-haus/seen-app/commit/66af81a154ed4abfc5410a8a81c0e5bb915a516e'
           ],
-          'Smart Contracts': [
+          'contracts': [
             'https://github.com/seen-haus/seen-contracts/commits/main',
           ]
         },
-        status: 'done'
+        status: 'complete'
+      },
+      {
+        title: 'ROADMAP UPDATE',
+        description: 'Added this roadmap page to the website as a means to more effectively display progress being made going forward',
+        githubCommits: {
+          'frontend': [
+            ''
+          ],
+        },
+        status: 'complete'
       }
     ]
   },
@@ -50,10 +60,10 @@ const roadmap = {
       title: '0xmons x SEEN HAUS Collab Claim Flow',
       description: 'Construction of claiming flow for 2nd iteration of 0xmons x SEEN HAUS collaboration',
       githubCommits: {
-        'Frontend': [
+        'frontend': [
           'https://github.com/seen-haus/seen-app/commits/feat/0xmons-claim'
         ],
-        'Smart Contracts': [
+        'contracts': [
           'https://github.com/JayWelsh/claim-against-nft/commit/59dd22bedd92a3d4cd4f40503b2feae5df962fbf',
         ]
       },
@@ -87,6 +97,11 @@ const roadmap = {
     {
       title: 'Social features',
       description: 'Add support for comments & likes on drops',
+      status: 'upcoming'
+    },
+    {
+      title: '[CLASSIFIED]',
+      description: 'An experimental new offering for the SEEN HAUS platform.',
       status: 'upcoming'
     }
   ]
