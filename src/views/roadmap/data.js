@@ -48,7 +48,7 @@ const roadmap = {
         description: 'Added this roadmap page to the website as a means to more effectively display progress being made going forward',
         githubCommits: {
           'frontend': [
-            ''
+            'https://github.com/seen-haus/seen-app/commit/d112fedc16a08eae13eed30c7fdb2b7039586b65'
           ],
         },
         status: 'complete'
