@@ -1,166 +1,71 @@
 <template>
   <div class="banner-image-container-account-modal absolute">
-    <div
-      class="absolute clear-image-icon reset-banner-icon"
-      v-if="temporaryBannerImageUrl"
-      @click="resetTemporaryBannerImage"
-    >
-      <i class="fas fa-undo"></i>
-    </div>
-    <img
-      class="banner-image-account-modal"
-      :style="{
-        backgroundImage: `url(${
-          temporaryBannerImageUrl ? temporaryBannerImageUrl : user?.banner_image
-        })`,
-      }"
-    />
-    <input
-      type="file"
-      id="profileBannerUpload"
-      class="hidden"
-      @change="uploadBannerImage"
-      accept="image/*"
-    />
+    <div class="absolute clear-image-icon reset-banner-icon" v-if="temporaryBannerImageUrl" @click="resetTemporaryBannerImage"><i class="fas fa-undo"></i></div>
+    <img class="banner-image-account-modal" :style="{ backgroundImage: `url(${temporaryBannerImageUrl ? temporaryBannerImageUrl : user?.banner_image})` }">
+    <input type="file" id="profileBannerUpload" class="hidden" @change="uploadBannerImage" accept="image/*">
   </div>
   <div class="absolute edit-banner-button">
-    <button class="text-sm mb-8 text-grey-9" @click="openBannerUploadWindow">
-      <i class="fas fa-pencil-alt"></i> Banner
-    </button>
+    <button class="text-sm mb-8 text-grey-9" @click="openBannerUploadWindow"><i class="fas fa-pencil-alt"></i> Banner</button>
   </div>
   <div class="-mb-8 pt-9 relative">
     <div class="flex justify-center text-grey-9">
       <div class="avatar absolute">
-        <div
-          class="absolute clear-image-icon"
-          v-if="temporaryAvatarImageUrl"
-          @click="resetTemporaryAvatarImage"
-        >
-          <i class="fas fa-undo"></i>
-        </div>
-        <div
-          class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5 profile-avatar"
-          :style="{
-            backgroundImage: `url(${
-              temporaryAvatarImageUrl
-                ? temporaryAvatarImageUrl
-                : user?.avatar_image
-            })`,
-          }"
-        >
-          <img
-            src="@/assets/icons/avatar.svg"
-            class="h-16 cursor-pointer"
-            alt="SEEN"
-            v-if="!user?.avatar_image && !temporaryAvatarImageUrl"
-          />
-          <input
-            type="file"
-            id="profileAvatarUpload"
-            class="hidden"
-            @change="uploadAvatarImage"
-            accept="image/*"
-          />
+        <div class="absolute clear-image-icon" v-if="temporaryAvatarImageUrl" @click="resetTemporaryAvatarImage"><i class="fas fa-undo"></i></div>
+        <div class="bg-background-gray rounded-full w-full h-full flex justify-center items-center pt-1.5 profile-avatar" :style="{ backgroundImage: `url(${temporaryAvatarImageUrl ? temporaryAvatarImageUrl : user?.avatar_image})` }">
+          <img src="@/assets/icons/avatar.svg" class="h-16 cursor-pointer" alt="SEEN" v-if="!user?.avatar_image && !temporaryAvatarImageUrl">
+          <input type="file" id="profileAvatarUpload" class="hidden" @change="uploadAvatarImage" accept="image/*">
         </div>
       </div>
-      <button class="text-sm mb-8" @click="openAvatarUploadWindow">
-        <i class="fas fa-pencil-alt"></i> Avatar
-      </button>
+      <button class="text-sm mb-8" @click="openAvatarUploadWindow"><i class="fas fa-pencil-alt"></i> Avatar</button>
     </div>
     <div class="block md:flex justify-between items-center mb-4 my-8">
       <div>
-        <div class="text-xs font-bold mb-3 uppercase">
-          Connected with {{ name }}
-        </div>
+        <div class="text-xs font-bold mb-3 uppercase">Connected with {{ name }}</div>
         <div class="flex">
-          <span class="mr-2 pt-1"><identicon /></span>
-          <span class="text-lg font-address">{{
-            account && shortenAddress(account)
-          }}</span>
+          <span class="mr-2 pt-1"><identicon/></span> <span class="text-lg font-address">{{ account && shortenAddress(account) }}</span>
         </div>
       </div>
       <div>
-        <button class="button dark account-button w-45" @click="openOptions">
-          Change Wallet
-        </button>
+        <button class="button dark account-button w-45" @click="openOptions">Change Wallet</button>
       </div>
     </div>
     <div class="text-xs text-gray-600">
-      <copy-helper
-        :to-copy="account"
-        text="Copy Address"
-        class="cursor-pointer mr-4 text-grey-9"
-      />
-      <a
-        :href="getEtherscanLink(chainId, account, 'address')"
-        class="text-grey-9"
-        target="_blank"
-        ><i class="fas fa-external-link-alt"></i> View on Etherscan</a
-      >
+      <copy-helper :to-copy="account" text="Copy Address" class="cursor-pointer mr-4 text-grey-9"/>
+      <a :href="getEtherscanLink(chainId, account, 'address')" class="text-grey-9" target="_blank"><i class="fas fa-external-link-alt"></i> View on Etherscan</a>
     </div>
     <div class="text-sm bg-background-gray rounded-lg my-8 transactions-box">
       <!-- <p class="text-grey-9 p-5 text-center">Your transactions will appear here...</p> -->
     </div>
     <div>
-      <form
-        @submit="onSubmit"
-        class="font-semibold uppercase text-md text-black"
-      >
+      <form @submit="onSubmit" class="font-semibold uppercase text-md text-black">
         <div class="fc mb-4">
           <label for="profile-username">Username</label>
-          <input
-            type="text"
-            id="profile-username"
-            class="w-full outlined-input mt-2"
-            v-model="usernameField.value"
-          />
+          <input type="text" id="profile-username" class="w-full outlined-input mt-2" v-model="usernameField.value" />
           <span class="error-notice">{{ usernameField.errors[0] }}</span>
         </div>
         <div class="fc mb-4">
           <label for="profile-twitter">Twitter</label>
-          <input
-            type="text"
-            id="profile-twitter"
-            class="w-full outlined-input mt-2"
-            v-model="twitterField.value"
-          />
+          <input type="text" id="profile-twitter" class="w-full outlined-input mt-2" v-model="twitterField.value" />
           <span class="error-notice">{{ twitterField.errors[0] }}</span>
         </div>
         <div class="fc mb-4">
           <label for="profile-instagram">Instagram</label>
-          <input
-            type="text"
-            id="profile-instagram"
-            class="w-full outlined-input mt-2"
-            v-model="instagramField.value"
-          />
+          <input type="text" id="profile-instagram" class="w-full outlined-input mt-2" v-model="instagramField.value" />
           <span class="error-notice">{{ instagramField.errors[0] }}</span>
         </div>
         <div class="fc mb-4">
           <label for="profile-website">Website</label>
-          <input
-            type="text"
-            id="profile-website"
-            class="w-full outlined-input mt-2"
-            v-model="websiteField.value"
-          />
+          <input type="text" id="profile-website" class="w-full outlined-input mt-2" v-model="websiteField.value" />
           <span class="error-notice">{{ websiteField.errors[0] }}</span>
         </div>
         <div class="fc mb-4">
           <label for="winner-description">Description</label>
-          <textarea
-            id="winner-description"
-            class="w-full outlined-input mt-2"
-            v-model="descriptionField.value"
-          ></textarea>
+          <textarea id="winner-description" class="w-full outlined-input mt-2" v-model="descriptionField.value" ></textarea>
           <span class="error-notice">{{ descriptionField.errors[0] }}</span>
         </div>
 
         <div class="flex items-center justify-center my-8 mb-12">
-          <button
-            type="submit"
-            class="w-full cursor-pointer primary button mt-3 md:mt-0"
-          >
+          <button type="submit" class="w-full cursor-pointer primary button mt-3 md:mt-0">
             Save Changes
           </button>
         </div>
@@ -182,156 +87,120 @@
 </template>
 
 <script>
+
 import useWeb3 from "@/connectors/hooks";
 import useUser from "@/hooks/useUser";
-import { SUPPORTED_WALLETS } from "@/connectors/constants";
+import {SUPPORTED_WALLETS} from "@/connectors/constants";
 import Identicon from "@/components/Identicon/Identicon";
-import {
-  shortenAddress,
-  getEtherscanLink,
-  clean,
-} from "@/services/utils/index";
+import {shortenAddress, getEtherscanLink, clean} from "@/services/utils/index";
 import CopyHelper from "@/components/CopyHelper/CopyHelper";
-import { useStore } from "vuex";
+import {useStore} from "vuex";
 
-import { reactive, ref } from "vue";
+import {reactive, ref} from 'vue';
 import { useField, useForm } from "vee-validate";
-import { UserService } from "@/services/apiService";
+import { UserService } from "@/services/apiService"
 import useSigner from "@/hooks/useSigner";
 import { useToast } from "primevue/usetoast";
-import {
-  twitterRegx,
-  instagramRegx,
-  isValidHttpUrl,
-} from "@/connectors/constants";
+import {twitterRegx, instagramRegx, isValidHttpUrl} from '@/connectors/constants'
 
 export default {
   name: "AccountView",
-  components: { CopyHelper, Identicon },
-  setup(props, { emit }) {
-    const { chainId, account, connector } = useWeb3();
-    const store = useStore();
+  components: {CopyHelper, Identicon},
+  setup(props, {emit}) {
+    const {chainId, account, connector} = useWeb3();
+    const store = useStore()
     const { user, setUser } = useUser();
     const toast = useToast();
-    const temporaryAvatarImageUrl = ref("");
-    const temporaryBannerImageUrl = ref("");
+    const temporaryAvatarImageUrl = ref('');
+    const temporaryBannerImageUrl = ref('');
 
-    const { ethereum } = window;
-    const isMetaMask = !!(ethereum && ethereum.isMetaMask);
+    const {ethereum} = window;
+    const isMetaMask = !!(ethereum && ethereum.isMetaMask)
     const name = Object.keys(SUPPORTED_WALLETS)
-      .filter(
-        (k) =>
-          SUPPORTED_WALLETS[k].connector === connector &&
-          isMetaMask === (k === "METAMASK"),
-      )
-      .map((k) => SUPPORTED_WALLETS[k].name)[0];
+        .filter(
+            k =>
+                SUPPORTED_WALLETS[k].connector === connector && (isMetaMask === (k === 'METAMASK'))
+        )
+        .map(k => SUPPORTED_WALLETS[k].name)[0];
     const form = useForm({
       initialValues: {
-        username: user.value && user.value.username ? user.value.username : "",
-        twitter:
-          user.value && user.value.socials ? user.value.socials.twitter : "",
-        instagram:
-          user.value && user.value.socials ? user.value.socials.instagram : "",
-        website:
-          user.value && user.value.socials ? user.value.socials.website : "",
-        description:
-          user.value && user.value.description ? user.value.description : "",
+        username: (user.value && user.value.username) ? user.value.username : "",
+        twitter: (user.value && user.value.socials) ? user.value.socials.twitter : "",
+        instagram: (user.value && user.value.socials) ? user.value.socials.instagram : "",
+        website: (user.value && user.value.socials) ? user.value.socials.website : "",
+        description: (user.value && user.value.description) ? user.value.description : "",
       },
     });
 
     const resetTemporaryAvatarImage = () => {
-      temporaryAvatarImageUrl.value = "";
-    };
+      temporaryAvatarImageUrl.value = '';
+    }
 
     const resetTemporaryBannerImage = () => {
-      temporaryBannerImageUrl.value = "";
-    };
+      temporaryBannerImageUrl.value = '';
+    }
 
     const uploadAvatarImage = (event) => {
       const fd = new FormData();
       const file = event.target.files[0];
       if (file && file.size > 1500000) {
-        toast.add({
-          severity: "error",
-          summary: "Error",
-          detail: "Profile image must be less than 1.5 MB.",
-          life: 3000,
-        });
+        toast.add({severity:'error', summary:'Error', detail:'Profile image must be less than 1.5 MB.', life: 3000});
         return;
       }
-      fd.append("files", file);
+      fd.append('files', file);
 
       UserService.avatar(fd)
-        .then((res) => {
+        .then(res => {
           const imageSrc = res.data.url;
           temporaryAvatarImageUrl.value = imageSrc;
-          form.setFieldValue("avatar_image", imageSrc);
+          form.setFieldValue('avatar_image', imageSrc);
         })
-        .catch((e) => {
-          console.error(e);
-          toast.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Profile avatar upload failed.",
-            life: 3000,
-          });
-        });
-    };
+        .catch(e => {
+          console.error(e)
+          toast.add({severity:'error', summary:'Error', detail:'Profile avatar upload failed.', life: 3000});
+      });
+    }
 
     const uploadBannerImage = (event) => {
       const fd = new FormData();
       const file = event.target.files[0];
       if (file && file.size > 1500000) {
-        toast.add({
-          severity: "error",
-          summary: "Error",
-          detail: "Profile image must be less than 1.5 MB.",
-          life: 3000,
-        });
+        toast.add({severity:'error', summary:'Error', detail:'Profile image must be less than 1.5 MB.', life: 3000});
         return;
       }
-      fd.append("files", file);
+      fd.append('files', file);
 
       UserService.banner(fd)
-        .then((res) => {
+        .then(res => {
           const imageSrc = res.data.url;
           temporaryBannerImageUrl.value = imageSrc;
-          form.setFieldValue("banner_image", imageSrc);
+          form.setFieldValue('banner_image', imageSrc);
         })
-        .catch((e) => {
-          console.error(e);
-          toast.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Profile avatar upload failed.",
-            life: 3000,
-          });
-        });
-    };
+        .catch(e => {
+          console.error(e)
+          toast.add({severity:'error', summary:'Error', detail:'Profile avatar upload failed.', life: 3000});
+      });
+    }
 
     const openAvatarUploadWindow = () => {
-      document.getElementById("profileAvatarUpload").click();
-    };
+      document.getElementById('profileAvatarUpload').click();
+    }
 
     const openBannerUploadWindow = () => {
-      document.getElementById("profileBannerUpload").click();
-    };
+      document.getElementById('profileBannerUpload').click();
+    }
 
     const usernameField = reactive(useField("username", "required"));
-    const twitterField = reactive(
-      useField("twitter", (url) => {
-        const res = twitterRegx.exec(url);
-        if (!url) return true;
-        return res && res[1] ? true : "This is not a valid twitter address";
-      }),
-    );
-    const instagramField = reactive(
-      useField("instagram", (url) => {
-        const res = instagramRegx.exec(url);
-        if (!url) return true;
-        return res && res[1] ? true : "This is not a valid instagram username";
-      }),
-    );
+    const twitterField = reactive(useField("twitter", url => {
+      const res = twitterRegx.exec(url);
+      if (!url) return true;
+      return (res && res[1]) ? true : 'This is not a valid twitter address';
+    }));
+    const instagramField = reactive(useField("instagram", url => {
+      const res = instagramRegx.exec(url);
+      if (!url) return true;
+      return (res && res[1]) ? true : 'This is not a valid instagram username';
+    }));
     const websiteField = reactive(useField("website", isValidHttpUrl));
     const descriptionField = reactive(useField("description"));
 
@@ -339,49 +208,36 @@ export default {
       values.avatar_image = temporaryAvatarImageUrl.value;
       values.banner_image = temporaryBannerImageUrl.value;
       const signer = useSigner();
-      const msg = `I would like to update my account preferences for ${account.value}.`;
+      const msg = `I would like to update my account preferences for ${account.value}.`
 
       if (signer) {
-        const sig = await signer.signMessage(msg).catch((e) => {
-          toast.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Message signing failed.",
-            life: 3000,
-          });
-          // ToastifyService.fail(msg);
-          //this.submitting = false;
-          return e;
+        const sig = await signer
+          .signMessage(msg)
+          .catch((e) => {
+            toast.add({severity:'error', summary:'Error', detail:'Message signing failed.', life: 3000});
+            // ToastifyService.fail(msg);
+            //this.submitting = false;
+            return e;
         });
 
         values = clean(values);
-        UserService.update(account.value, { ...values, sig })
-          .then((res) => {
+        UserService.update(account.value, {...values, sig})
+          .then(res => {
             setUser(res.data.user);
-            toast.add({
-              severity: "info",
-              summary: "Success",
-              detail: "Your profile has been updated.",
-              life: 3000,
-            });
-            store.dispatch("application/closeModal");
-            temporaryAvatarImageUrl.value = "";
+            toast.add({severity:'info', summary:'Success', detail:'Your profile has been updated.', life: 3000});
+            store.dispatch('application/closeModal');
+            temporaryAvatarImageUrl.value = '';
           })
-          .catch((e) => {
-            console.error(e);
-            toast.add({
-              severity: "error",
-              summary: "Error",
-              detail: "Profile update failed.",
-              life: 3000,
-            });
-          });
+          .catch(e => {
+            console.error(e)
+            toast.add({severity:'error', summary:'Error', detail:'Profile update failed.', life: 3000});
+        });
       }
     });
 
     const openOptions = () => {
-      emit("changeView", "options");
-    };
+      emit('changeView', 'options');
+    }
     return {
       name,
       account,
@@ -404,9 +260,9 @@ export default {
       temporaryBannerImageUrl,
       resetTemporaryAvatarImage,
       resetTemporaryBannerImage,
-    };
-  },
-};
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -420,21 +276,21 @@ export default {
 }
 .input-width {
   width: 65%;
-  min-width: 300px;
+  min-width:300px;
 }
 .clear-image-icon {
-  right: 0.5rem;
-  top: 0.5rem;
+  right: .5rem;
+  top: .5rem;
   color: black;
   background: white;
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0,0,0,.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: .75rem;
   cursor: pointer;
   padding-left: 2px;
   padding-top: 1px;
