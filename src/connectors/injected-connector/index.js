@@ -83,6 +83,10 @@ export default class InjectedConnector extends AbstractConnector {
             (window.ethereum).autoRefreshOnNetworkChange = false
         }
 
+        if ((window.ethereum).isBlockWallet) {
+            this.name = 'BlockWallet';
+        }
+
         // try to activate + get account via eth_requestAccounts
         let account
         try {
