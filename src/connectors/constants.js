@@ -15,6 +15,14 @@ export const SUPPORTED_WALLETS = {
         href: null,
         color: '#E8831D'
     },
+	BLOCKWALLET: {
+		connector: injected,
+		name: "BlockWallet",
+		iconName: 'blockWalletIcon.svg',
+		description: 'The most private, non-custodial cryptocurrency wallet.',
+		href: null,
+		color: '#1673ff'
+	},
     WALLET_CONNECT: {
         connector: walletConnect,
         name: 'WalletConnect',
