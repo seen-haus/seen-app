@@ -4,7 +4,7 @@
                  :header="optionItem.name"
                  :key="key"
                  :icon="require('./../../assets/icons/' + optionItem.iconName)"
-                 :active="connector && connector.name === optionItem.connector.name && (connector.name !== 'BlockWallet' || connector.name === optionItem.name)"
+                 :active="connector && connector.name === optionItem.name"
                  @click="handleClick(optionItem)"/>
     <div class="p-4 border text cursor-pointer" @click="handleDisconnect" v-if="connector && connector.name">
       <button>Disconnect</button>
