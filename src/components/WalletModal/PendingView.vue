@@ -56,6 +56,10 @@ export default {
             if (connecting.value &&
                 SUPPORTED_WALLETS[key].connector.name === connecting.value.name) {
               console.log(true)
+              if (window.ethereum.isBlockWallet) {
+                // if BlockWallet is the selected option, even though the connector is MetaMask by default
+                return SUPPORTED_WALLETS["BLOCKWALLET"]
+              }
               return SUPPORTED_WALLETS[key];
             }
           }).filter(x=>x))[0]
