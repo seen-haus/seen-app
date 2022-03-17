@@ -23,6 +23,7 @@ export default {
   emits: ['changeView'],
   setup(props, {emit}) {
     const {activate, connector, deactivate} = useWeb3();
+    console.log({connector})
     const handleClick = (selectedOption) => {
       console.log(selectedOption)
       if (selectedOption.href) {

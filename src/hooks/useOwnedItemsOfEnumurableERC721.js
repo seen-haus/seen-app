@@ -1,19 +1,25 @@
 import {OpenSeaAPIService} from "@/services/apiService";
 import {computed, reactive} from "vue";
+import {Web3Provider} from "@ethersproject/providers";
+import { useERC721EnumerableContract } from "../hooks/useContract";
 
-export default function useOwnedItemsOfCollection(address = null, collection = "seen-haus", limit = 50) {
+export default function useOwnedItemsOfEnumurableERC721(holderAddress = null, tokenAddress = null, limit = 50) {
     const state = reactive({
         items: [],
         limit: limit,
         offset: 0,
         hasMore: false,
-        address,
-        collection,
+        holderAddress,
+        tokenAddress,
         error: null,
     });
 
-    const setAddress = (address) => {
-        state.address = address;
+    const setHolderAddress = (holderAddress) => {
+        state.holderAddress = holderAddress;
+    }
+
+    const setTokenAddress = (tokenAddress) => {
+      state.tokenAddress = tokenAddress;
     }
 
     async function load() {
@@ -24,10 +30,19 @@ export default function useOwnedItemsOfCollection(address = null, collection = "
         state.items = [];
 
         try {
-            const data = await OpenSeaAPIService.getOwnedCollectables(state.address, state.limit, state.offset, state.collection);
-            console.log({data})
-            state.items = data;
-            state.hasMore = data.length === state.limit;
+            const contract = await useERC721EnumerableContract(true, state.tokenAddress);
+            let broken = false;
+            for(let i = 0; !broken; i++) {
+              try {
+                let firstOwned = await contract.tokenOfOwnerByIndex(state.holderAddress, i);
+              } catch (e) {
+                broken = true;
+              }
+            }
+            console.log("Done")
+            // const data = await OpenSeaAPIService.getOwnedCollectables(state.holderAddress, state.limit, state.offset, state.collection);
+            // state.items = data;
+            // state.hasMore = data.length === state.limit;
         } catch (e) {
             state.error = e;
         }
@@ -48,7 +63,7 @@ export default function useOwnedItemsOfCollection(address = null, collection = "
         ];
 
         try {
-            const data = await OpenSeaAPIService.getProfileEntries(state.address, state.limit, state.offset, state.collection);
+            const data = await OpenSeaAPIService.getProfileEntries(state.holderAddress, state.limit, state.offset, state.collection);
 
             state.items = [
                 ...state.items.filter((i) => i != null),
@@ -72,7 +87,8 @@ export default function useOwnedItemsOfCollection(address = null, collection = "
         hasMore,
         error,
         loadMore,
-        setAddress,
+        setHolderAddress,
+        setTokenAddress,
     };
 
 }

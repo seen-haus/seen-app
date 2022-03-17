@@ -12,6 +12,7 @@ import XSEEN_ABI from "@/constants/abis/xseenABI.json"
 import CLAIM_ABI from "@/constants/abis/claimABI.json"
 import SEEN_NFT_ABI from "@/constants/abis/SeenNFT.json"
 import DISTRIBUTION_ABI from "@/constants/abis/distributionABI.json"
+import ERC721_ENUMERABLE_ABI from "@/constants/abis/erc721EnumerableABI.json"
 // V3
 import ACCESS_CONTROLLER_ABI from "@/constants/abis/v3/accessControllerABI.json"
 import SEEN_AUCTION_BUILDER_V3 from "@/constants/abis/v3/auctionBuilderABI"
@@ -544,4 +545,8 @@ export const useV3MarketConfigContract = async (withSignerIfPossible) => {
 
 export const useV3TicketerContract = async (withSignerIfPossible, ticketerAddress) => {
     return useContract(ticketerAddress, SEEN_TICKETER_ABI_V3, withSignerIfPossible);
+}
+
+export const useERC721EnumerableContract = async (withSignerIfPossible, tokenAddress) => {
+    return useContract(tokenAddress, ERC721_ENUMERABLE_ABI, withSignerIfPossible);
 }

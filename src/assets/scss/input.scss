@@ -25,6 +25,29 @@
   }
 }
 
+.outlined-input-darkmode-green {
+  @apply flex items-center border rounded-md px-5;
+  height: 60px;
+  border-width: 2px;
+
+  background-color: black;
+  color: white;
+  border-color: #25c785;
+
+  &:hover,
+  &:focus {
+    border-color: #25c785;
+  }
+
+  .p-dropdown-label {
+    font-size: 15px;
+    color: white;
+    text-transform: none;
+    margin-top: 0;
+    padding-left: 0;
+  }
+}
+
 .p-calendar .p-inputtext {
   padding:0!important;
   border: none;

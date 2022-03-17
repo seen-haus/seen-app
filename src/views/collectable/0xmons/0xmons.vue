@@ -28,108 +28,231 @@
         <i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
       </button>
 
-      <div v-if="!collectablesReactive.loading && account && (listOfCollectables?.length === 0)">
-        <light-typography color="red">
-          Your connected account does not hold any 0xmons, therefore no physical claim can be made.
-        </light-typography>
-      </div>
+      <template v-if="stepState.currentStepIndex === 0">
 
-      <div v-if="collectablesReactive.loading && account">
-        <unfenced-title
-          class="text-black hidden lg:flex pt-1"
-          color="fence-dark"
-          text-align="center"
-          font-size="32px"
-        >
-          <span class="text-gradient monospace">Loading Your 0xmons...</span>
-        </unfenced-title>
-        <light-typography>
-          Introspecting the ethereal...
-        </light-typography>
-        <div
-          class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
-        >
-          <template
-            v-for="collectable in [1,2,3,4,5,6]"
-            :key="`${collectable}-collectable-placeholder`"
-          >
-            <div class="collectable-container auto-margins"
-              :class="{'collectable-selected-for-claim': (selectedIds.indexOf(collectable.token_id) > -1)}"
-            >
-              <!-- <div class="text-white">
-                <pre>{{JSON.stringify(collectable, null, 4)}}</pre>
-              </div> -->
-              <div 
-                class="collectable-image"
-              >
-              </div>
-            </div>
-          </template>
+        <div v-if="!collectablesReactive.loading && account && (listOfCollectables?.length === 0)">
+          <light-typography color="red">
+            Your connected account does not hold any 0xmons, therefore no physical claim can be made.
+          </light-typography>
         </div>
-      </div>
 
-      <div v-if="!collectablesReactive.loading && account && (listOfCollectables?.length > 0)">
-        <unfenced-title
-          class="text-black hidden lg:flex pt-1"
-          color="fence-dark"
-          text-align="center"
-          font-size="32px"
-        >
-          <span class="text-gradient monospace">Your 0xmons Collection</span>
-        </unfenced-title>
-        <light-typography>
-          Select the 0xmons that you would like to claim
-        </light-typography>
-        <div
-          class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
-        >
-          <template
-            v-for="collectable in listOfCollectables"
-            :key="collectable && collectable.id"
+        <div v-if="collectablesReactive.loading && account">
+          <unfenced-title
+            class="text-black hidden lg:flex pt-1"
+            color="fence-dark"
+            text-align="center"
+            font-size="32px"
           >
-            <div class="collectable-container auto-margins"
-              :class="{'collectable-selected-for-claim': (selectedIds.indexOf(collectable.token_id) > -1)}"
+            <span class="text-gradient monospace">Loading Your 0xmons...</span>
+          </unfenced-title>
+          <light-typography>
+            Introspecting the ethereal...
+          </light-typography>
+          <div
+            class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
+          >
+            <template
+              v-for="collectable in [1,2,3,4,5,6]"
+              :key="`${collectable}-collectable-placeholder`"
             >
-              <!-- <div class="text-white">
-                <pre>{{JSON.stringify(collectable, null, 4)}}</pre>
-              </div> -->
-              <div 
-                class="collectable-image"
-                :class="{
-                  'collectable-already-claimed': (alreadyClaimedIds.indexOf(collectable.token_id) > -1)
-                }"
-                @click="toggleCollectableForClaim(collectable.token_id)"
+              <div class="collectable-container auto-margins"
+                :class="{'collectable-selected-for-claim': (selectionState.selectedIds.indexOf(collectable.token_id) > -1)}"
               >
+                <!-- <div class="text-white">
+                  <pre>{{JSON.stringify(collectable, null, 4)}}</pre>
+                </div> -->
                 <div 
-                  v-if="alreadyClaimedIds.indexOf(collectable.token_id) > -1"
-                  class="collectable-already-claimed-overlay text-white"
+                  class="collectable-image"
                 >
-                  Already Claimed
                 </div>
-                <media-loader
-                    :key="collectable.image_preview_url"
-                    v-if="collectable.image_preview_url"
-                    :src="collectable.image_preview_url"
-                    ignoreAspectRatioPadding
-                    muted
-                    loop
-                    autoplay
-                    maxWidthAndHeight
-                />
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <div v-if="!collectablesReactive.loading && account && (listOfCollectables?.length > 0)">
+          <unfenced-title
+            class="text-black hidden lg:flex pt-1"
+            color="fence-dark"
+            text-align="center"
+            font-size="32px"
+          >
+            <span class="text-gradient monospace">Your 0xmons Collection</span>
+          </unfenced-title>
+          <light-typography>
+            Select the 0xmons that you would like to claim
+          </light-typography>
+          <div
+            class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
+          >
+            <template
+              v-for="collectable in listOfCollectables"
+              :key="collectable && collectable.id"
+            >
+              <div class="collectable-container auto-margins"
+                :class="{'collectable-selected-for-claim': (selectionState.selectedIds.indexOf(collectable.token_id) > -1)}"
+              >
+                <!-- <div class="text-white">
+                  <pre>{{JSON.stringify(collectable, null, 4)}}</pre>
+                </div> -->
+                <div 
+                  class="collectable-image"
+                  :class="{
+                    'collectable-already-claimed': (selectionState.alreadyClaimedIds.indexOf(collectable.token_id) > -1)
+                  }"
+                  @click="toggleCollectableForClaim(collectable.token_id)"
+                >
+                  <div 
+                    v-if="selectionState.alreadyClaimedIds.indexOf(collectable.token_id) > -1"
+                    class="collectable-already-claimed-overlay text-white"
+                  >
+                    Already Claimed
+                  </div>
+                  <media-loader
+                      v-if="collectable?.metadata?.image"
+                      :key="collectable?.metadata?.image"
+                      :src="collectable?.metadata?.image"
+                      ignoreAspectRatioPadding
+                      muted
+                      loop
+                      autoplay
+                      maxWidthAndHeight
+                  />
+                </div>
+              </div>
+            </template>
+          </div>
+          <div class="mt-9">
+            <button
+              v-if="selectionState.selectedIds?.length > 0"
+              class="cursor-pointer button primary auto-margins flex-shrink-0"
+              @click="setStepIndex(1)"
+            >
+              Proceed To Review Claim
+            </button>
+          </div>
+        </div>
+
+      </template>
+
+      <template v-if="stepState.currentStepIndex === 1">
+        <unfenced-title
+            class="text-black hidden lg:flex pt-1"
+            color="fence-dark"
+            text-align="center"
+            font-size="32px"
+          >
+            <span class="text-gradient monospace">Review Claim Selection</span>
+          </unfenced-title>
+          <light-typography>
+            {{selectionState.selectedIds.length + ` 0xmon(s) selected`}}
+          </light-typography>
+         <div
+            class="collectable-review-container mt-9"
+          >
+            <template
+              v-for="collectable in listOfCollectables"
+              :key="collectable && collectable.id"
+            >
+              <div class="collectable-container-review"
+                v-if="selectionState.selectedIds.indexOf(collectable.token_id) > -1"
+                :class="{'collectable-selected-for-claim': (selectionState.selectedIds.indexOf(collectable.token_id) > -1)}"
+              >
+                <!-- <div class="text-white">
+                  <pre>{{JSON.stringify(collectable, null, 4)}}</pre>
+                </div> -->
+                <div 
+                  class="collectable-image-review"
+                  :class="{
+                    'collectable-already-claimed': (selectionState.alreadyClaimedIds.indexOf(collectable.token_id) > -1)
+                  }"
+                >
+                  <div 
+                    v-if="selectionState.alreadyClaimedIds.indexOf(collectable.token_id) > -1"
+                    class="collectable-already-claimed-overlay text-white"
+                  >
+                    Already Claimed
+                  </div>
+                  <media-loader
+                      v-if="collectable?.metadata?.image"
+                      :key="collectable?.metadata?.image"
+                      :src="collectable?.metadata?.image"
+                      ignoreAspectRatioPadding
+                      muted
+                      loop
+                      autoplay
+                      maxWidthAndHeight
+                  />
+                </div>
+              </div>
+            </template>
+          </div>
+          <div>
+            <div class="mt-9">
+              <button
+                v-if="selectedIds?.length > 0"
+                class="cursor-pointer button primary auto-margins selection-button flex-shrink-0"
+                @click="claimUnclaimedInSelection()"
+              >
+                Claim Selection
+              </button>
+            </div>
+            <div class="mt-4">
+              <button
+                v-if="selectedIds?.length > 0"
+                class="cursor-pointer button dark outline dark-mode-outline selection-button auto-margins flex-shrink-0"
+                @click="setStepIndex(0)"
+              >
+                Adjust Selection
+              </button>
+            </div>
+          </div>
+          <div class="mt-8">
+            <unfenced-title
+              class="text-black hidden lg:flex pt-1"
+              color="fence-dark"
+              text-align="center"
+              font-size="32px"
+            >
+              <span class="text-gradient monospace">Shipping Information</span>
+            </unfenced-title>
+            <!-- <div class="mt-4 mb-4">
+              <light-typography color="red">
+                You have not saved any shipping information yet.<br/>This claim cannot be fulfilled without any saved shipping information.
+              </light-typography>
+            </div> -->
+            <div v-if="shippingInfoSubmissionStatus.hasSubmitted && !shippingInfoFetched.isFetched" class="mt-4">
+              <light-typography color="#25c784">
+                Your shipping information has been successfully submitted.
+              </light-typography>
+              <div class="mt-8">
+                <button
+                  v-if="selectedIds?.length > 0"
+                  class="cursor-pointer button dark outline dark-mode-outline auto-margins flex-shrink-0"
+                  :class="{
+                    'disabled opacity-0-6': shippingInfoFetched.isLoading || shippingInfoFetched.isSigning,
+                  }"
+                  @click="fetchAndLoadShippingInfo()"
+                >
+                  {{
+                    shippingInfoFetched.isSigning ? 
+                      'Check MetaMask...'
+                        : shippingInfoFetched.isSubmitting 
+                          ? 'Loading...' 
+                            : 'Adjust Shipping Information'
+                  }}
+                </button>
               </div>
             </div>
-          </template>
-        </div>
-        <div class="mt-9">
-          <button
-            v-if="selectedIds?.length > 0"
-            class="cursor-pointer button primary auto-margins flex-shrink-0"
-            @click="openWalletModal"
-          >
-            Claim Against Selected Tokens
-          </button>
-        </div>
-      </div>
+            <div v-if="!shippingInfoSubmissionStatus.hasSubmitted || shippingInfoFetched.isFetched">
+              <ClaimAgainstTokenContractForm
+                claimContractAddress="0xa513E6E4b8f2a923D98304ec87F64353C4D5C853"
+                :preloadData="shippingInfoFetched.data"
+                :afterInfoSubmitted="afterInfoSubmitted"
+              />
+            </div>
+          </div>
+      </template>
       
     </div>
   </div>
@@ -145,16 +268,20 @@
 import { onUnmounted, watchEffect, computed, reactive } from "vue";
 import { useMeta } from "vue-meta";
 import { useStore } from "vuex";
+import { useToast } from "primevue/usetoast";
+
 import Container from "@/components/Container.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
+import ClaimAgainstTokenContractForm from '@/components/ClaimAgainstTokenContractForm';
 
-import { OpenSeaAPIService } from "@/services/apiService";
+import { ClaimsService } from "@/services/apiService";
 
+import useSigner from "@/hooks/useSigner";
 import useWeb3 from "@/connectors/hooks"
 import useDarkMode from "@/hooks/useDarkMode";
-import useOwnedItemsOfCollection from "@/hooks/useOwnedItemsOfCollection";
+import useTokenCache from "@/hooks/useTokenCache";
 
 export default {
   name: "0xmonsClaim",
@@ -163,31 +290,23 @@ export default {
     MediaLoader,
     UnfencedTitle,
     LightTypography,
-  },
-  methods: {
-    toggleCollectableForClaim(collectableId) {
-      console.log({collectableId})
-      let indexOfCollectableInCurrentSelection = this.selectedIds.indexOf(collectableId);
-      if(indexOfCollectableInCurrentSelection === -1 && (this.alreadyClaimedIds.indexOf(collectableId) === -1)) {
-        this.selectedIds.push(collectableId);
-      } else if(indexOfCollectableInCurrentSelection > -1) {
-        this.selectedIds.splice(indexOfCollectableInCurrentSelection, 1);
-      }
-    }
-  },
-  data() {
-    return {
-      selectedIds: [],
-      alreadyClaimedIds: ["248", "239"],
-    }
+    ClaimAgainstTokenContractForm,
   },
   setup() {
+
+    const toast = useToast();
 
     const store = useStore();
 
     const { darkMode, setDarkMode } = useDarkMode();
     const { account } = useWeb3();
-    const collection = useOwnedItemsOfCollection(account, "0xmons-xyz");
+    const collection = useTokenCache(account?.value, "0x0427743DF720801825a5c82e0582B1E915E0F750");
+
+    const claimContractAddress = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853"; // local
+    const tokenContractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // local
+
+    // const claimContractAddress = ""; // mainnet
+    // const tokenContractAddress = "0x0427743df720801825a5c82e0582b1e915e0f750"; // mainnet
 
     setDarkMode(true);
 
@@ -204,28 +323,143 @@ export default {
     })
 
     const listOfCollectables = computed(
-      () => collection.listOfCollectables.value
+      () => collection.tokenCache.value
     );
 
     const collectablesReactive = reactive({
       loading: true,
     })
 
+    const stepState = reactive({ currentStepIndex: 0 })
+
+    const selectionState = reactive({
+      selectedIds: [],
+      alreadyClaimedIds: [],
+    })
+
+    const setStepIndex = (stepIndex) => {
+      stepState.currentStepIndex = stepIndex;
+    }
+
     watchEffect(async () => {
       if(account?.value && collectablesReactive) {
+        setStepIndex(0);
+        selectionState.selectedIds = [];
+        selectionState.alreadyClaimedIds = [];
         collectablesReactive.loading = true;
-        let demoAccount = "0x0c3dbcf236282ed1eca06597d8858ccfba569c47";
-        collection.setAddress(demoAccount); // account?.value
+        collection.setHolderAddress(account?.value); // account?.value
+        collection.setTokenAddress(tokenContractAddress); // local node testing
         await collection.load();
+        console.log({collection})
         collectablesReactive.loading = false;
+      } else if (!account?.value) {
+        setStepIndex(0);
       }
     })
+
+    const shippingInfoSubmissionStatus = reactive({
+      hasSubmitted: false,
+      isLoading: true,
+    });
+
+    const afterInfoSubmitted = () => {
+      shippingInfoSubmissionStatus.hasSubmitted = true;
+      shippingInfoFetched.data = {};
+      shippingInfoFetched.isFetched = false;
+    }
+
+    const toggleCollectableForClaim = (collectableId) => {
+      console.log({collectableId})
+      let indexOfCollectableInCurrentSelection = selectionState.selectedIds.indexOf(collectableId);
+      if(indexOfCollectableInCurrentSelection === -1 && (selectionState.alreadyClaimedIds.indexOf(collectableId) === -1)) {
+        selectionState.selectedIds.push(collectableId);
+      } else if(indexOfCollectableInCurrentSelection > -1) {
+        selectionState.selectedIds.splice(indexOfCollectableInCurrentSelection, 1);
+      }
+    }
+
+    const shippingInfoFetched = reactive({
+      isLoading: false,
+      isSigning: false,
+      isFetched: false,
+      data: {}
+    });
+
+    watchEffect(async () => {
+      if(account?.value) {
+        shippingInfoSubmissionStatus.isLoading = true;
+        shippingInfoSubmissionStatus.hasSubmitted = false;
+        let response = await ClaimsService.claimAgainstTokenContractCheckHasSubmittedShipping(claimContractAddress, account?.value);
+        shippingInfoSubmissionStatus.isLoading = false;
+        if(response.data) {
+          shippingInfoSubmissionStatus.hasSubmitted = true;
+        }
+      }
+    })
+
+    const fetchAndLoadShippingInfo = async () => {
+      if(account?.value) {
+        shippingInfoFetched.isSigning = true;
+        const msg = `{"reason":"Fetch shipping information for wallet address","account":"${account.value}","timestamp":${Math.floor(new Date().getTime() / 1000)}}`
+        const signer = useSigner();
+        if (signer) {
+          const signature = await signer.signMessage(msg).catch((e) => {
+            console.log({e})
+            toast.add({
+              severity: "error",
+              summary: "Error",
+              detail: "Message signing failed.",
+              life: 3000,
+            });
+            return e;
+          });
+          shippingInfoFetched.isSigning = false;
+          shippingInfoFetched.isLoading = true;
+          let response = await ClaimsService.claimAgainstTokenContractFetchSubmittedShipping(claimContractAddress, {
+            signature,
+            msg
+          }).catch(error => {
+            if(error?.data?.message) {
+              toast.add({
+                severity: "error",
+                summary: "Error",
+                detail: error?.data?.message,
+                life: 3000,
+              });
+            } else {
+              toast.add({
+                severity: "error",
+                summary: "Error",
+                detail: "Message signing failed.",
+                life: 3000,
+              });
+            }
+          })
+          shippingInfoFetched.isLoading = false;
+          if(response.data) {
+            console.log({'response.data': response.data})
+            shippingInfoFetched.data = response.data;
+            shippingInfoFetched.isFetched = true;
+          }
+        }
+      }
+    }
 
     return {
       openWalletModal,
       listOfCollectables,
       account,
       collectablesReactive,
+      setStepIndex,
+      stepState,
+      tokenContractAddress,
+      claimContractAddress,
+      shippingInfoSubmissionStatus,
+      fetchAndLoadShippingInfo,
+      shippingInfoFetched,
+      afterInfoSubmitted,
+      selectionState,
+      toggleCollectableForClaim,
     }
   },
 };
@@ -288,6 +522,18 @@ export default {
   height: 300px;
 }
 
+.collectable-review-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.collectable-image-review {
+  width: 125px;
+  height: 125px;
+  position: relative;
+}
+
 .collectable-image {
   width: 250px;
   height: 250px;
@@ -303,6 +549,12 @@ export default {
 .collectable-container:hover {
   cursor: pointer;
   border: 5px solid #323232;
+}
+
+.collectable-container-review {
+  transition: all 0.2s;
+  border: 5px solid #1a1a1a;
+  margin: 10px;
 }
 
 .collectable-selected-for-claim {
@@ -327,5 +579,10 @@ export default {
   justify-content: center;
   align-items: center;
   font-weight: bold;
+}
+
+.selection-button {
+  max-width: 250px;
+  width: 100%;
 }
 </style>

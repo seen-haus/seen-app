@@ -101,6 +101,13 @@ export const CollectablesService = {
     },
 };
 
+export const TokenCacheService = {
+    fetchTokenCacheByHolder(tokenAddress, holderAddress) {
+        console.log("getting cache")
+        return ApiService.get(`/token-cache/${tokenAddress}/${holderAddress}`);
+    }
+}
+
 export const BidRegistrationService = {
     isRegistered(walletAddress, collectableId) {
         return ApiService.get(`bid-registration-status/${walletAddress}/${collectableId}`);
@@ -116,7 +123,16 @@ export const ClaimsService = {
     },
     claim(contractAddress, payload) {
         return ApiService.post(`claims/${contractAddress}/claim`, payload);
-    }
+    },
+    claimAgainstTokenContract(contractAddress, payload) {
+        return ApiService.post(`claim-against-token-contract/${contractAddress}`, payload);
+    },
+    claimAgainstTokenContractFetchSubmittedShipping(contractAddress, payload) {
+        return ApiService.post(`/claim-against-token-contract/fetch-submitted-shipping/${contractAddress}`, payload);
+    },
+    claimAgainstTokenContractCheckHasSubmittedShipping(contractAddress, walletAddress) {
+        return ApiService.get(`/claim-against-token-contract/check-has-submitted-shipping/${contractAddress}/${walletAddress}`);
+    },
 }
 
 export const SpotlightService = {
