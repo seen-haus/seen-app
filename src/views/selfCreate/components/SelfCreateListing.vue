@@ -604,7 +604,7 @@ export default {
                         //     SeenTypes.Audience _audience,
                         //     SeenTypes.Clock _clock
                         // )
-                        let duration = 120; // 24 hours
+                        let duration = 86400; // 24 hours
                         let clock = 1; // Triggered when reserve is hit
                         if(props.marketTypeData === 'secondary') {
                             tx = await useListingContract.createSecondaryAuction(account?.value, props.nftTokenAddressData, props.nftTokenIdData, props.openingTimeUnixData, duration, priceWei, audience, clock);
