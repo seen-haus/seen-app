@@ -6,6 +6,16 @@
   text-overflow: ellipsis;
 }
 
+@media screen and (min-width:480px) {
+  .desktop-hidden {
+    display: none;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
 .centered-quote {
   transform: translate3d(0, -50%, 0);
 }

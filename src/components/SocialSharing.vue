@@ -1,10 +1,21 @@
 <template>
-  <div class="wrapme" v-click-outside="handleClickOutside">
+  <div 
+    class="wrapme"
+    :style="{
+      ...(!noTransform && { transform: 'translateY(-50%)' }),
+      ...(!noFloat && { float: 'right' })
+    }"
+    v-click-outside="handleClickOutside"
+  >
     <div class="relative">
       <button @click="showDropdown=!showDropdown" class="button shadow-lifted" :class="darkMode ? 'dark-mode-surface dark-mode-text' : 'light-mode-surface'">
         Share <i class="px-2 fas fa-share"></i>
       </button>
-      <div v-if="showDropdown" class="dropup absolute rounded-md shadow-lg w-40" :class="darkMode ? 'dark-mode-surface dark-mode-text' : 'light-mode-surface text-gray-700'">
+      <div v-if="showDropdown" class="dropdown-share absolute rounded-md shadow-lifted w-40" :class="darkMode ? 'dark-mode-surface dark-mode-text' : 'light-mode-surface text-gray-700'" 
+        :style="{
+          ...(noTransformFlyout && { left: '0px' })
+        }"
+      >
         <div class="py-4">
           <a :href="twitterUrl" @click="showDropdown=false" target="_blank" class="block py-2 text-sm"><i class="mx-4 fab fa-twitter"></i>Twitter</a>
           <a :href="facebookUrl" @click="showDropdown=false" target="_blank" class="block py-2 text-sm"><i class="mx-4 fab fa-facebook"></i>Facebook</a>
@@ -27,6 +38,18 @@ export default {
     }
   },
   props: {
+    noFloat: {
+      type: Boolean,
+      default: false
+    },
+    noTransform: {
+      type: Boolean,
+      default: false
+    },
+    noTransformFlyout: {
+      type: Boolean,
+      default: false
+    }
   },
   methods: {
     shareUrl() {
@@ -66,10 +89,16 @@ export default {
 </script>
 
 
-<style>
+<style scoped>
 .dropup {
   top: -190px;
   left: -18px;
+  z-index: 100;
+}
+
+.dropdown-share {
+  top: 65px;
+  left: -10px;
   z-index: 100;
 }
 
@@ -80,7 +109,6 @@ export default {
 
 .wrapme {
   position: relative;
-  float: right;
-  transform: translateY(-50%);
+  z-index: 1000;
 }
 </style>

@@ -85,7 +85,9 @@
           width="100%"
         />
       </div>
-      <social-sharing></social-sharing>
+      <div class="hidden sm:block">
+        <social-sharing></social-sharing>
+      </div>
     </div>
     <div class="abstract-circles abstract-circles-1">
       <img src="@/assets/images/abstract-circles.svg" alt="">
@@ -108,7 +110,7 @@
     </container>
     <container v-if="!showSecondaryMarket">
       
-      <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-6">
+      <div class="flex flex-col lg:grid grid-cols-12 sm:gap-2 md:gap-6 lg:gap-12 py-6 pb-32 mt-6">
         <div class="left-side col-span-7 pb-6">
           <sub-title
             class="text-black hidden lg:flex pb-5"
@@ -117,6 +119,9 @@
             {{title}}
           </sub-title>
           <light-typography class="description" textAlign="left" fontSize="18px">{{description}}</light-typography>
+          <div class="desktop-hidden mt-8">
+            <social-sharing :noFloat="true" :noTransform="true" :noTransformFlyout="true"></social-sharing>
+          </div>
           <template v-if="showAdditionalInformation">
             <!--            <div class="rounded-container flex items-center mt-12">-->
             <!--              <i-->
