@@ -658,7 +658,7 @@ export default {
                 validated: (processData) => processData.marketType
                     && processData.mediaIpfsHash
                     && processData.metaDataIpfsHash
-                    && processData.nftTokenId
+                    // && processData.nftTokenId
             },
             {
                 stepType: STEP_TYPE.PUBLISH,
@@ -667,7 +667,7 @@ export default {
                 validated: (processData) => processData.marketType
                     && processData.mediaIpfsHash
                     && processData.metaDataIpfsHash
-                    && processData.nftTokenId
+                    // && processData.nftTokenId
                     && processData.isMarketHandlerAssigned
             },
             {
@@ -676,7 +676,7 @@ export default {
                 validated: (processData) => processData.marketType
                     && processData.mediaIpfsHash
                     && processData.metaDataIpfsHash
-                    && processData.nftTokenId
+                    // && processData.nftTokenId
                     && processData.isMarketHandlerAssigned
                     && processData.liveListingUrl
             }
