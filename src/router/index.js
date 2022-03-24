@@ -24,8 +24,8 @@ const routes = [
     },
     {
         path: '/drops/0xmons',
-        name: '0xmonsClaimsDrop',
-        component: () => import(/* webpackChunkName: "0xmonsClaimsDrop" */ '../views/collectable/0xmons/0xmons.vue')
+        name: '0xmons',
+        component: () => import(/* webpackChunkName: "0xmons" */ '../views/collectable/0xmons/0xmons.vue')
     },
     {
         path: '/drops/v2/:slug',
