@@ -186,8 +186,8 @@ export default {
             const fd = new FormData();
             const file = document.getElementById('file-to-pin').files[0];
 
-            if (file && file.size > 25000000) {
-                toast.add({severity:'error', summary:'Error', detail:'Media must be less than 25 MB.', life: 3000});
+            if (file && file.size > 35000000) {
+                toast.add({severity:'error', summary:'Error', detail:'Media must be less than 35 MB.', life: 3000});
                 return;
             } else if(!file) {
                 toast.add({severity:'error', summary:'Error', detail:'File not found, please reselect it via the file browser.', life: 8000});
