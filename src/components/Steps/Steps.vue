@@ -7,14 +7,17 @@
         :key="step"
     >
         <div
-            class="step-label-container pl-4"
+            class="pl-4"
             :class="[
-                index === useCurrentStep && 'active-step-number',
-                index < useCurrentStep && 'completed-step clickable',
+                darkMode ? 'step-label-container-dark-mode' : 'step-label-container',
+                (index === useCurrentStep) && (darkMode ? 'active-step-number-dark-mode' : 'active-step-number'),
+                ((index < useCurrentStep) || (forceCompletedSteps.indexOf(index) > -1) || (index === (useSteps.length - 1) && markFinalStepComplete)) && (darkMode ? 'completed-step-dark-mode' : 'completed-step'),
+                ((index < useCurrentStep) || (forceCompletedSteps.indexOf(index) > -1) || (index === (useSteps.length - 1) && markFinalStepComplete)) && dimCompleted && 'opacity-0-6',
+                ((index < useCurrentStep) || (forceCompletedSteps.indexOf(index) > -1) || (index === (useSteps.length - 1) && markFinalStepComplete)) && setStep && 'clickable',
             ]"
-            @click="(index < useCurrentStep) && setStep(index + stepOffset)"
+            @click="setStep && (index < useCurrentStep) && setStep(index + stepOffset)"
         >
-            <div v-if="index < useCurrentStep" class="mr-4 check-container">
+            <div v-if="(index < useCurrentStep || (forceCompletedSteps.indexOf(index) > -1) || (index === (useSteps.length - 1) && markFinalStepComplete)) && !hideCompletedIcons" class="mr-4 check-container">
                 <img src="@/assets/icons/check-circle-green.svg">
             </div>
             <div class="step-label">
@@ -58,6 +61,26 @@ export default {
     currentStep: Number,
     setStep: Function,
     stepOffset: Number,
+    darkMode: {
+        type: Boolean,
+        default: false
+    },
+    hideCompletedIcons: {
+        type: Boolean,
+        default: false
+    },
+    dimCompleted: {
+        type: Boolean,
+        default: false
+    },
+    forceCompletedSteps: {
+        type: Array,
+        default: () => []
+    },
+    markFinalStepComplete: {
+        type: Boolean,
+        default: false
+    }
   },
   setup(props) {
 
@@ -127,6 +150,17 @@ export default {
     align-items: center;
 }
 
+.step-label-container-dark-mode {
+    color: white;
+    height: 56px;
+    width: 100%;
+    border: 2px solid #e6e5e4ab;
+    border-radius: 4px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
 .check-container {
     width: 17px;
     height: 16px;
@@ -142,6 +176,11 @@ export default {
     border: none;
     background: #130B27;
     color: white;
+}
+
+.active-step-number-dark-mode {
+    opacity: 1;
+    border-color: #4bdf7f;
 }
 
 .completed-step {

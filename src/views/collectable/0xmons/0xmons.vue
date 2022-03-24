@@ -67,6 +67,9 @@
       >
         <i class="fas fa-wallet mr-2 transform rotate-12"></i> Connect wallet
       </button>
+      <div class="mb-8" v-if="account">
+        <Steps :darkMode="true" :steps="steps" :currentStep="stepState.stepperUseStepIndex" :dimCompleted="true" :forceCompletedSteps="shippingInfoSubmissionStatus.hasSubmitted && !shippingInfoFetched.isFetched ? [1] : []" :markFinalStepComplete="(selectionState.claimedIdsByCurrentAccount?.length > 0) && selectionState.selectedAllClaimed"/>
+      </div>
 
       <template v-if="stepState.currentStepIndex === 0">
 
@@ -381,6 +384,7 @@ import LightTypography from "@/components/LightTypography.vue";
 import ClaimAgainstTokenContractForm from '@/components/ClaimAgainstTokenContractForm';
 import ProgressTimer from "@/components/Progress/v3/ProgressTimer.vue";
 import HeroGallery from "@/components/Media/HeroGallery.vue";
+import Steps from "@/components/Steps/Steps.vue";
 
 import { ClaimsService, CollectablesService } from "@/services/apiService";
 
@@ -401,6 +405,7 @@ export default {
     ClaimAgainstTokenContractForm,
     ProgressTimer,
     HeroGallery,
+    Steps,
   },
   setup(props, ctx) {
 
@@ -414,6 +419,24 @@ export default {
 
     const { darkMode, setDarkMode } = useDarkMode();
     const { account } = useWeb3();
+
+    const steps = [
+        {
+            stepType: 1,
+            label: '1. Select 0xmons',
+            helperText: 'Which 0xmons you would like to claim against?',
+        },
+        {
+            stepType: 2,
+            label: '2. Save Shipping Info',
+            helperText: 'So that we know where to send your card(s)',
+        },
+        {
+            stepType: 3,
+            label: '3. Run On-chain Claim',
+            helperText: 'Payment & on-chain confirmation',
+        },
+    ];
 
     const {
       collectable,
@@ -441,8 +464,8 @@ export default {
       ctx.emit('updateState');
     }
 
-    // const claimContractAddress = "0xd0e33b6c945207DB859DD7Ab687AC0c13965162d"; // local
-    // const tokenContractAddress = "0xAA65483af897e3C80b2eCa2A73230474D145fCCb"; // local
+    // const claimContractAddress = "0x66890e7f07C33c7E81941d4696aD7F8217c85c84"; // local
+    // const tokenContractAddress = "0x8efc2c80747674b6C55d1cA80cB3e034b3Ee4aD8"; // local
 
     const claimContractAddress = "0xE21ebA28a0968281a403c1D8A6e1d1B9Af245cFf"; // mainnet
     const tokenContractAddress = "0x0427743df720801825a5c82e0582b1e915e0f750"; // mainnet
@@ -471,11 +494,24 @@ export default {
       loading: true,
     })
 
-    const stepState = reactive({ currentStepIndex: 0 })
+    const stepState = reactive({ currentStepIndex: 0, stepperUseStepIndex: 0 })
+
+    watchEffect(() => {
+      if(stepState.currentStepIndex === 0) {
+        stepState.stepperUseStepIndex = 0;
+      } else if (stepState.currentStepIndex === 1) {
+        if(!shippingInfoSubmissionStatus.hasSubmitted || shippingInfoFetched.isFetched) {
+          stepState.stepperUseStepIndex = 1;
+        } else if (shippingInfoSubmissionStatus.hasSubmitted && !shippingInfoFetched.isFetched) {
+          stepState.stepperUseStepIndex = 2;
+        }
+      }
+    })
 
     const selectionState = reactive({
       selectedIds: [],
       alreadyClaimedIds: [],
+      claimedIdsByCurrentAccount: [],
       selectedAllClaimed: false,
       selectedUnclaimedCount: 0,
       claimCheckWallet: false,
@@ -531,6 +567,7 @@ export default {
         selectionState.alreadyClaimedIds = [];
         let claimedIdsFromCachedEvents = mergedEvents?.value.map(event => event.token_id);
         let claimedIdsByCurrentAccount = mergedEvents?.value.filter(event => event.wallet_address.toLowerCase() === account?.value?.toLowerCase());
+        selectionState.claimedIdsByCurrentAccount = claimedIdsByCurrentAccount;
         for(let claimedIdFromCachedEvents of claimedIdsFromCachedEvents) {
           if(selectionState.alreadyClaimedIds.indexOf(claimedIdFromCachedEvents) === - 1) {
             selectionState.alreadyClaimedIds.push(claimedIdFromCachedEvents);
@@ -565,6 +602,7 @@ export default {
         await collection.load();
         setStepIndex(0);
         selectionState.selectedIds = [];
+        selectionState.claimedIdsByCurrentAccount = [];
         selectionState.alreadyClaimedIds = [];
         selectionState.claiming = false;
         selectionState.claimingTx = false;
@@ -686,6 +724,7 @@ export default {
       updateState,
       gallerySortedMedia,
       humanReadablePrice,
+      steps,
     }
   },
 };
