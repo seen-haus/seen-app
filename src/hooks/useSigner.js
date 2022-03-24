@@ -7,6 +7,7 @@ export default function useSigner() {
 
   if (provider.value && account.value) {
     const library = new Web3Provider(provider.value)
+    console.log({'account.value': account.value})
     return getSigner(library, account.value)
   } else {
     return null;

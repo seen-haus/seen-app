@@ -102,6 +102,13 @@ export const CollectablesService = {
     },
 };
 
+export const TokenCacheService = {
+    fetchTokenCacheByHolder(tokenAddress, holderAddress) {
+        console.log("getting cache")
+        return ApiService.get(`/token-cache/${tokenAddress}/${holderAddress}`);
+    }
+}
+
 export const BidRegistrationService = {
     isRegistered(walletAddress, collectableId) {
         return ApiService.get(`bid-registration-status/${walletAddress}/${collectableId}`);
@@ -117,7 +124,16 @@ export const ClaimsService = {
     },
     claim(contractAddress, payload) {
         return ApiService.post(`claims/${contractAddress}/claim`, payload);
-    }
+    },
+    claimAgainstTokenContract(contractAddress, payload) {
+        return ApiService.post(`claim-against-token-contract/${contractAddress}`, payload);
+    },
+    claimAgainstTokenContractFetchSubmittedShipping(contractAddress, payload) {
+        return ApiService.post(`/claim-against-token-contract/fetch-submitted-shipping/${contractAddress}`, payload);
+    },
+    claimAgainstTokenContractCheckHasSubmittedShipping(contractAddress, walletAddress) {
+        return ApiService.get(`/claim-against-token-contract/check-has-submitted-shipping/${contractAddress}/${walletAddress}`);
+    },
 }
 
 export const SpotlightService = {
@@ -187,8 +203,8 @@ export const IPFSService = {
 };
 
 export const OpenSeaAPIService = {
-    async getProfileEntries(owner, limit = 6, offset = 0) {
-        const url = `https://api.opensea.io/api/v1/assets?owner=${owner}&collection=seen-haus&limit=${limit}&offset=${offset}`;
+    async getProfileEntries(owner, limit = 6, offset = 0, collection = "seen-haus") {
+        const url = `https://api.opensea.io/api/v1/assets?owner=${owner}&collection=${collection}&limit=${limit}&offset=${offset}`;
         const data = await $axios.get(url);
 
         if (!data) return [];
@@ -291,5 +307,19 @@ export const OpenSeaAPIService = {
         }
 
         return [consolidatedData, mayHaveMore];
-    }
+    },
+    async getOwnedCollectables(owner, limit = 6, offset = 0, collection = "seen-haus") {
+        const url = `https://api.opensea.io/api/v1/assets?owner=${owner}&collection=${collection}&limit=${limit}&offset=${offset}`;
+        const data = await $axios.get(url);
+
+        if (!data) return [];
+
+        const assets = data.assets;
+
+        if (!assets.length) {
+            return [];
+        }
+
+        return assets;
+    },
 };

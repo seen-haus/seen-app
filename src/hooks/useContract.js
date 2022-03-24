@@ -12,6 +12,7 @@ import XSEEN_ABI from "@/constants/abis/xseenABI.json"
 import CLAIM_ABI from "@/constants/abis/claimABI.json"
 import SEEN_NFT_ABI from "@/constants/abis/SeenNFT.json"
 import DISTRIBUTION_ABI from "@/constants/abis/distributionABI.json"
+import ERC721_ENUMERABLE_ABI from "@/constants/abis/erc721EnumerableABI.json"
 // V3
 import ACCESS_CONTROLLER_ABI from "@/constants/abis/v3/accessControllerABI.json"
 import SEEN_AUCTION_BUILDER_V3 from "@/constants/abis/v3/auctionBuilderABI"
@@ -30,6 +31,7 @@ import {
     chainIdToMarketDiamond,
     chainIdToDistributionPool,
 } from '@/constants/ContractAddressesV3.js'
+import CLAIM_AGAINST_TOKEN_CONTRACT_WITH_FEE_ABI from "@/constants/abis/claimAgainstTokenContractWithFeeABI.json";
 import VRF_SALE_V2_ABI from "@/constants/abis/vrfSaleV2ABI.json"
 import PROPY_AUCTION_V2_ABI from "@/constants/abis/propyAuctionV2ABI.json"
 import ETH_ADDRESS_WHITELIST_ABI from "@/constants/abis/ethAddressWhitelistABI.json"
@@ -107,6 +109,10 @@ export function useSeenNFTContract(contract, withSignerIfPossible) {
 
 export function useClaimContract(contractAddress, withSignerIfPossible) {
     return useContract(contractAddress, CLAIM_ABI, withSignerIfPossible);
+}
+
+export function useClaimAgainstTokenContractWithFee(contractAddress, withSignerIfPossible) {
+    return useContract(contractAddress, CLAIM_AGAINST_TOKEN_CONTRACT_WITH_FEE_ABI, withSignerIfPossible);
 }
 
 export const useDistributionContractNetworkReactive = async (withSignerIfPossible) => {
@@ -544,4 +550,8 @@ export const useV3MarketConfigContract = async (withSignerIfPossible) => {
 
 export const useV3TicketerContract = async (withSignerIfPossible, ticketerAddress) => {
     return useContract(ticketerAddress, SEEN_TICKETER_ABI_V3, withSignerIfPossible);
+}
+
+export const useERC721EnumerableContract = async (withSignerIfPossible, tokenAddress) => {
+    return useContract(tokenAddress, ERC721_ENUMERABLE_ABI, withSignerIfPossible);
 }

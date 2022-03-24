@@ -23,6 +23,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "collectablePropyDrop" */ '../views/collectable/propy/Collectable.vue')
     },
     {
+        path: '/drops/0xmons',
+        name: '0xmonsClaimsDrop',
+        component: () => import(/* webpackChunkName: "0xmonsClaimsDrop" */ '../views/collectable/0xmons/0xmons.vue')
+    },
+    {
         path: '/drops/v2/:slug',
         name: 'collectableDropV2',
         component: () => import(/* webpackChunkName: "collectableDropV2" */ '../views/collectable/Collectable.vue')

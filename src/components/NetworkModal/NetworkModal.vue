@@ -75,6 +75,8 @@ export default {
 
             const useChainId = Number(chainId.value);
 
+            console.log({useChainId})
+
             if (useChainId !== DEFAULT_CHAIN_ID) {
                 openModal();
             }

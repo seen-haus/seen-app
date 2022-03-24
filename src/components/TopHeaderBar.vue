@@ -1,5 +1,10 @@
 <template>
-  <div class="py-2.5 bg-light-grey text-white">
+  <div class="py-2.5 text-white"
+    :class="{
+      'bg-light-grey': !darkMode,
+      'dark-mode-section': darkMode,
+    }"
+  >
     <container>
       <div class="flex justify-center md:justify-between flex-wrap">
         <div class="flex align-center py-1">
@@ -71,13 +76,15 @@
 <script>
 import Container from "@/components/Container";
 import useExchangeRate from "@/hooks/useExchangeRate.js";
+import useDarkMode from "@/hooks/useDarkMode";
 
 export default {
   name: "TopHeaderBar",
   components: { Container },
   setup() {
+    const { darkMode } = useDarkMode();
     const { formatCurrency, seen, ethereum, bitcoin } = useExchangeRate();
-    return { formatCurrency, seen, ethereum, bitcoin };
+    return { formatCurrency, seen, ethereum, bitcoin, darkMode };
   },
 };
 </script>
