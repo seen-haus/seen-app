@@ -16,7 +16,6 @@
       <div class="flex text-center items-center pb-3 flex-col lg:flex-row">
         <light-typography
           class="text-gradient w-full text-center"
-          v-if="account"
           :titleMonospace="true"
         >
           0xmons x SEEN HAUS Part 2
