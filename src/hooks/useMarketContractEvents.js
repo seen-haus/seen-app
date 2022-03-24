@@ -18,6 +18,7 @@ import {
     useV3SaleRunnerContract,
     useV3SaleBuilderContract,
     useV3SaleEnderContract,
+    useClaimAgainstTokenContractWithFee,
 } from "@/hooks/useContract";
 import {computed, ref, onBeforeUnmount} from 'vue';
 import PURCHASE_TYPES from "@/constants/PurchaseTypes.js";
@@ -56,10 +57,10 @@ const useMarketContractEvents = () => {
     const isAuction = computed(() => collectable.value.purchase_type === PURCHASE_TYPES.AUCTION);
     const version = computed(() => collectable.value ? collectable.value.version : '1.0');
     const isOpenEdition = computed(() => collectable.value.is_open_edition);
+    const isClaimAgainstTokenDrop = computed(() => collectable.value.is_claim_against_token_drop);
     const isVRFSale = computed(() => collectable.value.is_vrf_drop);
 
     const createNormalizedEvent = async (contractEvent, type) => {
-        console.log({contractEvent})
         const trx = await contractEvent.getTransaction();
         const blockNumber = await contractEvent.getBlock();
         const tx = trx.hash;
@@ -78,6 +79,8 @@ const useMarketContractEvents = () => {
             wallet_address = evt.who;
         } else if (type === 'buy') {
             wallet_address = evt.buyer;
+        } else if (type === 'claim-against-token-id') {
+            wallet_address = evt.claimant;
         }
 
         let ethAmount;
@@ -96,6 +99,14 @@ const useMarketContractEvents = () => {
         } else if (type === 'buy') {
             ethAmount = parseInt(evt.amount) * collectable.value.price;
             unitAmount = evt.amount.toString();
+        } else if (type === 'claim-against-token-id') {
+            ethAmount = collectable.value.price;
+            unitAmount = 1;
+        }
+
+        let tokenId;
+        if(type === 'claim-against-token-id') {
+            tokenId = evt.tokenId.toString();
         }
 
         const event = {
@@ -108,6 +119,7 @@ const useMarketContractEvents = () => {
             value: ethAmount,
             amount: unitAmount,
             value_in_usd: converEthToUSD(ethAmount),
+            token_id: tokenId,
             wallet_address,
             raw: JSON.stringify(evt)
         };
@@ -116,7 +128,14 @@ const useMarketContractEvents = () => {
 
     const mergeEvents = (event) => {
         const evts = [...mergedEvents.value];
-        const existingEvt = evts.find(evt => evt.tx === event.tx);
+        let existingEvt;
+        if(isClaimAgainstTokenDrop.value) {
+            existingEvt = evts.find(evt => {
+                return evt.token_id === event.token_id
+            });
+        } else {
+            existingEvt = evts.find(evt => evt.tx === event.tx);
+        }
         if (existingEvt) {
             return;
         } else {
@@ -393,6 +412,21 @@ const useMarketContractEvents = () => {
                                 }
                             }
                         }
+                    } else if(isClaimAgainstTokenDrop.value) {
+                        contract = useClaimAgainstTokenContractWithFee(contractAddress.value)
+                        let endTime = await contract.closingTimeUnix();
+                        let startTime = await contract.openingTimeUnix();
+                        if(startTime > 0) {
+                            collectable.value.starts_at = new Date(parseInt(startTime) * 1000)
+                            startsAt.value = new Date(parseInt(startTime) * 1000)
+                        }
+                        if(Number(endTime) > 0) {
+                            collectable.value.ends_at = new Date(parseInt(endTime) * 1000)
+                            endsAt.value = new Date(parseInt(endTime) * 1000)
+                        }
+
+                        const claimEvents = await contract.queryFilter("ClaimedAgainstTokenId");
+                        itemsBought.value = claimEvents.length;
                     } else {
                         contract = useV2OpenEditionContract(contractAddress.value)
                         itemsBought.value = +(await contract.buyCount()).toString();
@@ -484,31 +518,44 @@ const useMarketContractEvents = () => {
                         mergeEvents(event);
                     });
                 } else if (version.value === 1 || version.value === 2) {
-                    let start = await contract.start();
-                    let price = await contract.price();
+                    if(!isClaimAgainstTokenDrop.value) {
+                        let start = await contract.start();
+                        let price = await contract.price();
 
-                    await contract.on("Buy", async (fromAddress, amount, evt) => {
-                        // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
-                        // console.log(fromAddress, amount.toString(), evt)
-                        const event = await createNormalizedEvent(evt, 'buy');
-                        if(isOpenEdition.value) {
-                            itemsBought.value = +(await contract.buyCount()).toString();
-                        } else if(isVRFSale.value) {
-                            itemsBought.value = +(await contract.ticketId()).toString();
-                        } else{
-                            let remainingSupply = +(await contract.supply()).toString()
-                            supply.value = remainingSupply;
+                        await contract.on("Buy", async (fromAddress, amount, evt) => {
+                            // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
+                            // console.log(fromAddress, amount.toString(), evt)
+                            const event = await createNormalizedEvent(evt, 'buy');
+                            if(isOpenEdition.value) {
+                                itemsBought.value = +(await contract.buyCount()).toString();
+                            } else if(isVRFSale.value) {
+                                itemsBought.value = +(await contract.ticketId()).toString();
+                            } else{
+                                let remainingSupply = +(await contract.supply()).toString()
+                                supply.value = remainingSupply;
+                            }
+                            mergeEvents(event);
+                        });
+
+                        const buys = await contract.queryFilter("Buy");
+                        console.group('Past Events - Sale');
+                        buys.forEach(async (buy) => {
+                            const event = await createNormalizedEvent(buy, 'buy');
+                            mergeEvents(event);
+                        });
+                        console.groupEnd('Past Events - Sale');
+                    } else if (isClaimAgainstTokenDrop.value) {
+                        const claims = await contract.queryFilter("ClaimedAgainstTokenId");
+                        for(let claim of claims) {
+                            const event = await createNormalizedEvent(claim, 'claim-against-token-id');
+                            mergeEvents(event);
                         }
-                        mergeEvents(event);
-                    });
 
-                    const buys = await contract.queryFilter("Buy");
-                    console.group('Past Events - Sale');
-                    buys.forEach(async (buy) => {
-                        const event = await createNormalizedEvent(buy, 'buy');
-                        mergeEvents(event);
-                    });
-                    console.groupEnd('Past Events - Sale');
+                        await contract.on("ClaimedAgainstTokenId", async (claimant, tokenId, timestamp, evt) => {
+                            const event = await createNormalizedEvent(evt, 'claim-against-token-id');
+                            mergeEvents(event);
+                        });
+                    }
                 }
             }
 
