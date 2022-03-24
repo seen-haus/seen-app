@@ -31,6 +31,7 @@ import {
     chainIdToMarketDiamond,
     chainIdToDistributionPool,
 } from '@/constants/ContractAddressesV3.js'
+import CLAIM_AGAINST_TOKEN_CONTRACT_WITH_FEE_ABI from "@/constants/abis/claimAgainstTokenContractWithFeeABI.json";
 import VRF_SALE_V2_ABI from "@/constants/abis/vrfSaleV2ABI.json"
 import PROPY_AUCTION_V2_ABI from "@/constants/abis/propyAuctionV2ABI.json"
 import ETH_ADDRESS_WHITELIST_ABI from "@/constants/abis/ethAddressWhitelistABI.json"
@@ -108,6 +109,10 @@ export function useSeenNFTContract(contract, withSignerIfPossible) {
 
 export function useClaimContract(contractAddress, withSignerIfPossible) {
     return useContract(contractAddress, CLAIM_ABI, withSignerIfPossible);
+}
+
+export function useClaimAgainstTokenContractWithFee(contractAddress, withSignerIfPossible) {
+    return useContract(contractAddress, CLAIM_AGAINST_TOKEN_CONTRACT_WITH_FEE_ABI, withSignerIfPossible);
 }
 
 export const useDistributionContractNetworkReactive = async (withSignerIfPossible) => {

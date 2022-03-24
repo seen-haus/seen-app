@@ -1,10 +1,10 @@
 <template>
   <div class="dark-mode-section background-square">
-    <div class="container mx-auto px-6 py-12 md:px-8">
+    <div class="container mx-auto px-6 pt-12 md:px-8">
       <div class="flex-center">
         <img class="xmons-logo" src="@/assets/images/0xmons-logo.png" alt="" />
       </div>
-      <div class="flex items-center py-6 flex-col lg:flex-row">
+      <div class="flex items-center pt-6 flex-col lg:flex-row">
         <unfenced-title
           class="text-black hidden lg:flex pt-1"
           color="fence-dark"
@@ -13,11 +13,52 @@
           <span class="text-gradient monospace">0xmons Physical Claim</span>
         </unfenced-title>
       </div>
-
-      <div class="text-center md:w-2/3 md:mx-auto text-gray-600 text-lg pb-12">
-        <light-typography fontSize="18px">
-          Claim physical collectables against your 0xmons NFT(s). This process does not involve burning or transferring your 0xmons, claims are simply based off ownership. Only one claim can be made against each 0xmons NFT.
+      <div class="flex text-center items-center pb-3 flex-col lg:flex-row">
+        <light-typography
+          class="text-gradient w-full text-center"
+          v-if="account"
+          :titleMonospace="true"
+        >
+          0xmons x SEEN HAUS Part 2
         </light-typography>
+      </div>
+    </div>
+
+    <hero-gallery v-if="gallerySortedMedia" :slidesPerView="1" :mediaResources="gallerySortedMedia"/>
+
+    <div class="container mx-auto px-6 py-12 md:px-8">
+      <div class="text-center md:w-2/3 md:mx-auto text-gray-600 text-lg">
+        <light-typography fontSize="18px">
+          After successfully summoning M̷’̷ö̷r̷k̷, Maelstrom of Consternation into the physical realm, the cursed devs have once again opened the mystical wormhole to continue the invasion of the GAN monsters. 0xmons cultists hereby have the opportunity to bridge their colorful, glitchy and unique pixel monster from the ethereal, digital world to our physical one.
+        </light-typography>
+        <light-typography fontSize="18px">
+          <br/>Claim physical collectables against your 0xmons NFT(s). This process does not involve burning or transferring your 0xmons, claims are simply based off ownership. Only one claim can be made against each 0xmons NFT.
+        </light-typography>
+      </div>
+
+      <div class="pt-6" :class="{'pb-6': account}">
+          <light-typography
+            class="text-gradient"
+            v-if="account && !shippingInfoSubmissionStatus.hasSubmitted"
+            fontWeight="bold"
+          >
+            {{currentTimerState === "IN_PROGRESS" ? `CLAIMS CLOSE IN` : ''}}
+            {{currentTimerState === "WAITING" ? `CLAIMS OPEN IN` : ''}}
+            {{currentTimerState === "DONE" ? `CLAIM PERIOD COMPLETE` : ''}}
+          </light-typography>
+          <progress-timer
+            v-if="account && (currentTimerState !== 'DONE') && !shippingInfoSubmissionStatus.hasSubmitted"
+            ref="timerRef"
+            class="text-3xl mt-2"
+            :customColor="'#8e98a0'"
+            textAlign="center"
+            :isAuction="false"
+            :label="null"
+            :startDate="startsAt"
+            :endDate="endsAt"
+            @onProgress="updateProgress"
+            @onTimerStateChange="updateState"
+          />
       </div>
 
       <button
@@ -106,12 +147,12 @@
                     v-if="selectionState.alreadyClaimedIds.indexOf(collectable.token_id) > -1"
                     class="collectable-already-claimed-overlay text-white"
                   >
-                    Already Claimed
+                    {{`Already Claimed`}}
                   </div>
                   <media-loader
                       v-if="collectable?.metadata?.image"
                       :key="collectable?.metadata?.image"
-                      :src="collectable?.metadata?.image"
+                      :src="collectable?.metadata?.image.replace('ipfs.io/ipfs/', 'seenhaus.mypinata.cloud/ipfs/')"
                       ignoreAspectRatioPadding
                       muted
                       loop
@@ -148,7 +189,7 @@
             {{selectionState.selectedIds.length + ` 0xmon(s) selected`}}
           </light-typography>
          <div
-            class="collectable-review-container mt-9"
+            class="collectable-review-container mt-2"
           >
             <template
               v-for="collectable in listOfCollectables"
@@ -169,14 +210,14 @@
                 >
                   <div 
                     v-if="selectionState.alreadyClaimedIds.indexOf(collectable.token_id) > -1"
-                    class="collectable-already-claimed-overlay text-white"
+                    class="collectable-already-claimed-overlay text-white text-center"
                   >
-                    Already Claimed
+                  {{`Already`}}<br/>{{`Claimed`}}
                   </div>
                   <media-loader
                       v-if="collectable?.metadata?.image"
                       :key="collectable?.metadata?.image"
-                      :src="collectable?.metadata?.image"
+                      :src="collectable?.metadata?.image.replace('ipfs.io/ipfs/', 'seenhaus.mypinata.cloud/ipfs/')"
                       ignoreAspectRatioPadding
                       muted
                       loop
@@ -188,18 +229,9 @@
             </template>
           </div>
           <div>
-            <div class="mt-9">
+            <div class="mt-4" v-if="currentTimerState === 'IN_PROGRESS' || currentTimerState === 'WAITING'">
               <button
-                v-if="selectedIds?.length > 0"
-                class="cursor-pointer button primary auto-margins selection-button flex-shrink-0"
-                @click="claimUnclaimedInSelection()"
-              >
-                Claim Selection
-              </button>
-            </div>
-            <div class="mt-4">
-              <button
-                v-if="selectedIds?.length > 0"
+                v-if="selectionState.selectedIds?.length > 0"
                 class="cursor-pointer button dark outline dark-mode-outline selection-button auto-margins flex-shrink-0"
                 @click="setStepIndex(0)"
               >
@@ -227,8 +259,8 @@
               </light-typography>
               <div class="mt-8">
                 <button
-                  v-if="selectedIds?.length > 0"
-                  class="cursor-pointer button dark outline dark-mode-outline auto-margins flex-shrink-0"
+                  v-if="selectionState.selectedIds?.length > 0"
+                  class="cursor-pointer button dark selection-button outline dark-mode-outline auto-margins flex-shrink-0"
                   :class="{
                     'disabled opacity-0-6': shippingInfoFetched.isLoading || shippingInfoFetched.isSigning,
                   }"
@@ -243,10 +275,83 @@
                   }}
                 </button>
               </div>
+              <div class="mt-8">
+                <unfenced-title
+                  class="text-black hidden lg:flex pt-1"
+                  color="fence-dark"
+                  text-align="center"
+                  font-size="32px"
+                >
+                  <span class="text-gradient monospace">On-Chain Claim</span>
+                </unfenced-title>
+                <light-typography v-if="selectionState.selectedUnclaimedCount > 0" color="#25c784" class="mt-4">
+                  You have selected {{selectionState.selectedUnclaimedCount}} <span class="monospace">{{selectionState.selectedUnclaimedCount > 1 ? `0xmons` : `0xmon`}}</span> which {{selectionState.selectedUnclaimedCount > 1 ? `have` : `has`}} not yet been claimed,<br/>claiming will cost a total of {{selectionState.selectedUnclaimedCount * humanReadablePrice}} ETH (excluding gas).
+                </light-typography>
+                <div class="mt-4" :class="{'mb-6': account}">
+                  <light-typography
+                    class="text-gradient"
+                    v-if="account"
+                    fontWeight="bold"
+                  >
+                    {{currentTimerState === "IN_PROGRESS" ? `CLOSING IN` : ''}}
+                    {{currentTimerState === "WAITING" ? `OPENING IN` : ''}}
+                    {{currentTimerState === "DONE" ? `CLAIM PERIOD COMPLETE` : ''}}
+                  </light-typography>
+                  <progress-timer
+                    v-if="account && (currentTimerState !== 'DONE')"
+                    ref="timerRef"
+                    class="text-3xl mt-2"
+                    :customColor="'#8e98a0'"
+                    textAlign="center"
+                    :isAuction="false"
+                    :label="null"
+                    :startDate="startsAt"
+                    :endDate="endsAt"
+                    @onProgress="updateProgress"
+                    @onTimerStateChange="updateState"
+                  />
+              </div>
+                <div class="mt-4">
+                  <!-- <button
+                    v-if="selectionState.selectedIds?.length > 0 && !selectionState.selectedAllClaimed"
+                    class="cursor-pointer button primary auto-margins selection-button flex-shrink-0"
+                    :class="{
+                      'disabled opacity-0-6': selectionState.claiming,
+                    }"
+                    @click="claimUnclaimedInSelection()"
+                  >
+                    {{
+                      selectionState.claimCheckWallet 
+                        ? 'Check MetaMask...' 
+                        : selectionState.claiming 
+                          ? 'Claiming...'
+                          : 'Claim Selection'
+                    }}
+                  </button> -->
+                  <button
+                    v-if="selectionState.selectedIds?.length > 0"
+                    class="cursor-pointer button primary auto-margins selection-button flex-shrink-0"
+                    :class="{
+                      'disabled opacity-0-6': selectionState.claiming || selectionState.selectedAllClaimed || currentTimerState === 'WAITING' || currentTimerState === 'DONE',
+                    }"
+                    @click="claimUnclaimedInSelection()"
+                  >
+                    {{currentTimerState === 'WAITING' ? 'Claims Not Open Yet' : null}}
+                    {{currentTimerState === 'IN_PROGRESS' && selectionState.claimCheckWallet ? 'Check MetaMask...' : null}}
+                    {{currentTimerState === 'IN_PROGRESS' && !selectionState.claimCheckWallet && selectionState.claiming ? 'Claiming...' : null}}
+                    {{currentTimerState === 'IN_PROGRESS' && !selectionState.claiming && !selectionState.claimCheckWallet && !selectionState.selectedAllClaimed ? 'Claim Selection' : null}}
+                    {{currentTimerState === 'IN_PROGRESS' && !selectionState.claiming && !selectionState.claimCheckWallet && selectionState.selectedAllClaimed ? 'Successfully Claimed' : null}}
+                    {{currentTimerState === 'DONE' ? 'Claim Period Complete' : null}}
+                  </button>
+                </div>
+              </div>
             </div>
             <div v-if="!shippingInfoSubmissionStatus.hasSubmitted || shippingInfoFetched.isFetched">
+              <light-typography class="mt-2" color="#ff8200">
+                Shipping information must be provided before being able to run a on-chain claims
+              </light-typography>
               <ClaimAgainstTokenContractForm
-                claimContractAddress="0xa513E6E4b8f2a923D98304ec87F64353C4D5C853"
+                :claimContractAddress="claimContractAddress"
                 :preloadData="shippingInfoFetched.data"
                 :afterInfoSubmitted="afterInfoSubmitted"
               />
@@ -265,7 +370,7 @@
 </template>
 
 <script>
-import { onUnmounted, watchEffect, computed, reactive } from "vue";
+import { onUnmounted, watchEffect, watch, computed, reactive, ref } from "vue";
 import { useMeta } from "vue-meta";
 import { useStore } from "vuex";
 import { useToast } from "primevue/usetoast";
@@ -275,13 +380,17 @@ import MediaLoader from "@/components/Media/MediaLoader.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
 import ClaimAgainstTokenContractForm from '@/components/ClaimAgainstTokenContractForm';
+import ProgressTimer from "@/components/Progress/v3/ProgressTimer.vue";
+import HeroGallery from "@/components/Media/HeroGallery.vue";
 
-import { ClaimsService } from "@/services/apiService";
+import { ClaimsService, CollectablesService } from "@/services/apiService";
 
 import useSigner from "@/hooks/useSigner";
 import useWeb3 from "@/connectors/hooks"
 import useDarkMode from "@/hooks/useDarkMode";
 import useTokenCache from "@/hooks/useTokenCache";
+import useClaimAgainstTokenContractWithEvents from "@/hooks/useClaimAgainstTokenContractWithEvents";
+import useCollectableInformation from "@/hooks/useCollectableInformation.js";
 
 export default {
   name: "0xmonsClaim",
@@ -291,8 +400,14 @@ export default {
     UnfencedTitle,
     LightTypography,
     ClaimAgainstTokenContractForm,
+    ProgressTimer,
+    HeroGallery,
   },
-  setup() {
+  setup(props, ctx) {
+
+    const timerRef = ref(null);
+    const currentProgress = ref(0);
+    const currentTimerState = ref(null);
 
     const toast = useToast();
 
@@ -300,13 +415,40 @@ export default {
 
     const { darkMode, setDarkMode } = useDarkMode();
     const { account } = useWeb3();
-    const collection = useTokenCache(account?.value, "0x0427743DF720801825a5c82e0582B1E915E0F750");
 
-    const claimContractAddress = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853"; // local
-    const tokenContractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // local
+    const {
+      collectable,
+      collectableState,
+      // firstMedia,
+      gallerySortedMedia,
+      // Methods
+      setCollectable,
+    } = useCollectableInformation();
+
+    (async function loadCollectable() {
+      // state.loading = true;
+      const {data} = await CollectablesService.show(`0xmons`);
+      // state.loading = false;
+
+      setCollectable(data);
+    })();
+
+    const updateProgress = function (event) {
+      currentProgress.value = event;
+    };
+
+    const updateState = function (state) {
+      currentTimerState.value = state;
+      ctx.emit('updateState');
+    }
+
+    const claimContractAddress = "0xd0e33b6c945207DB859DD7Ab687AC0c13965162d"; // local
+    const tokenContractAddress = "0xAA65483af897e3C80b2eCa2A73230474D145fCCb"; // local
 
     // const claimContractAddress = ""; // mainnet
     // const tokenContractAddress = "0x0427743df720801825a5c82e0582b1e915e0f750"; // mainnet
+
+    const collection = useTokenCache(account?.value, tokenContractAddress);
 
     setDarkMode(true);
 
@@ -335,22 +477,101 @@ export default {
     const selectionState = reactive({
       selectedIds: [],
       alreadyClaimedIds: [],
+      selectedAllClaimed: false,
+      selectedUnclaimedCount: 0,
+      claimCheckWallet: false,
+      claiming: false,
+      claimingTx: false,
+    });
+
+    const {
+      endsAt,
+      startsAt,
+      humanReadablePrice,
+      claimAgainstTokenIds,
+      initializeContractEvents,
+      mergedEvents,
+    } = useClaimAgainstTokenContractWithEvents();
+
+    watchEffect(() => {
+      if(account?.value && listOfCollectables?.value) {
+        let idsToCheck = listOfCollectables?.value.map(item => item.token_id);
+        initializeContractEvents(claimContractAddress, account?.value, idsToCheck);
+      }
     })
+
+    const setClaimCheckWalletStatus = (status) => {
+      selectionState.claimCheckWallet = status;
+    }
+
+    const claimUnclaimedInSelection = async () => {
+      const unclaimedInSelection = selectionState.selectedIds.filter(selectedId => selectionState.alreadyClaimedIds.indexOf(selectedId) === -1);
+      selectionState.claiming = true;
+      let success;
+
+      try {
+        success = await claimAgainstTokenIds(unclaimedInSelection, setClaimCheckWalletStatus);
+      } catch(e) {
+        selectionState.claiming = false;
+        selectionState.claimCheckWallet = false;
+      }
+      
+      selectionState.claiming = false;
+      selectionState.claimCheckWallet = false;
+      if(success) {
+        selectionState.selectedUnclaimedCount = 0;
+      }
+    }
 
     const setStepIndex = (stepIndex) => {
       stepState.currentStepIndex = stepIndex;
     }
 
+    watchEffect(() => {
+      if((mergedEvents && mergedEvents?.value?.length > 0) || selectionState.selectedIds || selectionState.alreadyClaimedIds) {
+        selectionState.alreadyClaimedIds = [];
+        let claimedIdsFromCachedEvents = mergedEvents?.value.map(event => event.token_id);
+        let claimedIdsByCurrentAccount = mergedEvents?.value.filter(event => event.wallet_address.toLowerCase() === account?.value?.toLowerCase());
+        for(let claimedIdFromCachedEvents of claimedIdsFromCachedEvents) {
+          if(selectionState.alreadyClaimedIds.indexOf(claimedIdFromCachedEvents) === - 1) {
+            selectionState.alreadyClaimedIds.push(claimedIdFromCachedEvents);
+          }
+          if(selectionState.selectedIds.indexOf(claimedIdFromCachedEvents) === - 1) {
+            selectionState.selectedIds.push(claimedIdFromCachedEvents);
+          }
+        }
+        let selectedUnclaimedCount = 0;
+        for(let selectedId of selectionState.selectedIds) {
+          if(selectionState.alreadyClaimedIds.indexOf(selectedId) === -1) {
+            selectedUnclaimedCount++;
+          }
+        }
+        if(!selectedUnclaimedCount && (selectionState.selectedIds.length > 0)) {
+          selectionState.selectedAllClaimed = true;
+          selectionState.selectedUnclaimedCount = 0;
+          if(claimedIdsByCurrentAccount?.length > 0) {
+            setStepIndex(1);
+          }
+        } else {
+          selectionState.selectedAllClaimed = false;
+          selectionState.selectedUnclaimedCount = selectedUnclaimedCount;
+        }
+      }
+    })
+
     watchEffect(async () => {
       if(account?.value && collectablesReactive) {
-        setStepIndex(0);
-        selectionState.selectedIds = [];
-        selectionState.alreadyClaimedIds = [];
-        collectablesReactive.loading = true;
         collection.setHolderAddress(account?.value); // account?.value
         collection.setTokenAddress(tokenContractAddress); // local node testing
         await collection.load();
-        console.log({collection})
+        setStepIndex(0);
+        selectionState.selectedIds = [];
+        selectionState.alreadyClaimedIds = [];
+        selectionState.claiming = false;
+        selectionState.claimingTx = false;
+        selectionState.selectedAllClaimed = false;
+        selectionState.selectedUnclaimedCount = 0;
+        collectablesReactive.loading = true;
         collectablesReactive.loading = false;
       } else if (!account?.value) {
         setStepIndex(0);
@@ -362,14 +583,13 @@ export default {
       isLoading: true,
     });
 
-    const afterInfoSubmitted = () => {
-      shippingInfoSubmissionStatus.hasSubmitted = true;
+    const afterInfoSubmitted = (success = false) => {
+      shippingInfoSubmissionStatus.hasSubmitted = success;
       shippingInfoFetched.data = {};
       shippingInfoFetched.isFetched = false;
     }
 
     const toggleCollectableForClaim = (collectableId) => {
-      console.log({collectableId})
       let indexOfCollectableInCurrentSelection = selectionState.selectedIds.indexOf(collectableId);
       if(indexOfCollectableInCurrentSelection === -1 && (selectionState.alreadyClaimedIds.indexOf(collectableId) === -1)) {
         selectionState.selectedIds.push(collectableId);
@@ -437,7 +657,6 @@ export default {
           })
           shippingInfoFetched.isLoading = false;
           if(response.data) {
-            console.log({'response.data': response.data})
             shippingInfoFetched.data = response.data;
             shippingInfoFetched.isFetched = true;
           }
@@ -460,6 +679,14 @@ export default {
       afterInfoSubmitted,
       selectionState,
       toggleCollectableForClaim,
+      claimUnclaimedInSelection,
+      currentTimerState,
+      startsAt,
+      endsAt,
+      updateProgress,
+      updateState,
+      gallerySortedMedia,
+      humanReadablePrice,
     }
   },
 };
@@ -519,7 +746,7 @@ export default {
 }
 
 .xmons-logo {
-  height: 300px;
+  height: 75px;
 }
 
 .collectable-review-container {
@@ -582,7 +809,7 @@ export default {
 }
 
 .selection-button {
-  max-width: 250px;
+  max-width: 350px;
   width: 100%;
 }
 </style>

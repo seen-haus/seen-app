@@ -37,6 +37,10 @@ export default {
     upperCase: Boolean,
     maxWidth: String,
     color: String,
+    titleMonospace: {
+      type: Boolean,
+      default: false
+    },
   },
   computed: {
     alignment: function () {

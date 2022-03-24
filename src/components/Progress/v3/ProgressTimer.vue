@@ -2,7 +2,7 @@
   <div>
     <light-typography 
         v-if="label != null"
-        textAlign="left"
+        :text-align="textAlign ? textAlign : 'left'"
         fontSize="14px"
         fontWeight="700"
         lineHeight="16px"
@@ -14,7 +14,12 @@
     <sub-title
         class="text-black hidden lg:flex"
         :class="whiteText && 'text-white'"
-        text-align="left"
+        :style="{
+          ...(customColor && {
+            'color': customColor
+          })
+        }"
+        :text-align="textAlign ? textAlign : 'left'"
         fontSize="24px"
         line-height="30px"
         :overflowEllipsis="true"
@@ -66,6 +71,14 @@ export default {
     whiteText: {
       type: Boolean,
       default: false,
+    },
+    customColor: {
+      type: String || Boolean,
+      default: false
+    },
+    textAlign: {
+      type: String || Boolean,
+      default: false
     }
   },
   components: {

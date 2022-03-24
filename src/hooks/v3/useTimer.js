@@ -86,12 +86,12 @@ export default function useTimer(callback) {
             progress = duration - progressLeft;
         }
 
-        console.log({'state.endDate': state.endDate})
+        // console.log({'state.endDate': state.endDate})
 
-        console.log({progressLeft, progress, duration, now, 'state.startDate': state.startDate})
+        // console.log({progressLeft, progress, duration, now, 'state.startDate': state.startDate})
         
         state.percentage = +(progress / duration).toFixed(4);
-        console.log({progressLeft})
+        // console.log({progressLeft})
         if (progressLeft <= 0 || (state.isAwaitingReserve && new Date().getTime() > state.startDate)) {
             timerState.value = TIMER_STATE.DONE;
             if(state.isAwaitingReserve) {
@@ -110,6 +110,7 @@ export default function useTimer(callback) {
                 : TIMER_STATE.IN_PROGRESS;
             state.value = formatter(progressLeft);
         }
+        // console.log({'timerState.value': timerState.value})
     }
 
     function startTimer(options) {
@@ -199,6 +200,7 @@ export default function useTimer(callback) {
         startTimer,
         endTimer,
         addSeconds,
+        timerState: timerState.value,
         percentage,
         value,
         ended,

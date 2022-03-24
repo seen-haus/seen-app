@@ -149,6 +149,7 @@
             <button
               type="submit"
               class="cursor-pointer primary button mt-3 md:mt-0"
+              :class="{'disabled opacity-0-6': state.isSigning || state.isSubmitting}"
             >
               {{
                 state.isSigning ? 
@@ -274,62 +275,66 @@ export default {
         });
 
         state.isSigning = false;
-        state.isSubmitting = true;
 
-        // TODO
-        ClaimsService.claimAgainstTokenContract(props.claimContractAddress, {
-          ...values,
-          signature,
-          msg: msg,
-          wallet_address: account.value,
-        })
-          .then(() => {
-            let message =
-              "Your artwork will be delivered within 3 - 4 weeks, keep in mind it may take longer due to COVID restrictions in certain countries";
-            // if(claim?.value?.collectable?.is_slug_full_route && claim?.value?.collectable?.slug) {
-            //   router.push({
-            //     name: claim?.value?.collectable?.slug,
-            //   });
-            // } else {
-            //   router.push({
-            //     name: "collectableAuction",
-            //     params: { slug: claim?.value?.collectable?.slug },
-            //   });
-            // }
-            toast.add({
-              severity: "success",
-              summary: "Success",
-              detail: message,
-              life: 10000,
-            });
+        if(!signature.code) {
+          state.isSubmitting = true;
+
+          // TODO
+          await ClaimsService.claimAgainstTokenContract(props.claimContractAddress, {
+            ...values,
+            signature,
+            msg: msg,
+            wallet_address: account.value,
           })
-          .catch((e) => {
-              let message = e?.data?.message ? parseError(e?.data?.message) : e;
-              if(!message) {
-                message = "Could not submit your details. Please try to enter them later.";
-              }
-              if(message.indexOf('already submitted a claim') > -1) {
-                // if(claim?.value?.collectable?.is_slug_full_route && claim?.value?.collectable?.slug) {
-                //   router.push({
-                //     name: claim?.value?.collectable?.slug,
-                //   });
-                // } else {
-                //   router.push({
-                //     name: "collectableAuction",
-                //     params: { slug: claim?.value?.collectable?.slug },
-                //   });
-                // }
-              }
+            .then(() => {
+              let message =
+                "Your shipping information has been successfully saved";
+              // if(claim?.value?.collectable?.is_slug_full_route && claim?.value?.collectable?.slug) {
+              //   router.push({
+              //     name: claim?.value?.collectable?.slug,
+              //   });
+              // } else {
+              //   router.push({
+              //     name: "collectableAuction",
+              //     params: { slug: claim?.value?.collectable?.slug },
+              //   });
+              // }
               toast.add({
-                severity: "error",
-                summary: "Error",
+                severity: "success",
+                summary: "Success",
                 detail: message,
                 life: 10000,
-              })
-            }
-          );
-          state.isSubmitting = false;
-          props.afterInfoSubmitted();
+              });
+              props.afterInfoSubmitted(true);
+            })
+            .catch((e) => {
+                let message = e?.data?.message ? parseError(e?.data?.message) : e;
+                if(!message) {
+                  message = "Could not submit your details. Please try to enter them later.";
+                }
+                if(message.indexOf('already submitted a claim') > -1) {
+                  // if(claim?.value?.collectable?.is_slug_full_route && claim?.value?.collectable?.slug) {
+                  //   router.push({
+                  //     name: claim?.value?.collectable?.slug,
+                  //   });
+                  // } else {
+                  //   router.push({
+                  //     name: "collectableAuction",
+                  //     params: { slug: claim?.value?.collectable?.slug },
+                  //   });
+                  // }
+                }
+                toast.add({
+                  severity: "error",
+                  summary: "Error",
+                  detail: message,
+                  life: 10000,
+                })
+                props.afterInfoSubmitted(false);
+              }
+            );
+        }
+        state.isSubmitting = false;
       } else {
         // toastr to login
       }
