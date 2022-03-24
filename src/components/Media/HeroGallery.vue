@@ -109,6 +109,11 @@ export default {
 
     const openModal = (type, url) => {
       const lightbox = GLightbox({
+          plyr: {
+            config: {
+              loop: {active: true},
+            }
+          },
           touchNavigation: true,
           loop: true,
           autoplayVideos: true
