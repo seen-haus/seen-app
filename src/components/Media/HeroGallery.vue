@@ -27,6 +27,7 @@
                 ref="mediaRef"
                 :src="mediaResource.url"
                 aspectRatio="100%"
+                :loop="isActive ? true : false"
                 :autoplay="isActive"
                 :declaredMediaType="(mediaResource?.type?.indexOf('image') > -1) ? 'image' : false"
                 :muted="true"
