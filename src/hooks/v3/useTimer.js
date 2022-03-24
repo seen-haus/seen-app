@@ -100,7 +100,7 @@ export default function useTimer(callback) {
                 state.value = 'Auction Ended';
             }
             endTimer();
-        } else if(progressLeft > 1000000000) {
+        } else if(progressLeft > 2000000000) {
             timerState.value = TIMER_STATE.DONE;
             state.value = 'Loading...'; // In case there is an issue fetching times (rather than show a very incorrect time)
             endTimer();
