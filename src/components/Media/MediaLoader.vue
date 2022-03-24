@@ -196,7 +196,7 @@ export default {
         setOverrideMediaType()
         return "video"
       }
-      if (props.src.includes("blob:http://")) {
+      if (props.src.includes("blob:http://") || props.src.includes("blob:https://")) {
         setOverrideMediaType()
         return "video"
       }
