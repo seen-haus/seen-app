@@ -136,6 +136,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     );
     const isUpcomming = computed(() => collectableState.value === COLLECTABLE_STATE.WAITING);
     const isOpenEdition = computed(() => collectable.value.is_open_edition);
+    const isClaimAgainstTokenDrop = computed(() => collectable.value.is_claim_against_token_drop);
     const tangibility = computed(() => collectable.value.type === 'tangible_nft' ? 'nft-physical' : 'nft-digital');
     const tags = computed(() => collectable.value.tags ? collectable.value.tags.map(tag => tag.name) : []);
     const listingType = computed(() => marketHandlerToListingType[collectable.value.version === 3 ? collectable.value.market_handler_type : collectable.value.purchase_type]);
@@ -239,7 +240,22 @@ export default function useCollectableInformation(initialCollectable = {}) {
 
         // SALE
         if (!isAuction.value) {
-            if(!isOpenEdition.value) {
+            if(isOpenEdition.value) {
+                items.value = (events.value || [])
+                    .reduce((carry, evt) => {
+                        if (evt.amount) {
+                            return parseInt(evt.amount) + carry;
+                        }
+                        if (evt.raw && typeof evt.raw == "string") {
+                            let decodedEvt = JSON.parse(evt.raw);
+                            return parseInt(decodedEvt.amount) + carry;
+                        }
+                        return carry;
+                    }, 0);
+            } else if(isClaimAgainstTokenDrop.value) {
+                itemsOf.value = data.available_qty || 0;
+                items.value = itemsOf.value - events.value.length;
+            } else {
                 itemsOf.value = data.available_qty || 0;
                 items.value = supply.value
                     ? supply.value
@@ -254,18 +270,6 @@ export default function useCollectableInformation(initialCollectable = {}) {
                             }
                             return carry;
                         }, 0);
-            } else {
-                items.value = (events.value || [])
-                    .reduce((carry, evt) => {
-                        if (evt.amount) {
-                            return parseInt(evt.amount) + carry;
-                        }
-                        if (evt.raw && typeof evt.raw == "string") {
-                            let decodedEvt = JSON.parse(evt.raw);
-                            return parseInt(decodedEvt.amount) + carry;
-                        }
-                        return carry;
-                    }, 0);
             }
             price.value = +(data.price || 0).toFixed(3);
             priceUSD.value = +(data.value_in_usd || 0).toFixed(2);
@@ -353,6 +357,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
             if (
                 ((now >= start) && (now < end) && !is_sold_out.value) ||
                 (collectable.value.is_vrf_drop && !collectable.value.is_closed) ||
+                (collectable.value.is_claim_against_token_drop && !collectable.value.is_closed) ||
                 (new Date(endsAt.value).getTime() === 0 && collectable.value.is_reserve_price_auction) ||
                 (isAuction.value && !collectable.value.winner_address) ||
                 ((collectable.value.version === 3) && (collectable.value.market_handler_type === MARKET_HANDLER_TYPES.SALE) && !collectable.value.is_closed)
