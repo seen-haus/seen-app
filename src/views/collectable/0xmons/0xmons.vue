@@ -442,11 +442,11 @@ export default {
       ctx.emit('updateState');
     }
 
-    const claimContractAddress = "0xd0e33b6c945207DB859DD7Ab687AC0c13965162d"; // local
-    const tokenContractAddress = "0xAA65483af897e3C80b2eCa2A73230474D145fCCb"; // local
+    // const claimContractAddress = "0xd0e33b6c945207DB859DD7Ab687AC0c13965162d"; // local
+    // const tokenContractAddress = "0xAA65483af897e3C80b2eCa2A73230474D145fCCb"; // local
 
-    // const claimContractAddress = ""; // mainnet
-    // const tokenContractAddress = "0x0427743df720801825a5c82e0582b1e915e0f750"; // mainnet
+    const claimContractAddress = "0xE21ebA28a0968281a403c1D8A6e1d1B9Af245cFf"; // mainnet
+    const tokenContractAddress = "0x0427743df720801825a5c82e0582b1e915e0f750"; // mainnet
 
     const collection = useTokenCache(account?.value, tokenContractAddress);
 
