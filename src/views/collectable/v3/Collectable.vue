@@ -493,10 +493,9 @@ export default {
       let nftTokenId = collectable.value.nft_token_id
       console.log({nftTokenId})
       let url = `https://opensea.io/assets/${nftAddress}/${nftTokenId}`;
-      console.log({chainId: chainId.value})
-      if(Number(chainId.value) !== 1) {
-        url = `https://testnets.opensea.io/assets/${nftAddress}/${nftTokenId}`;
-      }
+      // if(!NaN(chainId.value) && Number(chainId.value) > 0) {
+      //   url = `https://testnets.opensea.io/assets/${nftAddress}/${nftTokenId}`;
+      // }
       window.open(url, '_blank').focus()
     }
 
