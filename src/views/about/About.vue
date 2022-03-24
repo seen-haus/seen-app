@@ -232,7 +232,10 @@ export default {
 
 .text-gradient {
   background: -webkit-linear-gradient(0deg, #11998e 1.74%, #38ef7d 100%);
+  box-decoration-break: clone;
+  background-clip: text;
   -webkit-background-clip: text;
+  -webkit-box-decoration-break: clone;
   -webkit-text-fill-color: transparent;
   color: #26c785;
 }
