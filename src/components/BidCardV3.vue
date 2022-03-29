@@ -724,6 +724,7 @@ export default {
         } else {
           amount = parseInt(saleField.value, 10);
           if (isNaN(amount)) throw new Error("invalid number");
+          if (amount <= 0) throw new Error("must be more than zero");
 
           // if (amount > props.items_of - props.items) {
           //   throw new Error("not enough items");
