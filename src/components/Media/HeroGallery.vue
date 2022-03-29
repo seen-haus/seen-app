@@ -31,6 +31,7 @@
                 :autoplay="isActive"
                 :declaredMediaType="(mediaResource?.type?.indexOf('image') > -1) ? 'image' : false"
                 :muted="true"
+                :fillHeight="true"
                 :class="darkMode ? 'dark-mode-background dark-mode-slide' : 'light-mode-background light-mode-slide'"
                 class="overflow-hidden rounded-lg flex-1 media-loader-active"
               />
