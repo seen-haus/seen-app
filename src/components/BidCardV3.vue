@@ -634,7 +634,12 @@ export default {
 
     const fieldValidatorSale = (value) => {
       if (value) {
-        return hasEnoughFunds(value) ? true : 'You do not have enough funds';
+        if(!hasEnoughFunds(value)) {
+          return 'You do not have enough funds'
+        } else if(value <= 0) {
+          return 'Must be more than zero'
+        }
+        return true
       } else {
         return true;
       }

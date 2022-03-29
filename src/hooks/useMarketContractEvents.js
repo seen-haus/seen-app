@@ -503,7 +503,9 @@ const useMarketContractEvents = () => {
                     await contract.on(filter, async (consignmentId, fromAddress, amount, value, evt) => {
                         const event = await createNormalizedEvent(evt, 'buy-v3');
                         itemsBought.value = +(amount).toString();
-                        mergeEvents(event);
+                        if(event.value > 0 || event.amount > 0) {
+                            mergeEvents(event);
+                        }
                         await checkClosureStatus(consignmentId);
                     });
 
@@ -519,7 +521,9 @@ const useMarketContractEvents = () => {
                     const buys = await contract.queryFilter(filter);
                     buys.forEach(async (buy) => {
                         const event = await createNormalizedEvent(buy, 'buy-v3');
-                        mergeEvents(event);
+                        if(event.value > 0 || event.amount > 0) {
+                            mergeEvents(event);
+                        }
                     });
                 } else if (version.value === 1 || version.value === 2) {
                     if(!isClaimAgainstTokenDrop.value) {
