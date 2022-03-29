@@ -131,7 +131,11 @@ const useMarketContractEvents = () => {
         let existingEvt;
         if(isClaimAgainstTokenDrop.value) {
             existingEvt = evts.find(evt => {
-                return evt.token_id === event.token_id
+                if(evt.meta) {
+                    return evt.meta === event.token_id
+                } else {
+                    return evt.token_id === event.token_id
+                }
             });
         } else {
             existingEvt = evts.find(evt => evt.tx === event.tx);
