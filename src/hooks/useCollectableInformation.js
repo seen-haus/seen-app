@@ -256,6 +256,8 @@ export default function useCollectableInformation(initialCollectable = {}) {
                 itemsOf.value = data.available_qty || 0;
                 items.value = itemsOf.value - events.value.length;
             } else {
+                // Filter out any zero events
+                events.value = events.value.filter(event => (event.amount > 0) || (event.value > 0))
                 itemsOf.value = data.available_qty || 0;
                 items.value = supply.value
                     ? supply.value
