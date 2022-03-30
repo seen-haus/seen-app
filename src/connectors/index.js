@@ -16,9 +16,6 @@ export const walletConnect = new WalletConnectConnector({
     bridge: "https://bridge.walletconnect.org",
     qrcode: true,
     pollingInterval: POLLING_INTERVAL,
-    options: {
-        infuraId: process.env.VUE_APP_INFURA_ID
-    }
 });
 
 // mainnet only
