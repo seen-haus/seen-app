@@ -63,23 +63,28 @@ const roadmap = {
           ],
         },
       },
+      {
+        title: '0xmons x SEEN HAUS Collab Claim Flow',
+        description: 'Construction of claiming flow for 2nd iteration of 0xmons x SEEN HAUS collaboration',
+        githubCommits: {
+          'api': [
+            'https://github.com/seen-haus/seen-api/commit/8d6575a897054303a95add3e340db73974bb374c'
+          ],
+          'frontend': [
+            'https://github.com/seen-haus/seen-app/commits/feat/0xmons-claim'
+          ],
+          'contracts': [
+            'https://github.com/JayWelsh/claim-against-nft/commit/59dd22bedd92a3d4cd4f40503b2feae5df962fbf',
+          ]
+        },
+        status: 'complete'
+      },
     ]
   },
   'Upcoming': [
     {
-      title: '0xmons x SEEN HAUS Collab Claim Flow',
-      description: 'Construction of claiming flow for 2nd iteration of 0xmons x SEEN HAUS collaboration',
-      githubCommits: {
-        'api': [
-          'https://github.com/seen-haus/seen-api/commit/8d6575a897054303a95add3e340db73974bb374c'
-        ],
-        'frontend': [
-          'https://github.com/seen-haus/seen-app/commits/feat/0xmons-claim'
-        ],
-        'contracts': [
-          'https://github.com/JayWelsh/claim-against-nft/commit/59dd22bedd92a3d4cd4f40503b2feae5df962fbf',
-        ]
-      },
+      title: 'Migrate OpenSea Dependencies Over to SEEN API',
+      description: 'Migrates the existing physical drops process and claiming procedure over to the SEEN HAUS V3 contracts',
       status: 'in-progress'
     },
     {
@@ -93,12 +98,12 @@ const roadmap = {
       status: 'upcoming'
     },
     {
-      title: 'Harberger-tax featured listings',
+      title: 'Harberger-Tax Featured Listings',
       description: 'Add a featured listing banner which can be controlled via a Harberger-tax system.',
       status: 'upcoming'
     },
     {
-      title: 'Daily snapshot system',
+      title: 'Daily Snapshot System',
       description: 'Lays groundwork for social & curation features by constructing a daily snapshot system into the SEEN HAUS API',
       status: 'upcoming'
     },
@@ -108,7 +113,7 @@ const roadmap = {
       status: 'upcoming'
     },
     {
-      title: 'Social features',
+      title: 'Social Features',
       description: 'Add support for comments & likes on drops',
       status: 'upcoming'
     },

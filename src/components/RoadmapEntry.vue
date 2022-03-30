@@ -4,7 +4,7 @@
       'mb-8': marginBottom
     }"
   >
-    <div class="flex p-4 align-center"
+    <div class="flex p-4 align-center bottom-padding-mobile"
       :class="{
         'disable-bottom-padding': isExpanded
       }"
@@ -32,8 +32,17 @@
           {{title}}
         </common-title>
       </div>
-      <div v-if="description.length > 0">
+      <div class="lg-hidden" v-if="description.length > 0">
         <button class="button primary dark" @click="toggleExpansion">
+          {{isExpanded ? 'Less' : 'More'}}
+        </button>
+      </div>
+    </div>
+    <div class="flex lg:hidden p-4 align-center" :class="{
+        'disable-bottom-padding-mobile': isExpanded
+      }">
+      <div class="w-full" v-if="description.length > 0">
+        <button class="button w-full primary dark" @click="toggleExpansion">
           {{isExpanded ? 'Less' : 'More'}}
         </button>
       </div>
@@ -80,14 +89,14 @@
         >
           Code Links
         </common-title>
-        <div v-for="(githubLinkFrontend, index) in githubLinksFrontend" :key="`githubLinkFrontend-${githubLinkFrontend}-${index}`">
-          [frontend] <a class="green-link" target="_blank" :href="githubLinkFrontend" rel="noopener noreferrer">{{githubLinkFrontend}}</a>
+        <div class="break-word" v-for="(githubLinkFrontend, index) in githubLinksFrontend" :key="`githubLinkFrontend-${githubLinkFrontend}-${index}`">
+          <span style="font-weight: bold">[frontend]</span> <a class="green-link" target="_blank" :href="githubLinkFrontend" rel="noopener noreferrer">{{githubLinkFrontend}}</a>
         </div>
-        <div v-for="(githubLinkApi, index) in githubLinksApi" :key="`githubLinkApi-${githubLinkApi}-${index}`">
-          [api] <a class="green-link" target="_blank" :href="githubLinkApi" rel="noopener noreferrer">{{githubLinkApi}}</a>
+        <div class="break-word" v-for="(githubLinkApi, index) in githubLinksApi" :key="`githubLinkApi-${githubLinkApi}-${index}`">
+          <span style="font-weight: bold">[api]</span> <a class="green-link" target="_blank" :href="githubLinkApi" rel="noopener noreferrer">{{githubLinkApi}}</a>
         </div>
-        <div v-for="(githubLinkContracts, index) in githubLinksContracts" :key="`githubLinkContracts-${githubLinkContracts}-${index}`">
-          [smart contract] <a class="green-link" target="_blank" :href="githubLinkContracts" rel="noopener noreferrer">{{githubLinkContracts}}</a>
+        <div class="break-word" v-for="(githubLinkContracts, index) in githubLinksContracts" :key="`githubLinkContracts-${githubLinkContracts}-${index}`">
+          <span style="font-weight: bold">[smart contract]</span> <a class="green-link" target="_blank" :href="githubLinkContracts" rel="noopener noreferrer">{{githubLinkContracts}}</a>
         </div>
       </template>
     </div>
@@ -169,7 +178,30 @@ export default {
 }
 
 .disable-bottom-padding {
-  padding-bottom: 0px;
+  @screen lg {
+    padding-bottom: 0px!important;
+  }
+}
+
+.disable-bottom-padding-mobile {
+  @screen sm {
+    padding-bottom: 0px;
+  }
+  @screen md {
+    padding-bottom: 0px;
+  }
+}
+
+.bottom-padding-mobile {
+  @screen sm {
+    @apply pb-1;
+  }
+  @screen md {
+    @apply pb-1;
+  }
+  @screen lg {
+    @apply pb-4;
+  }
 }
 
 .status-circle {
