@@ -12,6 +12,16 @@
   }
 }
 
+@media screen and (max-width:976px) {
+  .lg-hidden {
+    display: none;
+  }
+}
+
+.break-word {
+  word-break: break-word;
+}
+
 .hidden {
   display: none;
 }
