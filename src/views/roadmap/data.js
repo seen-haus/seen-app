@@ -84,7 +84,7 @@ const roadmap = {
   'Upcoming': [
     {
       title: 'Migrate OpenSea Dependencies Over to SEEN API',
-      description: 'Migrates the existing physical drops process and claiming procedure over to the SEEN HAUS V3 contracts',
+      description: 'Migrates detection of collected SEEN drops on user profiles over to the new SEEN token balance tracker built into the SEEN API, instead of continuing to rely on the OpenSea API (which has proven troublesome).',
       status: 'in-progress'
     },
     {
