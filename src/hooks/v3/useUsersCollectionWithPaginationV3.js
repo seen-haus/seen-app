@@ -1,4 +1,4 @@
-import {OpenSeaAPIService} from "@/services/apiService";
+import {CollectablesService} from "@/services/apiService";
 import {computed, reactive} from "vue";
 
 export default function useUsersCollectionWithPaginationV3(address = null, chainId = null) {
@@ -30,7 +30,7 @@ export default function useUsersCollectionWithPaginationV3(address = null, chain
         state.items = [];
 
         try {
-            const [data, mayHaveMore] = await OpenSeaAPIService.getProfileEntriesV3(state.chainId, state.address, state.limit, state.offset);
+            const [data, mayHaveMore] = await CollectablesService.getProfileEntriesCollected(state.chainId, state.address, state.limit, state.offset);
             state.loading = false;
             state.items = data;
             state.hasMore = data.length === state.limit || mayHaveMore;
@@ -51,7 +51,7 @@ export default function useUsersCollectionWithPaginationV3(address = null, chain
         ];
 
         try {
-            const [data, mayHaveMore] = await OpenSeaAPIService.getProfileEntriesV3(state.chainId, state.address, state.limit, state.offset);
+            const [data, mayHaveMore] = await CollectablesService.getProfileEntriesCollected(state.chainId, state.address, state.limit, state.offset);
 
             state.loading = false;
 
