@@ -100,6 +100,58 @@ export const CollectablesService = {
     publishConsignmentByConsignmentId(consignmentId) {
         return ApiService.post(`/collectables/publish-consignment`, {consignment_id: consignmentId});
     },
+    async getProfileEntriesCollected(chainId, owner, limit = 6, offset = 0) {
+        const url = `/token-cache/holder/${owner}?limit=${limit}&offset=${offset}`;
+        const data = await $axios.get(url);
+        const assets = data?.data;
+
+        if(!assets || assets?.length === 0) {
+            return []
+        }
+
+        const tokenContractAddressesToIds = {};
+
+        for(let asset of assets) {
+            if(!tokenContractAddressesToIds[asset.token_address]) {
+                tokenContractAddressesToIds[asset.token_address] = [asset.token_id];
+            } else {
+                tokenContractAddressesToIds[asset.token_address].push(asset.token_id);
+            }
+        }
+
+        const collectables = await ApiService.post('collectables/mapWithTokenContractAddress', {tokenContractAddressesToIds});
+        const mapped = [];
+
+        for(let asset of assets) {
+            const match = collectables.data.find(c => {
+                if(!Array.isArray(c.nft_token_id) && parseInt(c.nft_token_id) === parseInt(asset.token_id)) {
+                    return true;
+                } else if (Array.isArray(c.nft_token_id) && (c.nft_token_id.indexOf(parseInt(asset.token_id)) > -1)) {
+                    return true;
+                }
+            });
+            if (match) {
+                mapped.push({
+                    data: {
+                        ...match,
+                        balance: Number(asset.token_balance),
+                    },
+                });
+            }
+        }
+
+        // Remove duplicates that could arise from multiples being owned of a multitoken drop
+        let consolidatedData = [];
+        let idTracker = [];
+        for(let item of mapped) {
+            if(idTracker.indexOf(item.data.id) === -1) {
+                consolidatedData.push(item);
+                idTracker.push(item.data.id);
+            }
+        }
+
+        return [consolidatedData, false];
+    },
 };
 
 export const TokenCacheService = {
