@@ -68,10 +68,9 @@ export default class WalletConnectConnector extends AbstractConnector {
             const WalletConnectProvider = await import('@walletconnect/web3-provider').then(m => m?.default ?? m)
             this.walletConnectProvider = new WalletConnectProvider({
                 bridge: this.bridge,
-                // rpc: this.rpc,
+                rpc: this.rpc,
                 qrcode: this.qrcode,
                 // pollingInterval: this.pollingInterval,
-                infuraId: this.options.infuraId,
             })
         }
 
