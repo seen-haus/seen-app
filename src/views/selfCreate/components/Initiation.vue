@@ -48,7 +48,7 @@
             >
               List an existing NFT on the SEEN.HAUS secondary market
             </light-typography>
-            <button :disabled="invalid || (listOfCollectables.length === 0)" @click="showExistingNftsModal" :class="listOfCollectables.length > 0 ? 'primary' : 'disabled'" class="button mt-4 w-full">
+            <button :disabled="invalid || (!listOfCollectables || listOfCollectables.length === 0)" @click="showExistingNftsModal" :class="listOfCollectables.length > 0 ? 'primary' : 'disabled'" class="button mt-4 w-full">
               <span v-if="isLoadingListOfCollectables"><i class="fas fa-spinner fa-spin mr-2"></i> Loading</span>
               <span v-if="!isLoadingListOfCollectables && (listOfCollectables.length > 0)">LIST EXISTING</span>
               <span v-if="!isLoadingListOfCollectables && (listOfCollectables.length === 0)">NO OWNED SEEN.HAUS V3 NFTs</span>
