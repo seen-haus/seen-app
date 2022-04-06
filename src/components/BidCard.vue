@@ -907,7 +907,7 @@ export default {
               if (response) {
                 saleField.resetField(null)
               }
-              if(account?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
+              if(account?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id && !collectableData.value.is_vrf_drop) {
                 // Cover sale scenarios, show claim button when balance is positive
                 let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
                 let balanceOfCurrentAccount = 0;
