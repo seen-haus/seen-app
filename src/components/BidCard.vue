@@ -422,7 +422,7 @@ import useSigner from "@/hooks/useSigner";
 import useMarketContractEvents from "@/hooks/useMarketContractEvents";
 import {
   useSeenNFTContract,
-  useV2VRFSaleContract,
+  useV1VRFSaleContract,
 } from "@/hooks/useContract";
 
 export default {
@@ -495,6 +495,7 @@ export default {
     const isClosingAuction = ref(false);
     const isCurrentAccountEntitledToPhysical = ref(false);
     const isCurrentAccountEntitledToDigitalClaimVRF = ref(false);
+    const vrfTicketIdsForClaim = ref([]);
     const isCurrentAccountEntitledToDigital = ref(false);
     const collectableData = ref(props.collectable);
     const showNotificationButtonRef = ref(false);
@@ -557,6 +558,20 @@ export default {
       checkRegistrationStatusIfRequired()
     });
 
+    const {
+      bid,
+      buy,
+      closeAuctionV3,
+      closeSaleV3,
+      requestRandomness,
+      commitRandomness,
+      claimTokensSaleVRF,
+      initializeContractEvents,
+      checkVrfV2ClaimsForAccount,
+      claimedReservationsVRF,
+      reservationIdsVRF,
+    } = useMarketContractEvents();
+
     watchEffect(async () => {
       if (account?.value && isAuction?.value && !props.isOpenEdition && !props?.isCollectableActive && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
         let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
@@ -578,21 +593,23 @@ export default {
           }
         }
       } else if(account?.value && !isAuction?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
-        // Cover sale scenarios, show claim button when balance is positive
-        let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
-        let balanceOfCurrentAccount = 0;
-        if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
-          for(let tokenId of collectableData.value.nft_token_id) {
-            let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
-            balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
+        if(collectableData?.value?.vrf_version !== 2) {
+          // Cover sale scenarios, show claim button when balance is positive
+          let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
+          let balanceOfCurrentAccount = 0;
+          if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
+            for(let tokenId of collectableData.value.nft_token_id) {
+              let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
+              balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
+            }
+          } else {
+            balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
           }
-        } else {
-          balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
-        }
-        if(parseInt(balanceOfCurrentAccount) > 0) {
-          isCurrentAccountEntitledToPhysical.value = true;
-        } else {
-          isCurrentAccountEntitledToPhysical.value = false;
+          if(parseInt(balanceOfCurrentAccount) > 0) {
+            isCurrentAccountEntitledToPhysical.value = true;
+          } else {
+            isCurrentAccountEntitledToPhysical.value = false;
+          }
         }
       }
       // else if(account?.value && props.isOpenEdition && !props?.isCollectableActive) {
@@ -610,14 +627,38 @@ export default {
 
     watchEffect(async () => {
       if(account?.value && !isAuction?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id && props.hasCommittedVRF) {
-        // Cover sale scenarios, show claim button when balance is positive
-        let vrfSaleContract = useV2VRFSaleContract(collectableData.value.contract_address);
-        let ticketCount = await vrfSaleContract.addressToTicketCount(account?.value);
-        if(parseInt(ticketCount) > 0) {
-          isCurrentAccountEntitledToDigitalClaimVRF.value = true;
-        } else {
-          isCurrentAccountEntitledToDigitalClaimVRF.value = false;
+        if(collectableData?.value?.vrf_version === 1) {
+          // Cover sale scenarios, show claim button when balance is positive
+          let vrfSaleContract = useV1VRFSaleContract(collectableData.value.contract_address);
+          let ticketCount = await vrfSaleContract.addressToTicketCount(account?.value);
+          if(parseInt(ticketCount) > 0) {
+            isCurrentAccountEntitledToDigitalClaimVRF.value = true;
+          } else {
+            isCurrentAccountEntitledToDigitalClaimVRF.value = false;
+          }
+        } else if (collectableData?.value?.vrf_version === 2) {
+          if(reservationIdsVRF.value[account?.value.toLowerCase()]?.length > 0 && claimedReservationsVRF.value[account?.value.toLowerCase()]?.length > 0) {
+            let claimedTicketIds = [...claimedReservationsVRF.value[account?.value.toLowerCase()]];
+            let remainingTicketsForClaim = [...reservationIdsVRF.value[account?.value.toLowerCase()]].filter(id => claimedTicketIds.indexOf(id) === -1);
+            vrfTicketIdsForClaim.value = remainingTicketsForClaim;
+            if(remainingTicketsForClaim?.length > 0) {
+              isCurrentAccountEntitledToDigitalClaimVRF.value = true;
+            } else {
+              isCurrentAccountEntitledToDigitalClaimVRF.value = false;
+            }
+          } else if(reservationIdsVRF.value[account?.value.toLowerCase()]?.length > 0) {
+            vrfTicketIdsForClaim.value = [...reservationIdsVRF.value[account?.value.toLowerCase()]];
+            isCurrentAccountEntitledToDigitalClaimVRF.value = true;
+          } else {
+            isCurrentAccountEntitledToDigitalClaimVRF.value = false;
+          }
         }
+      }
+    })
+
+    watchEffect(() => {
+      if(collectableData?.value?.vrf_version === 2 && account?.value) {
+        checkVrfV2ClaimsForAccount(account?.value);
       }
     })
 
@@ -666,22 +707,12 @@ export default {
 
     const priceUSDByType = computed(() => isAuction.value === 1);
 
-    const {
-      bid,
-      buy,
-      closeAuctionV3,
-      closeSaleV3,
-      requestRandomness,
-      commitRandomness,
-      claimTokensSaleVRF,
-      initializeContractEvents,
-    } = useMarketContractEvents();
-
     watchEffect(() => {
       if (collectableData.value) {
         initializeContractEvents(collectableData.value, true)
       }
     })
+
     const isWinnerButtonShown = computed(() => {
       if (
           typeof account.value === "string" &&
@@ -828,24 +859,28 @@ export default {
     const startClaimVRF = async () => {
       try {
         isSubmittingClaimVRF.value = true;
-        await claimTokensSaleVRF()
+        await claimTokensSaleVRF(vrfTicketIdsForClaim.value)
             .then(async () => {
               isSubmittingClaimVRF.value = false;
-              if(account?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
-                // Cover sale scenarios, show claim button when balance is positive
-                let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
-                let balanceOfCurrentAccount = 0;
-                if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
-                  for(let tokenId of collectableData.value.nft_token_id) {
-                    let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
-                    balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
+              if(collectableData.value.vrf_version === 1) {
+                if(account?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
+                  // Cover sale scenarios, show claim button when balance is positive
+                  let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
+                  let balanceOfCurrentAccount = 0;
+                  if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
+                    for(let tokenId of collectableData.value.nft_token_id) {
+                      let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
+                      balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
+                    }
+                  }
+                  if(parseInt(balanceOfCurrentAccount) > 0) {
+                    isCurrentAccountEntitledToPhysical.value = true;
+                  } else {
+                    isCurrentAccountEntitledToPhysical.value = false;
                   }
                 }
-                if(parseInt(balanceOfCurrentAccount) > 0) {
-                  isCurrentAccountEntitledToPhysical.value = true;
-                } else {
-                  isCurrentAccountEntitledToPhysical.value = false;
-                }
+              } else {
+                await checkVrfV2ClaimsForAccount(account?.value)
               }
             }).catch(e => {
               console.log({e})
@@ -872,7 +907,7 @@ export default {
               if (response) {
                 saleField.resetField(null)
               }
-              if(account?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
+              if(account?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id && !collectableData.value.is_vrf_drop) {
                 // Cover sale scenarios, show claim button when balance is positive
                 let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
                 let balanceOfCurrentAccount = 0;
@@ -1062,6 +1097,7 @@ export default {
       startRandomnessRequest,
       startRandomnessCommitment,
       startClaimVRF,
+      vrfTicketIdsForClaim,
     };
   },
 };

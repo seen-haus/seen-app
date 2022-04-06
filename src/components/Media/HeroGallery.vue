@@ -23,7 +23,7 @@
           <swiper-slide v-for="mediaResource in mediaResources" :key="mediaResource.id"  v-slot="{ isActive }">
             <div class="relative">
               <media-loader
-                @click="openModal(mediaResource.type, mediaResource.url)"
+                @click="openModal(mediaResource.type, mediaResource.hiRes ? mediaResource.hiRes : mediaResource.url, mediaResource.hiRes ? true : false)"
                 ref="mediaRef"
                 :src="mediaResource.url"
                 aspectRatio="100%"
@@ -39,7 +39,7 @@
             </div>
           </swiper-slide>
         </swiper>
-        <div class="swiper-pagination" v-if="mediaResources.length > 1" :class="darkMode && 'swiper-pagination-dark-mode-active'"></div>
+        <div class="swiper-pagination" v-if="mediaResources.length > 1" :class="{'swiper-pagination-dark-mode-active': darkMode, 'swiper-pagination-mini-bullets sm:hidden md:block': mediaResources.length > 80}"></div>
         <div class="swiper-button-prev" v-if="mediaResources.length > 1">
           <img src="@/assets/icons/arrow-right.svg" class="cursor-pointer" alt="SEEN">
         </div>
@@ -108,7 +108,7 @@ export default {
       }
     })
 
-    const openModal = (type, url) => {
+    const openModal = (type, url, useHiRes = false) => {
       const lightbox = GLightbox({
           plyr: {
             config: {
@@ -120,20 +120,26 @@ export default {
           autoplayVideos: true
       });
 
-      const elementIndex = media.value.findIndex(el => el.url === url);
+      const elementIndex = media.value.findIndex(el => {
+        if(useHiRes) { 
+          return el.hiRes === url
+        } else {
+          return el.url === url
+        }
+      });
       const reorderedMediaArray = media.value.slice(elementIndex).concat(media.value.slice(0, elementIndex));
       const lightBoxElements = [];
 
       reorderedMediaArray.forEach(m => {
         if (m.type === 'video' || m.type.includes("mp4") || m.type.includes("video")) {
           lightBoxElements.push({
-              'href': m.url,
+              'href': useHiRes ? m.hiRes : m.url,
               'type': 'video',
               'source': 'local', //vimeo, youtube or local
           })
         } else {
           lightBoxElements.push({
-              'href': m.url,
+              'href': useHiRes ? m.hiRes : m.url,
               'type': 'image', //vimeo, youtube or local
           });
         }

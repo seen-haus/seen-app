@@ -34,6 +34,13 @@
   }
 }
 
+.swiper-pagination-mini-bullets {
+  .swiper-pagination-bullet {
+    width: 10px !important;
+    height: 10px !important;
+  }
+}
+
 .swiper-pagination-dark-mode-active {
   .swiper-pagination-bullet {
     background-color: #797979 !important;
