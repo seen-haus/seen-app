@@ -6,6 +6,7 @@ import {
     useV1NftContract,
     useV2AuctionContract,
     useV2OpenEditionContract,
+    useV1VRFSaleContract,
     useV2VRFSaleContract,
     useRandomNumberConsumerContract,
     useV3NftContract,
@@ -43,6 +44,8 @@ const useMarketContractEvents = () => {
     const hasRequestedVRF = ref(false);
     const hasFulfilledVRF = ref(false);
     const hasCommittedVRF = ref(false);
+    const reservationIdsVRF = ref({});
+    const claimedReservationsVRF = ref({})
     const isReadyForClosure = ref(false);
     const isClosed = ref(false);
     const isCancelled = ref(false);
@@ -91,13 +94,13 @@ const useMarketContractEvents = () => {
             unitAmount = 1;
         } else if (type === 'buy-v3') {
             // event Purchase(uint256 indexed consignmentId,  uint256 indexed amount, address indexed buyer);
-            ethAmount = parseInt(evt.amount) * collectable.value.price;
+            ethAmount = formatEther(BigNumber.from(evt.amount.toString()).mul(parseEther(collectable.value.price.toString())));
             unitAmount = evt.amount.toString();
         } else if(type === 'bid') {
             ethAmount = parseFloat(formatEther(evt.amount), 10)
             unitAmount = 1;
         } else if (type === 'buy') {
-            ethAmount = parseInt(evt.amount) * collectable.value.price;
+            ethAmount = formatEther(BigNumber.from(evt.amount.toString()).mul(parseEther(collectable.value.price.toString())));
             unitAmount = evt.amount.toString();
         } else if (type === 'claim-against-token-id') {
             ethAmount = collectable.value.price;
@@ -357,7 +360,11 @@ const useMarketContractEvents = () => {
                         }
                         itemsBought.value = +(await contract.buyCount()).toString();
                     }else if(isVRFSale.value) {
-                        contract = useV2VRFSaleContract(contractAddress.value)
+                        if(collectable.value.vrf_version === 1) {
+                            contract = useV1VRFSaleContract(contractAddress.value)
+                        } else if (collectable.value.vrf_version === 2) {
+                            contract = useV2VRFSaleContract(contractAddress.value)
+                        }
                         let endTime = await contract.end()
                         let startTime = await contract.start()
                         let randomnessRequestId = await contract.randomNumberRequestId();
@@ -394,7 +401,6 @@ const useMarketContractEvents = () => {
                             hasCommittedVRF.value = true;
                         });
     
-    
                         const vrfRequestedEvents = await contract.queryFilter("RequestedVRF");
                         // There can only be one, so:
                         for(let vrfRequestedEvent of vrfRequestedEvents) {
@@ -416,6 +422,8 @@ const useMarketContractEvents = () => {
                                 }
                             }
                         }
+
+                        await checkVrfV2ClaimsForAccount(account?.value)
                     } else if(isClaimAgainstTokenDrop.value) {
                         contract = useClaimAgainstTokenContractWithFee(contractAddress.value)
                         let endTime = await contract.closingTimeUnix();
@@ -572,6 +580,36 @@ const useMarketContractEvents = () => {
             console.log({'initializeContractEvents error': e})
         }
     };
+
+    const checkVrfV2ClaimsForAccount = async (accountAddress) => {
+        if (collectable?.value?.vrf_version === 2) {
+            const contract = useV2VRFSaleContract(collectable.value.contract_address)
+            const vrfReservationFilter = contract.filters.PlacedReservation(accountAddress, null);
+            const vrfReservationIdEvents = await contract.queryFilter(vrfReservationFilter);
+            for(let vrfReservationIdEvent of vrfReservationIdEvents) {
+                const ticketId = Number(vrfReservationIdEvent.args.ticketId);
+                if(reservationIdsVRF.value[accountAddress] && (reservationIdsVRF.value[accountAddress].indexOf(ticketId) === -1)){
+                    reservationIdsVRF.value[accountAddress].push(ticketId);
+                } else {
+                    reservationIdsVRF.value[accountAddress] = [];
+                    reservationIdsVRF.value[accountAddress].push(ticketId);
+                }
+            }
+
+            const vrfMintedOffsetFilter = contract.filters.MintedOffset(accountAddress, null, null);
+            const vrfMintedOffsetEvents = await contract.queryFilter(vrfMintedOffsetFilter);
+            for(let vrfMintedOffsetEvent of vrfMintedOffsetEvents) {
+                const ticketId = Number(vrfMintedOffsetEvent.args.ticketId);
+                if(claimedReservationsVRF.value[accountAddress] && (claimedReservationsVRF.value[accountAddress].indexOf(ticketId) === -1)){
+                    claimedReservationsVRF.value[accountAddress].push(ticketId);
+                } else {
+                    claimedReservationsVRF.value[accountAddress] = [];
+                    claimedReservationsVRF.value[accountAddress].push(ticketId);
+                }
+            }
+
+        }
+    }
 
 
     const bid = async (amount, consignmentId) => {
@@ -836,43 +874,78 @@ const useMarketContractEvents = () => {
             })
     }
 
-    const claimTokensSaleVRF = async () => {
+    const claimTokensSaleVRF = async (ticketIds = []) => {
         if (!contractAddress.value || !provider.value) return;
-        let vrfContract = useV2VRFSaleContract(contractAddress.value)
 
         const temporaryProvider = new Web3Provider(provider.value);
-        const gasPrice = await temporaryProvider.getGasPrice()
-            .catch((e) => {
-                toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 3000});
-            });
 
-        let tx = await await vrfContract.claimAssigned({
-            gasPrice: gasPrice.toString(),
-            from: account.value
-        }).catch(e => {
-            let message = parseError(e.message)
-            toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
-        });
+        let vrfContract;
+        let tx;
 
-        return tx.wait()
-            .then((response) => {
-                if(response.status === 1) {
-                    hasRequestedVRF.value = true;
-                    toast.add({
-                        severity: 'success',
-                        summary: 'Success',
-                        detail: 'You have successfully claimed your assigned tokens.',
-                        life: 5000
-                    });
-                } else {
-                    toast.add({severity: 'error', summary: 'Error', detail: `Error claiming assigned tokens`, life: 3000});
-                }
-                return true;
-            }).catch((e) => {
+        if(collectable.value.vrf_version === 1) {
+            vrfContract = useV1VRFSaleContract(contractAddress.value)
+
+            const gasPrice = await temporaryProvider.getGasPrice()
+                .catch((e) => {
+                    toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 3000});
+                });
+
+            tx = await await vrfContract.claimAssigned({
+                gasPrice: gasPrice.toString(),
+                from: account.value
+            }).catch(e => {
                 let message = parseError(e.message)
                 toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+            });
+
+        } else if (collectable.value.vrf_version === 2) {
+            console.log({ticketIds})
+            if(ticketIds.length > 0) {
+                vrfContract = useV2VRFSaleContract(contractAddress.value)
+
+                const gasPrice = await temporaryProvider.getGasPrice()
+                    .catch((e) => {
+                        toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 3000});
+                        return false;
+                    });
+
+                tx = await vrfContract.mint([...ticketIds] ,{
+                    gasPrice: gasPrice.toString(),
+                    from: account.value
+                }).catch(e => {
+                    let message = parseError(e.message)
+                    toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                    return false;
+                });
+            } else {
+                toast.add({severity: 'error', summary: 'Error', detail: `No ticket IDs provided`, life: 3000});
                 return false;
-            })
+            }
+        }
+
+        if(tx) {
+            return tx.wait()
+                .then((response) => {
+                    if(response.status === 1) {
+                        toast.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: 'You have successfully claimed your assigned tokens.',
+                            life: 5000
+                        });
+                        return true;
+                    } else {
+                        toast.add({severity: 'error', summary: 'Error', detail: `Error claiming assigned tokens`, life: 3000});
+                        return false;
+                    }
+                }).catch((e) => {
+                    let message = parseError(e.message)
+                    toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                    return false;
+                })
+        } else {
+            return false;
+        }
     }
 
     onBeforeUnmount(() => {
@@ -906,6 +979,9 @@ const useMarketContractEvents = () => {
         isCancelled,
         winningAddress,
         checkClosureStatusFn,
+        claimedReservationsVRF,
+        reservationIdsVRF,
+        checkVrfV2ClaimsForAccount,
         initializeContractEvents,
         bid,
         buy,

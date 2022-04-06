@@ -278,9 +278,7 @@ export default {
     });
 
     function onLoadedCallback() {
-      console.log({mediaType: mediaType.value})
       isLoading.value = false;
-      console.log({isLoading})
       if (mediaType.value === "video") {
         if (!videoRef.value) return;
         //Video should now be loaded but we can add a second check
@@ -346,7 +344,6 @@ export default {
     }
 
     onMounted(() => {
-      console.log({mediaType: mediaType.value})
       if (mediaType.value === "video") {
         videoRef.value.addEventListener("canplay", onLoadedCallback);
         createObserver();
@@ -356,7 +353,6 @@ export default {
         isLoading.value = false;
       }
       if (mediaType.value === "image") {
-        console.log({imageRef})
         imageRef.value.addEventListener("load", onLoadedCallback);
       }
     });

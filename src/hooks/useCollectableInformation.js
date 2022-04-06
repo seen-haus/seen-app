@@ -32,6 +32,8 @@ export default function useCollectableInformation(initialCollectable = {}) {
         hasRequestedVRF,
         hasFulfilledVRF,
         hasCommittedVRF,
+        claimedReservationsVRF,
+        reservationIdsVRF,
         endsAt: updatedEndsAt,
         startsAt: updatedStartsAt,
         minimumStartsAt: updatedMinimumStartsAt,
@@ -440,6 +442,8 @@ export default function useCollectableInformation(initialCollectable = {}) {
         hasRequestedVRF,
         hasFulfilledVRF,
         hasCommittedVRF,
+        claimedReservationsVRF,
+        reservationIdsVRF,
         // Static
         type,
         media,

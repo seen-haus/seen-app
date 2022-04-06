@@ -422,7 +422,7 @@ import useSigner from "@/hooks/useSigner";
 import useMarketContractEvents from "@/hooks/useMarketContractEvents";
 import {
   useSeenNFTContract,
-  useV2VRFSaleContract,
+  useV1VRFSaleContract,
 } from "@/hooks/useContract";
 
 export default {
@@ -611,7 +611,7 @@ export default {
     watchEffect(async () => {
       if(account?.value && !isAuction?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id && props.hasCommittedVRF) {
         // Cover sale scenarios, show claim button when balance is positive
-        let vrfSaleContract = useV2VRFSaleContract(collectableData.value.contract_address);
+        let vrfSaleContract = useV1VRFSaleContract(collectableData.value.contract_address);
         let ticketCount = await vrfSaleContract.addressToTicketCount(account?.value);
         if(parseInt(ticketCount) > 0) {
           isCurrentAccountEntitledToDigitalClaimVRF.value = true;

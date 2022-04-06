@@ -65,7 +65,7 @@
       </div>
     </container>
 
-    <hero-gallery :mediaResources="gallerySortedMedia"/>
+    <hero-gallery :mediaResources="overrideMedia ? overrideMedia : gallerySortedMedia"/>
 
     <container>
       <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-12 md:mt-0">
@@ -254,7 +254,17 @@ export default {
       }
     }
   },
-  setup() {
+  props: {
+    slug: {
+      type: String || Boolean,
+      default: false
+    },
+    overrideMedia: {
+      type: Array || Boolean,
+      default: false
+    }
+  },
+  setup(props) {
     const toast = useToast();
     const route = useRoute();
     const state = reactive({
@@ -319,6 +329,8 @@ export default {
     const backgroundImage = ref(false);
     const titleMonospace = ref(false);
 
+    const useSlug = props.slug ? props.slug : route.params["slug"];
+
     const darkModeEnabled = [
       '0xmons-mork',
       'crossover',
@@ -327,7 +339,7 @@ export default {
       'eye-contact',
       'face-off',
       'nosferatus-mushroom-party',
-    ].indexOf(route.params["slug"]) > -1;
+    ].indexOf(useSlug) > -1;
     
     setDarkMode(darkModeEnabled);
 
@@ -337,7 +349,7 @@ export default {
 
     // TODO: Make this into a DB datasource unless V3 no longer uses this
     if (darkModeEnabled) {
-      switch(route.params["slug"]) {
+      switch(useSlug) {
         case '0xmons-mork':
           backgroundImage.value = '0xmons-tile.png';
           titleMonospace.value = true;
@@ -412,7 +424,7 @@ export default {
 
     (async function loadCollectable() {
       state.loading = true;
-      const slug = route.params["slug"];
+      const slug = useSlug;
       const {data} = await CollectablesService.show(slug);
 
       // data.events.reverse(); // Right order
