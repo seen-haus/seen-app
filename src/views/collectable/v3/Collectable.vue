@@ -158,10 +158,10 @@
             </div> -->
           </template>
 
-          <div v-if="artist" class="text-4xl font-title font-bold mt-14 mb-6" :class="darkMode && 'dark-mode-text'">
-            Artist statement
+          <div v-if="user" class="text-4xl font-title font-bold mt-14 mb-6" :class="darkMode && 'dark-mode-text'">
+            Creator
           </div>
-          <artist-card v-if="artist" fullSize class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
+          <user-card v-if="user" fullSize class="shadow-md" :user="user"/>
         </div>
         <div class="right-side col-span-5 mt-15">
           <bid-card
@@ -271,7 +271,7 @@ import UserOrArtistBadge from "@/components/PillsAndTags/UserOrArtistBadge.vue";
 import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import Container from "@/components/Container.vue";
-import ArtistCard from "@/components/ArtistCard.vue";
+import UserCard from "@/components/UserCard.vue";
 import BidCard from "@/components/BidCardV3.vue";
 import ListOfBuyers from "@/components/Lists/ListOfBuyers.vue";
 import HeroGallery from "@/components/Media/HeroGallery.vue";
@@ -300,7 +300,7 @@ export default {
     UserOrArtistBadge,
     Tag,
     LiveIndicator,
-    ArtistCard,
+    UserCard,
     BidCard,
     ListOfBuyers,
     HeroGallery,
@@ -354,6 +354,7 @@ export default {
       gallerySortedMedia,
       artist,
       artistStatement,
+      user,
       title,
       description,
       events,
@@ -611,6 +612,7 @@ export default {
       setShowSecondaryMarket,
       currentUserIsOwnerOfCollectable,
       navigateToCreate,
+      user,
     };
   },
 };
