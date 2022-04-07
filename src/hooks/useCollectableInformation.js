@@ -77,6 +77,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     });
     const gallerySortedMedia = computed(() => collectable.value.mediaSorted);
     const artist = computed(() => collectable.value.artist);
+    const user = computed(() => collectable.value.user);
     const artistStatement = computed(() => collectable.value.artist_statement);
     const title = computed(() => collectable.value.title);
     const description = computed(() => collectable.value.description);
@@ -452,6 +453,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         gallerySortedMedia,
         artist,
         artistStatement,
+        user,
         title,
         description,
         events,
