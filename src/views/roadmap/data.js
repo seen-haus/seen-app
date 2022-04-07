@@ -79,18 +79,41 @@ const roadmap = {
         },
         status: 'complete'
       },
+    ],
+    'Q2': [
+      {
+        title: 'Migrate OpenSea Dependencies Over to SEEN API',
+        description: 'Migrates detection of collected SEEN drops on user profiles over to the new SEEN token balance tracker built into the SEEN API, instead of continuing to rely on the OpenSea API (which has proven troublesome).',
+        githubCommits: {
+          'api': [
+            'https://github.com/seen-haus/seen-api/pull/63/files'
+          ],
+          'frontend': [
+            'https://github.com/seen-haus/seen-app/pull/215/files'
+          ]
+        },
+        status: 'complete',
+      },
+      {
+        title: 'Luca Donno x BlockWallet x SEEN HAUS Collab',
+        description: 'Implements the next generation of SEEN HAUS\'s VRF process which allows for larger quantities of tokens to be handled within a SEEN HAUS VRF drop, the first use of which is to drop a collab between Luca Donno, BlockWallet & SEEN HAUS.',
+        githubCommits: {
+          'api': [
+            'https://github.com/seen-haus/seen-api/pull/68/files'
+          ],
+          'frontend': [
+            'https://github.com/seen-haus/seen-app/pull/219/files'
+          ]
+        },
+        status: 'complete',
+      },
     ]
   },
   'Upcoming': [
     {
-      title: 'Migrate OpenSea Dependencies Over to SEEN API',
-      description: 'Migrates detection of collected SEEN drops on user profiles over to the new SEEN token balance tracker built into the SEEN API, instead of continuing to rely on the OpenSea API (which has proven troublesome).',
-      status: 'in-progress'
-    },
-    {
       title: 'Migrate Physical Drops to V3 contracts',
       description: 'Migrates the existing physical drops process and claiming procedure over to the SEEN HAUS V3 contracts',
-      status: 'upcoming'
+      status: 'in-progress'
     },
     {
       title: 'Revamp Email Notification System',
