@@ -204,7 +204,7 @@
 
 <script>
 import {computed, reactive, ref, onUnmounted} from "vue";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useMeta} from "vue-meta";
 import {useStore} from "vuex";
 
@@ -267,6 +267,7 @@ export default {
   setup(props) {
     const toast = useToast();
     const route = useRoute();
+    const router = useRouter();
     const state = reactive({
       loading: true,
       contractAddress: null,
@@ -330,6 +331,12 @@ export default {
     const titleMonospace = ref(false);
 
     const useSlug = props.slug ? props.slug : route.params["slug"];
+
+    if(route.path === '/drops/v2/secret') {
+      router.push({
+        name: "secret",
+      })
+    }
 
     const darkModeEnabled = [
       '0xmons-mork',
