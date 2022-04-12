@@ -18,7 +18,8 @@
           v-for="artist in listOfArtists"
           :key="artist && artist.id"
         >
-          <artist-card :autoMargins="true" v-if="artist != null" :artist="artist" class="cursor-pointer"/>
+          <artist-card :autoMargins="true" v-if="artist != null && !artist.username" :artist="artist" class="cursor-pointer"/>
+          <user-card v-if="artist != null && artist.username" class="cursor-pointer" :user="artist"/>
           <div
             v-else
             class="creator-placeholder placeholder-card overflow-hidden rounded-2xl bg-gray-100"
@@ -40,6 +41,7 @@ import { useMeta } from "vue-meta";
 
 import useDarkMode from "@/hooks/useDarkMode";
 import ArtistCard from "@/components/ArtistCard.vue";
+import UserCard from "@/components/UserCard.vue";
 import Container from "@/components/Container.vue";
 import FencedTitle from "@/components/FencedTitle.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
@@ -52,13 +54,14 @@ export default {
     FencedTitle,
     UnfencedTitle,
     ArtistCard,
+    UserCard,
   },
   setup() {
     const { meta } = useMeta({
       title: "Creators",
     });
     const router = useRouter();
-    const paginatedArtists = useArtistsWithPagination(48);
+    const paginatedArtists = useArtistsWithPagination(24);
     const listOfArtists = computed(() => paginatedArtists.listOfArtists.value);
     const hasMore = computed(() => paginatedArtists.hasMore.value);
     const { darkMode } = useDarkMode();
