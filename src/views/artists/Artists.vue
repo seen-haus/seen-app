@@ -18,8 +18,8 @@
           v-for="artist in listOfArtists"
           :key="artist && artist.id"
         >
-          <artist-card :autoMargins="true" v-if="artist != null && !artist.username" :artist="artist" class="cursor-pointer"/>
-          <user-card v-if="artist != null && artist.username" class="cursor-pointer" :user="artist"/>
+          <artist-card :autoMargins="true" v-if="artist != null && !artist.hasOwnProperty('username')" :artist="artist" class="cursor-pointer"/>
+          <user-card v-else-if="artist != null && artist.hasOwnProperty('username')" class="cursor-pointer" :user="artist"/>
           <div
             v-else
             class="creator-placeholder placeholder-card overflow-hidden rounded-2xl bg-gray-100"
