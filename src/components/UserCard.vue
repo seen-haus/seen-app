@@ -11,18 +11,19 @@
     @click="navigateToUser"
   >
     <div>
-      <div class="top-bar" :class="darkMode ? 'dark-mode-background' : 'light-mode-background'">
-        <img v-if="user.banner_image" :src="user.banner_image" class="mr-4 header" alt="">
-        <img v-else :src="user.avatar_image" class="mr-4 blur" alt="">
-      </div>
+      <div class="top-bar banner-background" :style="`background-image:url(${getBackgroundImage(user.banner_image)})`" :class="darkMode ? 'dark-mode-background' : 'light-mode-background'"/>
       <div class="description flex flex-col p-6" :class="darkMode ? 'dark-mode-surface' : 'light-mode-background'">
         
         <div class="flex">
           <img
+            v-if="user.avatar_image"
             :src="user.avatar_image"
             alt=""
             class="rounded-full border-white border-3 left-6 -top-12.5 w-25 h-25 avatar"
           />
+          <div v-else-if="user?.wallet" class="rounded-full border-white border-3 left-6 -top-12.5 w-25 h-25 avatar">
+            <identicon :size="94" :address="user?.wallet" class="flex justify-center"/>
+          </div>
           <div class="mt-13 ml-3">
             <div class="text-xs text-gray-400 mt-1">
               <div v-if="socials">
@@ -61,7 +62,14 @@
               >
             </div> -->
           </div>
-        <div class="mt-2" :class="darkMode ? 'dark-mode-text-washed' : 'text-gray-600'">
+        <div 
+          class="mt-2" 
+          :class="{
+            'dark-mode-text-washed': darkMode,
+            'text-gray-600': !darkMode,
+            'line-clamp': !fullSize
+          }"
+        >
           {{user.description}}
         </div>
       </div>
@@ -77,6 +85,7 @@ import useDarkMode from '@/hooks/useDarkMode';
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import SocialLine from "@/components/PillsAndTags/SocialLine.vue";
 import MediaLoader from "@/components/Media/MediaLoader.vue";
+import Identicon from "@/components/Identicon/Identicon";
 
 export default {
   name: "ArtistCard",
@@ -84,6 +93,7 @@ export default {
     Tag,
     MediaLoader,
     SocialLine,
+    Identicon,
   },
   props: {
     user: Object,
@@ -94,6 +104,16 @@ export default {
     autoMargins: {
       type: Boolean,
       default: false,
+    }
+  },
+  methods: {
+    getBackgroundImage(backgroundImage) {
+      if(!backgroundImage) {
+        // Default background image
+        return require('./../assets/images/default_banner_1.jpeg');
+      } else {
+        return backgroundImage;
+      }
     }
   },
   setup(props) {
@@ -193,4 +213,16 @@ export default {
   opacity: .7;
 }
 
+.line-clamp {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+.banner-background {
+  background-size: cover;
+  background-position: center;
+}
 </style>
