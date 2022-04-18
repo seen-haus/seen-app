@@ -629,5 +629,6 @@ export default {
   p {
     margin-bottom: 1rem;
   }
+  word-break: break-word;
 }
 </style>
