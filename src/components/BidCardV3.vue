@@ -229,6 +229,9 @@
       <button class="button primary mt-6" :class="{'cursor-wait disabled opacity-50': isClosingSale}" :disabled="isClosingSale" v-if="isReadyForClosure && !isAuction" @click="closeSale">
         {{isClosingSale ? 'Closing Sale...' : 'Close Sale'}}
       </button>
+      <button class="button primary mt-6" :class="{'cursor-wait disabled opacity-50': isClaimingPendingPayout}" :disabled="isClaimingPendingPayout" v-if="showClaimPendingPayoutButton && !isAuction && !isReadyForClosure" @click="claimPendingSalePayout">
+        {{isClaimingPendingPayout ? 'Claiming Payout...' : 'Claim Pending Payout'}}
+      </button>
     </div>
 
     <div class="bottom-part border-t p-8" :class="darkMode ? 'dark-mode-surface-darkened black-border' : 'light-mode-surface'">
@@ -467,6 +470,8 @@ export default {
     overrideClaimLink: String,
     isReadyForClosure: Boolean,
     winningAddress: [Boolean, String],
+    hasPendingPayout: [Boolean],
+    consignmentSeller: [Boolean, String]
   },
   computed: {
     isAwaitingReserve: function () {
@@ -493,11 +498,13 @@ export default {
     const isSubmittingClaimVRF = ref(false);
     const isClosingSale = ref(false);
     const isClosingAuction = ref(false);
+    const isClaimingPendingPayout = ref(false);
     const isCurrentAccountEntitledToPhysical = ref(false);
     const isCurrentAccountEntitledToDigitalClaimVRF = ref(false);
     const isCurrentAccountEntitledToDigital = ref(false);
     const collectableData = ref(props.collectable);
     const showNotificationButtonRef = ref(false);
+    const showClaimPendingPayoutButton = ref(false);
 
     const showNotificationButton = computed(() => showNotificationButtonRef.value);
     const winner = computed(() => collectableData.value.winner_address);
@@ -676,6 +683,7 @@ export default {
       buy,
       closeAuctionV3,
       closeSaleV3,
+      claimPendingPayoutSaleV3,
       requestRandomness,
       commitRandomness,
       claimTokensSaleVRF,
@@ -687,6 +695,15 @@ export default {
         initializeContractEvents(collectableData.value, true)
       }
     })
+
+    watchEffect(async () => {
+      if(account?.value && props.hasPendingPayout && props.consignmentSeller && props.consignmentSeller?.toLowerCase() === account?.value?.toLowerCase() && !props.isReadyForClosure) {
+        showClaimPendingPayoutButton.value = true;
+      } else {
+        showClaimPendingPayoutButton.value = false;
+      }
+    })
+
     const isWinnerButtonShown = computed(() => {
       if (
           typeof account.value === "string" &&
@@ -999,6 +1016,14 @@ export default {
       }
     }
 
+    const claimPendingSalePayout = async () => {
+      if(account?.value && ((Number(props.collectableConsignmentId) === 0) || (Number(props.collectableConsignmentId) > 0))) {
+        isClaimingPendingPayout.value = true;
+        await claimPendingPayoutSaleV3(props.collectableConsignmentId);
+        isClaimingPendingPayout.value = false;
+      }
+    }
+
     const closeAuction = async () => {
       if(account?.value && ((Number(props.collectableConsignmentId) === 0) || (Number(props.collectableConsignmentId) > 0))) {
         isClosingAuction.value = true;
@@ -1064,10 +1089,12 @@ export default {
       showNotificationButton,
       openNotificationsModal,
       closeSale,
+      claimPendingSalePayout,
       closeAuction,
       startRandomnessRequest,
       startRandomnessCommitment,
       startClaimVRF,
+      showClaimPendingPayoutButton,
     };
   },
 };

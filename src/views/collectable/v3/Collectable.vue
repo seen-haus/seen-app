@@ -191,6 +191,8 @@
             :claim="claim"
             :isReadyForClosure="isReadyForClosure"
             :winningAddress="winningAddress"
+            :hasPendingPayout="hasPendingPayout"
+            :consignmentSeller="consignmentSeller"
             @update-state="updateCollectableState"
           />
           <!-- START Secondary listings -->
@@ -381,6 +383,8 @@ export default {
       creatorType,
       creatorSlug,
       secondaryMarketListings,
+      hasPendingPayout,
+      consignmentSeller,
       // Methods
       updateProgress,
       setCollectable,
@@ -599,6 +603,8 @@ export default {
       creatorType,
       creatorSlug,
       secondaryMarketListingsForRender,
+      hasPendingPayout,
+      consignmentSeller,
       // Methods
       updateProgress,
       viewOnEtherscan,

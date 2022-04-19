@@ -47,6 +47,8 @@ const useMarketContractEvents = () => {
     const reservationIdsVRF = ref({});
     const claimedReservationsVRF = ref({})
     const isReadyForClosure = ref(false);
+    const hasPendingPayout = ref(false);
+    const consignmentSeller = ref(false);
     const isClosed = ref(false);
     const isCancelled = ref(false);
     const winningAddress = ref(false);
@@ -472,6 +474,16 @@ const useMarketContractEvents = () => {
                             } else if (Number(sale.outcome) === 0) {
                                 // Get consignment to derive if sale is ready to be closed
                                 let consignment = await marketClerkContract.getConsignment(consignmentId);
+
+                                consignmentSeller.value = consignment.seller;
+
+                                // Check if consignment has a pending payout
+                                if(Number(consignment.pendingPayout) > 0) {
+                                    hasPendingPayout.value = true;
+                                } else {
+                                    hasPendingPayout.value = false;
+                                }
+
                                 if(Number(consignment.supply) === Number(consignment.releasedSupply)) {
                                     isReadyForClosure.value = true;
                                 } else {
@@ -796,6 +808,47 @@ const useMarketContractEvents = () => {
             })
     };
 
+    const claimPendingPayoutSaleV3 = async (consignmentId) => {
+        if (consignmentId !== 0 && !consignmentId) return;
+
+        const saleRunnerContractRaw = await useV3SaleRunnerContract(true);
+        let temporaryContract = saleRunnerContractRaw;
+
+        const temporaryProvider = new Web3Provider(provider.value);
+        const gasPrice = await temporaryProvider.getGasPrice().catch((e) => {
+            toast.add({severity: 'error', summary: 'Error', detail: `You may be out of ETH`, life: 3000});
+        });
+
+        let tx = await temporaryContract.claimPendingPayout(consignmentId, {from: account.value.toString(), gasPrice}).catch(e => {
+            toast.add({severity: 'error', summary: 'Error', detail: 'Transaction Reverted', life: 3000});
+        });
+        
+        if(tx) {
+            return tx.wait()
+                .then((response) => {
+                    if(response.status === 1) {
+                        toast.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: 'You have claimed the pending payout.',
+                            life: 3000
+                        });
+                        hasPendingPayout.value = false;
+                        return true;
+                    }else {
+                        toast.add({severity: 'error', summary: 'Error', detail: 'Transaction Reverted', life: 3000});
+                        return false;
+                    }
+                }).catch((e) => {
+                    let message = parseError(e.message)
+                    toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                    return false;
+                })
+        } else {
+            return false;
+        }
+    };
+
     const requestRandomness = async () => {
         if (!contractAddress.value || !provider.value) return;
         let vrfContract = useV2VRFSaleContract(contractAddress.value)
@@ -975,6 +1028,8 @@ const useMarketContractEvents = () => {
         hasFulfilledVRF,
         hasCommittedVRF,
         isReadyForClosure,
+        hasPendingPayout,
+        consignmentSeller,
         isClosed,
         isCancelled,
         winningAddress,
@@ -990,6 +1045,7 @@ const useMarketContractEvents = () => {
         claimTokensSaleVRF,
         closeAuctionV3,
         closeSaleV3,
+        claimPendingPayoutSaleV3,
     };
 }
 
