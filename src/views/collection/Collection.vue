@@ -1,19 +1,32 @@
 <template>
   <div>
     <container class="section-featured-auctions pb-24">
+      <div v-if="getCollectionTrailer(state.collectionName)" class="trailer-container mt-12">
+        <media-loader
+          @click="openModal('video/mp4', getCollectionTrailer(state.collectionName), false)"
+          ref="mediaRef"
+          :src="getCollectionTrailer(state.collectionName)"
+          aspectRatio="100%"
+          :loop="true"
+          :autoplay="true"
+          :declaredMediaType="false"
+          :muted="true"
+          :fillHeight="true"
+          :class="darkMode ? 'dark-mode-background dark-mode-slide' : 'light-mode-background light-mode-slide'"
+          class="overflow-hidden rounded-lg flex-1 media-loader-active"
+        />
+        <p class="w-full text-grey-9 text-center mt-4 text-sm">Click to Expand</p>
+      </div>
       <div class="flex items-center pb-4 flex-col lg:flex-row">
         <div class="abstract-circles abstract-circles-drops">
           <img src="@/assets/images/abstract-circles.svg" alt="">
         </div>
-        <unfenced-title
-          class="text-black hidden lg:flex pt-12"
-          color="fence-dark"
-          text-align="left"
-        >
-          {{state.collectionName}}
-        </unfenced-title>
       </div>
-
+      <div v-if="getCollectionDescription(state.collectionName)" class="mt-4 mb-4">
+        <light-typography fontSize="18px">
+          {{getCollectionDescription(state.collectionName)}}
+        </light-typography>
+      </div>
       <div
         class="auction-list-big grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
       >
@@ -53,13 +66,14 @@ import Container from "@/components/Container.vue";
 import ProductCardV3 from "@/components/ProductCardV3.vue";
 import ProductCardV3Placeholder from "@/components/ProductCardV3Placeholder.vue";
 import UnfencedTitle from "@/components/FencedTitle.vue";
-import Toggle from "@/components/Inputs/Toggle.vue";
-import HowToVideo from "@/components/HowToVideo.vue";
-import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
-import ArtistCard from "@/components/ArtistCard.vue";
+import MediaLoader from "@/components/Media/MediaLoader.vue"
+import LightTypography from "@/components/LightTypography.vue";
 
 import useDropsWithPagination from "@/hooks/useDropsWithPagination.js";
 import useDarkMode from '@/hooks/useDarkMode';
+
+import GLightbox from 'glightbox';
+import 'glightbox/dist/css/glightbox.css';
 
 export default {
   name: "Drops",
@@ -68,10 +82,24 @@ export default {
     UnfencedTitle,
     ProductCardV3,
     ProductCardV3Placeholder,
-    Toggle,
-    HowToVideo,
-    QuoteCarousel,
-    ArtistCard,
+    LightTypography,
+    MediaLoader,
+  },
+  methods: {
+    getCollectionTrailer(collectionName) {
+      if(collectionName === '420') {
+        // return [{ 
+        //   url: `https://seenhaus.mypinata.cloud/ipfs/QmT2AMW6HEfgbwtftmCAfVnCKyjXkMwRfWMys23nyfhKZr`,
+        //   type: 'video/mp4',
+        // }]
+        return `https://seenhaus.mypinata.cloud/ipfs/QmT2AMW6HEfgbwtftmCAfVnCKyjXkMwRfWMys23nyfhKZr`;
+      }
+    },
+    getCollectionDescription(collectionName) {
+      if(collectionName === '420') {
+        return 'In collab with $FMHS @420 and SEEN.HAUS, delight in 5 dope limited edition NFT+physical hoodies by 5 dank cryptoartists. Each artist celebrates the season with original art on super soft streetwear swag.';
+      }
+    }
   },
   setup(props) {
 
@@ -149,6 +177,29 @@ export default {
       }
     };
 
+    const openModal = (type, url, useHiRes = false) => {
+      const lightbox = GLightbox({
+          plyr: {
+            config: {
+              loop: {active: true},
+            }
+          },
+          touchNavigation: true,
+          loop: true,
+          autoplayVideos: true
+      });
+
+      const lightBoxElements = [{
+          'href': url,
+          'type': 'video',
+          'source': 'local', //vimeo, youtube or local
+      }];
+
+      lightbox.setElements(lightBoxElements)
+
+      lightbox.open();
+    };
+
     return {
       state,
       filterAuctions,
@@ -160,6 +211,7 @@ export default {
       hasMore,
       handleLoadMore,
       navigateToCollectable,
+      openModal,
 
       darkMode,
     };
@@ -167,11 +219,16 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .abstract-circles-drops {
     top: 100px;
     @screen lg {
       right: 35px;
     }
+  }
+  .trailer-container {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
   }
 </style>
