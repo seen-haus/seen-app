@@ -70,6 +70,7 @@
     <container>
       <div class="flex flex-col lg:grid grid-cols-12 gap-12 py-6 pb-32 mt-12 md:mt-0">
         <div class="left-side col-span-7 pb-6">
+          <video v-if="getCollectionVideoCallback(collectionName)" muted loop autoplay @click="navigateToCollection(collectionName)" style="background-color: #010101;" :src="getCollectionVideoCallback(collectionName)" class="cursor-pointer rounded-3xl pb-20" alt="SEEN"/>
           <div v-if="version === 2 || version === 1" class="text-lg description" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'" v-html="description"></div>
           <div v-if="version === 3" class="text-lg description" :class="darkMode ? 'dark-mode-text' : 'text-gray-500'">{{description}}</div>
           <template v-if="showAdditionalInformation">
@@ -112,6 +113,10 @@
             Artist statement
           </div>
           <artist-card v-if="artist" fullSize class="shadow-md" :artist="artist" :artistStatement="artistStatement"/>
+          <div v-if="user" class="text-4xl font-title font-bold mt-14 mb-6" :class="darkMode && 'dark-mode-text'">
+            Creator
+          </div>
+          <user-card v-if="user" fullSize class="shadow-md" :user="user"/>
         </div>
 
         <div class="right-side col-span-5">
@@ -215,6 +220,7 @@ import LiveIndicator from "@/components/PillsAndTags/LiveIndicator.vue";
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import Container from "@/components/Container.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
+import UserCard from "@/components/UserCard.vue";
 import BidCard from "@/components/BidCard.vue";
 import ListOfBuyers from "@/components/Lists/ListOfBuyers.vue";
 import HeroGallery from "@/components/Media/HeroGallery.vue";
@@ -241,6 +247,7 @@ export default {
     Tag,
     LiveIndicator,
     ArtistCard,
+    UserCard,
     BidCard,
     ListOfBuyers,
     HeroGallery,
@@ -251,6 +258,11 @@ export default {
     getBackgroundImage(backgroundImage) {
       if(backgroundImage) {
         return require('../../assets/images/' + backgroundImage)
+      }
+    },
+    getCollectionVideoCallback(collectionName) {
+      if(collectionName === '420') {
+        return require('../../assets/videos/420-collection-2022.mp4');
       }
     }
   },
@@ -319,12 +331,14 @@ export default {
       isAuction,
       version,
       nextBidPrice,
+      user,
       // Methods
       updateProgress,
       setCollectable,
       updateCollectableState,
       claim,
       pillOverride,
+      collectionName,
     } = useCollectableInformation();
 
     const backgroundImage = ref(false);
@@ -346,9 +360,16 @@ export default {
       'eye-contact',
       'face-off',
       'nosferatus-mushroom-party',
+      'blueberry-kush',
+      'trashed-hoodie',
+      'beautiful-day',
+      'santa-marijuana',
+      'purple-dos-mart',
     ].indexOf(useSlug) > -1;
-    
-    setDarkMode(darkModeEnabled);
+
+    setTimeout(() => {
+      setDarkMode(darkModeEnabled);
+    }, 200)
 
     onUnmounted(() => {
       setDarkMode(false);
@@ -398,6 +419,15 @@ export default {
         }
       ],
     });
+
+    const navigateToCollection = function (slug) {
+      router.push({
+          name: 'collection',
+          params: {
+            collectionName: slug
+          }
+      });
+    }
 
     const isLoading = computed(() => state.loading);
 
@@ -471,6 +501,7 @@ export default {
       isLoading,
       collectable,
       collectableState,
+      collectionName,
       price,
       priceUSD,
       items,
@@ -519,6 +550,8 @@ export default {
       claim,
       pillOverride,
       version,
+      navigateToCollection,
+      user,
     };
   },
 };

@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { computed, reactive, ref, watchEffect } from "vue";
+import { computed, reactive, ref, watchEffect, onUnmounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useMeta } from "vue-meta";
 
@@ -74,13 +74,24 @@ export default {
     ArtistCard,
   },
   setup(props) {
-    const { darkMode } = useDarkMode();
+
+    const { darkMode, setDarkMode } = useDarkMode();
 
     const { meta } = useMeta({
       title: "Drops",
     });
     const router = useRouter();
     const route = useRoute();
+
+    if(['420'].indexOf(route.params["collectionName"]) > -1) {
+      setTimeout(() => {
+        setDarkMode(true);
+      }, 200)
+    }
+
+    onUnmounted(() => {
+      setDarkMode(false);
+    })
 
     const state = reactive({
       collectionName: slugToTitleCase(route.params["collectionName"]),
@@ -118,16 +129,23 @@ export default {
       filterEditions.value = event;
       paginatedCollectables.filter(filterAuctions.value, filterEditions.value);
     }
-    const navigateToCollectable = function (slug, isSlugFullRoute) {
+    const navigateToCollectable = function (slug, isSlugFullRoute, version) {
       if(isSlugFullRoute) {
         router.push({
           name: slug,
         });
       } else {
-        router.push({
-          name: "collectableAuction",
-          params: { slug: slug },
-        });
+        if(version === 1 || version === 2) {
+          router.push({
+            name: "collectableDropV2",
+            params: { slug: slug },
+          });
+        } else if (version === 3) {
+          router.push({
+            name: "collectableDropV3",
+            params: { slug: slug },
+          });
+        }
       }
     };
 
