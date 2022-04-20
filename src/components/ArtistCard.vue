@@ -32,7 +32,7 @@
                   :isVertical="false"
                   :iconOnly="true"
                   v-for="social in artist.socials"
-                  :key="social.url"
+                  :key="social?.url"
                 />
               </div>
               <div v-else>User has no socials yet</div>

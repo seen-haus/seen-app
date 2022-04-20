@@ -41,6 +41,10 @@
       </div>
     </container>
 
+    <container class="section-featured-auctions pt-20 lg:pt-24">
+      <video muted loop autoplay @click="navigateToCollection('420')" style="background-color: #010101;" src="@/assets/videos/420-collection-2022.mp4" class="cursor-pointer rounded-3xl" alt="SEEN"/>
+    </container>
+
     <container class="section-featured-auctions pb-12">
       <div class="flex items-center pt-20 lg:pt-24 flex-col lg:flex-row">
         <img src="@/assets/icons/orange-flame.svg" class="mr-2"/>
@@ -165,7 +169,8 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 mt-9">
         <template v-for="artist in listOfArtists" :key="artist && artist.id">
-          <artist-card :autoMargins="true" v-if="artist != null" :artist="artist" />
+          <artist-card :autoMargins="true" v-if="artist != null && !artist.hasOwnProperty('username')" :artist="artist" class="cursor-pointer"/>
+          <user-card v-else-if="artist != null && artist.hasOwnProperty('username')" class="cursor-pointer" :user="artist"/>
           <div
             v-else
             class="creator-placeholder auto-margins placeholder-card overflow-hidden rounded-2xl bg-gray-100"
@@ -190,6 +195,7 @@ import ProductCardV3 from "@/components/ProductCardV3.vue";
 import ProductCardV3Placeholder from "@/components/ProductCardV3Placeholder.vue";
 import CommonTitle from "@/components/CommonTitle.vue";
 import ArtistCard from "@/components/ArtistCard.vue";
+import UserCard from "@/components/UserCard.vue";
 import HeroAuction from "./components/HeroAuction.vue";
 import PaneLink from "@/components/PaneLink.vue";
 import useDarkMode from "@/hooks/useDarkMode";
@@ -210,6 +216,7 @@ export default {
     LightTypography,
     IconSquare,
     PaneLink,
+    UserCard,
   },
   setup() {
     const { meta } = useMeta({

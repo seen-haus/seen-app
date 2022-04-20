@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     getSocialIcon(social) {
-      const type = social.type;
+      const type = social?.type;
       if (type === 'twitter') {
         return 'fab fa-twitter'
       } else if (type === 'instagram') {
@@ -36,7 +36,7 @@ export default {
       }
     },
     getSocialText(social) {
-      return social.handle || social.url;
+      return social?.handle || social?.url || "";
     }
   },
 };
