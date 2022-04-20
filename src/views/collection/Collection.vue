@@ -1,16 +1,17 @@
 <template>
   <div>
     <container class="section-featured-auctions pb-24">
-      <div class="flex items-center py-6 flex-col lg:flex-row">
-        <fenced-title
-          class="flex-grow mr-0 mb-2 self-stretch"
-          color="fence-gray"
-          textAlign="center"
-          unshrinkable
-          :closed="true"
-          >
+      <div class="flex items-center pb-4 flex-col lg:flex-row">
+        <div class="abstract-circles abstract-circles-drops">
+          <img src="@/assets/images/abstract-circles.svg" alt="">
+        </div>
+        <unfenced-title
+          class="text-black hidden lg:flex pt-12"
+          color="fence-dark"
+          text-align="left"
+        >
           {{state.collectionName}}
-        </fenced-title>
+        </unfenced-title>
       </div>
 
       <div
@@ -20,16 +21,12 @@
           v-for="collectable in listOfCollectables"
           :key="collectable && collectable.id"
         >
-          <product-card
+          <product-card-v3
             v-if="collectable != null"
             :collectable="collectable"
-            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route)"
+            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
           />
-          <div
-            v-else
-            class="placeholder-card overflow-hidden rounded-3xl bg-gray-100"
-            :style="{ 'padding-bottom': '120%' }"
-          ></div>
+          <product-card-v3-placeholder v-else />
         </template>
       </div>
 
@@ -53,8 +50,9 @@ import { useMeta } from "vue-meta";
 import { slugToTitleCase } from "@/services/utils";
 
 import Container from "@/components/Container.vue";
-import ProductCard from "@/components/ProductCard.vue";
-import FencedTitle from "@/components/FencedTitle.vue";
+import ProductCardV3 from "@/components/ProductCardV3.vue";
+import ProductCardV3Placeholder from "@/components/ProductCardV3Placeholder.vue";
+import UnfencedTitle from "@/components/FencedTitle.vue";
 import Toggle from "@/components/Inputs/Toggle.vue";
 import HowToVideo from "@/components/HowToVideo.vue";
 import QuoteCarousel from "@/components/Quote/QuoteCarousel.vue";
@@ -67,8 +65,9 @@ export default {
   name: "Drops",
   components: {
     Container,
-    FencedTitle,
-    ProductCard,
+    UnfencedTitle,
+    ProductCardV3,
+    ProductCardV3Placeholder,
     Toggle,
     HowToVideo,
     QuoteCarousel,
@@ -151,4 +150,10 @@ export default {
 </script>
 
 <style scoped>
+  .abstract-circles-drops {
+    top: 100px;
+    @screen lg {
+      right: 35px;
+    }
+  }
 </style>
