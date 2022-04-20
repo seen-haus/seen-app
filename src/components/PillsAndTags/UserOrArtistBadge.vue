@@ -17,6 +17,9 @@
         <sub-title
             v-if="data.creatorUsername || data.creatorAccount"
             class="text-black hidden lg:flex mb-1 mt-1"
+            :class="{
+              'text-white': darkMode
+            }"
             text-align="center"
             font-size="15px"
         >
@@ -33,6 +36,8 @@ import { useRouter } from "vue-router";
 import { shortenAddress } from "@/services/utils/index";
 import Identicon from "@/components/Identicon/Identicon";
 import SubTitle from "@/components/SubTitle.vue";
+
+import useDarkMode from '@/hooks/useDarkMode';
 
 export default {
     name: 'UserBadge',
@@ -76,6 +81,8 @@ export default {
     setup(props) {
         const router = useRouter();
 
+        const { darkMode } = useDarkMode();
+
         const data = reactive({
             creatorAccount: props.creatorAccount,
             creatorUsername: props.creatorUsername,
@@ -103,6 +110,7 @@ export default {
 
         return {
             typeStyles,
+            darkMode,
             navigateToArtistOrUser,
             data,
             shortenAddress,

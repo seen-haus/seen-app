@@ -46,6 +46,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const bundleChildItems = computed(() => collectable.value.bundleChildItems);
     const pillOverride = computed(() => collectable.value.pill_override || false);
     const requiresRegistration = computed(() => collectable.value.requires_registration || false);
+    const collectionName = computed(() => collectable.value.collection_name || false);
     const price = ref(0.0);
     const nextBidPrice = ref(0.0);
     const priceUSD = ref(0.0);
@@ -494,6 +495,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         winningAddress,
         secondaryMarketListings,
         isVRFSale,
+        collectionName,
         // Methods
         updateProgress,
         setCollectable,

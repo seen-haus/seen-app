@@ -3,10 +3,15 @@
         class="drop-card-container-border" 
         :class="{
             'auto-margins': autoMargins,
-            'creation-step-sticky': sticky
+            'creation-step-sticky': sticky,
+            'drop-card-container-border-dark-mode': darkMode,
         }"
     >
-        <div class="drop-card-preview-container">
+        <div class="drop-card-preview-container"
+            :class="{
+                'drop-card-preview-container-dark-mode': darkMode,
+            }"
+        >
             <div class="drop-card-inner-padding-top">
                 <div class="drop-card-media-container flex-center bg-gray-100">
                     <img v-if="!data.mediaUrl && !disableMediaPlaceholder" src="@/assets/icons/media-icon.svg" style="opacity: 0.6" alt="Media Icon">
@@ -40,6 +45,9 @@
                         <sub-title
                             v-if="titleText"
                             class="text-black hidden lg:flex"
+                            :class="{
+                                'text-white': darkMode
+                            }"
                             text-align="left"
                             font-size="24px"
                             line-height="30px"
@@ -113,7 +121,7 @@
                         <progress-timer
                             v-if="data.startTime && (listingType !== 'sale' || (data.startTime > new Date().getTime()))"
                             ref="timerRef"
-                            :whiteText="data.timerState === TIMER_STATE.IN_PROGRESS && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK"
+                            :whiteText="(data.timerState === TIMER_STATE.IN_PROGRESS && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK) || darkMode"
                             :listingType="listingType"
                             :startDate="data.startTime"
                             :endDate="data.endTime"
@@ -209,13 +217,13 @@
                         <img src="@/assets/icons/ethereum-icon.svg"  class="mr-2" alt="Ethereum logo">
                         <sub-title
                             class="text-black hidden lg:flex"
-                            :class="
-                                (data.timerState === TIMER_STATE.IN_PROGRESS || (listingType == 'sale' && (data.startTime < new Date().getTime())))
+                            :class="{
+                                'text-white': (data.timerState === TIMER_STATE.IN_PROGRESS || (listingType == 'sale' && (data.startTime < new Date().getTime())))
                                 && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
                                 && collectableState !== COLLECTABLE_STATE.CLOSED
-                                && collectableState !== COLLECTABLE_STATE.DONE
-                                && 'text-white'
-                            "
+                                && collectableState !== COLLECTABLE_STATE.DONE,
+                                'text-white': darkMode
+                            }"
                             text-align="left"
                             font-size="24px"
                             line-height="30px"
@@ -244,6 +252,7 @@ import UserOrArtistBadge from "@/components/PillsAndTags/UserOrArtistBadge.vue";
 
 import { shortenAddress } from "@/services/utils/index";
 
+import useDarkMode from '@/hooks/useDarkMode';
 import useExchangeRate from "@/hooks/useExchangeRate.js";
 import { TIMER_STATE } from "@/hooks/v3/useTimer.js";
 import {
@@ -316,7 +325,7 @@ export default {
 
         const { formatCrypto } = useExchangeRate();
 
-        console.log({props})
+        const { darkMode } = useDarkMode();
         
         const data = reactive({
             mediaUrl: false,
@@ -370,6 +379,7 @@ export default {
             data,
             shortenAddress,
             formatCrypto,
+            darkMode,
             TIMER_STATE,
             COLLECTABLE_STATE,
         }
@@ -398,6 +408,9 @@ export default {
             transform: translateY(2px);
         }
     }
+    .drop-card-container-border-dark-mode {
+        background: #222222!important;
+    }
     .drop-card-preview-container {
         max-width: 100%;
         height: 504px;
@@ -405,6 +418,9 @@ export default {
         background: #FFFFFF;
         border-radius: 10px;
         overflow: hidden;
+    }
+    .drop-card-preview-container-dark-mode {
+        background: #222222!important;
     }
     .creation-step-sticky {
         position: sticky;

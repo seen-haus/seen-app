@@ -318,7 +318,7 @@ export default {
       }
     }
   },
-  setup() {
+  setup(props) {
     const toast = useToast();
     const route = useRoute();
     const router = useRouter();
@@ -329,6 +329,7 @@ export default {
       buyersVisible: 3,
       secondaryMarketListings: [],
       showSecondaryMarket: false,
+      preventUnmountThemeChange: false,
     });
     const { account, chainId } = useWeb3();
     const { darkMode, setDarkMode } = useDarkMode();
@@ -405,6 +406,7 @@ export default {
           currentUserIsOwnerOfCollectable.value = await contract.balanceOf(account?.value, collectable.value?.nft_token_id) > 0;
       }
       if(collectable.value?.slug && (collectable.value?.version === 2 || collectable.value?.version === 1)) {
+        state.preventUnmountThemeChange = true;
         router.push({
           name: "collectableDropV2",
           params: { slug: collectable.value.slug }
@@ -421,9 +423,24 @@ export default {
     const backgroundImage = ref(false);
     const titleMonospace = ref(false);
 
+    const useSlug = props.slug ? props.slug : route.params["slug"];
+
+    const darkModeEnabled = [
+      '0xmons-mork',
+      'crossover',
+      'virus',
+      'enkindle',
+      'eye-contact',
+      'face-off',
+      'nosferatus-mushroom-party',
+      'blueberry-kush',
+      'trashed-hoodie',
+      'beautiful-day',
+    ].indexOf(useSlug) > -1;
+
     // TODO: Make this into a DB datasource unless V3 no longer uses this
-    if(['0xmons-mork'].indexOf(route.params["slug"]) > -1) {
-      setDarkMode(true);
+    if(darkModeEnabled) {
+      setDarkMode(darkModeEnabled);
       switch(route.params["slug"]) {
         case '0xmons-mork':
           backgroundImage.value = '0xmons-tile.png';
@@ -433,7 +450,9 @@ export default {
     }
 
     onUnmounted(() => {
-      setDarkMode(false);
+      if(!state.preventUnmountThemeChange) {
+        setDarkMode(false);
+      }
     })
 
     const currentEndsAt = computed(() => {
