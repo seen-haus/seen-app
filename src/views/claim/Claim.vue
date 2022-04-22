@@ -1,6 +1,37 @@
 <template>
   <container>
     <div class="loading-mask" v-if="!isLoading">
+      <div v-if="media?.url" class="mt-12 mb-8 media-container">
+        <router-link v-if="collectableLink?.name"
+          :to="{ name: collectableLink?.name, ...(collectableLink?.params && {params: collectableLink?.params}) }"
+          class="routing-link opacity-100 hover:opacity-80"
+        >
+          <media-loader
+            ref="mediaRef"
+            :src="media?.url"
+            aspectRatio="100%"
+            :loop="true"
+            :autoplay="true"
+            :declaredMediaType="false"
+            :muted="true"
+            :fillHeight="true"
+            :class="darkMode ? 'dark-mode-background dark-mode-slide' : 'light-mode-background light-mode-slide'"
+            class="overflow-hidden rounded-lg flex-1 media-loader-active"
+          />
+        </router-link>
+      </div>
+      <div class="flex-center mb-8">
+        <div class="button shortened shadow-lifted">
+          <user-or-artist-badge
+            :creatorAccount="creatorInfo.creatorAccount"
+            :creatorUsername="creatorInfo.creatorUsername"
+            :creatorSlug="creatorInfo.creatorSlug"
+            :creatorProfilePicture="creatorInfo.creatorProfilePicture"
+            :creatorType="creatorInfo.creatorType"
+            :disableLinkGrow="true"
+          />
+        </div>
+      </div>
       <h3
         class="font-bold text-3xl text-black text-center block w-full cursor-pointer"
         @click="navigateToCollectable"
@@ -182,8 +213,12 @@
 import { Web3Provider } from "@ethersproject/providers";
 import { computed, ref, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import orderBy from "lodash/orderBy";
 
 import Container from "@/components/Container.vue";
+import MediaLoader from "@/components/Media/MediaLoader.vue"
+import UserOrArtistBadge from "@/components/PillsAndTags/UserOrArtistBadge.vue";
+
 import { ClaimsService } from "@/services/apiService";
 
 import useWeb3 from "@/connectors/hooks";
@@ -199,6 +234,8 @@ export default {
   name: "Collectable",
   components: {
     Container,
+    MediaLoader,
+    UserOrArtistBadge,
   },
   setup() {
     // TODO:
@@ -210,6 +247,9 @@ export default {
     const router = useRouter();
     const claim = ref({});
     const title = ref("Claim");
+    const media = ref(false);
+    const creatorInfo = ref(false);
+    const collectableLink = ref(false);
     const state = reactive({
       loading: true,
       contractAddress: null,
@@ -404,6 +444,72 @@ export default {
         title.value = data.title;
       } else if (data.collectable) {
         title.value = data.collectable.title;
+
+        if(data.collectable.media) {
+          const firstMedia = computed(() => { // Use preview image or first
+              if (!data.collectable.media) return '';
+              const found = data.collectable.media.find(v => v.is_preview);
+
+              if (found) {
+                  return found.url;
+              }
+              let orderedMedia = orderBy(data.collectable.media, 'position', "asc")
+              return orderedMedia[0].url || '';
+          });
+
+          media.value = {
+            url: firstMedia,
+          }
+        }
+
+        if(data.collectable.artist) {
+          let {
+            slug,
+            name,
+            avatar
+          } = data.collectable.artist;
+          creatorInfo.value = {
+            creatorAccount: false,
+            creatorUsername: name,
+            creatorSlug: slug,
+            creatorProfilePicture: avatar,
+            creatorType: 'artist',
+          }
+        }
+
+        if(data.collectable.user) {
+          let {
+            username,
+            avatar_image,
+          } = data.collectable.artist;
+          creatorInfo.value = {
+            creatorAccount: false,
+            creatorUsername: username,
+            creatorSlug: username,
+            creatorProfilePicture: avatar_image,
+            creatorType: 'user',
+          }
+        }
+
+        if(data.collectable?.is_slug_full_route) {
+          collectableLink.value = {
+            name: data.collectable.slug
+          };
+        } else if(data.collectable?.version === 1 || data.collectable?.version === 2) {
+          collectableLink.value = {
+            name: 'collectableDropV2',
+            params: {
+              slug: data.collectable.slug
+            }
+          };
+        } else if(data.collectable?.version === 3) {
+          collectableLink.value = {
+            name: 'collectableDropV3',
+            params: {
+              slug: data.collectable.slug
+            }
+          };
+        }
       }
 
       state.loading = false;
@@ -433,6 +539,9 @@ export default {
       messageField,
       understandsClaimQuantityField,
       state,
+      media,
+      creatorInfo,
+      collectableLink,
     };
   },
 };
@@ -443,5 +552,10 @@ export default {
   p {
     margin-bottom: 1rem;
   }
+}
+.media-container {
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>
