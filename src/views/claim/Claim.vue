@@ -481,7 +481,7 @@ export default {
           let {
             username,
             avatar_image,
-          } = data.collectable.artist;
+          } = data.collectable.user;
           creatorInfo.value = {
             creatorAccount: false,
             creatorUsername: username,
