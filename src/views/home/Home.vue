@@ -41,10 +41,6 @@
       </div>
     </container>
 
-    <container class="section-featured-auctions pt-20 lg:pt-24">
-      <video muted loop autoplay @click="navigateToCollection('420')" style="background-color: #010101;" src="@/assets/videos/420-collection-2022.mp4" class="cursor-pointer rounded-3xl" alt="SEEN"/>
-    </container>
-
     <container class="section-featured-auctions pb-12">
       <div class="flex items-center pt-20 lg:pt-24 flex-col lg:flex-row">
         <img src="@/assets/icons/orange-flame.svg" class="mr-2"/>
