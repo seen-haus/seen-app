@@ -218,11 +218,12 @@
                         <sub-title
                             class="text-black hidden lg:flex"
                             :class="{
-                                'text-white': (data.timerState === TIMER_STATE.IN_PROGRESS || (listingType == 'sale' && (data.startTime < new Date().getTime())))
-                                && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
-                                && collectableState !== COLLECTABLE_STATE.CLOSED
-                                && collectableState !== COLLECTABLE_STATE.DONE,
-                                'text-white': darkMode
+                                'text-white': (
+                                    (data.timerState === TIMER_STATE.IN_PROGRESS || (listingType == 'sale' && (data.startTime < new Date().getTime())))
+                                    && collectableState !== COLLECTABLE_STATE.OUT_OF_STOCK
+                                    && collectableState !== COLLECTABLE_STATE.CLOSED
+                                    && collectableState !== COLLECTABLE_STATE.DONE
+                                ) || darkMode,
                             }"
                             text-align="left"
                             font-size="24px"
