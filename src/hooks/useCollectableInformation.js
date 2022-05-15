@@ -368,7 +368,8 @@ export default function useCollectableInformation(initialCollectable = {}) {
                 (collectable.value.is_claim_against_token_drop && !collectable.value.is_closed) ||
                 (new Date(endsAt.value).getTime() === 0 && collectable.value.is_reserve_price_auction) ||
                 (isAuction.value && !collectable.value.winner_address) ||
-                ((collectable.value.version === 3) && (collectable.value.market_handler_type === MARKET_HANDLER_TYPES.SALE) && !collectable.value.is_closed)
+                ((collectable.value.version === 3) && (collectable.value.market_handler_type === MARKET_HANDLER_TYPES.SALE) && !collectable.value.is_closed) ||
+                (collectable.value.vrf_version === 2)
             ) {
                 console.log('contract initialized');
                 initializeContractEvents(collectable.value);
