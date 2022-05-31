@@ -157,8 +157,17 @@ export const CollectablesService = {
 export const TokenCacheService = {
     fetchTokenCacheByHolder(tokenAddress, holderAddress) {
         console.log("getting cache")
-        return ApiService.get(`/token-cache/${tokenAddress}/${holderAddress}`);
-    }
+        return ApiService.get(`http://localhost:3005/token-cache/${tokenAddress}/${holderAddress}`);
+    },
+    syncAndFetchTokenCacheByHolderOrClaimantWithConsignmentId(payload) {
+        return ApiService.post(`token-cache/ticket-sync-with-consignment-id`, payload);
+    },
+}
+
+export const TicketCacheService = {
+    syncAndFetchTicketCacheByClaimantWithConsignmentId(payload) {
+        return ApiService.post(`ticket-cache/ticket-sync-claimant-with-consignment-id`, payload);
+    },
 }
 
 export const BidRegistrationService = {
@@ -176,6 +185,12 @@ export const ClaimsService = {
     },
     claim(contractAddress, payload) {
         return ApiService.post(`claims/${contractAddress}/claim`, payload);
+    },
+    claimV3(claimId, payload) {
+        return ApiService.post(`claims/v3/${claimId}/claim`, payload);
+    },
+    claimCheckHasSubmittedShipping(claimId, walletAddress) {
+        return ApiService.get(`claims/check-has-submitted-shipping/${claimId}/${walletAddress}`);
     },
     claimAgainstTokenContract(contractAddress, payload) {
         return ApiService.post(`claim-against-token-contract/${contractAddress}`, payload);

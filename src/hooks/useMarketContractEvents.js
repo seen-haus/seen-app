@@ -506,7 +506,7 @@ const useMarketContractEvents = () => {
 
                                             let ticketClaimsIssued = await ticketerContract.getTicketClaimableCount(consignment.id);
 
-                                            if(Number(ticketClaimsIssued) === Number(consignment.releasedSupply)) {
+                                            if(Number(ticketClaimsIssued) === Number(consignment.supply)) {
                                                 isReadyForClosure.value = true;
                                             }
                                         }

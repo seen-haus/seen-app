@@ -1,6 +1,6 @@
 <template>
   <transition name="fade">
-    <div class="fixed h-screen inset-x-0 top-0 z-50 overflow-x-auto modal" v-if="visible">
+    <div class="fixed h-screen inset-x-0 top-0 overflow-x-auto modal" v-if="visible">
       <div class="relative w-full  min-h-screen px-4 flex items-center justify-center">
         <div
             class="bg-white overflow-hidden dark:bg-gray-800 md:max-w-md md:mx-auto z-40 my-4 mx-4 relative modal-inner rounded-lg">
@@ -37,6 +37,7 @@ export default {
 <style lang="scss" scoped>
 .modal {
   background: rgba(14, 12, 13, 0.5);
+  z-index: 2000;
 }
 
 .modal-inner {

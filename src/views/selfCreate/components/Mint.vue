@@ -802,6 +802,48 @@ export default {
                         store.dispatch('application/closeModal')
                         store.dispatch('application/clearPendingTransactionHash')
                     }
+                } else if(data.selectedType === 'nft-physical') {
+                    store.dispatch('application/openModal', 'TransactionModal')
+                    try {
+                        let royaltyFeeToBasisPoints = (props.secondaryRoyaltyFeeData.toFixed(2) * 100).toFixed(0)
+                        let tx = await seenNFTContract.value.contract.mintPhysical(unitField?.value, account?.value, `ipfs://${props.metaDataIpfsHashData}`, royaltyFeeToBasisPoints);
+                        store.dispatch('application/setPendingTransactionHash', tx.hash)
+                        tx.wait()
+                            .then((response) => {
+                                if(response.status === 1) {
+                                    toast.add({
+                                        severity: 'success',
+                                        summary: 'Success',
+                                        detail: 'NFT successfully minted.',
+                                        life: 3000
+                                    });
+                                    let eventData = parseConsignmentRegisteredEventData(response.events[1].data)
+                                    let tokenId = Number(eventData[4]);
+                                    let consignmentId = Number(eventData[6]);
+                                    props.setNftTokenIdData(tokenId);
+                                    props.setNftConsignmentIdData(consignmentId);
+                                    store.dispatch('application/closeModal')
+                                    store.dispatch('application/clearPendingTransactionHash')
+                                    props.nextStep();
+                                } else {
+                                    throw new Error('Transaction Reverted');
+                                }
+                            }).catch((e) => {
+                                let message = parseError(e.message)
+                                props.setNftTokenIdData(false);
+                                props.setNftConsignmentIdData(false);
+                                toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                                store.dispatch('application/closeModal')
+                                store.dispatch('application/clearPendingTransactionHash')
+                            })
+                    } catch (e) {
+                        let message = e?.message ? parseError(e.message) : e;
+                        props.setNftTokenIdData(false);
+                        props.setNftConsignmentIdData(false);
+                        toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                        store.dispatch('application/closeModal')
+                        store.dispatch('application/clearPendingTransactionHash')
+                    }
                 }
             }
         }
