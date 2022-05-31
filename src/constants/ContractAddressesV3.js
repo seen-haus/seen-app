@@ -47,3 +47,27 @@ export const chainIdToDistributionPool = (chainId = false) => {
         }
     }
 }
+
+export const chainIdToItemsTicketer = (chainId = false) => {
+    if(chainId) {
+        // Cast to number
+        let useChainId = Number(chainId);
+        if(useChainId === CHAIN_ID_ETHEREUM_MAINNET) {
+            return '0xaD91240B3211Fa46dA471Cb6014F796Ec98d33F8';
+        } else if(useChainId === CHAIN_ID_ETHEREUM_RINKEBY) {
+            return '0xfa96c834734fe6422547d075cf162f95cf000d00';
+        }
+    }
+}
+
+export const chainIdToItemsTicketerClaimHelper = (chainId = false) => {
+    if(chainId) {
+        // Cast to number
+        let useChainId = Number(chainId);
+        if(useChainId === CHAIN_ID_ETHEREUM_MAINNET) {
+            return null;
+        } else if(useChainId === CHAIN_ID_ETHEREUM_RINKEBY) {
+            return '0xA0dE22b1EC90BCADBc0E42A4fD2302D929656523';
+        }
+    }
+}

@@ -71,11 +71,17 @@
           v-for="collectable in listOfCollectables"
           :key="collectable && collectable.id"
         >
-          <product-card-v3
-            v-if="collectable != null"
-            :collectable="collectable"
-            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
-          />
+          <router-link v-if="collectable != null"
+            :to="{
+              name: extractNavigationName(collectable.slug, collectable.is_slug_full_route, collectable.version),
+              ...(extractNavigationParams(collectable.slug, collectable.is_slug_full_route, collectable.version) && {params: extractNavigationParams(collectable.slug, collectable.is_slug_full_route, collectable.version)})
+            }"
+            class="routing-link"
+          >
+            <product-card-v3
+              :collectable="collectable"
+            />
+          </router-link>
           <product-card-v3-placeholder v-else />
         </template>
       </div>
@@ -125,6 +131,30 @@ export default {
     QuoteCarousel,
     ArtistCard,
     InputSwitch,
+  },
+  methods: {
+    extractNavigationName(slug, isSlugFullRoute, version) {
+      if(isSlugFullRoute) {
+        return slug;
+      } else {
+        if(version === 1 || version === 2) {
+          return "collectableDropV2";
+        } else if (version === 3) {
+          return "collectableDropV3"
+        }
+      }
+    },
+    extractNavigationParams(slug, isSlugFullRoute, version) {
+      if(isSlugFullRoute) {
+        return false;
+      } else {
+        if(version === 1 || version === 2) {
+          return { slug: slug };
+        } else if (version === 3) {
+          return { slug: slug }
+        }
+      }
+    }
   },
   setup() {
     const { darkMode } = useDarkMode();

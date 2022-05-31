@@ -46,6 +46,12 @@
   align-items: center;
 }
 
+.flex-left {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
 .flex-align-center {
   display: flex;
   align-items: center;
@@ -251,6 +257,17 @@
   .p-dialog-header, .p-dialog-content {
     background-color: #222222!important;
     color: white!important;
+  }
+}
+
+.ticket-modal {
+  .p-dialog-header {
+    position: absolute;
+    right: 0;
+    background: transparent;
+  }
+  .p-dialog-content {
+    max-height: 90vh;
   }
 }
 

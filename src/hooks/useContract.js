@@ -25,11 +25,14 @@ import SEEN_NFT_ABI_V3 from "@/constants/abis/v3/seenHausNFTABI"
 import SEEN_TICKETER_ABI_V3 from "@/constants/abis/v3/ticketerABI"
 import SEEN_MARKET_CLERK_V3 from "@/constants/abis/v3/marketClerkABI"
 import SEEN_MARKET_CONFIG_V3 from "@/constants/abis/v3/marketConfigABI"
+import SEEN_ITEMS_TICKETER_CLAIM_HELPER_V3 from "@/constants/abis/v3/itemsTicketerClaimHelperABI"
 import { 
     chainIdToAccessController,
     chainIdToSeenNFT,
     chainIdToMarketDiamond,
     chainIdToDistributionPool,
+    chainIdToItemsTicketer,
+    chainIdToItemsTicketerClaimHelper,
 } from '@/constants/ContractAddressesV3.js'
 import CLAIM_AGAINST_TOKEN_CONTRACT_WITH_FEE_ABI from "@/constants/abis/claimAgainstTokenContractWithFeeABI.json";
 import VRF_SALE_V1_ABI from "@/constants/abis/vrfSaleV1ABI.json"
@@ -551,6 +554,16 @@ export const useV3MarketClerkContract = async (withSignerIfPossible) => {
 export const useV3MarketConfigContract = async (withSignerIfPossible) => {
     let contractAddress = chainIdToMarketDiamond(DEFAULT_CHAIN_ID);
     return useContract(contractAddress, SEEN_MARKET_CONFIG_V3, withSignerIfPossible);
+}
+
+export const useV3ItemsTicketerClaimHelper = async (withSignerIfPossible) => {
+    let contractAddress = chainIdToItemsTicketerClaimHelper(DEFAULT_CHAIN_ID);
+    return useContract(contractAddress, SEEN_ITEMS_TICKETER_CLAIM_HELPER_V3, withSignerIfPossible);
+}
+
+export const useV3ItemsTicketerContract = async (withSignerIfPossible) => {
+    let contractAddress = chainIdToItemsTicketer(DEFAULT_CHAIN_ID);
+    return useContract(contractAddress, SEEN_TICKETER_ABI_V3, withSignerIfPossible);
 }
 
 export const useV3TicketerContract = async (withSignerIfPossible, ticketerAddress) => {

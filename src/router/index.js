@@ -53,6 +53,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "collectableDropV3" */ '../views/collectable/v3/Collectable.vue')
     },
     {
+        path: '/claims/v3/:claimId',
+        name: 'claimsV3',
+        component: () => import(/* webpackChunkName: "claimsV3" */ '../views/claim/ClaimV3.vue')
+    },
+    {
         path: '/claims/:contractAddress',
         name: 'claims',
         component: () => import(/* webpackChunkName: "claims" */ '../views/claim/Claim.vue')

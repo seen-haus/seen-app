@@ -217,7 +217,7 @@
       <button class="button primary mt-6" v-if="hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="viewOverrideClaimLink">
         Claim Physical
       </button>
-      <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
+      <button class="button primary mt-6" v-if="claimId !== null && !hasOverrideClaimLink && isCurrentAccountEntitledToPhysical" @click="$router.push({name: 'claimsV3', params: {claimId: claimId}})">
         Claim Physical
       </button>
       <button class="button primary mt-6" v-if="claimId !== null && isOpenEdition && isCurrentAccountEntitledToDigital" @click="$router.push({name: 'claims', params: {contractAddress: claimId}})">
@@ -416,7 +416,7 @@ import ProgressTimer from "@/components/Progress/v3/ProgressTimer.vue";
 import ProgressBar from "@/components/Progress/ProgressBar.vue";
 import numberHelper from "@/services/utils/numbers"
 import emitter from "@/services/utils/emitter";
-import { BidRegistrationService } from "@/services/apiService"
+import { BidRegistrationService, TokenCacheService } from "@/services/apiService"
 import useWeb3 from "@/connectors/hooks";
 import useUser from "@/hooks/useUser";
 import useDarkMode from '@/hooks/useDarkMode';
@@ -426,7 +426,12 @@ import useMarketContractEvents from "@/hooks/useMarketContractEvents";
 import {
   useSeenNFTContract,
   useV1VRFSaleContract,
+  useV3MarketConfigContract,
+  useV3TicketerContract,
 } from "@/hooks/useContract";
+import {
+  COLLECTABLE_TYPE
+} from "@/constants/Collectables";
 
 export default {
   name: "BidCard",
@@ -586,20 +591,50 @@ export default {
         }
       } else if(account?.value && !isAuction?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
         // Cover sale scenarios, show claim button when balance is positive
-        let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
-        let balanceOfCurrentAccount = 0;
-        if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
-          for(let tokenId of collectableData.value.nft_token_id) {
-            let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
-            balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
+        if(collectableData?.value?.type === COLLECTABLE_TYPE.TANGIBLE_NFT) {
+          const marketConfigContract = await useV3MarketConfigContract();
+          let ticketer = await marketConfigContract.getEscrowTicketer(collectableData.value.consignment_id);
+          // Check if account owns any tickets
+          let result = await TokenCacheService.syncAndFetchTokenCacheByHolderOrClaimantWithConsignmentId({
+            token_address: ticketer,
+            holder_or_claimant_address: account.value,
+            consignment_id: collectableData.value.consignment_id
+          });
+          let ticketBalance = 0;
+          console.log({'result.data': result.data})
+          if(result && result.data && result.data.holder) {
+            for(let ticket of result.data.holder) {
+              ticketBalance += ticket.token_balance;
+            }
           }
+          let claimedBalance = 0;
+          if(result && result.data && result.data.claimant) {
+            for(let ticket of result.data.claimant) {
+              claimedBalance++;
+            }
+          }
+          if((ticketBalance > 0) || (claimedBalance > 0)) {
+            isCurrentAccountEntitledToPhysical.value = true;
+          } else {
+            isCurrentAccountEntitledToPhysical.value = false;
+          }
+          console.log({result, ticketBalance, claimedBalance})
         } else {
-          balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
-        }
-        if(parseInt(balanceOfCurrentAccount) > 0) {
-          isCurrentAccountEntitledToPhysical.value = true;
-        } else {
-          isCurrentAccountEntitledToPhysical.value = false;
+          let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
+          let balanceOfCurrentAccount = 0;
+          if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
+            for(let tokenId of collectableData.value.nft_token_id) {
+              let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
+              balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
+            }
+          } else {
+            balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
+          }
+          if(parseInt(balanceOfCurrentAccount) > 0) {
+            isCurrentAccountEntitledToPhysical.value = true;
+          } else {
+            isCurrentAccountEntitledToPhysical.value = false;
+          }
         }
       }
       // else if(account?.value && props.isOpenEdition && !props?.isCollectableActive) {
@@ -896,21 +931,36 @@ export default {
                 saleField.resetField(null)
               }
               if(account?.value && collectableData?.value?.contract_address && collectableData.value.nft_token_id) {
-                // Cover sale scenarios, show claim button when balance is positive
-                let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
-                let balanceOfCurrentAccount = 0;
-                if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
-                  for(let tokenId of collectableData.value.nft_token_id) {
-                    let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
-                    balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
+                // Cover sale scenarios, show claim button when token balance (digital only) or ticket balance (physical + digital) is positive
+                if(collectableData?.value?.type === COLLECTABLE_TYPE.TANGIBLE_NFT) {
+                  // event TicketIssued(uint256 ticketId, uint256 indexed consignmentId, address indexed buyer, uint256 amount);
+                  const marketConfigContract = await useV3MarketConfigContract();
+                  let ticketer = await marketConfigContract.getEscrowTicketer(collectableData.value.consignment_id);
+                  // Get all TicketIssued events relevant to current account
+                  const ticketerContract = await useV3TicketerContract(false, ticketer);
+                  let filter = ticketerContract.filters.TicketIssued(null, collectableData.value.consignment_id, account.value, null);
+                  const issuedTickets = await ticketerContract.queryFilter(filter);
+                  if(issuedTickets.length > 0) {
+                    isCurrentAccountEntitledToPhysical.value = true;
+                  } else {
+                    isCurrentAccountEntitledToPhysical.value = false;
                   }
                 } else {
-                  balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
-                }
-                if(parseInt(balanceOfCurrentAccount) > 0) {
-                  isCurrentAccountEntitledToPhysical.value = true;
-                } else {
-                  isCurrentAccountEntitledToPhysical.value = false;
+                  let nftContract = useSeenNFTContract(collectableData.value.nft_contract_address);
+                  let balanceOfCurrentAccount = 0;
+                  if(Array.isArray(collectableData.value.nft_token_id) || collectableData.value.is_vrf_drop) {
+                    for(let tokenId of collectableData.value.nft_token_id) {
+                      let tokenBalanceCurentId = await nftContract.balanceOf(account.value, tokenId);
+                      balanceOfCurrentAccount += parseInt(tokenBalanceCurentId);
+                    }
+                  } else {
+                    balanceOfCurrentAccount = await nftContract.balanceOf(account.value, collectableData.value.nft_token_id);
+                  }
+                  if(parseInt(balanceOfCurrentAccount) > 0) {
+                    isCurrentAccountEntitledToPhysical.value = true;
+                  } else {
+                    isCurrentAccountEntitledToPhysical.value = false;
+                  }
                 }
               }
             }).catch(e => {

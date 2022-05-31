@@ -223,7 +223,8 @@ export default function useCollectableInformation(initialCollectable = {}) {
         const latestEvent = events.value[events.value.length - 1];
 
         if (data.media && data.media.length) {
-            const sorted = [...data.media].sort((a, b) => a.position < b.position ? -1 : 1).filter(m => !m.is_preview);
+            let additionalMedia = (data.additionalMedia && data.additionalMedia.length > 0) ? [...data.additionalMedia] : [];
+            const sorted = [...data.media, ...additionalMedia].sort((a, b) => a.position < b.position ? -1 : 1).filter(m => !m.is_preview);
             collectable.value.mediaSorted = sorted;
         } else {
             collectable.value.mediaSorted = [];
