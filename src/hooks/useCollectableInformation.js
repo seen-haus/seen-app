@@ -225,7 +225,7 @@ export default function useCollectableInformation(initialCollectable = {}) {
         if (data.media && data.media.length) {
             let additionalMedia = (data.additionalMedia && data.additionalMedia.length > 0) ? [...data.additionalMedia] : [];
             const sortedAdditional = [...additionalMedia].sort((a, b) => a.position < b.position ? -1 : 1).filter(m => !m.is_preview);
-            const sorted = [...data.media, ...additionalMedia].sort((a, b) => a.position < b.position ? -1 : 1).filter(m => !m.is_preview);
+            const sorted = [...data.media].sort((a, b) => a.position < b.position ? -1 : 1).filter(m => !m.is_preview);
             collectable.value.mediaSorted = [...sorted, ...sortedAdditional];
         } else {
             collectable.value.mediaSorted = [];
