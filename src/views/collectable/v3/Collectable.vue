@@ -196,13 +196,15 @@
             @update-state="updateCollectableState"
           />
           <!-- START Secondary listings -->
-          <div v-if="secondaryMarketListingsForRender?.length || currentUserIsOwnerOfCollectable" class="text-3xl font-title font-bold mt-12" :class="darkMode && 'dark-mode-text'">
-            Secondary Market
+          <div v-if="!isTangible">
+            <div v-if="secondaryMarketListingsForRender?.length || currentUserIsOwnerOfCollectable" class="text-3xl font-title font-bold mt-12" :class="darkMode && 'dark-mode-text'">
+              Secondary Market
+            </div>
+            <button v-if="secondaryMarketListingsForRender?.length > 0" @click="setShowSecondaryMarket(true)" class="button w-full primary mt-6">
+              View Secondary Listings
+            </button>
+            <button v-if="currentUserIsOwnerOfCollectable" class="button w-full primary mt-4" @click="navigateToCreate">List on Secondary</button>
           </div>
-          <button v-if="secondaryMarketListingsForRender?.length > 0" @click="setShowSecondaryMarket(true)" class="button w-full primary mt-6">
-            View Secondary Listings
-          </button>
-          <button v-if="currentUserIsOwnerOfCollectable" class="button w-full primary mt-4" @click="navigateToCreate">List on Secondary</button>
           <!-- END Secondary listings -->
 
           <div class="text-3xl font-title font-bold mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
