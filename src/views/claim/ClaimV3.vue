@@ -484,6 +484,7 @@ export default {
           });
           refreshTicketDataIndex.value = refreshTicketDataIndex.value + 1;
           store.dispatch('application/closeModal')
+          store.dispatch('application/clearPendingTransactionHash')
         })
         .catch((e) => {
           let message = parseError(e.message);
@@ -496,6 +497,7 @@ export default {
           console.error(e);
           state.approving = false;
           store.dispatch('application/closeModal')
+          store.dispatch('application/clearPendingTransactionHash')
         });
     }
 
