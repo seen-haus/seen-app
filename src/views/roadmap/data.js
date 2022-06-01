@@ -107,14 +107,25 @@ const roadmap = {
         },
         status: 'complete',
       },
+      {
+        title: 'Migrate Physical Drops to V3 contracts',
+        description: 'Migrates the existing physical drops process and claiming procedure over to the SEEN HAUS V3 contracts',
+        githubCommits: {
+          'api': [
+            'https://github.com/seen-haus/seen-api/pull/76'
+          ],
+          'frontend': [
+            'https://github.com/seen-haus/seen-app/pull/238'
+          ]
+        },
+        exampleLinks: [
+          'https://seen.haus/drops/0xmons-collective-poster',
+        ],
+        status: 'complete',
+      },
     ]
   },
   'Upcoming': [
-    {
-      title: 'Migrate Physical Drops to V3 contracts',
-      description: 'Migrates the existing physical drops process and claiming procedure over to the SEEN HAUS V3 contracts',
-      status: 'in-progress'
-    },
     {
       title: 'Revamp Email Notification System',
       description: 'Add support for bid alerts, rework existing notification system for increased reliability, add VRF drop support for claim alerts & add sale claim alert support',
