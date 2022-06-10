@@ -480,7 +480,7 @@ export default {
         const countries = countryList;
 
         let maxLengths = {
-            title: 30,
+            title: 40,
             description: 1000,
             units: 5,
             tags: 25, // Max text length of combined tags
