@@ -483,7 +483,7 @@ export default {
             title: 40,
             description: 1000,
             units: 5,
-            tags: 25, // Max text length of combined tags
+            tags: 35, // Max text length of combined tags
             properties: 10, // 10 properties max, not a limit per text value
         }
 
