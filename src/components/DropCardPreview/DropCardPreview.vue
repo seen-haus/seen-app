@@ -213,8 +213,9 @@
                     <div v-if="!data.price" class="price-placeholder-container">
                         <div class="placeholder-light-grey text-placeholder"/>
                     </div>
-                    <div v-if="data.price" class="flex">
-                        <img src="@/assets/icons/ethereum-icon.svg"  class="mr-2" alt="Ethereum logo">
+                    <div v-if="data.price" class="flex-align-center">
+                        <img v-if="!data.customPaymentTokenSymbol" src="@/assets/icons/ethereum-icon.svg"  class="mr-2" alt="Ethereum logo">
+                        <img v-if="data.customPaymentTokenSymbol === 'PRO'" src="@/assets/icons/propy.png"  class="mr-2 payment-token-logo" alt="Propy logo">
                         <sub-title
                             class="text-black hidden lg:flex"
                             :class="{
@@ -307,6 +308,9 @@ export default {
         timerState: [String, null],
         liveStatus: String,
         disableMediaPlaceholder: [Boolean, null],
+        customPaymentTokenSymbol: {
+            type: [String, Boolean]
+        },
     },
     methods: {
         updateTimerState(state) {
@@ -339,6 +343,7 @@ export default {
             tags: props.tags || [],
             tangibility: props.tangibility || "",
             timerState: props.timerState || false,
+            customPaymentTokenSymbol: props.customPaymentTokenSymbol || false,
         })
 
         watchEffect(() => {
@@ -368,6 +373,7 @@ export default {
             data.startTime = props.startTime;
             data.endTime = props.endTime;
             data.listingType = props.listingType;
+            data.customPaymentTokenSymbol = props.customPaymentTokenSymbol;
             if(!data.timerState) {
                 data.timerState = TIMER_STATE.WAITING;
             }
@@ -525,5 +531,8 @@ export default {
         height: 100%;
         float: right;
         transition: all 0.2s ease-out;
+    }
+    .payment-token-logo {
+        max-height: 20px;
     }
 </style>

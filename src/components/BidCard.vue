@@ -23,12 +23,12 @@
         </tag
         >
       </div>
-
       <price-display
           size="lg"
           class="self-start mt-5"
           :class="darkMode ? 'dark-mode-text' : 'light-mode-text'"
-          type="ETH"
+          :type="customPaymentTokenData.isCustomPaymentToken ? customPaymentTokenData.customPaymentTokenSymbol : 'ETH'"
+          :coingeckoId="customPaymentTokenData.customPaymentTokenCoingeckoId ? customPaymentTokenData.customPaymentTokenCoingeckoId : false"
           :price="price"
           :priceUSD="priceUSD"
           :number-of-bids="isAuction ? numberOfBids : undefined"
@@ -72,7 +72,7 @@
         <div class="text-center text-gray-400 text-sm py-2">
           <p v-if="!ethereum"><i class="fas fa-spinner fa-spin"></i></p>
           <p v-else>
-            Approx. {{ convertEthToUSDAndFormat(currentBidValue || "0") }}
+            Approx. {{ customPaymentTokenData.isCustomPaymentToken ? convertCustomPaymentTokenToUSDAndFormat(currentBidValue || "0", customPaymentTokenData.customPaymentTokenCoingeckoId) : convertEthToUSDAndFormat(currentBidValue || "0") }}
           </p>
         </div>
       </template>
@@ -135,12 +135,25 @@
             <span class="error-notice">{{ acceptVRFTermsField.errors[0] }}</span>
           </div>
         </template>
+        <button 
+          class="button primary mt-1 mb-3"
+          :class="{
+            'cursor-wait disabled opacity-50': isSubmittingApproval,
+            'disabled opacity-50': !currentBidValue,
+          }"
+          :disabled="isSubmittingApproval"
+          v-if="account && customPaymentTokenData.isCustomPaymentToken && !customPaymentTokenData.hasSufficientAllowance"
+          @click="approveCustomPaymentToken"
+        >
+          <span v-if="!isSubmittingApproval">{{ `Approve ${customPaymentTokenData.customPaymentTokenSymbol}` }}</span>
+          <span v-else>{{ `Approving ${customPaymentTokenData.customPaymentTokenSymbol}` }}...</span>
+        </button>
         <button class="button primary mt-1"
                 :class="{
                   'cursor-wait disabled opacity-50': isSubmitting,
-                  'disabled opacity-50': (tangibility === 'tangible_nft' && !acceptPhysicalTermsField.value) || (isVRFSale && !acceptVRFTermsField.value)
+                  'disabled opacity-50': (tangibility === 'tangible_nft' && !acceptPhysicalTermsField.value) || (isVRFSale && !acceptVRFTermsField.value) || (customPaymentTokenData.isCustomPaymentToken && !customPaymentTokenData.hasSufficientAllowance)
                 }"
-                :disabled="isSubmitting" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
+                :disabled="isSubmitting || (customPaymentTokenData.isCustomPaymentToken && !customPaymentTokenData.hasSufficientAllowance)" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
           <span v-if="!isSubmitting">{{ isAuction ? (`Place ${isAwaitingReserve ? 'reserve' : 'a'} bid`) : "Buy now" }}</span>
           <span v-else>Submitting...</span>
         </button>
@@ -407,6 +420,9 @@ import {useStore} from "vuex";
 import {useField, useForm} from "vee-validate";
 import {useToast} from "primevue/usetoast";
 
+import { parseUnits } from "@ethersproject/units";
+import BigNumber from "bignumber.js";
+
 import Tag from "@/components/PillsAndTags/Tag.vue";
 import PriceDisplay from "@/components/PillsAndTags/PriceDisplay.vue";
 import ProgressTimer from "@/components/Progress/ProgressTimer.vue";
@@ -423,6 +439,7 @@ import useMarketContractEvents from "@/hooks/useMarketContractEvents";
 import {
   useSeenNFTContract,
   useV1VRFSaleContract,
+  useTokenContract,
 } from "@/hooks/useContract";
 
 export default {
@@ -467,6 +484,12 @@ export default {
     overrideClaimLink: String,
     isReadyForClosure: Boolean,
     winningAddress: [Boolean, String],
+
+    customPaymentTokenName: [String, Boolean],
+    customPaymentTokenSymbol: [String, Boolean],
+    customPaymentTokenAddress: [String, Boolean],
+    customPaymentTokenDecimals: [Number, Boolean],
+    customPaymentTokenCoingeckoId: [String, Boolean],
   },
   computed: {
     isAwaitingReserve: function () {
@@ -491,6 +514,7 @@ export default {
     const isSubmittingRandomnessRequest = ref(false);
     const isSubmittingRandomnessCommitment = ref(false);
     const isSubmittingClaimVRF = ref(false);
+    const isSubmittingApproval = ref(false);
     const isClosingSale = ref(false);
     const isClosingAuction = ref(false);
     const isCurrentAccountEntitledToPhysical = ref(false);
@@ -523,6 +547,47 @@ export default {
         amount: "",
       },
     });
+
+    const customPaymentTokenData = reactive({
+      isCustomPaymentToken: false,
+      customPaymentTokenName: false,
+      customPaymentTokenSymbol: false,
+      customPaymentTokenAddress: false,
+      customPaymentTokenDecimals: false,
+      customPaymentTokenCoingeckoId: false,
+      hasSufficientAllowance: false,
+    })
+
+    watchEffect(() => {
+      const {
+        customPaymentTokenName,
+        customPaymentTokenSymbol,
+        customPaymentTokenAddress,
+        customPaymentTokenDecimals,
+        customPaymentTokenCoingeckoId,
+      } = props;
+      if(
+        customPaymentTokenName &&
+        customPaymentTokenSymbol &&
+        customPaymentTokenAddress &&
+        customPaymentTokenDecimals &&
+        customPaymentTokenCoingeckoId
+      ) {
+        customPaymentTokenData.isCustomPaymentToken = true;
+        customPaymentTokenData.customPaymentTokenName = customPaymentTokenName;
+        customPaymentTokenData.customPaymentTokenSymbol = customPaymentTokenSymbol;
+        customPaymentTokenData.customPaymentTokenAddress = customPaymentTokenAddress;
+        customPaymentTokenData.customPaymentTokenDecimals = customPaymentTokenDecimals;
+        customPaymentTokenData.customPaymentTokenCoingeckoId = customPaymentTokenCoingeckoId;
+      } else {
+        customPaymentTokenData.isCustomPaymentToken = false;
+        customPaymentTokenData.customPaymentTokenName = false;
+        customPaymentTokenData.customPaymentTokenSymbol = false;
+        customPaymentTokenData.customPaymentTokenAddress = false;
+        customPaymentTokenData.customPaymentTokenDecimals = false;
+        customPaymentTokenData.customPaymentTokenCoingeckoId = false;
+      }
+    })
 
     const auctionField = reactive(useField("bid", (val) => fieldValidatorAuction(val)));
     const saleField = reactive(useField("amount", (val) => fieldValidatorSale(val)));
@@ -735,9 +800,62 @@ export default {
       }
     });
 
+
+    const customPaymentToken = ref(null);
+    watchEffect(() => {
+      customPaymentToken.value = useTokenContract(props.customPaymentTokenAddress, true);
+    })
+
+    const checkCustomPaymentTokenAllowance = async (saleContractAddress, requiredAllowance) => {
+      if(saleContractAddress && customPaymentToken.value) {
+        const currentAllowance = await customPaymentToken.value.allowance(account.value, saleContractAddress);
+        let currentAllowanceBN = new BigNumber(currentAllowance.toString());
+        const hasSufficientAllowance = currentAllowanceBN.isGreaterThanOrEqualTo(requiredAllowance.toString());
+        customPaymentTokenData.hasSufficientAllowance = hasSufficientAllowance;
+      }
+    }
+
+    watchEffect(() => {
+      if(customPaymentTokenData.customPaymentTokenDecimals && (auctionField.value || saleField.value)) {
+        let requiredAllowance;
+        if (isAuction.value) {
+          requiredAllowance = parseUnits(new BigNumber(auctionField.value).multipliedBy(price.value).toString(), customPaymentTokenData.customPaymentTokenDecimals);
+        } else {
+          requiredAllowance = parseUnits(new BigNumber(saleField.value).multipliedBy(price.value).toString(), customPaymentTokenData.customPaymentTokenDecimals);
+        }
+        checkCustomPaymentTokenAllowance(props.collectable.contract_address, requiredAllowance);
+      }
+    })
+
     const openNotificationsModal = () => {
       store.dispatch('application/openModal', 'NotificationsModal')
     };
+
+    const approveCustomPaymentToken = async () => {
+      let requiredAllowance;
+      if (isAuction.value) {
+        requiredAllowance = parseUnits(new BigNumber(auctionField.value).multipliedBy(price.value).toString(), customPaymentTokenData.customPaymentTokenDecimals);
+      } else {
+        requiredAllowance = parseUnits(new BigNumber(saleField.value).multipliedBy(price.value).toString(), customPaymentTokenData.customPaymentTokenDecimals);
+      }
+      try {
+        isSubmittingApproval.value = true;
+        let tx = await customPaymentToken.value.approve(props.collectable.contract_address, requiredAllowance);
+        await tx.wait().then(() => {
+          checkCustomPaymentTokenAllowance(props.collectable.contract_address, requiredAllowance);
+          isSubmittingApproval.value = false;
+        })
+      } catch(e) {
+        isSubmittingApproval.value = false;
+        console.log({e})
+        toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: `Error approving ${props.customPaymentTokenSymbol}.`,
+          life: 3000
+        });
+      }
+    }
 
     const placeABidOrBuy = () => {
       let amount = 0;
@@ -979,7 +1097,7 @@ export default {
       ctx.emit('updateState');
     }
 
-    const {ethereum, convertEthToUSDAndFormat} = useExchangeRate();
+    const {ethereum, convertEthToUSDAndFormat, convertCustomPaymentTokenToUSDAndFormat} = useExchangeRate();
 
     const hasEnoughFunds = () => {
       if (!balance.value) return true;
@@ -1052,6 +1170,7 @@ export default {
       updateState,
       ethereum,
       convertEthToUSDAndFormat,
+      convertCustomPaymentTokenToUSDAndFormat,
       openWinnerModal,
       isWinnerButtonShown,
       placeABidOrBuy,
@@ -1063,6 +1182,7 @@ export default {
       isSubmittingRandomnessRequest,
       isSubmittingRandomnessCommitment,
       isSubmittingClaimVRF,
+      isSubmittingApproval,
       isClosingAuction,
       isClosingSale,
       openWalletModal,
@@ -1098,6 +1218,8 @@ export default {
       startRandomnessCommitment,
       startClaimVRF,
       vrfTicketIdsForClaim,
+      customPaymentTokenData,
+      approveCustomPaymentToken,
     };
   },
 };

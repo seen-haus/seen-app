@@ -24,6 +24,7 @@
     :collectableState="collectableState"
     :liveStatus="liveStatus"
     :isOpenEdition="isOpenEdition"
+    :customPaymentTokenSymbol="customPaymentTokenSymbol"
   />
 </template>
 
@@ -171,6 +172,7 @@ export default {
       creatorUsername,
       creatorType,
       creatorSlug,
+      customPaymentTokenSymbol,
     } = useCollectableInformation(props.collectable);
 
     const addTime = function () {
@@ -262,6 +264,7 @@ export default {
       pillOverride,
       darkMode,
       collectableActiveTextColor,
+      customPaymentTokenSymbol,
     };
   },
 };

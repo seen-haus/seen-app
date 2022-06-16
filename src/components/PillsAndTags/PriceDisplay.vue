@@ -42,6 +42,10 @@ export default {
       type: Number,
       default: undefined,
     },
+    coingeckoId: {
+      type: [String, Boolean],
+      default: false,
+    }
   },
   computed: {
     numberSize: function () {
@@ -78,9 +82,13 @@ export default {
 setup(props) {
     const { darkMode } = useDarkMode();
 
-    const { formatCurrency, convertEthToUSDAndFormat } = useExchangeRate();
+    const { formatCurrency, convertEthToUSDAndFormat, convertCustomPaymentTokenToUSDAndFormat } = useExchangeRate();
     const formattedPrice = computed(() => {
-      return props.priceUSD ? formatCurrency(props.priceUSD) : convertEthToUSDAndFormat(props.price);
+      if(props.coingeckoId) {
+        return props.priceUSD ? formatCurrency(props.priceUSD) : convertCustomPaymentTokenToUSDAndFormat(props.price, props.coingeckoId);
+      } else {
+        return props.priceUSD ? formatCurrency(props.priceUSD) : convertEthToUSDAndFormat(props.price);
+      }
     })
 
     return {

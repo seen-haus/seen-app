@@ -30,7 +30,7 @@ import parseError from "@/services/utils/parseError";
 import {useToast} from "primevue/usetoast";
 
 const useMarketContractEvents = () => {
-    const {converEthToUSD} = useExchangeRate();
+    const {converEthToUSD, convertCustomPaymentTokenToUSD} = useExchangeRate();
     const {account, provider} = useWeb3();
     const toast = useToast();
     const collectable = ref(null);
@@ -64,6 +64,8 @@ const useMarketContractEvents = () => {
     const isOpenEdition = computed(() => collectable.value.is_open_edition);
     const isClaimAgainstTokenDrop = computed(() => collectable.value.is_claim_against_token_drop);
     const isVRFSale = computed(() => collectable.value.is_vrf_drop);
+    const isCustomPaymentToken = computed(() => collectable?.value?.custom_payment_token?.token_symbol ? true : false);
+    const customPaymentTokenCoingeckoId = computed(() => collectable?.value?.custom_payment_token?.coingecko_id ? collectable?.value?.custom_payment_token?.coingecko_id : false);
 
     const createNormalizedEvent = async (contractEvent, type) => {
         const trx = await contractEvent.getTransaction();
@@ -123,7 +125,7 @@ const useMarketContractEvents = () => {
             updated_at: null,
             value: ethAmount,
             amount: unitAmount,
-            value_in_usd: converEthToUSD(ethAmount),
+            value_in_usd: isCustomPaymentToken.value ? convertCustomPaymentTokenToUSD(ethAmount, customPaymentTokenCoingeckoId.value) : converEthToUSD(ethAmount),
             token_id: tokenId,
             wallet_address,
             raw: JSON.stringify(evt)
@@ -709,7 +711,7 @@ const useMarketContractEvents = () => {
         } else if(version.value === 2 || version.value === 1) {
             tx = await temporaryContract.buy(qty.toString(), {
                 gasPrice: gasPrice.toString(),
-                value: value.toString(),
+                ...(!isCustomPaymentToken.value && {value: value.toString()}),
                 from: account.value
             }).catch(e => {
                 let message = parseError(e.message)
