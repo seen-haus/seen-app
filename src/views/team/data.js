@@ -3,13 +3,7 @@ const coreContributors = [
     avatar: require("@/assets/images/team/Jigglybuff69.jpg"),
     name: "Jigglybuff69",
     title: "Head of Design",
-    socials: [
-      {
-        url: "https://twitter.com/JIGGLYBUFF69",
-        type: "twitter",
-        handle: "JIGGLYBUFF69",
-      },
-    ],
+    socials: [],
   },
   {
     avatar: require("@/assets/images/team/Jiigsaw01.png"),
