@@ -127,6 +127,11 @@ const roadmap = {
   },
   'Upcoming': [
     {
+      title: 'Daily Snapshot System',
+      description: 'Lays groundwork for social & curation features by constructing a daily snapshot system into the SEEN HAUS API',
+      status: 'in-progress'
+    },
+    {
       title: 'Revamp Email Notification System',
       description: 'Add support for bid alerts, rework existing notification system for increased reliability, add VRF drop support for claim alerts & add sale claim alert support',
       status: 'upcoming'
@@ -134,11 +139,6 @@ const roadmap = {
     {
       title: 'Harberger-Tax Featured Listings',
       description: 'Add a featured listing banner which can be controlled via a Harberger-tax system.',
-      status: 'upcoming'
-    },
-    {
-      title: 'Daily Snapshot System',
-      description: 'Lays groundwork for social & curation features by constructing a daily snapshot system into the SEEN HAUS API',
       status: 'upcoming'
     },
     {
