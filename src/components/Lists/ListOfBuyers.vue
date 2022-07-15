@@ -34,6 +34,7 @@
           <price-display
               size="xs"
               class="items-end"
+              :type="customPaymentTokenSymbol ? customPaymentTokenSymbol : 'ETH'"
               :price="buyer.value"
               :priceUSD="buyer.value_in_usd"
           />
@@ -72,6 +73,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    customPaymentTokenSymbol: {
+      type: [String, Boolean],
+      default: false,
+    }
   },
   setup(props) {
     const { darkMode } = useDarkMode();    

@@ -64,14 +64,16 @@ const actions = {
                 context.commit('SET_EXCHANGE_RATES', {
                     seen: parseFloat(data.seen.usd, 10),
                     bitcoin: parseFloat(data.bitcoin.usd, 10),
-                    ethereum: parseFloat(data.ethereum.usd, 10)
+                    ethereum: parseFloat(data.ethereum.usd, 10),
+                    propy: parseFloat(data.propy.usd, 10),
                 })
             }).catch(e => {
             console.log("ERROR")
             context.commit('SET_EXCHANGE_RATES', {
                 seen: parseFloat("1.0", 10),
                 bitcoin: parseFloat("1.0", 10),
-                ethereum: parseFloat("1.0", 10)
+                ethereum: parseFloat("1.0", 10),
+                propy: parseFloat("1.0", 10),
             });
             console.log(e)
         });

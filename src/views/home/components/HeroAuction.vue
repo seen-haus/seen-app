@@ -69,11 +69,12 @@
 
           <price-display
               size="md"
-              type="Ether"
+              :type="customPaymentTokenName ? customPaymentTokenName : 'Ether'"
               v-if="!shouldHidePrice"
               :class="isCollectableActive ? 'text-black' : 'text-gray-400'"
               :price="price"
               :priceUSD="isAuction ? priceUSD : priceUSDSold"
+              :coingeckoId="customPaymentTokenCoingeckoId"
           />
         </div>
 
@@ -268,6 +269,8 @@ export default {
       updateCollectableState,
       bundleChildItems,
       pillOverride,
+      customPaymentTokenName,
+      customPaymentTokenCoingeckoId,
     } = useCollectableInformation(props.collectable);
 
     const addTime = function () {
@@ -391,6 +394,8 @@ export default {
       currentEndsAt,
       getStartsAt,
       pillOverride,
+      customPaymentTokenName,
+      customPaymentTokenCoingeckoId,
     };
   },
 };

@@ -150,13 +150,18 @@
               :isUpcomming="isUpcomming"
               :nextBidPrice="nextBidPrice"
               :claim="claim"
+              :customPaymentTokenName="customPaymentTokenName"
+              :customPaymentTokenSymbol="customPaymentTokenSymbol"
+              :customPaymentTokenAddress="customPaymentTokenAddress"
+              :customPaymentTokenDecimals="customPaymentTokenDecimals"
+              :customPaymentTokenCoingeckoId="customPaymentTokenCoingeckoId"
               @update-state="updateCollectableState"
           />
 
           <div class="text-3xl font-title font-bold mb-6 mt-12" :class="darkMode && 'dark-mode-text'">
             {{ isAuction ? "Recent bids" : "Recent buys" }}
           </div>
-          <list-of-buyers class="mb-12" :list="events" :isAuction="isAuction"/>
+          <list-of-buyers class="mb-12" :list="events" :isAuction="isAuction" :customPaymentTokenSymbol="customPaymentTokenSymbol"/>
 
           <template v-if="isAuction">
             <button class="button dark w-full" :class="darkMode && 'dark-mode-outline'" @click="openModal('video', 'https://www.youtube.com/watch?v=1G5caDyf-kA')">
@@ -339,6 +344,11 @@ export default {
       claim,
       pillOverride,
       collectionName,
+      customPaymentTokenName,
+      customPaymentTokenSymbol,
+      customPaymentTokenAddress,
+      customPaymentTokenDecimals,
+      customPaymentTokenCoingeckoId,
     } = useCollectableInformation();
 
     const backgroundImage = ref(false);
@@ -552,6 +562,12 @@ export default {
       version,
       navigateToCollection,
       user,
+      // Custom payment tokens
+      customPaymentTokenName,
+      customPaymentTokenSymbol,
+      customPaymentTokenAddress,
+      customPaymentTokenDecimals,
+      customPaymentTokenCoingeckoId,
     };
   },
 };

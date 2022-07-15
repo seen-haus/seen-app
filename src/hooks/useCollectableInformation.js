@@ -18,7 +18,7 @@ import MARKET_HANDLER_TYPES from "@/constants/MarketHandlerTypes.js";
 import { marketHandlerToListingType } from '@/constants';
 
 export default function useCollectableInformation(initialCollectable = {}) {
-    const { converEthToUSD } = useExchangeRate();
+    const { converEthToUSD, convertCustomPaymentTokenToUSD } = useExchangeRate();
     const {
         mergedEvents,
         initializeContractEvents,
@@ -55,6 +55,13 @@ export default function useCollectableInformation(initialCollectable = {}) {
     const items = ref(0);
     const itemsOf = ref(0);
     const collectableState = ref(COLLECTABLE_STATE.WAITING);
+
+    // Custom payment token scenarios
+    const customPaymentTokenName = computed(() => collectable.value?.custom_payment_token?.token_name || false);
+    const customPaymentTokenSymbol = computed(() => collectable.value?.custom_payment_token?.token_symbol || false);
+    const customPaymentTokenAddress = computed(() => collectable.value?.custom_payment_token?.token_address || false);
+    const customPaymentTokenDecimals = computed(() => collectable.value?.custom_payment_token?.token_decimals || false);
+    const customPaymentTokenCoingeckoId = computed(() => collectable.value?.custom_payment_token?.coingecko_id || false);
 
     const type = computed(() => collectable.value.type);
     const media = computed(() => collectable.value.media);
@@ -236,11 +243,27 @@ export default function useCollectableInformation(initialCollectable = {}) {
             if (events.value.length === 0) {
                 price.value = +(data.start_bid || 0);
                 nextBidPrice.value = data.start_bid === price.value ? price.value : (price.value * 1.10); // TODO, make DB prop
-                priceUSD.value = +(data.value_in_usd || converEthToUSD(price.value)).toFixed(2);
+                let priceInUsd;
+                if(data.value_in_usd) {
+                    priceInUsd = data.value_in_usd;
+                } else if (data?.custom_payment_token?.id) {
+                    priceInUsd = convertCustomPaymentTokenToUSD(price.value, data.custom_payment_token.coingecko_id);
+                } else {
+                    priceInUsd = converEthToUSD(price.value);
+                }
+                priceUSD.value = +(priceInUsd).toFixed(2);
             } else {
                 price.value = +(latestEvent.value || 0);
                 nextBidPrice.value = +((latestEvent.value || 0) * 1.10); // TODO, make DB prop
-                priceUSD.value = +(latestEvent.value_in_usd || converEthToUSD(price.value)).toFixed(2);
+                let priceInUsd;
+                if(data.value_in_usd) {
+                    priceInUsd = data.value_in_usd;
+                } else if (data?.custom_payment_token?.id) {
+                    priceInUsd = convertCustomPaymentTokenToUSD(price.value, data.custom_payment_token.coingecko_id);
+                } else {
+                    priceInUsd = converEthToUSD(price.value);
+                }
+                priceUSD.value = +(priceInUsd).toFixed(2);
             }
             // Remove rounding errors in nextBidPrice // 1.000000000001
             nextBidPrice.value = +nextBidPrice.value.toFixed(7);
@@ -292,11 +315,23 @@ export default function useCollectableInformation(initialCollectable = {}) {
                         return evt.value + carry;
                     }
                     if (evt.amount) {
-                        return carry + (evt.amount * converEthToUSD(price.value));
+                        let priceInUsd;
+                        if (data?.custom_payment_token?.id) {
+                            priceInUsd = convertCustomPaymentTokenToUSD(price.value, data.custom_payment_token.coingecko_id);
+                        } else {
+                            priceInUsd = converEthToUSD(price.value);
+                        }
+                        return carry + (evt.amount * priceInUsd);
                     }
                     if (evt.raw && typeof evt.raw == "string") {
+                        let priceInUsd;
+                        if (data?.custom_payment_token?.id) {
+                            priceInUsd = convertCustomPaymentTokenToUSD(price.value, data.custom_payment_token.coingecko_id);
+                        } else {
+                            priceInUsd = converEthToUSD(price.value);
+                        }
                         let decodedEvt = JSON.parse(evt.raw);
-                        return (carry + (decodedEvt.amount) * converEthToUSD(price.value));
+                        return (carry + (decodedEvt.amount) * priceInUsd);
                     }
                     return carry;
                 }, 0).toFixed(2);
@@ -499,6 +534,11 @@ export default function useCollectableInformation(initialCollectable = {}) {
         secondaryMarketListings,
         isVRFSale,
         collectionName,
+        customPaymentTokenName,
+        customPaymentTokenSymbol,
+        customPaymentTokenAddress,
+        customPaymentTokenDecimals,
+        customPaymentTokenCoingeckoId,
         // Methods
         updateProgress,
         setCollectable,

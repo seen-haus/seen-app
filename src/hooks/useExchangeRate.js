@@ -32,11 +32,17 @@ export default function useExchangeRate() {
         return formatCurrency((currencies.value ? currencies.value.ethereum : 0) * parseFloat(numOfEth, 10))
     }
 
+    const convertCustomPaymentTokenToUSDAndFormat = function (numOfToken, coingeckoId) {
+        return formatCurrency((currencies.value ? currencies.value[coingeckoId] : 0) * parseFloat(numOfToken, 10))
+    }
+
     const convertSeenToUSDAndFormat = function (numOfSeen) {
         return formatCurrency((currencies.value ? currencies.value.seen : 0) * parseFloat(numOfSeen, 10))
     }
 
     const converEthToUSD = (numOfEth) => (currencies.value ? currencies.value.ethereum : 0) * parseFloat(numOfEth, 10);
+
+    const convertCustomPaymentTokenToUSD = (numOfToken, coingeckoId) => (currencies.value ? currencies.value[coingeckoId] : 0) * parseFloat(numOfToken, 10);
 
     const currencies = computed(() => store.getters['application/currencies']);
     const seen = computed(() => currencies.value ? currencies.value.seen : null);
@@ -52,6 +58,8 @@ export default function useExchangeRate() {
         formatCrypto,
         convertEthToUSDAndFormat,
         convertSeenToUSDAndFormat,
+        convertCustomPaymentTokenToUSD,
+        convertCustomPaymentTokenToUSDAndFormat,
         converEthToUSD,
     };
 }
