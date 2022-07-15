@@ -123,13 +123,33 @@ const roadmap = {
         ],
         status: 'complete',
       },
+    ],
+    'Q3': [
+      {
+        title: 'Support Custom ERC-20 Token Payment Drops',
+        description: 'Adds support for drops which can be conducted using arbitrary ERC-20 tokens for payment in order to improve collaboration potential with other projects.',
+        githubCommits: {
+          'api': [
+            'https://github.com/seen-haus/seen-api/pull/80/files'
+          ],
+          'frontend': [
+            'https://github.com/seen-haus/seen-app/pull/246/files'
+          ]
+        },
+        status: 'complete',
+      },
     ]
   },
   'Upcoming': [
     {
       title: 'Daily Snapshot System',
       description: 'Lays groundwork for social & curation features by constructing a daily snapshot system into the SEEN HAUS API',
-      status: 'in-progress'
+      status: 'in-progress',
+      githubCommits: {
+        'api': [
+          'https://github.com/seen-haus/seen-api/pull/81/files'
+        ],
+      },
     },
     {
       title: 'Revamp Email Notification System',
