@@ -390,3 +390,34 @@ export const OpenSeaAPIService = {
         return assets;
     },
 };
+
+
+export const CurationService = {
+    curationApplicants(pagination = {perPage: 6, page: 1}, filter = {}) {
+        return ApiService.query(`curation/applicants`, {...pagination, ...filter});
+    },
+    latestCurationRound(curationType) {
+        return ApiService.query(`curation/latest-round`, {curationType});
+    },
+    userVotingPower(account) {
+        return ApiService.query(`curation/voting-power`, {account});
+    },
+    castCurationVote(payload) {
+        return ApiService.post(`curation/vote`, payload);
+    },
+    userExistingVote(account, curationType, applicantId, roundDeclarationId) {
+        return ApiService.query(`curation/existing-vote`, {account, curationType, applicantId, roundDeclarationId});
+    },
+    applicantVoteOverview(curationType, applicantId, roundDeclarationId) {
+        return ApiService.query(`curation/applicant-vote-overview`, {curationType, applicantId, roundDeclarationId});
+    },
+    snapshotInfo() {
+        return ApiService.query(`curation/snapshot`);
+    }
+}
+
+export const TwitterService = {
+    getProfilePic(username) {
+        return ApiService.get(`http://localhost:3005/social-data/twitter/${username}`);
+    }
+}

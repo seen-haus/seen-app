@@ -91,10 +91,15 @@
       <div class="absolute-full-width-and-height overflow-hidden">
         <img
           ref="imageRef"
-          class="image absolute mx-auto h-full self-align-absolute-item max-width-none"
+          class="image absolute mx-auto self-align-absolute-item max-width-none"
+          :class="!fillWidthAndHeight && 'h-full'"
           :src="src"
           alt=""
-          :style="`max-height: 100%;`"
+          :style="
+            fillWidthAndHeight ? 
+              calculatedAspectRatioNumber >= 70 ? `width:100%` : 'height: 100%'
+            : `max-height: 100%;`
+          "
         />
       </div>
     </template>
@@ -151,6 +156,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    fillWidthAndHeight: {
+      type: Boolean,
+      default: false,
+    },
     ignoreAspectRatioPadding: {
       type: Boolean,
       default: false,
@@ -178,6 +187,7 @@ export default {
     const imageRef = ref(null);
     const overrideMediaType = ref(null);
     const calculatedAspecRatio = ref(props.aspectRatio);
+    const calculatedAspectRatioNumber = ref(props.aspectRatio);
 
     const state = reactive({
       paused: !props.autoplay,
@@ -294,6 +304,7 @@ export default {
             useAspectRatio = (videoRef.value.videoHeight / videoRef.value.videoWidth) * 100;
           }
           calculatedAspecRatio.value = `${useAspectRatio}%`;
+          calculatedAspectRatioNumber.value = useAspectRatio;
         }
       }
 
@@ -312,6 +323,7 @@ export default {
           useAspectRatio = (imageRef.value.naturalHeight / imageRef.value.naturalWidth) * 100;
         }
         calculatedAspecRatio.value = `${useAspectRatio}%`;
+        calculatedAspectRatioNumber.value = useAspectRatio;
       }
     }
 
@@ -370,6 +382,7 @@ export default {
       videoRef,
       imageRef,
       calculatedAspecRatio,
+      calculatedAspectRatioNumber,
       isLoading,
       mediaType,
       isPaused,

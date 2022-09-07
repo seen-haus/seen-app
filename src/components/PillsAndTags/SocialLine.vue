@@ -37,7 +37,7 @@ export default {
     },
     getSocialText(social) {
       return social?.handle || social?.url || "";
-    }
+    },
   },
 };
 </script>

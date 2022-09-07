@@ -113,6 +113,10 @@
   background-image: radial-gradient(circle farthest-corner at 10% 20%, #3fff00 0%, #00cd00 90.1%);
 }
 
+.bg-progress-bar-red-vibrant {
+  background-image: radial-gradient(circle farthest-corner at 10% 20%, #ff0000 0%, #cd0000 90.1%);
+}
+
 .bg-progress-bar-green-gradient {
   background-image: radial-gradient(circle farthest-corner at 10% 20%, #11998E 0%, #38EF7D 90.1%);
 }
@@ -453,6 +457,24 @@
 }
 
 .metadata-property-grid-item {
+  @apply border rounded-md border-gray-200;
+}
+
+.vote-container {
+  display: flex;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+
+.vote-item-outer {
+  min-width: 50%;
+  flex-grow: 1;
+  box-sizing: border-box;
+  justify-content: space-between;
+}
+
+.vote-item-inner {
+  margin: 5px;
   @apply border rounded-md border-gray-200;
 }
 

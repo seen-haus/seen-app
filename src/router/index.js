@@ -53,6 +53,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "collectableDropV3" */ '../views/collectable/v3/Collectable.vue')
     },
     {
+        path: '/curate/self-minting',
+        name: 'curateSelfMinters',
+        component: () => import(/* webpackChunkName: "curateSelfMinters" */ '../views/curation/MintingApplicants.vue')
+    },
+    {
         path: '/claims/v3/:claimId',
         name: 'claimsV3',
         component: () => import(/* webpackChunkName: "claimsV3" */ '../views/claim/ClaimV3.vue')
