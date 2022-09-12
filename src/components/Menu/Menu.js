@@ -12,8 +12,8 @@ export default {
                         url: 'artists'
                     },
                     {
-                        title: 'Staking',
-                        url: 'stake',
+                        title: 'Curate',
+                        url: 'curateSelfMinters',
                     },
                 ],
             mobileOnlyItems: [
