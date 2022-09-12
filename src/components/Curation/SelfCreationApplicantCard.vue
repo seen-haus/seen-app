@@ -444,7 +444,7 @@ export default {
         11:'https://pbs.twimg.com/profile_banners/1009087669928906756/1658035180/1500x500',
         12:'https://lh3.googleusercontent.com/-JE0FSzvxgy2dKwsmDMGZJKJLh5GSrtVGlbOwW7kr7GVk4Ju0JW6AU6FnotmolUEqQxNc8AJIc6tn7IE1UniNVZmiO007_KSOjJVYQ=w400',
         13:'https://pbs.twimg.com/profile_banners/1454968604961787904/1652709159/1500x500',
-        14:'https://assets.objkt.media/file/assets-003/QmPogNGqJ4Pys3Pzw2mvmiqbcQfLNrExVSUocNYMCbRLVM/artifact',
+        14:'https://seenhaus.mypinata.cloud/ipfs/QmVWGqrgrHPb76eXsFKUbHQA9U3v8FS3VYXSQRDssnTRK4',
         15:'',
         16:'https://pbs.twimg.com/media/FTOG0WFVUAAjx-c?format=jpg&name=large',
         17:'https://seenhaus.mypinata.cloud/ipfs/QmRGd2d1VmRt8s7xi97S9Xpo1QvpSsiKH6xDaDH4vyK3Wi',
