@@ -46,7 +46,12 @@ export default {
         return `https://twitter.com/${username}`
       }
       if(social.type === 'instagram') {
-        let extracted = stripped.split('www.instagram.com/');
+        let extracted;
+        if(stripped.indexOf('www.instagram.com/') > -1) {
+          extracted = stripped.split('www.instagram.com/');
+        } else {
+          extracted = stripped.split('instagram.com/');
+        }
         let username = extracted[extracted.length - 1];
         let hasTrailingSlash = username.indexOf('/') === username.length - 1;
         return hasTrailingSlash ? `https://instagram.com/${username}` : `https://instagram.com/${username}/`

@@ -114,6 +114,9 @@
           <button v-if="isVotingClosed" class="button primary mt-1 disabled opacity-50 w-full">
             <span>Voting Closed</span>
           </button>
+          <button v-else-if="isVotingOpeningSoon" class="button primary mt-1 disabled opacity-50 w-full">
+            <span>Voting Opening Soon</span>
+          </button>
           <button
             v-else
             @click="castVote"
@@ -300,7 +303,8 @@ export default {
       titleText: String,
       applicant: Object,
       roundDeclarationId: Number,
-      votingClosed: Boolean
+      votingClosed: Boolean,
+      votingState: String
     },
     components: {
       SubTitle,
@@ -320,6 +324,7 @@ export default {
       };
 
       const isVotingClosed = ref(false);
+      const isVotingOpeningSoon = ref(false);
 
       const fieldValidatorVotingPower = (value) => {
         console.log({value})
@@ -401,6 +406,14 @@ export default {
         }
       })
 
+      watchEffect(() => {
+        if(props.votingState === 'WAITING') {
+          isVotingOpeningSoon.value = true;
+        } else {
+          isVotingOpeningSoon.value = false;
+        }
+      })
+
       const {account} = useWeb3();
 
       const applicantSocials = computed(
@@ -434,13 +447,14 @@ export default {
         14:'https://assets.objkt.media/file/assets-003/QmPogNGqJ4Pys3Pzw2mvmiqbcQfLNrExVSUocNYMCbRLVM/artifact',
         15:'',
         16:'https://pbs.twimg.com/media/FTOG0WFVUAAjx-c?format=jpg&name=large',
-        17:'https://pbs.twimg.com/profile_banners/1370801361051394053/1658667237/1500x500',
+        17:'https://seenhaus.mypinata.cloud/ipfs/QmRGd2d1VmRt8s7xi97S9Xpo1QvpSsiKH6xDaDH4vyK3Wi',
         18:'https://pbs.twimg.com/media/FZFyTrqUUAAZJCb?format=jpg&name=medium',
         19:'https://pbs.twimg.com/media/FZq3kIRWYAMxejW?format=jpg&name=large',
         20:'https://pbs.twimg.com/profile_banners/2685357499/1616977947/1500x500',
         21:'',
         22:'',
         23: 'https://seenhaus.mypinata.cloud/ipfs/QmeCakj5pFnoWpKp4msA2Qd9eb8XgTEAyK2FuXodroRMV1',
+        24: 'https://seenhaus.mypinata.cloud/ipfs/QmXjsX8tJ3JK7gF1r5qGB8Z6MFyXWvtLQdtZez7vE64qNf'
       }
 
       const castVote = async () => {
@@ -520,6 +534,7 @@ export default {
         selectedVoteType,
         selectedVoteTypeSaved,
         isVotingClosed,
+        isVotingOpeningSoon,
       }
     }
 };

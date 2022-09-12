@@ -91,7 +91,7 @@
       <div class="absolute-full-width-and-height overflow-hidden">
         <img
           ref="imageRef"
-          class="image absolute mx-auto self-align-absolute-item max-width-none"
+          class="image absolute mx-auto max-width-none"
           :class="!fillWidthAndHeight && 'h-full'"
           :src="src"
           alt=""

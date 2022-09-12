@@ -20,6 +20,18 @@
             fontSize="2.5rem"
             lineHeight="5rem"
             :closed="false"
+            v-if="timerState === 'WAITING'"
+          >
+            <span v-if="!ended" style="font-weight: 400">Starting in</span> {{value}}
+          </common-title>
+          <common-title
+            class="flex-grow pb-1 mb-2"
+            color="fence-light"
+            textAlign="left"
+            fontSize="2.5rem"
+            lineHeight="5rem"
+            :closed="false"
+            v-else
           >
             {{value}} <span v-if="!ended" style="font-weight: 400">Remaining</span>
           </common-title>
@@ -48,7 +60,7 @@
           v-for="applicant in listOfApplicants"
           :key="applicant?.id ? applicant.id : new Date().getTime()"
         >
-          <SelfCreationApplicantCard :key="`self-minting-applicant-${applicant.id}`" :roundDeclarationId="curationRoundInfo.id" :votingClosed="ended" v-if="applicant && applicant.id && (tempHideList.indexOf(applicant.id) === -1)" autoMargins :applicant="applicant">{{applicant}}</SelfCreationApplicantCard>
+          <SelfCreationApplicantCard :key="`self-minting-applicant-${applicant.id}`" :roundDeclarationId="curationRoundInfo.id" :votingClosed="ended" :votingState="timerState" v-if="applicant && applicant.id && (tempHideList.indexOf(applicant.id) === -1)" autoMargins :applicant="applicant">{{applicant}}</SelfCreationApplicantCard>
           <product-card-v3-placeholder v-else-if="applicant && (tempHideList.indexOf(applicant.id) === -1)" />
         </template>
       </div>
@@ -97,7 +109,7 @@ export default {
     const curationRoundInfo = computed(() => curationRoundInfoHook.curationRound.value);
     const latestSnapshotBlock = computed(() => curationRoundInfoHook.latestSnapshotBlock.value);
 
-    const {startTimer, endTimer, percentage, value, ended} = useGenericTimer(null, 'Curation round');
+    const {startTimer, endTimer, percentage, timerState, value, ended} = useGenericTimer(null, 'Curation round');
 
     const paginatedApplicants = useApplicantsWithPagination('self_minting_applicants');
     const listOfApplicants = computed(
@@ -118,11 +130,14 @@ export default {
           startDate: curationRoundInfo.value.start_unix * 1000,
           endDate: curationRoundInfo.value.end_unix * 1000,
         })
-        paginatedApplicants.load(curationRoundInfo.value.id);
+        console.log({listOfApplicants})
+        if(!listOfApplicants.value || (listOfApplicants.value[0] === null) || listOfApplicants.value.length === 0) {
+          paginatedApplicants.load(curationRoundInfo.value.id);
+        }
       }
     })
 
-    const tempHideList = [5, 15, 22, 21];
+    const tempHideList = [5, 15, 22, 21, 25];
 
     return {
       curationRoundInfo,
@@ -132,7 +147,8 @@ export default {
       tempHideList,
       value,
       ended,
-      latestSnapshotBlock
+      latestSnapshotBlock,
+      timerState
     }
   }
 };

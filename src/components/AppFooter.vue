@@ -41,6 +41,9 @@
                 <router-link :to="{ name: 'artists'}" class="block">
                   <span class="font-bold">Creators</span>
                 </router-link>
+                <router-link :to="{ name: 'curateSelfMinters'}" class="block">
+                  <span class="font-bold">Curation</span>
+                </router-link>
                 <router-link :to="{ name: 'stake'}" class="block">
                   <span class="font-bold">Staking</span>
                 </router-link>
