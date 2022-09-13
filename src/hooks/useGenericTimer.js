@@ -200,7 +200,7 @@ export default function useTimer(callback, timerDescriptor) {
         startTimer,
         endTimer,
         addSeconds,
-        timerState: timerState.value,
+        timerState,
         percentage,
         value,
         ended,
