@@ -147,7 +147,7 @@
                 lineHeight="36px"
                 :closed="false"
               >
-                Buy Zone / Under Construction / Smart Contract Integration Ongoing
+                Buy Zone Coming Soon
               </common-title>
             </div>
           </div>
