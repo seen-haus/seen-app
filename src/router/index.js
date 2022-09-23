@@ -33,6 +33,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "secret" */ '../views/collectable/pfpStyle/secret.vue')
     },
     {
+        path: '/drops/metaagents-x-shredders',
+        name: 'PropyMetaAgents',
+        component: () => import(/* webpackChunkName: "0xmons" */ '../views/collectable/propy/PropyMetaAgents.vue')
+    },
+    {
         path: '/drops/v2/:slug',
         name: 'collectableDropV2',
         component: () => import(/* webpackChunkName: "collectableDropV2" */ '../views/collectable/Collectable.vue')

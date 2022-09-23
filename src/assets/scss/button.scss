@@ -33,6 +33,16 @@
     }
   }
 
+  &.blue-button {
+    @apply text-white;
+    box-shadow: 0 3px 10px 0 rgba(0, 211, 115, 0.36);
+    background-image: linear-gradient(94.05deg, #37a6fb 1.74%, #00599d 100%);
+    &.wallet {
+      border: none;
+      @apply h-12;
+    }
+  }
+
   &.secondary {
     @apply text-white;
     box-shadow: 0 3px 10px 0 #00a4da5c;
