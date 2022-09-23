@@ -59,6 +59,23 @@
                 <div v-if="artist && creationsReactive?.listOfCreations && creationsReactive.listOfCreations.length > 0 && !creationsReactive.loading">
                   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 my-8">
                     <template
+                      v-for="collectable in externalCollectables.listOfCollectables"
+                      :key="collectable && collectable.id"
+                    >
+                      <template v-if="collectable != null">
+                        <product-card-v3
+                          v-if="collectable != null"
+                          :collectable="collectable"
+                          @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version, collectable.is_external_link)"
+                        />
+                      </template>
+                      <div
+                        v-else
+                        class="placeholder-card overflow-hidden rounded-20px bg-gray-100"
+                        :style="{ 'padding-bottom': '120%' }"
+                      ></div>
+                    </template>
+                    <template
                       v-for="collectable in creationsReactive.listOfCreations"
                       :key="collectable && collectable.id"
                     >
@@ -206,23 +223,27 @@ export default {
         : null
     );
 
-    const navigateToCollectable = function (slug, isSlugFullRoute, version) {
-      if(isSlugFullRoute) {
-        router.push({
-          name: slug,
-        });
-      }else{
-        if(version === 1 || version === 2) {
+    const navigateToCollectable = function (slug, isSlugFullRoute, version, isExternalLink) {
+      if(!isExternalLink) {
+        if(isSlugFullRoute) {
           router.push({
-            name: "collectableDropV2",
-            params: { slug: slug },
+            name: slug,
           });
-        } else if (version === 3) {
-          router.push({
-            name: "collectableDropV3",
-            params: { slug: slug },
-          });
+        }else{
+          if(version === 1 || version === 2) {
+            router.push({
+              name: "collectableDropV2",
+              params: { slug: slug },
+            });
+          } else if (version === 3) {
+            router.push({
+              name: "collectableDropV3",
+              params: { slug: slug },
+            });
+          }
         }
+      } else {
+        window.open(slug, '_blank').focus()
       }
     };
 
@@ -256,6 +277,40 @@ export default {
       paginatedCreations.loadMore();
     };
 
+    let externalCollectables = reactive({
+      listOfCollectables: [],
+    });
+    watchEffect(async () => {
+      if(artist?.value?.name || artist?.value?.name === 'Propy' && (creationsReactive.listOfCreations.length > 0) && externalCollectables) {
+
+        externalCollectables.listOfCollectables[0] = JSON.parse(JSON.stringify(creationsReactive.listOfCreations[0]));
+        externalCollectables.listOfCollectables[1] = JSON.parse(JSON.stringify(creationsReactive.listOfCreations[0]));
+
+        externalCollectables.listOfCollectables[0].contract_address = null;
+        externalCollectables.listOfCollectables[0].custom_payment_token = {token_symbol: 'USDC'};
+        externalCollectables.listOfCollectables[0].events[externalCollectables.listOfCollectables[0].events.length - 1].value = 215000;
+        externalCollectables.listOfCollectables[0].media = [...externalCollectables.listOfCollectables[0].media];
+        externalCollectables.listOfCollectables[0].media[0].url = 'https://ir.propy.com/images/6246cf6d10051f078ab2c197/8f8bca62bfd94f549de2bd535a94cbd2.jpeg?maxwidth=3000&maxheight=3000&format=jpg';
+        externalCollectables.listOfCollectables[0].media[0].is_preview = true;
+        externalCollectables.listOfCollectables[0].title = 'Tampa Condo NFT';
+        externalCollectables.listOfCollectables[0].is_external_link = true;
+        externalCollectables.listOfCollectables[0].slug = 'https://propy.com/property/6246cf6d10051f078ab2c197';
+
+        externalCollectables.listOfCollectables[1].contract_address = null;
+        externalCollectables.listOfCollectables[1].custom_payment_token = {token_symbol: 'USDC'};
+        externalCollectables.listOfCollectables[1].events[externalCollectables.listOfCollectables[1].events.length - 1].value = 420000;
+        externalCollectables.listOfCollectables[1].media = [...externalCollectables.listOfCollectables[1].media];
+        externalCollectables.listOfCollectables[1].media[0].url = 'https://ir.propy.com/images/62aa0a00685b8a52b0fab188/c47464583b6b442087646aa095eb0447.jpg?maxwidth=3000&maxheight=3000&format=jpg';
+        externalCollectables.listOfCollectables[1].media[0].is_preview = true;
+        externalCollectables.listOfCollectables[1].title = 'Disney Bound NFT';
+        externalCollectables.listOfCollectables[1].is_external_link = true;
+        externalCollectables.listOfCollectables[1].slug = 'https://propy.com/property/62aa0a00685b8a52b0fab188';
+
+      } else {
+        externalCollectables.listOfCollectables = [];
+      }
+    });
+
     return {
       artist,
       isArtistFound,
@@ -264,6 +319,7 @@ export default {
       socials,
       assets,
       creationsReactive,
+      externalCollectables,
       handleLoadMoreCreations,
       navigateToCollectable,
       activeTabIndex,

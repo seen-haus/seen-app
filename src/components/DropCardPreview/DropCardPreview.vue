@@ -216,6 +216,7 @@
                     <div v-if="data.price" class="flex-align-center">
                         <img v-if="!data.customPaymentTokenSymbol" src="@/assets/icons/ethereum-icon.svg"  class="mr-2" alt="Ethereum logo">
                         <img v-if="data.customPaymentTokenSymbol === 'PRO'" src="@/assets/icons/propy.png"  class="mr-2 payment-token-logo" alt="Propy logo">
+                        <img v-if="data.customPaymentTokenSymbol === 'USDC'" src="@/assets/icons/usdc.svg"  class="mr-2 payment-token-logo" alt="USDC logo">
                         <sub-title
                             class="text-black hidden lg:flex"
                             :class="{
