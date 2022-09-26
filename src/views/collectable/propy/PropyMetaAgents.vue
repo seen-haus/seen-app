@@ -1,32 +1,5 @@
 <template>
   <div>
-    <!-- <container class="section-featured-auctions hero-banner-meta-agents pb-12">
-      <img class="meta-agent-hero-dots" src="@/assets/images/propy-meta-agent-bg-dots.svg" alt="">
-      <img class="meta-agent-hero-sliced-circle" src="@/assets/images/propy-meta-agent-sliced-circle.svg" alt="">
-      <img class="meta-agent-hero-agent" src="@/assets/images/propy-meta-agent-hero.svg" alt="">
-      <div class="flex items-center pb-6 flex-col lg:flex-row" style="max-width: 470px;">
-        <div>
-          <common-title
-            class="flex-grow pb-1 mb-2"
-            color="fence-light"
-            textAlign="left"
-            fontSize="4rem"
-            lineHeight="5rem"
-            :closed="false"
-          >
-            Meta Agents<br/>& Shredders
-          </common-title>
-          <light-typography 
-            textAlign="left"
-            fontSize="1.6rem"
-            lineHeight="40px"
-            paddingBottom="6px"
-          >
-            Exclusive NFT Avatars for Real Estate and Metaverse Fans
-          </light-typography>
-        </div>
-      </div>
-    </container> -->
     <container class="section-featured-auctions hero-banner-meta-agents pb-12">
       <img class="meta-agent-hero-dots" src="@/assets/images/propy-meta-agent-bg-dots.svg" alt="">
       <div
@@ -137,19 +110,44 @@
             </div>
           </div>
           <div>
-            <div class="info-box" style="height: calc(100% - 32px);display: flex;justify-content: center;align-items: center">
-              <common-title
-                style="opacity: 0.7"
-                class="flex-grow mb-2"
-                color="fence-light"
-                textAlign="center"
-                fontSize="24px"
-                lineHeight="36px"
-                :closed="false"
-              >
-                Buy Zone Coming Soon
-              </common-title>
-            </div>
+            <!-- <div  class="info-box" style="height: calc(100% - 32px);display: flex;justify-content: center;align-items: center"> -->
+              <BidCardVRFv3
+                v-if="collectable && collectable.id"
+                :status="liveStatus"
+                :collectable="collectable"
+                :startsAt="currentStartsAt"
+                :minimumStartsAt="currentMinimumStartsAt"
+                :endsAt="currentEndsAt"
+                :isAuction="isAuction"
+                :numberOfBids="events.length"
+                :isOpenEdition="isOpenEdition"
+                :isVRFSale="isVRFSale"
+                :hasRequestedVRF="hasRequestedVRF"
+                :hasFulfilledVRF="hasFulfilledVRF"
+                :hasCommittedVRF="hasCommittedVRF"
+                :itemsBought="itemsBought"
+                :edition="edition"
+                :edition_of="edition_of"
+                :items="items"
+                :items_of="itemsOf"
+                :price="price"
+                :priceUSD="priceUSD"
+                :progress="progress"
+                :is_sold_out="is_sold_out"
+                :is_closed="is_closed"
+                :isCollectableActive="isCollectableActive"
+                :isUpcomming="isUpcomming"
+                :nextBidPrice="nextBidPrice"
+                :claim="claim"
+                :customPaymentTokenName="customPaymentTokenName"
+                :customPaymentTokenSymbol="customPaymentTokenSymbol"
+                :customPaymentTokenAddress="customPaymentTokenAddress"
+                :customPaymentTokenDecimals="customPaymentTokenDecimals"
+                :customPaymentTokenCoingeckoId="customPaymentTokenCoingeckoId"
+                :requireAdminCommitVRF="true"
+                @update-state="updateCollectableState"
+            />
+            <!-- </div> -->
           </div>
         </div>
       </container>
@@ -435,13 +433,13 @@
             >
               Join Propy Groups
             </common-title>
-            <a href="https://t.me/seenhaus" target="_blank" class="btn-social">
+            <a href="https://t.me/propy" target="_blank" class="btn-social">
                 <i class="fab fa-telegram mr-2"></i>
             </a>
-            <a href="https://twitter.com/seen_haus" target="_blank" class="btn-social">
+            <a href="https://twitter.com/PropyInc" target="_blank" class="btn-social">
                 <i class="fab fa-twitter mr-1.5"></i>
             </a>
-            <a href="https://discord.com/invite/dad8J4f" target="_blank" class="btn-social">
+            <a href="https://discord.com/invite/BSpmUeBF" target="_blank" class="btn-social">
                 <i class="fab fa-discord mr-2"></i>
             </a>
           </div>
@@ -593,7 +591,6 @@
       </common-title>
       <a href="https://propy.com/browse/cres/" target="_blank" rel="noopener noreferrer">
         <button
-          @click="navigateToPropySummit"
           class="cursor-pointer button blue-button"
         >
         Get Started
@@ -604,12 +601,18 @@
 </template>
 
 <script>
+import { reactive, computed } from "vue";
 import { useMeta } from "vue-meta";
 
 import CommonTitle from "@/components/CommonTitle.vue";
 import Container from "@/components/Container.vue";
 import UnfencedTitle from "@/components/UnfencedTitle.vue";
 import LightTypography from "@/components/LightTypography.vue";
+import BidCardVRFv3 from "@/components/BidCardVRFv3.vue";
+
+import { CollectablesService } from "@/services/apiService";
+
+import useCollectableInformation from "@/hooks/useCollectableInformation.js";
 
 export default {
   name: "PropyMetaAgents",
@@ -618,16 +621,157 @@ export default {
     UnfencedTitle,
     LightTypography,
     CommonTitle,
+    BidCardVRFv3,
   },
   setup() {
     const { meta } = useMeta({
       title: "Propy Meta Agents",
     });
-    const navigateToPropySummit = () => {
 
-    }
+    const {
+      collectable,
+      collectableState,
+      price,
+      priceUSD,
+      items,
+      itemsOf,
+      progress,
+      isCollectableActive,
+      isUpcomming,
+      isOpenEdition,
+      isVRFSale,
+      itemsBought,
+      hasRequestedVRF,
+      hasFulfilledVRF,
+      hasCommittedVRF,
+      // Static
+      type,
+      media,
+      // firstMedia,
+      gallerySortedMedia,
+      artist,
+      artistStatement,
+      title,
+      description,
+      events,
+      startsAt,
+      minimumStartsAt,
+      endsAt,
+      liveStatus,
+      is_sold_out,
+      is_closed,
+      edition,
+      edition_of,
+      isTangible,
+      isNft,
+      isAuction,
+      version,
+      nextBidPrice,
+      user,
+      // Methods
+      updateProgress,
+      setCollectable,
+      updateCollectableState,
+      claim,
+      pillOverride,
+      collectionName,
+      customPaymentTokenName,
+      customPaymentTokenSymbol,
+      customPaymentTokenAddress,
+      customPaymentTokenDecimals,
+      customPaymentTokenCoingeckoId,
+    } = useCollectableInformation();
+
+    const state = reactive({
+      loading: true,
+      contractAddress: null,
+      collectable: {},
+      buyersVisible: 3,
+    });
+
+    (async function loadCollectable() {
+      state.loading = true;
+      const slug = 'PropyMetaAgents';
+      const {data} = await CollectablesService.show(slug);
+
+      // data.events.reverse(); // Right order
+      // state.buyers.list = data.events;
+      state.loading = false;
+      state.collectable = data;
+      state.contractAddress = data.contract_address;
+
+      console.log({data})
+
+      setCollectable(data);
+    })();
+
+    const currentEndsAt = computed(() => {
+      return endsAt.value;
+    });
+
+    const currentStartsAt = computed(() => {
+      return startsAt.value;
+    });
+
+    const currentMinimumStartsAt = computed(() => {
+      return minimumStartsAt.value;
+    });
+
     return {
-      navigateToPropySummit
+      currentEndsAt,
+      currentStartsAt,
+      currentMinimumStartsAt,
+      collectable,
+      collectableState,
+      price,
+      priceUSD,
+      items,
+      itemsOf,
+      progress,
+      isCollectableActive,
+      isUpcomming,
+      isOpenEdition,
+      isVRFSale,
+      itemsBought,
+      hasRequestedVRF,
+      hasFulfilledVRF,
+      hasCommittedVRF,
+      // Static
+      type,
+      media,
+      // firstMedia,
+      gallerySortedMedia,
+      artist,
+      artistStatement,
+      title,
+      description,
+      events,
+      startsAt,
+      minimumStartsAt,
+      endsAt,
+      liveStatus,
+      is_sold_out,
+      is_closed,
+      edition,
+      edition_of,
+      isTangible,
+      isNft,
+      isAuction,
+      version,
+      nextBidPrice,
+      user,
+      // Methods
+      updateProgress,
+      setCollectable,
+      updateCollectableState,
+      claim,
+      pillOverride,
+      collectionName,
+      customPaymentTokenName,
+      customPaymentTokenSymbol,
+      customPaymentTokenAddress,
+      customPaymentTokenDecimals,
+      customPaymentTokenCoingeckoId,
     }
   }
 };
