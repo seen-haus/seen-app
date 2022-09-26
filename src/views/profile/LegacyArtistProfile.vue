@@ -281,7 +281,7 @@ export default {
       listOfCollectables: [],
     });
     watchEffect(async () => {
-      if(artist?.value?.name || artist?.value?.name === 'Propy' && (creationsReactive.listOfCreations.length > 0) && externalCollectables) {
+      if(artist?.value?.name && artist?.value?.name === 'Propy' && (creationsReactive.listOfCreations.length > 0) && externalCollectables) {
 
         externalCollectables.listOfCollectables[0] = JSON.parse(JSON.stringify(creationsReactive.listOfCreations[0]));
         externalCollectables.listOfCollectables[1] = JSON.parse(JSON.stringify(creationsReactive.listOfCreations[0]));
