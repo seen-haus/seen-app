@@ -435,13 +435,13 @@
             >
               Join Propy Groups
             </common-title>
-            <a href="https://t.me/seenhaus" target="_blank" class="btn-social">
+            <a href="https://t.me/propy" target="_blank" class="btn-social">
                 <i class="fab fa-telegram mr-2"></i>
             </a>
-            <a href="https://twitter.com/seen_haus" target="_blank" class="btn-social">
+            <a href="https://twitter.com/PropyInc" target="_blank" class="btn-social">
                 <i class="fab fa-twitter mr-1.5"></i>
             </a>
-            <a href="https://discord.com/invite/dad8J4f" target="_blank" class="btn-social">
+            <a href="https://discord.com/invite/BSpmUeBF" target="_blank" class="btn-social">
                 <i class="fab fa-discord mr-2"></i>
             </a>
           </div>
