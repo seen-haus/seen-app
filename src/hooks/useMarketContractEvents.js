@@ -8,6 +8,7 @@ import {
     useV2OpenEditionContract,
     useV1VRFSaleContract,
     useV2VRFSaleContract,
+    useV3VRFSaleContract,
     useRandomNumberConsumerContract,
     useV3NftContract,
     useV3TicketerContract,
@@ -364,13 +365,24 @@ const useMarketContractEvents = () => {
                         }
                         itemsBought.value = +(await contract.buyCount()).toString();
                     }else if(isVRFSale.value) {
+                        let endTime;
+                        let startTime;
                         if(collectable.value.vrf_version === 1) {
-                            contract = useV1VRFSaleContract(contractAddress.value)
+                            contract = useV1VRFSaleContract(contractAddress.value);
+                            endTime = await contract.end();
+                            startTime = await contract.start();
+                            itemsBought.value = +(await contract.ticketId()).toString();
                         } else if (collectable.value.vrf_version === 2) {
-                            contract = useV2VRFSaleContract(contractAddress.value)
+                            contract = useV2VRFSaleContract(contractAddress.value);
+                            endTime = await contract.end();
+                            startTime = await contract.start();
+                            itemsBought.value = +(await contract.ticketId()).toString();
+                        } else if (collectable.value.vrf_version === 3) {
+                            contract = useV3VRFSaleContract(contractAddress.value);
+                            startTime = await contract.mintingStartTimeUnix();
+                            console.log({startTime: startTime.toString()});
+                            itemsBought.value = +(await contract.totalSupply()).toString();
                         }
-                        let endTime = await contract.end()
-                        let startTime = await contract.start()
                         let randomnessRequestId = await contract.randomNumberRequestId();
                         if(startTime > 0) {
                             collectable.value.starts_at = new Date(parseInt(startTime) * 1000)
@@ -380,7 +392,6 @@ const useMarketContractEvents = () => {
                             collectable.value.ends_at = new Date(parseInt(endTime) * 1000)
                             endsAt.value = new Date(parseInt(endTime) * 1000)
                         }
-                        itemsBought.value = +(await contract.ticketId()).toString();
     
                         // VRF events
                         //hasRequestedVRF,hasCommittedVRF
@@ -548,9 +559,7 @@ const useMarketContractEvents = () => {
                         }
                     });
                 } else if (version.value === 1 || version.value === 2) {
-                    if(!isClaimAgainstTokenDrop.value) {
-                        let start = await contract.start();
-                        let price = await contract.price();
+                    if(!isClaimAgainstTokenDrop.value && (collectable.value.vrf_version !== 3)) {
 
                         await contract.on("Buy", async (fromAddress, amount, evt) => {
                             // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
@@ -585,6 +594,22 @@ const useMarketContractEvents = () => {
                             const event = await createNormalizedEvent(evt, 'claim-against-token-id');
                             mergeEvents(event);
                         });
+                    } else if (collectable.value.vrf_version === 3) {
+                        await contract.on("Buy", async (fromAddress, amount, evt) => {
+                            // Handle bid event: check SUPPLY LEFT, add evt to Events (same decoding process as auction)
+                            // console.log(fromAddress, amount.toString(), evt)
+                            const event = await createNormalizedEvent(evt, 'buy');
+                            itemsBought.value = +(await contract.totalSupply()).toString();
+                            mergeEvents(event);
+                        });
+
+                        const buys = await contract.queryFilter("Buy");
+                        console.group('Past Events - Sale');
+                        buys.forEach(async (buy) => {
+                            const event = await createNormalizedEvent(buy, 'buy');
+                            mergeEvents(event);
+                        });
+                        console.groupEnd('Past Events - Sale');
                     }
                 }
             }
@@ -675,6 +700,8 @@ const useMarketContractEvents = () => {
     const buy = async (amount, consignmentId) => {
         const price = (collectable.value && collectable.value.price);
 
+        console.log({price, 'collectable.value': collectable.value});
+
         const value = BigNumber.from(amount.toString()).mul(parseEther(price.toFixed(8)))
 
         if (price == null || amount == null) return;
@@ -686,7 +713,11 @@ const useMarketContractEvents = () => {
             const saleRunnerContractRaw = await useV3SaleRunnerContract(true);
             temporaryContract = saleRunnerContractRaw;
         } else if(version.value === 2) {
-            temporaryContract = useV1NftContract(contractAddress.value, true);
+            if(collectable.value.vrf_version === 3) {
+                temporaryContract = useV3VRFSaleContract(contractAddress.value, true);
+            } else {
+                temporaryContract = useV1NftContract(contractAddress.value, true);
+            }
         } else if (version.value === 1) {
             temporaryContract = useV1NftContract(contractAddress.value, true);
         }
@@ -709,14 +740,25 @@ const useMarketContractEvents = () => {
                 toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
             });
         } else if(version.value === 2 || version.value === 1) {
-            tx = await temporaryContract.buy(qty.toString(), {
-                gasPrice: gasPrice.toString(),
-                ...(!isCustomPaymentToken.value && {value: value.toString()}),
-                from: account.value
-            }).catch(e => {
-                let message = parseError(e.message)
-                toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
-            });
+            if(collectable.value.vrf_version === 3) {
+                tx = await temporaryContract.mint(account.value, qty.toString(), {
+                    gasPrice: gasPrice.toString(),
+                    ...(!isCustomPaymentToken.value && {value: value.toString()}),
+                    from: account.value
+                }).catch(e => {
+                    let message = parseError(e.message)
+                    toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                });
+            } else {
+                tx = await temporaryContract.buy(qty.toString(), {
+                    gasPrice: gasPrice.toString(),
+                    ...(!isCustomPaymentToken.value && {value: value.toString()}),
+                    from: account.value
+                }).catch(e => {
+                    let message = parseError(e.message)
+                    toast.add({severity: 'error', summary: 'Error', detail: `${message}`, life: 3000});
+                });
+            }
         }
 
         return tx.wait()

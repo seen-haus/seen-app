@@ -27,7 +27,7 @@ export const TIMER_STATE = Object.freeze({
     DONE: 'DONE',
 });
 
-export default function useTimer(callback) {
+export default function useTimer(callback, isVRFSale) {
     const timerState = ref(TIMER_STATE.WAITING);
     const ended = ref(false);
     const state = reactive({
@@ -95,7 +95,7 @@ export default function useTimer(callback) {
                 state.value = 'Auction Ended';
             }
             endTimer();
-        } else if(progressLeft > 10000000000) {
+        } else if(progressLeft > 10000000000 && !isVRFSale) {
             timerState.value = TIMER_STATE.DONE;
             state.value = 'Loading...'; // In case there is an issue fetching times (rather than show a very incorrect time)
             endTimer();

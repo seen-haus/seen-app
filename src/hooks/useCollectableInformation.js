@@ -103,10 +103,12 @@ export default function useCollectableInformation(initialCollectable = {}) {
     });
     const isCollectableActive = computed(() => {
         return (
-            collectableState.value === COLLECTABLE_STATE.WAITING ||
-            collectableState.value === COLLECTABLE_STATE.IN_PROGRESS ||
-            collectableState.value === COLLECTABLE_STATE.AWAITING_RESERVE ||
-            (!is_closed.value && !isReadyForClosure.value && !isClosed.value && !isCancelled.value && new Date(collectable.value.ends_at).getTime() > new Date().getTime())
+            !hasRequestedVRF.value && collectableState.value !== COLLECTABLE_STATE.OUT_OF_STOCK && (
+                collectableState.value === COLLECTABLE_STATE.WAITING ||
+                collectableState.value === COLLECTABLE_STATE.IN_PROGRESS ||
+                collectableState.value === COLLECTABLE_STATE.AWAITING_RESERVE ||
+                (!is_closed.value && !isReadyForClosure.value && !isClosed.value && !isCancelled.value && new Date(collectable.value.ends_at).getTime() > new Date().getTime())
+            )
         );
     });
     const edition = computed(() => collectable.value.edition || 0);

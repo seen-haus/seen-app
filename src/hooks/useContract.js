@@ -37,6 +37,7 @@ import {
 import CLAIM_AGAINST_TOKEN_CONTRACT_WITH_FEE_ABI from "@/constants/abis/claimAgainstTokenContractWithFeeABI.json";
 import VRF_SALE_V1_ABI from "@/constants/abis/vrfSaleV1ABI.json"
 import VRF_SALE_V2_ABI from "@/constants/abis/vrfSaleV2ABI.json"
+import VRF_SALE_V3_ABI from "@/constants/abis/vrfSaleV3ABI.json"
 import PROPY_AUCTION_V2_ABI from "@/constants/abis/propyAuctionV2ABI.json"
 import ETH_ADDRESS_WHITELIST_ABI from "@/constants/abis/ethAddressWhitelistABI.json"
 import RANDOMNESS_CONSUMER_VRF_ABI from "@/constants/abis/randomnessConsumerVRFABI.json"
@@ -87,6 +88,10 @@ export function useV1VRFSaleContract(contract, withSignerIfPossible) {
 
 export function useV2VRFSaleContract(contract, withSignerIfPossible) {
     return useContract(contract, VRF_SALE_V2_ABI, withSignerIfPossible)
+}
+
+export function useV3VRFSaleContract(contract, withSignerIfPossible) {
+    return useContract(contract, VRF_SALE_V3_ABI, withSignerIfPossible)
 }
 
 export function useRandomNumberConsumerContract(contract, withSignerIfPossible) {
