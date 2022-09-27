@@ -780,7 +780,7 @@ export default {
 <style lang="scss" scoped>
 .hero-banner-meta-agents {
   position: relative;
-  height: 700px;
+  min-height: 700px;
   display: flex;
   align-items: center;
 }
