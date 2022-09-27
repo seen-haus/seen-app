@@ -749,7 +749,8 @@ console.log({'props.price': props.price})
       if (value) {
         if(value <= 50) {
           if(value <= props.items) {
-            return hasEnoughFunds(value) ? true : 'You do not have enough funds';
+            // return hasEnoughFunds(value) ? true : 'You do not have enough funds';
+            return true;
           } else {
             return `Only ${props.items} remaining`
           }
@@ -1122,20 +1123,21 @@ console.log({'props.price': props.price})
     const {ethereum, convertEthToUSDAndFormat, convertCustomPaymentTokenToUSDAndFormat} = useExchangeRate();
 
     const hasEnoughFunds = () => {
-      if (!balance.value) return true;
-      const funds = parseFloat(balance.value);
-      if (isAuction.value) {
-        let valid = true;
-        if (props.nextBidPrice) {
-          valid = funds > parseFloat(props.nextBidPrice.toString());
-        }
-        if (valid) {
-          valid = funds > parseFloat(auctionField.value ? auctionField.value : 0);
-        }
-        return valid;
-      } else {
-        return funds > (props.price * parseInt(form.values.amount || 0));
-      }
+      return true;
+      // if (!balance.value) return true;
+      // const funds = parseFloat(balance.value);
+      // if (isAuction.value) {
+      //   let valid = true;
+      //   if (props.nextBidPrice) {
+      //     valid = funds > parseFloat(props.nextBidPrice.toString());
+      //   }
+      //   if (valid) {
+      //     valid = funds > parseFloat(auctionField.value ? auctionField.value : 0);
+      //   }
+      //   return valid;
+      // } else {
+      //   return funds > (props.price * parseInt(form.values.amount || 0));
+      // }
     }
 
     const openWalletModal = () => {
