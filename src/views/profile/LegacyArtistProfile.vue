@@ -281,14 +281,19 @@ export default {
       listOfCollectables: [],
     });
     watchEffect(async () => {
-      if(artist?.value?.name && artist?.value?.name === 'Propy' && (creationsReactive.listOfCreations.length > 0) && externalCollectables) {
+      if(artist?.value?.name && artist?.value?.name === 'Propy' && (creationsReactive.listOfCreations?.length > 0) && externalCollectables) {
 
         externalCollectables.listOfCollectables[0] = JSON.parse(JSON.stringify(creationsReactive.listOfCreations[0]));
         externalCollectables.listOfCollectables[1] = JSON.parse(JSON.stringify(creationsReactive.listOfCreations[0]));
 
         externalCollectables.listOfCollectables[0].contract_address = null;
         externalCollectables.listOfCollectables[0].custom_payment_token = {token_symbol: 'USDC'};
-        externalCollectables.listOfCollectables[0].events[externalCollectables.listOfCollectables[0].events.length - 1].value = 215000;
+        if(externalCollectables.listOfCollectables[0].events?.length > 0) {
+          externalCollectables.listOfCollectables[0].events[externalCollectables.listOfCollectables[0].events.length - 1].value = 215000;
+        } else {
+          externalCollectables.listOfCollectables[0].events = [];
+          externalCollectables.listOfCollectables[0].events[0] = { value: 215000 };
+        }
         externalCollectables.listOfCollectables[0].media = [...externalCollectables.listOfCollectables[0].media];
         externalCollectables.listOfCollectables[0].media[0].url = 'https://ir.propy.com/images/6246cf6d10051f078ab2c197/8f8bca62bfd94f549de2bd535a94cbd2.jpeg?maxwidth=3000&maxheight=3000&format=jpg';
         externalCollectables.listOfCollectables[0].media[0].is_preview = true;
@@ -298,7 +303,12 @@ export default {
 
         externalCollectables.listOfCollectables[1].contract_address = null;
         externalCollectables.listOfCollectables[1].custom_payment_token = {token_symbol: 'USDC'};
-        externalCollectables.listOfCollectables[1].events[externalCollectables.listOfCollectables[1].events.length - 1].value = 420000;
+        if(externalCollectables.listOfCollectables[0].events?.length > 0) {
+          externalCollectables.listOfCollectables[0].events[externalCollectables.listOfCollectables[0].events.length - 1].value = 420000;
+        } else {
+          externalCollectables.listOfCollectables[0].events = [];
+          externalCollectables.listOfCollectables[0].events[0] = { value: 420000 };
+        }
         externalCollectables.listOfCollectables[1].media = [...externalCollectables.listOfCollectables[1].media];
         externalCollectables.listOfCollectables[1].media[0].url = 'https://ir.propy.com/images/62aa0a00685b8a52b0fab188/c47464583b6b442087646aa095eb0447.jpg?maxwidth=3000&maxheight=3000&format=jpg';
         externalCollectables.listOfCollectables[1].media[0].is_preview = true;
