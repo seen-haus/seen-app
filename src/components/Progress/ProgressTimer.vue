@@ -40,12 +40,16 @@ export default {
     isAwaitingReserve: {
       type: Boolean,
       default: false,
+    },
+    isVRFSale: {
+      type: Boolean,
+      default: false
     }
   },
   // TODO timer logic
   setup(props, ctx) {
     const timerState = ref(TIMER_STATE.WAITING);
-    const {startTimer, endTimer, addSeconds, percentage, value, ended} = useTimer(timerStateChange);
+    const {startTimer, endTimer, addSeconds, percentage, value, ended} = useTimer(timerStateChange, props.isVRFSale);
 
     watch(percentage, () => ctx.emit('onProgress', percentage.value));
     watch(timerState, () => ctx.emit('onTimerStateChange', timerState.value));
