@@ -1,6 +1,6 @@
 <template>
   <div>
-    <container class="section-featured-auctions hero-banner-meta-agents pb-12">
+    <container class="section-featured-auctions hero-banner-meta-agents pb-12" style="overflow: hidden">
       <img class="meta-agent-hero-dots" src="@/assets/images/propy-meta-agent-bg-dots.svg" alt="">
       <div
           class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-10 mt-5"
@@ -789,7 +789,7 @@ export default {
   left: 50%;
   transform: translateX(-50%)translateY(-50%);
   top: 50%;
-  max-width: 600px;
+  max-width: 100%;
 }
 .meta-agent-hero-agent {
   position: absolute;
