@@ -13,7 +13,6 @@
         ></div>
         <div :class="'avatar-mobile'">
           <div
-            v-if="hasUserData"
             class="bg-background-gray rounded-full w-full h-full flex justify-center items-center overflow-hidden"
           >
             <div class="profile-avatar" :style="{ backgroundImage: `url(${profileUser?.avatar_image})` }">
@@ -26,7 +25,6 @@
             <div class="sticky-bio mb-6 xl:mb-12">
               <div :class="'avatar-desktop hidden xl:inline-flex'">
                 <div
-                  v-if="hasUserData"
                   class="bg-background-gray rounded-full w-full h-full flex justify-center items-center overflow-hidden"
                 >
                   <div class="profile-avatar" :style="{ backgroundImage: `url(${profileUser?.avatar_image})` }">
@@ -39,7 +37,7 @@
                   <p class="font-bold text-3xl mr-4">{{ profileUser ? profileUser.username : 'New Profile' }}</p>
                   <div class="wallet-address-badge rounded-20px flex justify-between items-center">
                     <copy-helper
-                      v-if="hasUserData"
+                      v-if="profileUser && profileUser?.wallet"
                       :toCopy="profileUser.wallet"
                       :isIconSuffix="true"
                       :text="cropWithExtension(profileUser.wallet, 20)"
@@ -263,8 +261,6 @@ export default {
       return (!!profileUser.value && profileUser.value?.wallet) || (isOwnProfile.value && account.value);
     });
 
-    const hasUserData = computed(() => !!profileUser.value && profileUser.value?.wallet);
-
     const socials = computed(() =>
       profileUser.value && profileUser.value.socials
         ? [
@@ -345,7 +341,6 @@ export default {
     return {
       profileUser,
       isUserFound,
-      hasUserData,
       profileState,
       socials,
       assets,
