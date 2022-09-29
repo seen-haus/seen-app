@@ -113,6 +113,7 @@
             <!-- <div  class="info-box" style="height: calc(100% - 32px);display: flex;justify-content: center;align-items: center"> -->
               <BidCardVRFv3
                 v-if="collectable && collectable.id"
+                :isPropySale="true"
                 :status="liveStatus"
                 :collectable="collectable"
                 :startsAt="currentStartsAt"
