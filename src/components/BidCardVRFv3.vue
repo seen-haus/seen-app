@@ -123,13 +123,27 @@
                 class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
                 v-model="acceptVRFTermsField.value"
                 type="checkbox"
-                :placeholder="'Physical Terms'"
+                :placeholder="'VRF Terms'"
               />
               <p style="width: calc(100% - 30px)">
-                I understand that I will initially receive an unrevealed mystery agent, once the sale period is over or sold out, Propy will trigger a randomised reveal and my mystery agent will be revealed. <span class="text-xs error-notice">* required</span>
+                I understand that I will initially receive an unrevealed mystery agent, once the sale period is over or sold out, Propy will trigger a randomised reveal and my mystery agent will be revealed. <span class="text-xs error-notice">*&nbsp;required</span>
               </p>
             </div>
             <span class="error-notice">{{ acceptVRFTermsField.errors[0] }}</span>
+          </div>
+          <div v-if="isPropySale" class="mb-2">
+            <div class="text-gray-400 flex text-sm py-2">
+              <input
+                class="outlined-input-checkbox mt-1" :class="{ invalid: hasError || isFieldInvalid }"
+                v-model="acceptPropyTermsField.value"
+                type="checkbox"
+                :placeholder="'Propy Terms'"
+              />
+              <p style="width: calc(100% - 30px)" class="mt-1">
+                I agree with Propy's{{` `}}<a class="external-link" href="https://propy.com/browse/terms-and-conditions/" rel="noopener noreferrer" target="_blank">terms and conditions</a> <span class="text-xs error-notice">*&nbsp;required</span>
+              </p>
+            </div>
+            <span class="error-notice">{{ acceptPropyTermsField.errors[0] }}</span>
           </div>
         </template>
         <button 
@@ -148,7 +162,7 @@
         <button class="button primary mt-1"
                 :class="{
                   'cursor-wait disabled opacity-50': isSubmitting,
-                  'disabled opacity-50': (tangibility === 'tangible_nft' && !acceptPhysicalTermsField.value) || (isVRFSale && !acceptVRFTermsField.value) || (customPaymentTokenData.isCustomPaymentToken && !customPaymentTokenData.hasSufficientAllowance)
+                  'disabled opacity-50': (tangibility === 'tangible_nft' && !acceptPhysicalTermsField.value) || (isVRFSale && !acceptVRFTermsField.value) || (isPropySale && !acceptPropyTermsField.value) || (customPaymentTokenData.isCustomPaymentToken && !customPaymentTokenData.hasSufficientAllowance)
                 }"
                 :disabled="isSubmitting || (customPaymentTokenData.isCustomPaymentToken && !customPaymentTokenData.hasSufficientAllowance)" v-if="account && hasEnoughFunds() && (!requiresRegistration || (requiresRegistration && isRegisteredBidder))" @click="placeABidOrBuy">
           <span v-if="!isSubmitting">{{ isAuction ? (`Place ${isAwaitingReserve ? 'reserve' : 'a'} bid`) : "Buy now" }}</span>
@@ -484,6 +498,7 @@ export default {
     customPaymentTokenCoingeckoId: [String, Boolean],
 
     requireAdminCommitVRF: { type: Boolean, default: false },
+    isPropySale: { type: Boolean, default: false }
   },
   computed: {
     isAwaitingReserve: function () {
@@ -604,6 +619,7 @@ console.log({'props.price': props.price})
     const acceptTermsField = reactive(useField("terms and conditions", (val) => fieldValidatorAcceptTerms(val)));
     const acceptPhysicalTermsField = reactive(useField("physical terms and conditions", (val) => fieldValidatorAcceptPhysicalTerms(val)));
     const acceptVRFTermsField = reactive(useField("vrf terms and conditions", (val) => fieldValidatorAcceptVRFTerms(val)));
+    const acceptPropyTermsField = reactive(useField("Propy terms and conditions", (val) => fieldValidatorAcceptPropyTerms(val)));
 
     const isFieldInvalid = computed(() => {
       return isAuction.value ? auctionField.errors.length : saleField.errors.length
@@ -783,6 +799,14 @@ console.log({'props.price': props.price})
         return true;
       } else {
         return 'Please accept the terms regarding randomised sales to continue';
+      }
+    }
+
+    const fieldValidatorAcceptPropyTerms = (value) => {
+      if (value) {
+        return true;
+      } else {
+        return 'Please accept the Propy\'s terms and conditions to continue';
       }
     }
 
@@ -1214,6 +1238,7 @@ console.log({'props.price': props.price})
       acceptTermsField,
       acceptPhysicalTermsField,
       acceptVRFTermsField,
+      acceptPropyTermsField,
       tangibility,
       isFieldInvalid,
       viewOnOpenSea,
