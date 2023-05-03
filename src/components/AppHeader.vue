@@ -13,16 +13,16 @@
             </router-link>
             <div class="items-center hidden lg:flex lg:flex-grow justify-between">
               <desktop-menu class="flex justify-center flex-1 header-desktop flex-center-vertical"/>
-              <wallet-button class="disable-horizontal-padding"/>
+              <!-- <wallet-button class="disable-horizontal-padding"/> -->
             </div>
-            <nav class="lg:hidden">
+            <!-- <nav class="lg:hidden">
               <button
                   @click="openMobileMenu"
                   class="cursor-pointer button primary"
               >
                 menu
               </button>
-            </nav>
+            </nav> -->
           </div>
         </header>
       </container>
@@ -34,14 +34,13 @@
 import {useStore} from "vuex";
 
 import DesktopMenu from "@/components/Menu/DesktopMenu";
-import WalletButton from "@/components/WalletButton";
 import Container from "@/components/Container";
 import TopHeaderBar from "@/components/TopHeaderBar";
 import useDarkMode from "@/hooks/useDarkMode";
 
 export default {
   name: 'AppHeader',
-  components: {TopHeaderBar, Container, WalletButton, DesktopMenu},
+  components: {TopHeaderBar, Container, DesktopMenu},
   setup() {
     const store = useStore();
     const { darkMode } = useDarkMode();

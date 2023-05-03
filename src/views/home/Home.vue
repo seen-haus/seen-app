@@ -1,181 +1,21 @@
 <template>
-  <div>
-    <hero-auction
-      v-if="heroCollectable != null"
-      :collectable="heroCollectable"
-    />
-    <div
-      v-else
-      class="overflow-hidden rounded-2xl bg-gray-100"
-      :style="{ 'padding-bottom': '634px', 'background-color': 'white' }"
-    >
-
-       <div class="abstract-circles abstract-circles-hero">
-        <img src="@/assets/images/abstract-circles.svg" alt="">
-      </div>
-    </div>
-
-    <container class="section-featured-auctions relative pt-20">
+  <container class="section-featured-auctions relative pt-10 pb-10">
       <div class="abstract-circles" :style="{
           'left': '-274px',
           'top': '77px'
         }">
         <img src="@/assets/images/abstract-circles.svg" alt="">
       </div>
-      <div class="grid grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-10">
-        <div class="flex-center flex-col">
-          <icon-square icon="paint-and-brush.svg"></icon-square>
-          <sub-title fontSize="24px" class="mt-2">The future of art collecting</sub-title>
-          <light-typography maxWidth="250px" class="mt-2">Browse and build your collection of the world’s most cutting-edge digital art</light-typography>
+      <div class="grid grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-5">
+        <div class="flex-center-align-top flex-col">
+          <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Hello SEEN community!<br><br>We have some important updates to share about the future of SEEN HAUS. Firstly, we want to assure you that the SEEN IPFS infra will remain up and running indefinitely, so all SEEN NFTs will remain intact even after closing <a href="https://t.co/fjWCrgf8kj">https://t.co/fjWCrgf8kj</a> <a href="https://t.co/XPaX3QTVh1">pic.twitter.com/XPaX3QTVh1</a></p>&mdash; seen.haus (@seen_haus) <a href="https://twitter.com/seen_haus/status/1607347122822578176?ref_src=twsrc%5Etfw">December 26, 2022</a></blockquote>
         </div>
-        <div class="flex-center flex-col">
-          <icon-square icon="royalties.svg"></icon-square>
-          <sub-title fontSize="24px" class="mt-2">Pioneering royalties</sub-title>
-          <light-typography maxWidth="280px" class="mt-2">Artists receive royalties for secondary sales of their artworks on any EIP-2981 compliant marketplaces – forever</light-typography>
-        </div>
-        <div class="flex-center flex-col">
-          <icon-square icon="infinity.svg"></icon-square>
-          <sub-title fontSize="24px" class="mt-2">Built for longevity</sub-title>
-          <light-typography maxWidth="250px" class="mt-2">All transactions happen on-chain, creating a tamper-proof record of each artwork’s history</light-typography>
+        <div class="flex-center-align-top flex-col">
+          <blockquote class="twitter-tweet"><p lang="en" dir="ltr">The swap page to exchange SEEN for PRO tokens is officially live!<a href="https://t.co/EvB8DyyYPL">https://t.co/EvB8DyyYPL</a><br><br>Please refer to our pinned tweet or jump in Telegram if you have any questions</p>&mdash; seen.haus (@seen_haus) <a href="https://twitter.com/seen_haus/status/1606434918589939712?ref_src=twsrc%5Etfw">December 23, 2022</a></blockquote>
+          <blockquote class="twitter-tweet"><p lang="en" dir="ltr">1/ We&#39;re always looking for ways to innovate and push the boundaries of what&#39;s possible. Our overall goal is to drive innovation and our vision of the future of real estate technology to the next level.<br><br>We&#39;re thrilled to announce that we&#39;ve joined forces with <a href="https://twitter.com/seen_haus?ref_src=twsrc%5Etfw">@seen_haus</a> <a href="https://t.co/6QPRZNFgSA">pic.twitter.com/6QPRZNFgSA</a></p>&mdash; Propy (@PropyInc) <a href="https://twitter.com/PropyInc/status/1605311740433924096?ref_src=twsrc%5Etfw">December 20, 2022</a></blockquote>
         </div>
       </div>
     </container>
-
-    <container class="section-featured-auctions pb-12">
-      <div class="flex items-center pt-20 lg:pt-24 flex-col lg:flex-row">
-        <img src="@/assets/icons/orange-flame.svg" class="mr-2"/>
-        <common-title
-          class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
-          color="fence-light"
-          textAlign="left"
-          :closed="false"
-          >Live</common-title
-        >
-        <router-link to="drops" class="hidden lg:block">
-          <button :class="darkMode ? 'light' : 'dark'" class="button flex-shrink-0">
-            View All Drops <i class="fas fa-arrow-right ml-3 icon-right"></i>
-          </button>
-        </router-link>
-      </div>
-
-      <div
-        class="auction-list-big grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
-      >
-        <template
-          v-for="collectable in listOfLiveCollectables"
-          :key="collectable && collectable.id"
-        >
-          <product-card-v3
-            v-if="collectable != null"
-            :collectable="collectable"
-            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
-          />
-          <product-card-v3-placeholder v-else />
-        </template>
-      </div>
-    </container>
-
-    <container class="section-featured-auctions">
-      <div
-        class="grid grid-cols-1 md:grid-cols-2 gap-10 mt-9"
-      >
-        <pane-link image="state-of-seen.jpeg" title="State of SEEN" link="https://seen-haus.medium.com/" :isExternalLink="true"/>
-        <pane-link image="discord.jpeg" title="Discord Community" link="https://discord.com/invite/dad8J4f" :isExternalLink="true"/>
-      </div>
-    </container>
-
-    <container class="section-featured-auctions">
-      <div class="flex items-center pt-16 lg:pt-16 flex-col lg:flex-row">
-        <img src="@/assets/icons/paint-palette.svg" class="mr-2"/>
-        <common-title
-          class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
-          color="fence-light"
-          textAlign="left"
-          :closed="false"
-          >Featured</common-title>
-        <router-link to="drops" class="hidden lg:block">
-          <button :class="darkMode ? 'light' : 'dark'" class="button flex-shrink-0">
-            View All Drops <i class="fas fa-arrow-right ml-3 icon-right"></i>
-          </button>
-        </router-link>
-      </div>
-
-      <div
-        class="auction-list-big grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 mt-9"
-      >
-        <template
-          v-for="collectable in listOfEndedCollectables"
-          :key="collectable && collectable.id"
-        >
-          <product-card-v3
-            v-if="collectable != null"
-            :collectable="collectable"
-            @click="navigateToCollectable(collectable.slug, collectable.is_slug_full_route, collectable.version)"
-          />
-          <product-card-v3-placeholder v-else />
-        </template>
-      </div>
-    </container>
-
-    <!-- <div :class="darkMode ? 'dark-mode-background' : 'bg-background-gray'" class="learn-how-to border-t border-b">
-      <container class="py-24 pb-56 mb-8">
-        <fenced-title
-          class="flex-grow mr-0 mb-8 self-stretch"
-          color="fence-gray"
-          textAlign="center"
-          :closed="true"
-          >Learn how to bid in
-          <span class="text-primary italic">50 seconds</span></fenced-title
-        >
-
-        <div class="text-center md:w-1/2 md:mx-auto text-gray-600 text-lg">
-          Seen.haus is an innovative auction house of the future merging the
-          physical and digital worlds of art
-        </div>
-
-        <how-to-video class="my-12"></how-to-video>
-
-        <div class="flex justify-center">
-          <button :class="darkMode ? 'light' : 'dark'" class="button" @click="$router.push({name: 'faq'})">Read FAQs</button>
-        </div>
-      </container>
-    </div>
-
-    <div class="quotes">
-      <container class="flex justify-center">
-        <quote-carousel class="centered-quote" />
-      </container>
-    </div> -->
-
-    <container class="meet-artists pb-32">
-      <div class="flex items-center pt-20 lg:pt-24 flex-col lg:flex-row">
-        <img src="@/assets/icons/trending.svg" class="mr-2"/>
-        <common-title
-          class="flex-grow mr-0 mb-6 lg:mb-0 lg:mr-6 hidden lg:flex"
-          color="fence-light"
-          textAlign="left"
-          :closed="false"
-          >Creators</common-title>
-        <router-link to="creators" class="hidden lg:block">
-          <button :class="darkMode ? 'light' : 'dark'" class="button flex-shrink-0">
-            View All Creators <i class="fas fa-arrow-right ml-3 icon-right"></i>
-          </button>
-        </router-link>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 mt-9">
-        <template v-for="artist in listOfArtists" :key="artist && artist.id">
-          <artist-card :autoMargins="true" v-if="artist != null && !artist.hasOwnProperty('username')" :artist="artist" class="cursor-pointer"/>
-          <user-card v-else-if="artist != null && artist.hasOwnProperty('username')" class="cursor-pointer" :user="artist"/>
-          <div
-            v-else
-            class="creator-placeholder auto-margins placeholder-card overflow-hidden rounded-2xl bg-gray-100"
-            :style="{ 'padding-bottom': '100%' }"
-          ></div>
-        </template>
-      </div>
-    </container>
-  </div>
 </template>
 
 <script>
