@@ -79,21 +79,21 @@ export default {
         const signer = useSigner();
         if (signer) {
           // TODO: Uncomment next line, delete one after it, uncomment third line and last line also.
-          const tokenContract = useTokenContract('0xCa3FE04C7Ee111F0bbb02C328c699226aCf9Fd33');
-          const seenBalance = await tokenContract.balanceOf(account.value);
-          accountCurrent = account.value;
-          const ethBalance = await signer.getBalance();
-          const stakeContract = useStakingContract();
-          const xSeenBalance = await stakeContract.balanceOf(account.value);
-          const xSeenTotalSupply = await stakeContract.totalSupply();
-          const xSeenTotalSeenBalance = await tokenContract.balanceOf(process.env.VUE_APP_XSEEN_CONTRACT_ADDRESS)
-          store.dispatch('application/setBalance', {
-            eth: formatEther(ethBalance),
-            seen: formatEther(seenBalance),
-            xSeen: formatEther(xSeenBalance),
-            xSeenTotalSupply: formatEther(xSeenTotalSupply),
-            xSeenTotalSeenBalance: formatEther(xSeenTotalSeenBalance),
-            xSeenToSeenRatio: xSeenTotalSeenBalance/(xSeenTotalSupply)});
+          // const tokenContract = useTokenContract('0xCa3FE04C7Ee111F0bbb02C328c699226aCf9Fd33');
+          // const seenBalance = await tokenContract.balanceOf(account.value);
+          // accountCurrent = account.value;
+          // const ethBalance = await signer.getBalance();
+          // const stakeContract = useStakingContract();
+          // const xSeenBalance = await stakeContract.balanceOf(account.value);
+          // const xSeenTotalSupply = await stakeContract.totalSupply();
+          // const xSeenTotalSeenBalance = await tokenContract.balanceOf(process.env.VUE_APP_XSEEN_CONTRACT_ADDRESS)
+          // store.dispatch('application/setBalance', {
+          //   eth: formatEther(ethBalance),
+          //   seen: formatEther(seenBalance),
+          //   xSeen: formatEther(xSeenBalance),
+          //   xSeenTotalSupply: formatEther(xSeenTotalSupply),
+          //   xSeenTotalSeenBalance: formatEther(xSeenTotalSeenBalance),
+          //   xSeenToSeenRatio: xSeenTotalSeenBalance/(xSeenTotalSupply)});
         }
       }
     });
