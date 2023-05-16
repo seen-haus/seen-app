@@ -148,7 +148,7 @@ const routes = [
     {
         path: '/stake',
         name: 'stake',
-        redirect: `/`,
+        // redirect: `/`,
         component: () => import(/* webpackChunkName: "stake" */ '../views/stake/Stake.vue')
     },
     {
